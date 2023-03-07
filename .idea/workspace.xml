@@ -5,14 +5,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="381daccd-0066-456c-bb1a-1134ef07430c" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.env.sample" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/ProjeX.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/LICENSE" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/backend/Dockerfile" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/backend/Dockerfile.prod" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/backend/api/static/admin/css/autocomplete.css" afterDir="false" />
@@ -152,17 +144,13 @@
       <change afterPath="$PROJECT_DIR$/backend/app/settings/production.py" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/backend/app/urls.py" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/backend/app/wsgi.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/db.sqlite3" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/backend/entrypoint.prod.sh" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/backend/entrypoint.sh" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/backend/manage.py" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/backend/requirements/base.txt" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/backend/requirements/local.txt" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/backend/requirements/production.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docker-compose.prod.yml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -256,7 +244,7 @@
       <workItem from="1678110087553" duration="7608000" />
       <workItem from="1678160175103" duration="1014000" />
       <workItem from="1678163895637" duration="1257000" />
-      <workItem from="1678172972463" duration="10890000" />
+      <workItem from="1678172972463" duration="11273000" />
     </task>
     <servers />
   </component>

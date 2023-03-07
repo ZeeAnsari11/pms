@@ -1,25 +1,10 @@
-# Ignore everything by default
-# Whitelist only what should be tracked
-*
-!/.gitignore
-!/backend/app
-!/backend/requirements
-!/backend/Dockerfile
-!/backend/Dockerfile.prod
-!/backend/entrypoint.prod.sh
-!/backend/entrypoint.sh
-!/backend/manage.py
-!/frontend/nginx
-!/frontend/public
-!/frontend/src
-!/frontend/Dockerfile
-!/frontend/Dockerfile.prod
-!/frontend/package.json
-!/frontend/README.md
-!/.env.dev
-!/.env.prod
-!/.env.prod.db
-!/docker-compose.yml
-!/docker-compose.prod.yml
-!/LICENSE
-!/README.md
+# Django Stuff
+
+/backend/.venv
+/backend/api
+/backend/db.sqlite3
+
+# React Stuff
+
+/frontend/node_modules
+/frontend/package-lock.json
