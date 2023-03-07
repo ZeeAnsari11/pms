@@ -1,45 +1,143 @@
-**Edit a file, create a new file, and clone from Bitbucket in under 2 minutes**
+# ProjeX Dockerized
 
-When you're done, you can delete the content in this README and update the file with details for others getting started with your repository.
+#### About Project
 
-*We recommend that you open this README in another tab as you perform the tasks below. You can [watch our video](https://youtu.be/0ocf7u76WSo) for a full demo of all the steps in this tutorial. Open the video in a new tab to avoid leaving Bitbucket.*
+The project is a complete example of boilerplate project. This project uses:
+* Django
+* Gunicorn
+* React.js
+* Postgres
+* Nginx
+* Docker
+* Docker Compose
 
----
+There are two environments defined here. Development and production.
 
-## Edit a file
 
-You’ll start by editing this README file to learn how to edit a file in Bitbucket.
+## Development Environment
 
-1. Click **Source** on the left side.
-2. Click the README.md link from the list of files.
-3. Click the **Edit** button.
-4. Delete the following text: *Delete this line to make a change to the README from Bitbucket.*
-5. After making your change, click **Commit** and then **Commit** again in the dialog. The commit page will open and you’ll see the change you just made.
-6. Go back to the **Source** page.
+#### About
 
----
+This environment uses three docker containers. `backend` django app, `frontend` react app, `db` postgres database.
 
-## Create a file
+### Setup
 
-Next, you’ll add a new file to this repository.
+Use `.env.sample` file to create `.env.dev` file. It can look like this:
+```
+DEBUG=1
+SECRET_KEY=foo
+DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
+DJANGO_SETTINGS_MODULE=app.settings.local
 
-1. Click the **New file** button at the top of the **Source** page.
-2. Give the file a filename of **contributors.txt**.
-3. Enter your name in the empty file space.
-4. Click **Commit** and then **Commit** again in the dialog.
-5. Go back to the **Source** page.
+SQL_ENGINE=django.db.backends.postgresql
+SQL_DATABASE=ProjeX
+SQL_USER=postgres
+SQL_PASSWORD=root
+SQL_HOST=db
+SQL_PORT=5432
+DATABASE=postgres
+```
 
-Before you move on, go ahead and explore the repository. You've already seen the **Source** page, but check out the **Commits**, **Branches**, and **Settings** pages.
+### Run
 
----
+Build the application:
 
-## Clone a repository
+```docker-compose build```
 
-Use these steps to clone from SourceTree, our client for using the repository command-line free. Cloning allows you to work on your files locally. If you don't yet have SourceTree, [download and install first](https://www.sourcetreeapp.com/). If you prefer to clone from the command line, see [Clone a repository](https://confluence.atlassian.com/x/4whODQ).
+Start application:
 
-1. You’ll see the clone button under the **Source** heading. Click that button.
-2. Now click **Check out in SourceTree**. You may need to create a SourceTree account or log in.
-3. When you see the **Clone New** dialog in SourceTree, update the destination path and name if you’d like to and then click **Clone**.
-4. Open the directory you just created to see your repository’s files.
+```docker-compose up```
 
-Now that you're more familiar with your Bitbucket repository, go ahead and add a new file locally. You can [push your change back to Bitbucket with SourceTree](https://confluence.atlassian.com/x/iqyBMg), or you can [add, commit,](https://confluence.atlassian.com/x/8QhODQ) and [push from the command line](https://confluence.atlassian.com/x/NQ0zDQ).
+or to run it in the background
+
+```docker-compose up -d```
+
+Now you can visit [localhost:3000/](http://localhost:3000/) to see your frontend app running
+and backend app at port `8000` so admin panel is here [localhost:8000/api/admin/](http://localhost:8000/api/admin/)
+
+to stop it:
+
+```docker-compose down```
+
+
+
+### Stand alone apps
+
+You can run apps separetely without using docker. To do so for frontend app:
+
+```
+cd frontend/
+npm install
+npm start
+```
+and for backend django app just follow:
+```
+cd backend/
+source env/bin/activate 
+pip install -r requirements/local.txt
+python manage.py migrate
+python manage.py runserver
+```
+by default this approach will use sqlite3 database
+
+## Production Environment
+
+#### About
+
+This environment is designed to be used in production setup. 
+
+Backend app for this project uses multistage build. First is creating wheel for packages to be installed later. Second step is creating coping files/folders etc. It installs whell packages and runs entrypoint script. Entrypoint runs collectstatic for backend static files (to be used for django admin panel) and applies migrations. Gunicorn is used for django.
+
+Postgres database is used.
+
+Frontend application is also a multistage build. First node container creates optimized static files. Then nginx container serves them. It also redirects requests for backed service (`/api`)
+
+### Setup
+
+Create `.env.prod` file (similar to `.env.sample` file) eg:
+```
+DEBUG=0
+SECRET_KEY=TODO-changeme
+DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1] your-domain-here
+DJANGO_SETTINGS_MODULE=app.settings.production
+
+SQL_ENGINE=django.db.backends.postgresql
+SQL_DATABASE=django_prod
+SQL_USER=postgres
+SQL_PASSWORD=root
+SQL_HOST=db-prod
+SQL_PORT=5432
+DATABASE=postgres
+
+```
+
+Create `.env.prod.db` file and fill it with:
+
+```
+POSTGRES_USER=django
+POSTGRES_PASSWORD=django
+POSTGRES_DB=django_prod
+```
+those of course need to match variables from previous file. 
+
+### Run
+
+Build the application:
+
+```docker-compose -f docker-compose.prod.yml build```
+
+Start application:
+
+```docker-compose -f docker-compose.prod.yml up```
+
+or to run it in the background
+
+```docker-compose -f docker-compose.prod.yml up -d```
+
+In your browser you can visit [localhost](http://localhost) to see app running.
+
+Admin panel can be found at [localhost/api/admin/](http://localhost/api/admin/)
+
+to stop it:
+
+```docker-compose -f docker-compose.prod.yml down```
