@@ -9,6 +9,7 @@ services:
     command: gunicorn app.wsgi:application --bind 0.0.0.0:8000
     volumes:
       - static_volume:/home/app/web/api/static
+      - media_volume:/home/app/web/api/media
     networks:
       - prod
     expose:
@@ -25,6 +26,7 @@ services:
     container_name: "frontend"
     volumes:
       - static_volume:/home/app/web/api/static
+      - media_volume:/home/app/web/api/media
     networks:
       - prod
     ports:
@@ -47,6 +49,7 @@ services:
 volumes:
   postgres_data_prod:
   static_volume:
+  media_volume:
 
 networks:
   prod:
