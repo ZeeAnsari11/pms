@@ -12,3 +12,11 @@
 # Compiler Stuff
 
 /.idea
+
+# Docker Stuff
+
+/.env.dev
+/.env.prod.db
+/docker-compose.yml
+/backend/Dockerfile
+/frontend/Dockerfile
