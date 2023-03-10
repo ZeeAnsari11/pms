@@ -1,38 +1,65 @@
-.App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.app {
+  height: 100vh;
+  width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
 }
 
-.App-link {
-  color: #61dafb;
+  .app_navbar {
+    width: 100%;
+    padding: 10px 20px;
+    background-color: orange;
+    text-align: center;
+  }
+
+  .app_navbar_one {
+    width: 100%;
+    padding: 10px 20px;
+    border-bottom: 1px solid rgb(245, 239, 235);
+    background-color: rgb(59, 56, 54);
+    color: #fff;
+    /* text-align: center; */
+  }
+
+  .Dashboard_nav {
+    border-radius: 20px;
+    padding: 8px 16px;
+    gap: 5px;
+  }
+
+  .app_outer {
+    flex: 1;
+    overflow-x: auto;
+    padding: 20px;
+    margin-left: 210px;
+  }
+
+.app_boards {
+    min-width: fit-content;
+    display: flex;
+    gap: 30px;
+    height: 100%;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.app_boards_board {
+    min-width: 290px;
+    width: 290px;
+}
+
+.app_boards_board_add {
+  width: 100%;
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 1px 2px 0 1px rgba(0, 0, 0, 0.15);
+}
+
+.app_boards_board_add:hover {
+  box-shadow: 1px 2px 0 1px #ccc;
+}
+
+.user-profile
+{
+  float:right;
+  padding-right: 65px;
+  padding-top: 6px;
 }
