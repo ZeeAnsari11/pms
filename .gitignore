@@ -3,6 +3,85 @@
 /backend/.venv
 /backend/api
 /backend/db.sqlite3
+/backend/*.log
+/backend/*.pot
+/backend/*.pyc
+/backend/__pycache__
+/backend/media
+
+# Python #
+/backend/*.py[cod]
+/backend/*$py.class
+/frontend/*.py[cod]
+/frontend/*$py.class
+
+
+# Distribution / packaging
+/backend/.Python build/
+/backend/develop-eggs/
+/backend/dist/
+/backend/downloads/
+/backend/eggs/
+/backend/.eggs/
+/backend/lib/
+/backend/lib64/
+/backend/parts/
+/backend/sdist/
+/backend/var/
+/backend/wheels/
+/backend/*.egg-info/
+/backend/.installed.cfg
+/backend/*.egg
+/backend/*.manifest
+/backend/*.spec
+
+
+# Installer logs
+/backend/pip-log.txt
+/backend/pip-delete-this-directory.txt
+
+
+# celery
+/backend/celerybeat-schedule.*
+
+
+# SageMath parsed files
+/backend/*.sage.py
+
+
+# mypy
+.mypy_cache/
+/backend/.mypy_cache/
+
+# Backup files #
+*.bak
+frontend/*.bak
+backend/*.bak
+
+
+
+# AWS User-specific
+.idea/**/aws.xml
+
+# Generated files
+.idea/**/contentModel.xml
+
+
+# Gradle
+.idea/**/gradle.xml
+.idea/**/libraries
+
+
+# File-based project format
+*.iws
+
+# Python #
+*.py[cod]
+*$py.class
+
+
+# JIRA plugin
+atlassian-ide-plugin.xml
 
 # React Stuff
 
@@ -11,7 +90,31 @@
 
 # Compiler Stuff
 
-/.idea
+# If you are using PyCharm #
+# User-specific stuff
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/usage.statistics.xml
+.idea/**/dictionaries
+.idea/**/shelf
+
+# Sublime Text #
+*.tmlanguage.cache
+*.tmPreferences.cache
+*.stTheme.cache
+*.sublime-workspace
+*.sublime-project
+
+# Visual Studio Code #
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history
+
+# IntelliJ
+out/
 
 # Docker Stuff
 
