@@ -22,11 +22,12 @@ admin.site.site_header = "ProjeX Admin View"
 admin.site.index_title = "Admin"
 
 urlpatterns = [
+    path('', include('core.urls')),
     path('api/admin/', admin.site.urls),
     path('api/', include('projects.urls')),
     path('register/', include('register.urls')),
     path('api/auth/', include('djoser.urls')),
-    path('api/auth/', include('djoser.urls.jwt')),
+    path('api/auth/', include('djoser.urls.authtoken')),
     path('__debug__/', include('debug_toolbar.urls'))
 ]
 

@@ -23,7 +23,6 @@ class Project(models.Model):
         max_length=50,
         choices=PROJECT_CATEGORY_CHOICES, default=PROJECT_CATEGORY_DEFAULT
     )
-
     def __str__(self):
         return (self.name)
 
