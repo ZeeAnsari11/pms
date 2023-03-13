@@ -1,9 +1,9 @@
 import React, { Component, useState } from 'react';
 import "./App.css";
-import Board from './components/Board/Board';
-import Editable from './components/Editable/Editable';
-import Sidebar from './components/Sidebar/Sidebar';
-import Dropdown from "./components/Dropdown/Dropdown";
+import Board from './components/Dashboard/Board/Board';
+import Editable from './components/Dashboard/Editable/Editable';
+import Sidebar from './components/Dashboard/Sidebar/Sidebar';
+import Dropdown from "./components/Dashboard/Dropdown/Dropdown";
 
 function App(props){
   const [showDropDown, setShowDropdown]= useState(false);
