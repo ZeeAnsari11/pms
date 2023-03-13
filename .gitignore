@@ -124,3 +124,13 @@ out/
 /docker-compose.yml
 /backend/Dockerfile
 /frontend/Dockerfile
+
+
+# Ignore the Dose files
+
+.DS_Store
+._.DS_Store
+**/.DS_Store
+**/._.DS_Store
+./backend/.DS_Store
+./frontend/.DS_Store
