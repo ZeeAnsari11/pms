@@ -92,11 +92,8 @@ atlassian-ide-plugin.xml
 
 # If you are using PyCharm #
 # User-specific stuff
-<<<<<<< Updated upstream
-.idea/*
-=======
 ./.idea/*
->>>>>>> Stashed changes
+.idea/*
 .idea/**/workspace.xml
 .idea/**/tasks.xml
 .idea/**/usage.statistics.xml
