@@ -7,16 +7,20 @@
 
   .app_navbar {
     width: 100%;
-    padding: 10px 20px;
-    background-color: orange;
+    padding: 0px 20px;
+    background-color: #f46f26;
     text-align: center;
+  }
+
+  .app_navbar h2 {
+    color: #FFFFFF;
   }
 
   .app_navbar_one {
     width: 100%;
-    padding: 10px 20px;
+    padding: 2px 20px;
     border-bottom: 1px solid rgb(245, 239, 235);
-    background-color: rgb(59, 56, 54);
+    background-color: #4a4848;
     color: #fff;
     /* text-align: center; */
   }
@@ -27,11 +31,21 @@
     gap: 5px;
   }
 
+  .Dashboard_nav:hover {
+  background-color: #dd743b;
+  color: #ffffff;
+  /*border-color: whitesmoke;*/
+  cursor: pointer
+  ;
+}
+
   .app_outer {
     flex: 1;
     overflow-x: auto;
-    padding: 20px;
-    margin-left: 210px;
+    padding: 0px 20px 0px 20px;
+    margin-left: 165px;
+    margin-bottom: -10px;
+
   }
 
 .app_boards {
