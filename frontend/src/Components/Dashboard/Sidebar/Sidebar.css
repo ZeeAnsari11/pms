@@ -1,11 +1,11 @@
 .sidebar {
-  background-color: #656565;
-  width: 170px;
-  height: 75%;
+  background-color: #4a4848;
+  width: 140px;
+  height: 83%;
   position: absolute;
-  top: 143px;
+  top: 107px;
   left: 0;
-  padding: 20px;
+  padding: 0px 0px 20px 20px;
   color: white;
 }
 
