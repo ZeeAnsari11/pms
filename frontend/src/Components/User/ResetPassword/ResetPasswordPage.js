@@ -30,27 +30,29 @@ const ResetPasswordPage = () => {
   };
 
   return (
-    <div className="reset-password-page">
+    <div className="forgot-password-container">
       <form onSubmit={handleSubmit}>
-        <h1 className='RestPasswordHeadline'>---- Reset Password! ----</h1>
+        <h1 className='forgot-password-headline'>---- Reset Password! ----</h1>
         {error && <div className="error">{error}</div>}
-        <label htmlFor="password">New Password:</label>
+        <label className="forgot-password-label" htmlFor="password">New Password:</label>
         <input
+          className="reset-password-input"
           type="password"
           id="password"
           value={password}
           onChange={handlePasswordChange}
           required
         />
-        <label htmlFor="confirmPassword">Confirm Password:</label>
+        <label className="forgot-password-label" htmlFor="confirmPassword">Confirm Password:</label>
         <input
+          className="reset-password-input"
           type="password"
           id="confirmPassword"
           value={confirmPassword}
           onChange={handleConfirmPasswordChange}
           required
         />
-        <button className="button-border-color Button-top-padding-for-forgetpassword" type="submit">Reset Password</button>
+        <button className="reset-password-button" type="submit">Reset Password</button>
       </form>
     </div>
   );

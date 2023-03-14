@@ -143,13 +143,12 @@ export const OverlayPanel = styled.div`
 `;
 
 export const LeftOverlayPanel = styled(OverlayPanel)`
-  transform: translateX(-20%);
+  left: -40px;
   ${props => (props.signingIn !== true ? `transform: translateX(0);` : null)}
 `;
 
 export const RightOverlayPanel = styled(OverlayPanel)`
-  right: 0;
-  transform: translateX(0);
+  right: -40px;
   ${props => (props.signingIn !== true ? `transform: translateX(20%);` : null)}
 `;
 
@@ -159,4 +158,5 @@ export const Paragraph = styled.p`
   line-height: 20px;
   letter-spacing: 0.5px;
   margin: 20px 0 30px;
+  
 `;
