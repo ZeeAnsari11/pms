@@ -1,3 +1,9 @@
-from django.shortcuts import render
+from rest_framework.generics import RetrieveAPIView
+from .serializers import UserProfileSerializer
 
-# Create your views here.
+
+class AvatarView(RetrieveAPIView):
+    serializer_class = UserProfileSerializer
+
+    def get_object(self):
+        return self.request.user.userprofile
