@@ -25,6 +25,15 @@
     width: fit-content;
 }
 
+.modal_title_styling textarea{
+    width: 575px;
+    height: 147px;
+    border-radius: 5px;
+    outline: none;
+    font-size: 1rem;
+    padding: 10px;
+}
+
 .modal_title_styling input {
     outline: none;
     border: 1px solid #ccc;
@@ -90,4 +99,10 @@ task_list {
 
 .task p {
     flex: 1
+}
+
+.cardinfo_box_labels {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
 }
