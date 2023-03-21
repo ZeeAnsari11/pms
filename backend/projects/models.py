@@ -7,22 +7,42 @@ from .validators import validate_file_size
 # Create your models here.
 
 
+class ProjectCategory(models.Model):
+    project_category = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.project_category
+
+
+class IssuesType(models.Model):
+    issue_type = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.issue_type
+
+
+class IssuesStatus(models.Model):
+    issue_status = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.issue_status
+
+
+class IssuesPriority(models.Model):
+    issue_priority = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.issue_priority
+
+
 class Project(models.Model):
     name = models.CharField(max_length=255)
     slug = models.SlugField('shortcut', blank=True)
     assignee = models.ManyToManyField(User)
     description = models.TextField()
     company = models.ForeignKey('register.Company', on_delete=models.CASCADE, default=1)
-    PROJECT_CATEGORY_DEFAULT = 'Software'
-    PROJECT_CATEGORY_CHOICES = [
-        ('Software', 'Software'),
-        ('Marketing', 'Marketing'),
-        ('Business', 'Business')
-    ]
-    project_category = models.CharField(
-        max_length=50,
-        choices=PROJECT_CATEGORY_CHOICES, default=PROJECT_CATEGORY_DEFAULT
-    )
+    project_category = models.ForeignKey(ProjectCategory, on_delete=models.PROTECT, blank=True, null=True)
+
     def __str__(self):
         return (self.name)
 
@@ -38,43 +58,12 @@ class Issue(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     assignee = models.ManyToManyField(User, related_name='issues_assigned')
     reporter = models.ForeignKey(User, on_delete=models.CASCADE, related_name='issues_reported')
-    ISSUE_TYPE_DEFAULT = 'Task'
 
-    ISSUE_TYPE_CHOICES = [
-        ('Task', 'Task'),
-        ('Bug', 'Bug'),
-        ('Story', 'Story')
-    ]
-    type = models.CharField(
-        max_length=50,
-        choices=ISSUE_TYPE_CHOICES, default=ISSUE_TYPE_DEFAULT
-    )
+    type = models.ForeignKey(IssuesType, on_delete=models.PROTECT, blank=True, null=True)
 
-    ISSUE_STATUS_DEFAULT = 'Backlog'
+    status = models.ForeignKey(IssuesStatus, on_delete=models.PROTECT, blank=True, null=True)
 
-    ISSUE_STATUS_CHOICES = [
-        ('Backlog', 'Backlog'),
-        ('Selected For development', 'Selected For development'),
-        ('InProgress', 'InProgress'),
-        ('Done', 'Done')
-    ]
-    status = models.CharField(
-        max_length=50,
-        choices=ISSUE_STATUS_CHOICES, default=ISSUE_STATUS_DEFAULT
-    )
-    ISSUE_PRIORITY_DEFAULT = 'Medium'
-
-    ISSUE_PRIORITY_CHOICES = [
-        ('Highest', 'Highest'),
-        ('High', 'High'),
-        ('Medium', 'Medium'),
-        ('Low', 'Low'),
-        ('Lowest', 'Lowest')
-    ]
-
-    priority = models.CharField(
-        max_length=50, choices=ISSUE_PRIORITY_CHOICES, default=ISSUE_PRIORITY_DEFAULT
-    )
+    priority = models.ForeignKey(IssuesPriority, on_delete=models.PROTECT, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
