@@ -4,12 +4,49 @@ from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework.mixins import RetrieveModelMixin, CreateModelMixin
 from rest_framework.decorators import api_view, action
 from rest_framework.response import Response
+from django.db.models import Q
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated, IsAdminUser
-from .models import Project, Issue, Comment, WorkLog, Watcher
+from .models import Project, Issue, Comment, WorkLog, Watcher, ProjectCategory, IssuesType, IssuesPriority, IssuesStatus
 from . import serializers
 
 
 # Create your views here.
+
+class ProjectCategoryViewSet(ModelViewSet):
+    http_method_names = ['get', 'post', 'patch', 'delete']
+
+    serializer_class = serializers.ProjectCategorySerializer
+    permission_classes = [IsAdminUser]
+
+    queryset = ProjectCategory.objects.all()
+
+
+class IssuesTypeViewSet(ModelViewSet):
+    http_method_names = ['get', 'post', 'patch', 'delete']
+
+    serializer_class = serializers.IssuesTypeSerialzer
+    permission_classes = [IsAdminUser]
+
+    queryset = IssuesType.objects.all()
+
+
+class IssuesStatusViewSet(ModelViewSet):
+    http_method_names = ['get', 'post', 'patch', 'delete']
+
+    serializer_class = serializers.IssuesStatusSerializer
+    permission_classes = [IsAdminUser]
+
+    queryset = IssuesStatus.objects.all()
+
+
+class IssuesPriorityViewSet(ModelViewSet):
+    http_method_names = ['get', 'post', 'patch', 'delete']
+
+    serializer_class = serializers.IssuesPrioritySerializer
+    permission_classes = [IsAdminUser]
+
+    queryset = IssuesPriority.objects.all()
+
 
 class ProjectViewSet(ModelViewSet):
     http_method_names = ['get', 'post', 'patch', 'delete']
@@ -34,7 +71,8 @@ class ProjectViewSet(ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         if user.is_staff:
-            return Project.objects.prefetch_related('assignee').select_related('company').all()
+            return Project.objects.prefetch_related('assignee').select_related('company').select_related(
+                'project_category').all()
         return Project.objects.filter(assignee=self.request.user)
 
     # serializer_class = serializers.ProjectSerializer
@@ -68,8 +106,9 @@ class IssueViewSet(ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         if user.is_staff:
-            return Issue.objects.prefetch_related('assignee').select_related('reporter').select_related('project').all()
-        return Issue.objects.filter(reporter_id=self.request.user)
+            return Issue.objects.prefetch_related('assignee').select_related('reporter').select_related(
+                'project').select_related('type').select_related('status').select_related('priority').all()
+        return Issue.objects.filter(Q(reporter_id=self.request.user) | Q(assignee=self.request.user))
 
 
 class CommentViewSet(ModelViewSet):
@@ -79,14 +118,12 @@ class CommentViewSet(ModelViewSet):
 
     # serializer_class = serializers.CommentSerializer
 
-
     def get_serializer_class(self):
         if self.request.method == 'POST':
             return serializers.CreateCommentSerializer
         return serializers.CommentSerializer
 
     permission_classes = [IsAuthenticated]
-
 
     def get_serializer_context(self):
         return {'user_id': self.request.user.id}
