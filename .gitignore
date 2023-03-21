@@ -9,6 +9,20 @@
 /backend/__pycache__
 /backend/media
 
+**/env/*
+**/localPythonEnv/*
+/.vscode
+.vscode
+*.log
+*.pot
+*.pyc
+__pycache__/
+**/migrations/*
+**/.ipynb_checkpoints/*
+db.sqlite3
+**/static/*
+**/media/*
+
 # Python #
 /backend/*.py[cod]
 /backend/*$py.class
@@ -130,7 +144,7 @@ out/
 
 # Docker Stuff
 
-/.env.dev
+**/.env.dev/*
 /.env.prod.db
 /docker-compose.yml
 /backend/Dockerfile
