@@ -22,7 +22,7 @@ BASE_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
 
 SECRET_KEY = os.environ.get("SECRET_KEY", default='!!3j4e%5&!%3_r!grgj4uodx*&cj90k5lrr@9l_ec@s0_xfar6')
 
-DEBUG = int(os.environ.get("DEBUG", default=0))
+DEBUG = int(os.environ.get("DEBUG", default=1))
 
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", default='localhost 127.0.0.1').split(" ")
 
@@ -96,12 +96,12 @@ WSGI_APPLICATION = 'app.wsgi.application'
 
 DATABASES = {
     "default": {
-        "ENGINE": os.environ.get("SQL_ENGINE", "django.db.backends.sqlite3"),
-        "NAME": os.environ.get("SQL_DATABASE", os.path.join(BASE_DIR, "db.sqlite3")),
-        "USER": os.environ.get("SQL_USER", "postgres"),
-        "PASSWORD": os.environ.get("SQL_PASSWORD", "root"),
-        "HOST": os.environ.get("SQL_HOST", "localhost"),
-        "PORT": os.environ.get("SQL_PORT", "5432"),
+        "ENGINE": os.environ.get("MYSQL_ENGINE", "django.db.backends.sqlite3"),
+        "NAME": os.environ.get("MYSQL_DATABASE", os.path.join(BASE_DIR, "db.sqlite3")),
+        "USER": os.environ.get("MYSQL_ROOT_USER", "root"),
+        "PASSWORD": os.environ.get("MYSQL_PASSWORD", "root"),
+        "HOST": os.environ.get("MYSQL_DATABASE_HOST", "localhost"),
+        "PORT": os.environ.get("MYSQL_DATABASE_PORT", "5432"),
     }
 }
 
@@ -144,8 +144,8 @@ CORS_ALLOWED_ORIGINS = [
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
-STATIC_URL = '/api/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'api/static')
+STATIC_URL = '/static/'
+MEDIA_URL = '/media/'
 
-MEDIA_URL = '/api/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'api/media')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
