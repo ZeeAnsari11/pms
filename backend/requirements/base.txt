@@ -9,12 +9,9 @@ sqlparse==0.4.3
 config==0.5.1
 env_utils==1.2.0
 netcat==0.0.1a0
-mysqlclient>=2.1.1
 django-staticfiles==1.2.1
-psycopg2-binary==2.9.5
 drf-nested-routers==0.93.4
 django-cors-headers==3.14.0
 djoser==2.1.0
-gunicorn==20.1.0
 djangorestframework-simplejwt==4.8.0
 
