@@ -23,7 +23,7 @@ class ProjectAdmin(admin.ModelAdmin):
     prepopulated_fields = {
         'slug': ['name']
     }
-    autocomplete_fields = ['company']
+    autocomplete_fields = ['company', 'project_category']
     search_fields = ['name']
     list_editable = ['project_category']
 
@@ -47,7 +47,7 @@ class ProjectAdmin(admin.ModelAdmin):
 class IssueAdmin(admin.ModelAdmin):
     list_display = ['name', 'project', 'summary', 'reporter', 'type', 'status', 'priority']
     search_fields = ['name', 'project__name']
-    autocomplete_fields = ['project', 'reporter']
+    autocomplete_fields = ['project', 'reporter', 'type', 'status', 'priority']
     list_editable = ['type', 'status', 'priority']
 
 
@@ -83,9 +83,33 @@ class WatcherAdmin(admin.ModelAdmin):
     list_editable = ['issue']
 
 
+class ProjectCategoryAdmin(admin.ModelAdmin):
+    list_display = ['project_category']
+    search_fields = ['project_category']
+
+
+class IssuesTypeAdmin(admin.ModelAdmin):
+    list_display = ['issue_type']
+    search_fields = ['type']
+
+
+class IssuesStatusAdmin(admin.ModelAdmin):
+    list_display = ['issue_status']
+    search_fields = ['status']
+
+
+class IssuesPriorityAdmin(admin.ModelAdmin):
+    list_display = ['issue_priority']
+    search_fields = ['priority']
+
+
 admin.site.register(models.Project, ProjectAdmin)
 admin.site.register(models.Issue, IssueAdmin)
 admin.site.register(models.Comment, CommentAdmin)
 # admin.site.register(models.Attachment, AttachmentAdmin)
 admin.site.register(models.WorkLog, WorkLogAdmin)
 admin.site.register(models.Watcher, WatcherAdmin)
+admin.site.register(models.ProjectCategory, ProjectCategoryAdmin)
+admin.site.register(models.IssuesType, IssuesTypeAdmin)
+admin.site.register(models.IssuesStatus, IssuesStatusAdmin)
+admin.site.register(models.IssuesPriority, IssuesPriorityAdmin)

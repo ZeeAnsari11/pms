@@ -5,6 +5,30 @@ from django.db.models.aggregates import Count
 from register.serializers import CompanySerializer
 
 
+class ProjectCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.ProjectCategory
+        fields = "__all__"
+
+
+class IssuesTypeSerialzer(serializers.ModelSerializer):
+    class Meta:
+        model = models.IssuesType
+        fields = "__all__"
+
+
+class IssuesStatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.IssuesStatus
+        fields = "__all__"
+
+
+class IssuesPrioritySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.IssuesPriority
+        fields = "__all__"
+
+
 class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -12,6 +36,9 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
 
 class ProjectIssuesSerializer(serializers.ModelSerializer):
+    type = IssuesTypeSerialzer(read_only=True)
+    status = IssuesStatusSerializer(read_only=True)
+    priority = IssuesPrioritySerializer(read_only=True)
     assignee = CustomUserSerializer(many=True, read_only=True)
     reporter = CustomUserSerializer(read_only=True)
 
@@ -32,6 +59,7 @@ class CreateProjectSerializer(serializers.ModelSerializer):
 
 
 class ProjectSerializer(serializers.ModelSerializer):
+    project_category = ProjectCategorySerializer(read_only=True)
     assignee = CustomUserSerializer(read_only=True, many=True)
     company = CompanySerializer(read_only=True)
 
@@ -52,6 +80,9 @@ class CreateIssueSerializer(serializers.ModelSerializer):
 
 
 class IssueSerializer(serializers.ModelSerializer):
+    type = IssuesTypeSerialzer(read_only=True)
+    status = IssuesStatusSerializer(read_only=True)
+    priority = IssuesPrioritySerializer(read_only=True)
     assignee = CustomUserSerializer(read_only=True, many=True)
     reporter = CustomUserSerializer(read_only=True)
     project = ProjectSerializer(read_only=True)
