@@ -101,3 +101,12 @@
     margin-bottom: -1.8px;
     margin-right: 2px;
   }
+
+.card_profile {
+  margin-left: 124px;
+  z-index: 1;
+}
+
+.card_profile:hover .card_profile_name {
+  opacity: 1;
+}
