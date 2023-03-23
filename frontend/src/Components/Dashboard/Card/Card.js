@@ -123,7 +123,6 @@ function Card(props) {
           }
         </div>
           <div className="card_profile">
-              <PlusCircle onClick={() => setshowModal(true)} style={{ marginRight: "10px" }} />
             <img src={props.Card?.assignedTo?.profilePic} alt="Assigned to" />
             <span className="card_profile_name">{props.Card?.assignedTo?.name}</span>
           </div>
