@@ -5,7 +5,7 @@
   .editable_display {
     padding: 6px 12px;
     border-radius: 8px;
-    background-color: rgb(234, 231, 231);
+    background-color: #cecece;
     color: #000;
     cursor: pointer;
     transition: 200ms;
@@ -13,7 +13,8 @@
   }
   
   .editable_display:hover {
-    background-color: #ddd;
+    background-color: #B9B9B9;
+
   }
   
   .editable_edit {

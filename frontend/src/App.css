@@ -29,6 +29,11 @@
     background-color: #b9b9b9;
   }
 
+  .Dashboard_nav:hover {
+  background-color: #F46F26;
+  cursor: pointer;
+}
+
 
   .app_outer {
     flex: 1;
@@ -65,8 +70,19 @@
 
 .user-profile
 {
-  float:right;
-  padding-right: 65px;
   padding-top: 6px;
-  margin-top: 9px;
+  margin-top: 3px;
+  margin-left: 565px;
+}
+
+
+.logo-container
+{
+  display: flex;
+  align-items: center;
+}
+
+.logo-container img {
+  height: 50px;
+  margin-right: 10px;
 }

@@ -15,6 +15,9 @@ import {
 import Editable from "../Editable/Editable";
 import Chip from "../Chip/Chip";
 import axios from "axios";
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+
 
 function CardInfo(props) {
   // Array of colors for labels
@@ -218,7 +221,7 @@ function CardInfo(props) {
                 </div>
 
                 <div className="modal_title_styling">
-                <textarea
+                <ReactQuill theme="snow"
                    className="modal_title_styling"
                    defaultValue={values.desc}
                    placeholder="Enter New Description"
@@ -306,16 +309,6 @@ function CardInfo(props) {
                     )
                     )
                     }
-                {/*<div className="task">*/}
-                {/*    <input type="checkbox" />*/}
-                {/*    <p>Task 1</p>*/}
-                {/*    <Trash />*/}
-                {/*</div>*/}
-                {/*<div className="task">*/}
-                {/*    <input type="checkbox" />*/}
-                {/*    <p>Task 2</p>*/}
-                {/*    <Trash />*/}
-                {/*</div>*/}
                 </div>
 
                 <div className="modal_title_styling">
