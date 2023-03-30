@@ -5,19 +5,16 @@
 .editable_display {
     font-size: 16px;
     background: #FFFFFF;
-
 }
 
 .editable_display:hover {
-
-    /*background: #FFFFFF;*/
     background: #EBECF0;
 }
 
 .editable_edit {
     display: flex;
     flex-direction: column;
-    /*gap: 10px;*/
+    gap: 10px;
 }
 
 .editable_edit input {
@@ -58,7 +55,7 @@
 }
 
 .hover-div {
-    /*background-color: #FFFFFF;*/
+    background-color: #FFFFFF;
     padding: 1px;
     transition: box-shadow 0.3s ease-in-out;
     margin-bottom: 15px;
@@ -69,8 +66,8 @@
 }
 
 .hover-div:hover {
-    /*z-index: 1;*/
-    /*background: #EBECF0;*/
+    z-index: 1;
+    background: #EBECF0;
 }
 
 .hover-text {
