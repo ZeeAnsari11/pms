@@ -121,16 +121,6 @@ const HorizontalLine = styled.div`
   background-color: lightgray;
   position: relative;
   margin-top: 20px;
-
-  ::before {
-    content: "";
-    width: 14.5%;
-    height: 2px;
-    background-color: #0a6cf8;
-    position: absolute;
-    top: 0;
-    left: 0;
-  }
 `;
 
 const UserProfilePage = () => {
