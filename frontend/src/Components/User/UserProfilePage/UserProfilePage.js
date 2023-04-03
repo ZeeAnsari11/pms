@@ -31,7 +31,6 @@ const ProfileImage = styled.img`
   height: 100px;
   border-radius: 50%;
   border: 1px solid whitesmoke;
-  //border: whitesmoke;
   object-fit: cover;
   margin-right: 20px;
   margin-left: 30px;
