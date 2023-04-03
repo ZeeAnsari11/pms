@@ -13,6 +13,10 @@
 
 
 .modal_content {
+    display: flex;
+    justify-content: space-between;
+    width: 75%;
+    padding: 20px;
     background-color: #fff;
     border-radius: 3px;
     max-height: 95vh;
