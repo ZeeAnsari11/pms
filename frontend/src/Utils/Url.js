@@ -6,6 +6,7 @@ import Dashboard from "../Components/Dashboard/Dashboard/Dashboard"
 import React  from 'react';
 import UserProfilePage from "../Components/User/UserProfilePage/UserProfilePage";
 import ProjectsPage from "../Components/User/ProjectViews/ProjectViews";
+import ProjectSettingPage from "../Components/User/ProjectSettingPage/ProjectSettingPage";
 
 function Url() {
   return (
@@ -17,6 +18,7 @@ function Url() {
             <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/profile" element={<UserProfilePage />} />
           <Route path="/project-views" element={<ProjectsPage />} />
+          <Route path="/project-setting" element={<ProjectSettingPage />} />
       </Routes>
     </BrowserRouter>
   );
