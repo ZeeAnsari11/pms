@@ -2,14 +2,15 @@ import React, { useEffect, useState } from "react";
 import Modal from "../Modal/Modal";
 import "./CardInfo.css";
 import {
-  Calendar,
-  CheckSquare,
-  List,
-  Tag,
-  Trash,
-  Type,
-  User,
-  Users,
+    Book,
+    Calendar,
+    CheckSquare,
+    List,
+    Tag,
+    Trash,
+    Type,
+    User,
+    Users,
 } from "react-feather";
 import Editable from "../Editable/Editable";
 import Chip from "../Chip/Chip";
@@ -26,6 +27,48 @@ function CardInfo(props) {
     "#cf61a1",
     "#240959",
   ];
+
+  //Timer
+
+    const [startTime, setStartTime] = useState(null);
+  const handleStart = () => {
+      setStartTime(new Date());
+      };
+  const [endTime, setEndTime] = useState(null);
+
+  const handleEnd = () => {
+  setEndTime(new Date());
+};
+  const duration = startTime && endTime ? (endTime - startTime) / 1000 : 0;
+
+
+
+
+  //Comments
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState('');
+
+
+
+   const handleCommentSubmit = (event)=> {
+    event.preventDefault();
+    setComments([...comments, newComment]);
+    setNewComment('');
+  }
+
+  const handleNewCommentChange = (event) => {
+    setNewComment(event.target.value);
+  }
+
+
+  //Array of reporters
+  const [reporters, setReporters] = useState([
+    { id: 1, name: "Reporter 1" },
+    { id: 2, name: "Reporter 2" },
+    { id: 3, name: "Reporter 3" }
+]);
+  const [selectedReporter, setSelectedReporter] = useState(null);
+
 
   // State to track the currently selected color
   const [activeColor, setActiveColor] = useState("");
@@ -120,6 +163,15 @@ function CardInfo(props) {
         setValues({...values, user: [...values.user, user]});
     };
 
+    const addReporter = (reporterId) => {
+    // Add the new reporter to the list of reporters
+    const newReporter = { id: reporterId, name: `Reporter ${reporterId}` };
+    setReporters([...reporters, newReporter]);
+
+    // Do whatever else you need to do with the selected reporter
+    console.log(`Selected reporter: ${reporterId}`);
+};
+
     const removeUser = (id) =>{
         const tempUser = values.user?.filter(item => item.id !== id);
         setValues({...values, user: tempUser });
@@ -147,6 +199,16 @@ function CardInfo(props) {
                     onSubmit={(value)=>setValues({...values,title:value})}
                 />
                 </div>
+            </div>
+
+            <div className="cardinfo_box">
+            <div>
+              <button onClick={handleStart}>Start</button>
+              <button onClick={handleEnd}>End</button>
+              {startTime && endTime && (
+                <p>Duration: {duration} seconds</p>
+              )}
+            </div>
             </div>
 
           <div className="cardinfo_box">
@@ -270,7 +332,7 @@ function CardInfo(props) {
             <div className="cardinfo_box">
                 <div className="cardinfo_box_title">
                     <Users />
-                    Users
+                    Assignee
                 </div>
 
                 <div className="task_list">
@@ -294,6 +356,58 @@ function CardInfo(props) {
 
                 </div>
             </div>
+            <div className="cardinfo_box">
+            <div className="cardinfo_box_title">
+                <User />
+                Reporter
+            </div>
+
+            <div className="task_list">
+                {values.reporter?.map((item) => (
+                    <div key={item.id} className="task">
+                        <p>{item.text}</p>
+                        <p>{item.picture}</p>
+                    </div>
+                ))}
+            </div>
+
+            <div className="modal_title_styling">
+                <select
+                    value={selectedReporter}
+                    onChange={(e) => setSelectedReporter(e.target.value)}
+                >
+                    <option value="">Select a reporter</option>
+                    {reporters.map((reporter) => (
+                        <option key={reporter.id} value={reporter.id}>
+                            {reporter.name}
+                        </option>
+                    ))}
+                </select>
+                <button onClick={() => addReporter(selectedReporter)}>Save Reporter</button>
+            </div>
+
+
+                <div className="cardinfo_box" style={{ marginTop: "50px" }}>
+                <div className="cardinfo_box_title">
+                    <Type />
+                    Comments
+                </div>
+                  <ul>
+                    {comments.map((comment, index) => (
+                      <li key={index}>{comment}</li>
+                    ))}
+                  </ul>
+                  <form onSubmit={handleCommentSubmit}>
+                    <input
+                      type="text"
+                      placeholder="Leave a comment"
+                      value={newComment}
+                      onChange={handleNewCommentChange}
+                    />
+                    <button type="submit">Send</button>
+                  </form>
+                </div>
+        </div>
         </div>
       </Modal>
   )
