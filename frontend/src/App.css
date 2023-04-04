@@ -5,23 +5,17 @@
   flex-direction: column;
 }
 
-  .app_navbar {
-    width: 100%;
-    padding: 0px 20px;
-    background-color: #f46f26;
-    text-align: center;
-  }
-
-  .app_navbar h2 {
-    color: #FFFFFF;
+  .app_navbar_one img{
+    width: 150px;
   }
 
   .app_navbar_one {
     width: 100%;
-    padding: 2px 20px;
-    border-bottom: 1px solid rgb(245, 239, 235);
-    background-color: #4a4848;
-    color: #fff;
+    padding: 2px 7px;
+    border-bottom: 3px solid rgb(128 128 128);
+    background-color: #b9b9b9;
+    color: black;
+    height: 51px;
     /* text-align: center; */
   }
 
@@ -29,21 +23,18 @@
     border-radius: 20px;
     padding: 8px 16px;
     gap: 5px;
+    border: none;
+    font-size: 15px;
+    margin-top: 11px;
+    background-color: #b9b9b9;
   }
 
-  .Dashboard_nav:hover {
-  background-color: #dd743b;
-  color: #ffffff;
-  /*border-color: whitesmoke;*/
-  cursor: pointer
-  ;
-}
 
   .app_outer {
     flex: 1;
     overflow-x: auto;
     padding: 0px 20px 0px 20px;
-    margin-left: 165px;
+    margin-left: 200px;
     margin-bottom: -10px;
 
   }
@@ -53,6 +44,7 @@
     display: flex;
     gap: 30px;
     height: 100%;
+  margin-top: 40px;
 }
 
 .app_boards_board {
@@ -76,4 +68,5 @@
   float:right;
   padding-right: 65px;
   padding-top: 6px;
+  margin-top: 9px;
 }
