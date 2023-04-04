@@ -59,6 +59,25 @@
 
 }
 
+.label_colors {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.label_colors li {
+    height: 24px;
+    width: 24px;
+    border-radius: 50%;
+    list-style: none;
+    border: 3px solid transparent;
+    transition: 200ms;
+}
+
+.label_colors .active {
+    border: 3px solid yellow;
+}
+
 .task_progress-bar {
     height: 10px;
     border-radius: 20px;
@@ -184,3 +203,34 @@ margin-right: 5px;
   border-radius: 3px;
 }
 
+
+.modal_title_stylings {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.modal_title_stylings select {
+  font-size: 14px;
+  font-weight: 500;
+  color: #172B4D;
+  padding: 5px 10px;
+  border-radius: 4px;
+  border: 1px solid #DDE0E6;
+  margin-right: 5px;
+}
+
+.modal_title_stylings button {
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+  padding: 5px 10px;
+  background-color: #0052CC;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+}
+
+.modal_title_stylings button:hover {
+  background-color: #0065FF;
+}
