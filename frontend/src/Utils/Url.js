@@ -4,6 +4,7 @@ import ResetPasswordPage from "../Components/User/ResetPassword/ResetPasswordPag
 import ForgotPassword from "../Components/User/ForgetPassword/ForgetPassword"
 import Dashboard from "../Components/Dashboard/Dashboard/Dashboard"
 import React  from 'react';
+import UserProfilePage from "../Components/User/UserProfilePage/UserProfilePage";
 
 function Url() {
   return (
@@ -13,6 +14,7 @@ function Url() {
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/rest-password" element={<ResetPasswordPage />} />
             <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/profile" element={<UserProfilePage />} />
       </Routes>
     </BrowserRouter>
   );
