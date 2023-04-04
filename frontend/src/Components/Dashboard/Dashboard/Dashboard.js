@@ -155,29 +155,27 @@ function Dashboard(props) {
     }
 
     return (
-        <div className="app">
-          <Sidebar/> {/* Include the Sidebar component */}
-          <div className="app_navbar">
-            <h2>PHPStudios Project Management Dashboard</h2>
-          </div>
-          <div className="app_navbar_one">
-            <button id="btn_1" className='Dashboard_nav'>Only My Issue</button>
-            <button id="btn_2" className='Dashboard_nav'>Recently Updated</button>
 
+        <div className="app">
+          <Sidebar/>
+          <div className="app_navbar_one">
+            <img src="https://lh3.google.com/u/0/d/1IxWCTZL5L9PRa1DwoKw8wu8EA7Ez_hT0=w2560-h848-iv1" alt="PHPStudios" />
+            <button id="btn_1" className='Dashboard_nav'>Only My Issue </button>
+            <button id="btn_2" className='Dashboard_nav'>Recently Updated</button>
             <div className="user-profile">
               <div className="user-profile-icon" onClick={() => setShowDropdown(!showDropDown)}>
-                {/* Replace `user-image.jpg` with the actual URL or path to the user's profile picture */}
                 <img src="user-image.jpg" alt="User Profile"/>
                 {showDropDown && (
-                    <Dropdown onClick={() => setShowDropdown(!showDropDown)}>
-                      <div className="board_dropdown">
-                        <p onClick={() => props.removeBoard(props.board?.id)}>Delete Board</p>
-                      </div>
-                    </Dropdown>
+                  <Dropdown onClick={() => setShowDropdown(!showDropDown)}>
+                    <div className="board_dropdown">
+                      <p onClick={() => props.removeBoard(props.board?.id)}>Delete Board</p>
+                    </div>
+                  </Dropdown>
                 )}
               </div>
             </div>
           </div>
+
 
           <div className="app_outer">
             <div className="app_boards">

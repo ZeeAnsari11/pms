@@ -123,7 +123,7 @@ function Card(props) {
           }
         </div>
           <div className="card_profile">
-            <img src={props.Card?.assignedTo?.profilePic} alt="Assigned to" />
+            <img src={props.Card?.assignedTo?.profilePic} alt="Assignee" />
             <span className="card_profile_name">{props.Card?.assignedTo?.name}</span>
           </div>
       </div>
