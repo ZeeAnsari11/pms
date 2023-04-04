@@ -4,13 +4,22 @@
     display: flex;
     flex-direction: column;
     gap: 30px;
-    width: 600px;
+    width: 730px;
 }
 
 .cardinfo_box {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    padding-bottom: 20px;
+}
+
+.cardinfo_box_custom{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding-bottom: 25px;
+    padding-top: 30px;
 }
 
 .cardinfo_box_title {
@@ -23,6 +32,10 @@
 
 .modal_title_styling {
     width: fit-content;
+}
+
+.quill_modal_title_styling {
+    width: 500px;
 }
 
 .modal_title_styling textarea{
@@ -40,6 +53,10 @@
     border-radius: 3px;
     padding: 10px;
     font-size: 1rem;
+}
+
+.modal_title_styling_filebutton {
+
 }
 
 .label_colors {
@@ -64,7 +81,7 @@
 .task_progress-bar {
     height: 10px;
     border-radius: 20px;
-    width: 100%;
+    width: 500px;
     border: 1px solid #ccc;
 }
 
@@ -105,4 +122,115 @@ task_list {
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
+}
+
+.timer_button{
+    cursor: pointer;
+    outline: none;
+    color: #fff;
+    border: none;
+    transition: 100ms ease;
+    padding: 10px;
+    margin: 5px;
+}
+
+
+
+.dropzone {
+  border: 2px dashed #ccc;
+  padding: 20px;
+  text-align: center;
+}
+
+.dropzone span {
+  font-size: 16px;
+}
+
+.avatar {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 10px;
+    background-color: #ccc;
+    margin-bottom: 18px;
+}
+
+.comment-container {
+display: flex;
+align-items: center;
+}
+
+.comment-info {
+display: flex;
+flex-direction: column;
+}
+
+
+.cardinfo_box_title svg {
+margin-right: 10px;
+}
+
+.comment-text {
+margin: 0;
+font-size: 14px;
+}
+
+.comment-author {
+font-weight: bold;
+margin-right: 5px;
+}
+
+.form-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.comment-input {
+  flex: 1;
+  margin-right: 8px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+.comment-button {
+  padding: 8px 12px;
+  background-color: #0052cc;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+}
+
+
+.modal_title_stylings {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.modal_title_stylings select {
+  font-size: 14px;
+  font-weight: 500;
+  color: #172B4D;
+  padding: 5px 10px;
+  border-radius: 4px;
+  border: 1px solid #DDE0E6;
+  margin-right: 5px;
+}
+
+.modal_title_stylings button {
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+  padding: 5px 10px;
+  background-color: #0052CC;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+}
+
+.modal_title_stylings button:hover {
+  background-color: #0065FF;
 }
