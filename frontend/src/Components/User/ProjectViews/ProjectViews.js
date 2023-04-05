@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { FaSearch } from 'react-icons/fa';
 import ProjectListing from "../ProjectListing/ProjectListing";
+import NavBar from "../../Dashboard/Navbar";
 const ProjectsPageContainer = styled.div`
   background-color: #FFFFFF;
   display: flex;
