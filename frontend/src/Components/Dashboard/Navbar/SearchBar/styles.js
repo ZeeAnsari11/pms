@@ -11,7 +11,7 @@ export const SearchContainer = styled.div`
   padding: 5px;
   transition: width 0.3s ease-in-out;
   max-width: 300px;
-  width: ${({ expanded }) => (expanded ? '700px' : '200px')};
+  width: ${({ expanded }) => (expanded ? '600px' : '200px')};
   cursor: pointer;
 
   &:hover {

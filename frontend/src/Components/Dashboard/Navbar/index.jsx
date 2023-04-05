@@ -13,7 +13,7 @@ import {
     NavbarLinkExtended,
 } from "./styles";
 import Dropdown from '../Dropdown/index'
-import {projectitems, yourworkitems, teamitems, notificationsitems,helpitems} from "./Dropdownitems";
+import {accountitems,projectitems, yourworkitems, teamitems, notificationsitems, helpitems} from "./Dropdownitems";
 import {MdKeyboardArrowDown} from 'react-icons/md'
 import {IoMdNotifications} from 'react-icons/io'
 import {RxAvatar} from 'react-icons/rx'
@@ -60,11 +60,12 @@ function NavBar() {
                 </LeftContainer>
                 <RightContainer>
                     {/*<Logo src={LogoImg}></Logo>*/}
-                    <SearchBar />
-                    <Dropdown minWidth="450px" items={notificationsitems} name={<IoMdNotifications size={24} style={{marginLeft: "10px"}}/>}/>
+                    <SearchBar/>
+                    <Dropdown minWidth="450px" items={notificationsitems}
+                              name={<IoMdNotifications size={24} style={{marginLeft: "10px"}}/>}/>
                     <Dropdown minWidth="350px" items={helpitems}
                               name={<AiFillQuestionCircle size={24} style={{marginLeft: "10px"}}/>}/>
-
+                    <Dropdown items={accountitems} name={<RxAvatar size={24} style={{marginLeft: "10px"}}/>}/>
                 </RightContainer>
             </NavbarInnerContainer>
             {extendNavbar && (
