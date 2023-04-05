@@ -159,3 +159,5 @@ out/
 **/._.DS_Store
 ./backend/.DS_Store
 ./frontend/.DS_Store
+/node_modules/
+/package-lock.json
