@@ -50,14 +50,18 @@ const SearchBar = () => {
                 <>
                     <SearchInput
                         ref={inputRef}
-                        placeholder="Search..."
+                        placeholder="Search ProjeX..."
                         value={searchValue}
                         onChange={handleSearchInputChange}
                         onBlur={handleSearchInputBlur}
                         onClick={stopPropagation}
                     />
-
+                    <CloseIcon onClick={() => {
+                        handleClearSearch();
+                        setExpanded(false);
+                    }}/>
                 </>
+
             ) : (
                 <SearchInput placeholder="Search..." onClick={toggleExpand}/>
             )}

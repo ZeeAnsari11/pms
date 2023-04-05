@@ -1,6 +1,6 @@
 import {ImUser} from "react-icons/im";
 import {Link} from "react-router-dom";
-import {RiExternalLinkLine,RiFeedbackFill} from "react-icons/ri";
+import {RiExternalLinkLine, RiFeedbackFill} from "react-icons/ri";
 import {VscProject} from "react-icons/vsc";
 import {BiPlus} from "react-icons/bi";
 import {AiOutlineLogout} from 'react-icons/ai'
@@ -51,7 +51,7 @@ export const accountitems = [
     {
         key: '3',
         icon: <AiOutlineLogout size={iconSize}/>,
-        label: <Link to="/project">Logout</Link>,
+        label: <Link to="/logout">Logout</Link>,
     },
 
 ];
@@ -59,7 +59,7 @@ export const projectitems = [
 
     {
         icon: <VscProject size={iconSize}/>,
-        label: <Link to="/project">View All Projects</Link>,
+        label: <Link to="/project-views">View All Projects</Link>,
         key: '0',
     },
     {
@@ -67,7 +67,7 @@ export const projectitems = [
     },
     {
         icon: <MdOutlineCreate size={iconSize}/>,
-        label: <Link to="/logout">Create Project</Link>,
+        label: <Link to="/project">Create Project</Link>,
         key: '1',
     },
 ];
@@ -118,7 +118,6 @@ export const helpitems = [
         icon: <GoKeyboard size={iconSize}/>,
         label: <Link to="/notifcations">KeyBoard Shortcuts</Link>,
         key: '0',
-        icon1: <RiExternalLinkLine size={iconSize}/>,
 
     },
     {
