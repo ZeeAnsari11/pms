@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import ReactQuill from 'react-quill';
-import Selector from '../../../Shared/Components/Select';
+import Selector from '../../../shared/Components/Select';
 
 const PageWrapper = styled.div`
   background-color: #fff;
