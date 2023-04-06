@@ -1,23 +1,27 @@
 .editable {
+    width: 100%;
+  }
+
+.editable_k {
     width: 30%;
 }
 
-.editable_display {
+.editable_display_k {
     font-size: 16px;
     background: #FFFFFF;
 }
 
-.editable_display:hover {
+.editable_display_k:hover {
     background: #EBECF0;
 }
 
-.editable_edit {
+.editable_edit_k {
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
-.editable_edit input {
+.editable_edit_k input {
     border: 2px solid #0079bf;
     border-radius: 5px;
     outline: none;
@@ -25,14 +29,14 @@
     padding: 10px;
 }
 
-.editable_edit_footer {
+.editable_edit_footer_k {
     display: flex;
     flex-direction: row-reverse;
     gap: 8px;
     align-items: center;
 }
 
-.editable_edit_footer button {
+.editable_edit_footer_k button {
     cursor: pointer;
     border-radius: 5px;
     outline: none;
@@ -43,18 +47,18 @@
     padding: 10px;
 }
 
-.editable_edit_footer button:hover {
+.editable_edit_footer_k button:hover {
     background-color: #EBECF0;
 }
 
 
-.editable_edit_footer .closeIcon {
+.editable_edit_footer_k .closeIcon {
     cursor: pointer;
     height: 24px;
     width: 24px;
 }
 
-.hover-div {
+.hover-div_k {
     background-color: #FFFFFF;
     padding: 1px;
     transition: box-shadow 0.3s ease-in-out;
@@ -65,12 +69,12 @@
     position: relative;
 }
 
-.hover-div:hover {
+.hover-div_k:hover {
     z-index: 1;
     background: #EBECF0;
 }
 
-.hover-text {
+.hover-text_k {
   position: absolute;
   bottom: -20px;
   left: 50%;
@@ -84,7 +88,7 @@
   z-index: 2;
 }
 
-.hover-div:hover .hover-text {
+.hover-div_k:hover .hover-text_k {
     opacity: 1;
 }
 
