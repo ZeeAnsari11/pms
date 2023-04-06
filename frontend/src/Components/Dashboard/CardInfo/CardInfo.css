@@ -10,8 +10,8 @@
 .cardinfo_box {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    padding-bottom: 20px;
+    /*gap: 10px;*/
+    /*padding-bottom: 20px;*/
 }
 
 .cardinfo_box_custom{
@@ -19,7 +19,6 @@
     flex-direction: column;
     gap: 20px;
     padding-bottom: 25px;
-    padding-top: 30px;
 }
 
 .cardinfo_box_title {
@@ -81,8 +80,10 @@
 .task_progress-bar {
     height: 10px;
     border-radius: 20px;
-    width: 500px;
+    width: 300px;
     border: 1px solid #ccc;
+    margin-bottom: 10px;
+
 }
 
 .task_progress {
@@ -193,6 +194,7 @@ margin-right: 5px;
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 3px;
+    margin-top: 20px;
 }
 
 .comment-button {
@@ -233,4 +235,21 @@ margin-right: 5px;
 
 .modal_title_stylings button:hover {
   background-color: #0065FF;
+}
+
+
+
+.my-editable .editable_display {
+    background-color: transparent;
+    font-size: 24px;
+    font-weight: bold;
+    width: 500px;
+    display: flex;
+}
+.my-editable .editable_display:hover {
+    background-color: #EBECF0;
+}
+
+.task_list{
+    margin: 8px 0 25px
 }
