@@ -26,9 +26,9 @@ function Editable(props) {
     };
 
     return (
-        <div className="editable">
+        <div className="editable_k">
             {isEditable ? (
-                <form className={`editable_edit ${props.editClass || ""}`} onSubmit={handleSubmit}>
+                <form className={`editable_edit_k ${props.editClass || ""}`} onSubmit={handleSubmit}>
                     <input
                         type="text"
                         value={inputText}
@@ -36,7 +36,7 @@ function Editable(props) {
                         onChange={handleInputChange}
                         autoFocus
                     />
-                    <div className="editable_edit_footer">
+                    <div className="editable_edit_footer_k">
                         <button type="submit">{props.buttonText || <FontAwesomeIcon icon={faCheck}/>}</button>
                         <button type="button" onClick={handleCancel}><FontAwesomeIcon icon={faXmark}/></button>
                     </div>
@@ -44,12 +44,12 @@ function Editable(props) {
             ) : (
                 <div className="hover-div">
                     <p
-                        className={`editable_display ${props.displayClass || ""}`}
+                        className={`editable_display_k ${props.displayClass || ""}`}
                         onClick={() => setIsEditable(true)}
                     >
                         {props.text || inputText || props.frontendText || props.frontendText}
                     </p>
-                    <span className="hover-text">Click to enter</span>
+                    <span className="hover-text_k">Click to enter</span>
                 </div>
             )}
         </div>
