@@ -15,7 +15,7 @@ const App = ({items, name, icon, minWidth}) => (
                     <span style={{
                         marginRight: '0px',
                         marginLeft: "5px",
-                        fontWeight: "500",
+                        fontWeight: "400",
                         fontSize: '16px',
                         cursor: 'pointer'
                     }}>{name}</span>
