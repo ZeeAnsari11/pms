@@ -33,7 +33,7 @@ const ProjectSidebar = ({project}) => {
             </ProjectInfo>
 
             {renderLinkItem(match, 'Kanban Board', 'kanban', '/board')}
-            {renderLinkItem(match, 'Project settings', 'settings', '/settings')}
+            {renderLinkItem(match, 'Project Settings', 'settings', '/settings')}
             <Divider/>
             {renderLinkItem(match, 'Roadmap', 'roadmap')}
             {renderLinkItem(match, 'Releases', 'release')}
