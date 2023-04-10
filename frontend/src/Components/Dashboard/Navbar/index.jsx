@@ -30,10 +30,6 @@ function NavBar() {
                     <Logo src="https://lh3.google.com/u/0/d/1IxWCTZL5L9PRa1DwoKw8wu8EA7Ez_hT0=w2560-h848-iv1"
                           alt="PHPStudios"></Logo>
                     <NavbarLinkContainer>
-                        {/*<NavbarLink to="/"> Projects</NavbarLink>*/}
-                        {/*<NavbarLink to="/filters"> Filters</NavbarLink>*/}
-                        {/*<NavbarLink to="/contact"> Dashboard</NavbarLink>*/}
-                        {/*<NavbarLink to="/about"> About Us</NavbarLink>*/}
                         <OpenLinksButton
                             onClick={() => {
                                 setExtendNavbar((curr) => !curr);
