@@ -10,15 +10,16 @@
 .cardinfo_box {
     display: flex;
     flex-direction: column;
-    /*gap: 10px;*/
-    /*padding-bottom: 20px;*/
+    gap: 10px;
+    padding-bottom: 20px;
 }
 
-.cardinfo_box_custom{
+.cardinfo_box_custom {
     display: flex;
     flex-direction: column;
     gap: 20px;
     padding-bottom: 25px;
+    padding-top: 30px;
 }
 
 .cardinfo_box_title {
@@ -29,6 +30,15 @@
     align-items: center;
 }
 
+.cardinfo_box_close {
+    float: right;
+}
+
+.cardinfo_close {
+    gap: 10px;
+    padding-bottom: 50px;
+}
+
 .modal_title_styling {
     width: fit-content;
 }
@@ -37,7 +47,7 @@
     width: 500px;
 }
 
-.modal_title_styling textarea{
+.modal_title_styling textarea {
     width: 575px;
     height: 147px;
     border-radius: 5px;
@@ -80,10 +90,8 @@
 .task_progress-bar {
     height: 10px;
     border-radius: 20px;
-    width: 300px;
+    width: 500px;
     border: 1px solid #ccc;
-    margin-bottom: 10px;
-
 }
 
 .task_progress {
@@ -125,7 +133,7 @@ task_list {
     flex-wrap: wrap;
 }
 
-.timer_button{
+.timer_button {
     cursor: pointer;
     outline: none;
     color: #fff;
@@ -136,15 +144,14 @@ task_list {
 }
 
 
-
 .dropzone {
-  border: 2px dashed #ccc;
-  padding: 20px;
-  text-align: center;
+    border: 2px dashed #ccc;
+    padding: 20px;
+    text-align: center;
 }
 
 .dropzone span {
-  font-size: 16px;
+    font-size: 16px;
 }
 
 .avatar {
@@ -158,98 +165,80 @@ task_list {
 }
 
 .comment-container {
-display: flex;
-align-items: center;
+    display: flex;
+    align-items: center;
 }
 
 .comment-info {
-display: flex;
-flex-direction: column;
+    display: flex;
+    flex-direction: column;
 }
 
 
 .cardinfo_box_title svg {
-margin-right: 10px;
+    margin-right: 10px;
 }
 
 .comment-text {
-margin: 0;
-font-size: 14px;
+    margin: 0;
+    font-size: 14px;
 }
 
 .comment-author {
-font-weight: bold;
-margin-right: 5px;
+    font-weight: bold;
+    margin-right: 5px;
 }
 
 .form-container {
-  display: flex;
-  align-items: center;
-  margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
 }
 
 .comment-input {
-  flex: 1;
-  margin-right: 8px;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 3px;
-    margin-top: 20px;
+    flex: 1;
+    margin-right: 8px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
 }
 
 .comment-button {
-  padding: 8px 12px;
-  background-color: #0052cc;
-  color: #fff;
-  border: none;
-  border-radius: 3px;
+    padding: 8px 12px;
+    background-color: #0052cc;
+    color: #fff;
+    border: none;
+    border-radius: 3px;
 }
 
 
 .modal_title_stylings {
-  margin-top: 10px;
-  display: flex;
-  align-items: center;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
 }
 
 .modal_title_stylings select {
-  font-size: 14px;
-  font-weight: 500;
-  color: #172B4D;
-  padding: 5px 10px;
-  border-radius: 4px;
-  border: 1px solid #DDE0E6;
-  margin-right: 5px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #172B4D;
+    padding: 5px 10px;
+    border-radius: 4px;
+    border: 1px solid #DDE0E6;
+    margin-right: 5px;
 }
 
 .modal_title_stylings button {
-  font-size: 14px;
-  font-weight: 500;
-  color: #fff;
-  padding: 5px 10px;
-  background-color: #0052CC;
-  border-radius: 4px;
-  border: none;
-  cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    color: #fff;
+    padding: 5px 10px;
+    background-color: #0052CC;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
 }
 
 .modal_title_stylings button:hover {
-  background-color: #0065FF;
-}
-
-
-
-.my-editable .editable_display {
-    background-color: transparent;
-    font-size: 24px;
-    font-weight: bold;
-    width: 500px;
-    display: flex;
-}
-.my-editable .editable_display:hover {
-    background-color: #EBECF0;
-}
-
-.task_list{
-    margin: 8px 0 25px
+    background-color: #0065FF;
 }
