@@ -71,7 +71,7 @@ export const LinkItem = styled.div`
 export const LinkText = styled.div`
   padding-top: 2px;
   padding-left: 10px;
-  ${font.size(14.7)};
+  ${font.size(15)};
 `;
 
 export const NotImplemented = styled.div`
