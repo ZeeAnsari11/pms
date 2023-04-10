@@ -1,5 +1,5 @@
 import React from 'react';
-import {BsFillKanbanFill} from 'react-icons/bs';
+import {MdOutlineViewKanban} from 'react-icons/md';
 import {FiSettings} from 'react-icons/fi';
 import {CiDeliveryTruck} from 'react-icons/ci';
 import {RiRoadMapLine, RiPagesLine} from 'react-icons/ri'
@@ -9,7 +9,7 @@ import {BsGraphUpArrow} from 'react-icons/bs'
 const Icon = ({type, size}) => {
     switch (type) {
         case 'kanban':
-            return <BsFillKanbanFill size={size}/>;
+            return <MdOutlineViewKanban size={size}/>;
         case 'settings':
             return <FiSettings size={size}/>;
         case 'release':
