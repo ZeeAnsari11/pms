@@ -7,8 +7,6 @@ import {
     List,
     Trash,
     Type,
-    User,
-    Users,
 } from "react-feather";
 import Editable from "../Editable/Editable";
 import ReactQuill from 'react-quill';
@@ -17,6 +15,10 @@ import UserSelectField from '../SelectFields/UserSelectField'
 import GenericSelectField from '../SelectFields/GenericSelectField'
 import TrackingField from '../TimeTracking/index'
 import {AiOutlineArrowDown, AiOutlineArrowUp, AiFillCloseCircle} from 'react-icons/ai'
+import {TbStatusChange} from 'react-icons/tb'
+import {FiUser,FiUsers} from 'react-icons/fi'
+import {CgOptions} from 'react-icons/cg'
+import {RxStopwatch} from 'react-icons/rx'
 
 const users = [
     {id: 1, username: "Hashim Doe"},
@@ -316,6 +318,7 @@ function CardInfo(props) {
 
                 <div className="cardinfo_box">
                     <div className="cardinfo_box_title">
+                        <TbStatusChange/>
                         Status
 
                     </div>
@@ -338,7 +341,7 @@ function CardInfo(props) {
 
                 <div className="cardinfo_box">
                     <div className="cardinfo_box_title">
-                        <Users/>
+                        <FiUsers />
                         Assignees
 
                     </div>
@@ -366,7 +369,7 @@ function CardInfo(props) {
                 </div>
                 <div className="cardinfo_box">
                     <div className="cardinfo_box_title">
-                        <User/>
+                        <FiUser />
                         Reporter
                     </div>
 
@@ -399,6 +402,7 @@ function CardInfo(props) {
 
                 <div className="cardinfo_box">
                     <div className="cardinfo_box_title">
+                        <CgOptions />
                         Priority
 
                     </div>
@@ -419,7 +423,7 @@ function CardInfo(props) {
 
                 <div className="cardinfo_box">
                     <div className="cardinfo_box_title">
-                        <Clock/>
+                        <RxStopwatch />
                         Time Tracking
                     </div>
                     <div>
