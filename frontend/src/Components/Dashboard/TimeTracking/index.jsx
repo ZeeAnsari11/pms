@@ -1,10 +1,88 @@
+// import React, {useState} from 'react';
+// import {Progress, Modal, DatePicker, TimePicker, InputNumber, Input} from 'antd';
+// import moment from 'moment';
+// import ReactQuill from 'react-quill';
+// import 'react-quill/dist/quill.snow.css';
+// import {TimeTrackingContainer, ProgressBarContainer, InputHeading, ModalContent} from './styles'
+//
+//
+// const TimeTracking = () => {
+//     const [originalEstimate, setOriginalEstimate] = useState(0);
+//     const [timeSpent, setTimeSpent] = useState(0);
+//     const [timeRemaining, setTimeRemaining] = useState(0);
+//     const [startDate, setStartDate] = useState(null);
+//     const [startTime, setStartTime] = useState(null);
+//     const [workDescription, setWorkDescription] = useState("");
+//     const [isModalVisible, setIsModalVisible] = useState(false);
+//
+//     const handleProgressBarClick = () => {
+//         setIsModalVisible(true);
+//     };
+//
+//     const handleModalOk = () => {
+//         setIsModalVisible(false);
+//     };
+//
+//     const handleModalCancel = () => {
+//         setIsModalVisible(false);
+//     };
+//
+//     const handleTimeSpentChange = (value) => {
+//         setTimeSpent(value);
+//     };
+//
+//     const handleTimeRemainingChange = (value) => {
+//         setTimeRemaining(value);
+//     };
+//
+//     const handleOriginalEstimateTimeChange = (value) => {
+//         setOriginalEstimate(value);
+//     };
+//     const handleDateChange = (date, dateString) => {
+//         setStartDate(dateString);
+//     };
+//
+//     const handleTimeChange = (time, timeString) => {
+//         setStartTime(timeString);
+//     };
+//
+//     const getTimePercentage = () => {
+//         let totalTime;
+//         if (!timeRemaining && originalEstimate) {
+//             totalTime = originalEstimate;
+//         } else {
+//             totalTime = timeSpent + timeRemaining;
+//         }
+//         return Math.round((timeSpent / totalTime) * 100);
+//     };
+//
+//     const getTimeLogged = () => {
+//         const hours = Math.floor(timeSpent);
+//         if (hours > 0) {
+//             return `${hours}h logged`;
+//         } else {
+//             return "No time logged";
+//         }
+//     };
+//
+//     const getTimeRemaining = () => {
+//         const hours = Math.floor(timeRemaining);
+//         if (timeRemaining) {
+//             return `${hours}h remaining`;
+//         } else if (originalEstimate) {
+//             return `${originalEstimate}h estimated`;
+//         } else {
+//             return "";
+//         }
+//     };
+
 import React, {useState} from 'react';
 import {Progress, Modal, DatePicker, TimePicker, InputNumber, Input} from 'antd';
 import moment from 'moment';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import {TimeTrackingContainer, ProgressBarContainer, InputHeading, ModalContent} from './styles'
-
+import Worklog from '../Worklog/Worklog';
 
 const TimeTracking = () => {
     const [originalEstimate, setOriginalEstimate] = useState(0);
@@ -14,12 +92,19 @@ const TimeTracking = () => {
     const [startTime, setStartTime] = useState(null);
     const [workDescription, setWorkDescription] = useState("");
     const [isModalVisible, setIsModalVisible] = useState(false);
+    const [worklogs, setWorklogs] = useState([]);
 
     const handleProgressBarClick = () => {
         setIsModalVisible(true);
     };
 
     const handleModalOk = () => {
+        const newWorklog = {
+          username: "Alice", // replace with actual username
+          timeTracked: timeSpent,
+          description: workDescription
+        };
+        setWorklogs([...worklogs, newWorklog]);
         setIsModalVisible(false);
     };
 
