@@ -14,7 +14,7 @@
     padding-bottom: 20px;
 }
 
-.cardinfo_box_custom {
+.cardinfo_box_custom{
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -47,7 +47,7 @@
     width: 500px;
 }
 
-.modal_title_styling textarea {
+.modal_title_styling textarea{
     width: 575px;
     height: 147px;
     border-radius: 5px;
@@ -133,7 +133,7 @@ task_list {
     flex-wrap: wrap;
 }
 
-.timer_button {
+.timer_button{
     cursor: pointer;
     outline: none;
     color: #fff;
@@ -142,6 +142,7 @@ task_list {
     padding: 10px;
     margin: 5px;
 }
+
 
 
 .dropzone {
@@ -161,7 +162,7 @@ task_list {
     border-radius: 50%;
     margin-right: 10px;
     background-color: #ccc;
-    margin-bottom: 18px;
+    margin-bottom: 40px;
 }
 
 .comment-container {
@@ -180,8 +181,9 @@ task_list {
 }
 
 .comment-text {
-    margin: 0;
+    margin-top: -20px;
     font-size: 14px;
+
 }
 
 .comment-author {
@@ -204,13 +206,26 @@ task_list {
 }
 
 .comment-button {
-    padding: 8px 12px;
-    background-color: #0052cc;
-    color: #fff;
-    border: none;
-    border-radius: 3px;
+  padding: 8px 12px;
+  background-color: #0052cc;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+    margin-top: 20px;
+
 }
 
+.comment-action-button {
+  background: none;
+  border: none;
+  color: gray;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.comment-buttons {
+  display: flex;
+}
 
 .modal_title_stylings {
     margin-top: 10px;
@@ -241,4 +256,21 @@ task_list {
 
 .modal_title_stylings button:hover {
     background-color: #0065FF;
+}
+
+
+
+.my-editable .editable_display {
+    background-color: transparent;
+    font-size: 24px;
+    font-weight: bold;
+    width: 500px;
+    display: flex;
+}
+.my-editable .editable_display:hover {
+    background-color: #EBECF0;
+}
+
+.task_list{
+    margin: 8px 0 25px
 }
