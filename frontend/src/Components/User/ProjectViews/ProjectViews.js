@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { FaSearch } from 'react-icons/fa';
 import ProjectListing from "../ProjectListing/ProjectListing";
-import NavBar from "../../Dashboard/Navbar";
+import {Link} from "react-router-dom";
+
 const ProjectsPageContainer = styled.div`
   background-color: #FFFFFF;
   display: flex;
@@ -121,11 +122,15 @@ const ProjectsPage = () => {
     setSearchValue(event.target.value);
   };
 
+  const submit = () => {
+    window.location.href = '/create-project';
+  };
+
   return (
     <ProjectsPageContainer>
       <ProjectsHeaderContainer>
         <ProjectsHeader>Projects</ProjectsHeader>
-        <ProjectButton>Create Project</ProjectButton>
+        <ProjectButton onClick={submit}>Create Project</ProjectButton>
       </ProjectsHeaderContainer>
       <SearchContainer>
         <SearchInputContainer>

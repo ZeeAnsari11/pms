@@ -5,6 +5,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import Editable from "../Editable/Editable";
 import DatePicker from "../DatePicker/DatePicker";
 
+
 const ProfileWrapper = styled.div`
   display: flex;
   flex-direction: column;
