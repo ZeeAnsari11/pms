@@ -22,9 +22,10 @@ import GenericSelectField from '../SelectFields/GenericSelectField'
 import TrackingField from '../TimeTracking/index'
 import {AiOutlineArrowDown, AiOutlineArrowUp, AiFillCloseCircle} from 'react-icons/ai'
 import {TbStatusChange} from 'react-icons/tb'
-import {FiUser,FiUsers} from 'react-icons/fi'
+import {FiUser, FiUsers} from 'react-icons/fi'
 import {CgOptions} from 'react-icons/cg'
 import {RxStopwatch} from 'react-icons/rx'
+import Worklog from "../Worklog/Worklog";
 
 const users = [
     {id: 1, username: "Hashim Doe"},
@@ -50,41 +51,60 @@ const priorityoptions = [
 
 function CardInfo(props) {
 
+    const worklogs = [
+        {username: 'John', timeTracked: '2', description: 'Worklog 1'},
+        {username: 'Jane', timeTracked: '3', description: 'Worklog 2'},
+        {username: 'Bob', timeTracked: '1', description: 'Worklog 3'},
+    ];
+
+    const handleWorklogDelete = (index) => {
+        // handle worklog delete logic
+    };
+
+    const handleWorklogEdit = (index) => {
+        // handle worklog edit logic
+    };
+
+
     //Comments
     const [comments, setComments] = useState([]);
-  const [newComment, setNewComment] = useState('');
-  const [selectedComment, setSelectedComment] = useState(null);
+    const [newComment, setNewComment] = useState('');
+    const [selectedComment, setSelectedComment] = useState(null);
+    const [showComments, setShowComments] = useState(true);
+    const [showWorklog, setShowWorklog] = useState(false);
+    const [selectedWorklog, setSelectedWorklog] = useState(null);
 
-  const handleCommentSubmit = (event) => {
-    event.preventDefault();
-    setComments([...comments, newComment]);
-    setNewComment('');
-  };
 
-  const handleNewCommentChange = (event) => {
-    setNewComment(event.target.value);
-  };
+    const handleCommentSubmit = (event) => {
+        event.preventDefault();
+        setComments([...comments, newComment]);
+        setNewComment('');
+    };
 
-  const handleCommentDelete = (index) => {
-    setComments(comments.filter((_, i) => i !== index));
-  };
+    const handleNewCommentChange = (event) => {
+        setNewComment(event.target.value);
+    };
 
-  const handleCommentEdit = (index, comment) => {
-    if (selectedComment === null) {
-      setSelectedComment(index);
-    } else if (selectedComment === index) {
-      setSelectedComment(null);
-      setComments(
-        comments.map((c, i) => (i === index ? comment : c))
-      );
-    }
-  };
+    const handleCommentDelete = (index) => {
+        setComments(comments.filter((_, i) => i !== index));
+    };
+
+    const handleCommentEdit = (index, comment) => {
+        if (selectedComment === null) {
+            setSelectedComment(index);
+        } else if (selectedComment === index) {
+            setSelectedComment(null);
+            setComments(
+                comments.map((c, i) => (i === index ? comment : c))
+            );
+        }
+    };
 
 //Description
     const [desc, setDesc] = useState('initial value');
-     const handleDescChange = (newDesc) => {
+    const handleDescChange = (newDesc) => {
         setDesc(newDesc);
-      };
+    };
 
 
     const [showDescription, setShowDescription] = useState(false);
@@ -117,29 +137,29 @@ function CardInfo(props) {
     };
 
     useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (descriptionBoxRef.current && !descriptionBoxRef.current.contains(event.target)) {
-        setShowDescription(false);
-      }
-    };
+        const handleClickOutside = (event) => {
+            if (descriptionBoxRef.current && !descriptionBoxRef.current.contains(event.target)) {
+                setShowDescription(false);
+            }
+        };
 
-    document.addEventListener('click', handleClickOutside);
+        document.addEventListener('click', handleClickOutside);
 
-    return () => {
-      document.removeEventListener('click', handleClickOutside);
-    };
-  }, [descriptionBoxRef]);
+        return () => {
+            document.removeEventListener('click', handleClickOutside);
+        };
+    }, [descriptionBoxRef]);
 
-    useEffect(()=>{
+    useEffect(() => {
         props.updateCard(props.card.id, props.boardId, values)
     }, [values])
 
     return (
-      <Modal onClose={()=>props.onClose()} >
-          <div className="left-section" style={{ width: "55%" }}>
-      <div className="modal-header">
-        <span className="card-id"><b>Card ID: {props.card.id}</b></span>
-      </div>
+        <Modal onClose={() => props.onClose()}>
+            <div className="left-section" style={{width: "55%"}}>
+                <div className="modal-header">
+                    <span className="card-id"><b>Card ID: {props.card.id}</b></span>
+                </div>
                 <div className="modal_title_styling my-editable">
                     <Editable
                         text={values.title}
@@ -147,17 +167,17 @@ function CardInfo(props) {
                         placeholder={"Enter Title"}
                         buttonText="Set Title"
                         onSubmit={(value) => setValues({...values, title: value})}
-                        style={{ backgroundColor: "none" }}
+                        style={{backgroundColor: "none"}}
                     />
                 </div>
-            <div>
-              <div className="cardinfo_box_custom">
-                <div className="cardinfo_box_title">
-                  <List />
-                  Card Description
-                </div>
-                  <Description initialValue={values.desc} onSave={handleDescChange} />
-              </div>
+                <div>
+                    <div className="cardinfo_box_custom">
+                        <div className="cardinfo_box_title">
+                            <List/>
+                            Card Description
+                        </div>
+                        <Description initialValue={values.desc} onSave={handleDescChange}/>
+                    </div>
                     <div className="cardinfo_box_custom">
                         <div className="cardinfo_box_title">
                             <File/>
@@ -170,9 +190,6 @@ function CardInfo(props) {
                     <div className="cardinfo_box_title">
                         <CheckSquare/>
                         Tasks
-                    </div>
-                    <div className="task_progress-bar">
-                        <div className="task_progress" style={{width: calculatePercent() + "%"}}/>
                     </div>
                     <div className="task_list">
                         {values.tasks?.map((item) => (
@@ -197,36 +214,77 @@ function CardInfo(props) {
                         />
                     </div>
                 </div>
-                  <div className="cardinfo_box" style={{ marginTop: '15px' }}>
-                  <div className="cardinfo_box_title">
-                    <Type />
-                    Comments
-                  </div>
-                  <form onSubmit={handleCommentSubmit} className="form-container">
-                    <input
-                      type="text"
-                      placeholder="Leave a comment"
-                      value={newComment}
-                      onChange={handleNewCommentChange}
-                      className="comment-input"
-                    />
-                    <button type="submit" className="comment-button">
-                      Send
-                    </button>
-                  </form>
-                  <ul>
-                    {comments.map((comment, index) => (
-                      <Comment
-                        key={index}
-                        comment={comment}
-                        index={index}
-                        onDelete={handleCommentDelete}
-                        onEdit={handleCommentEdit}
-                        selectedComment={selectedComment}
-                      />
-                    ))}
-                  </ul>
+                <div className="cardinfo_box_custom">
+                    <div className="cardinfo_box_title">
+                        Activity
+                    </div>
+                    <div style={{display: 'flex', gap: '8px', borderRadius: '4px'}}>
+                        <button className="activity-button" onClick={() => {
+                            setShowComments(!showComments);
+                            setShowWorklog(false);
+                            setSelectedWorklog(null);
+                        }}>
+                            Comments
+                        </button>
+                        <button className="activity-button" onClick={() => {
+                            setShowWorklog(!showWorklog);
+                            setShowComments(false);
+                            setSelectedComment(null);
+                        }}>
+                            Work log
+                        </button>
+                    </div>
                 </div>
+                {showComments && (
+                    <div className="cardinfo_box" style={{marginTop: '15px'}}>
+                        <div className="cardinfo_box_title">
+                            Comments
+                        </div>
+                        <form onSubmit={handleCommentSubmit} className="form-container">
+                            <input
+                                type="text"
+                                placeholder="Leave a comment"
+                                value={newComment}
+                                onChange={handleNewCommentChange}
+                                className="comment-input"
+                            />
+                            <button type="submit" className="comment-button">
+                                Send
+                            </button>
+                        </form>
+                        <ul>
+                            {comments.map((comment, index) => (
+                                <Comment
+                                    key={index}
+                                    comment={comment}
+                                    index={index}
+                                    onDelete={handleCommentDelete}
+                                    onEdit={handleCommentEdit}
+                                    selectedComment={selectedComment}
+                                />
+                            ))}
+                        </ul>
+                    </div>
+                )}
+                {showWorklog && (
+                    <div className="cardinfo_box" style={{marginTop: '15px'}}>
+                        <div className="cardinfo_box_title">
+                            Worklog
+                        </div>
+                        <ul>
+                            {worklogs.map((worklog, index) => (
+                                <Worklog
+                                    key={index}
+                                    index={index}
+                                    worklog={worklog}
+                                    onDelete={handleWorklogDelete}
+                                    onEdit={handleWorklogEdit}
+                                    selectedWorklog={selectedWorklog}
+                                />
+                            ))}
+                        </ul>
+                    </div>
+                )}
             </div>
             <div className="right-section" style={{width: "35%", float: "right"}}>
 
@@ -255,7 +313,7 @@ function CardInfo(props) {
                 </div>
                 <div className="cardinfo_box">
                     <div className="cardinfo_box_title">
-                        <FiUsers />
+                        <FiUsers/>
                         Assignees
                     </div>
                     <div className="task_list">
@@ -264,7 +322,7 @@ function CardInfo(props) {
                 </div>
                 <div className="cardinfo_box">
                     <div className="cardinfo_box_title">
-                        <FiUser />
+                        <FiUser/>
                         Reporter
                     </div>
                     <UserSelectField users={users} isMultiple={false} placeholder={"Unassigned"}/>
@@ -280,7 +338,7 @@ function CardInfo(props) {
 
                 <div className="cardinfo_box">
                     <div className="cardinfo_box_title">
-                        <CgOptions />
+                        <CgOptions/>
                         Priority
 
                     </div>
@@ -292,7 +350,7 @@ function CardInfo(props) {
 
                 <div className="cardinfo_box">
                     <div className="cardinfo_box_title">
-                        <RxStopwatch />
+                        <RxStopwatch/>
                         Time Tracking
                     </div>
                     <div>
