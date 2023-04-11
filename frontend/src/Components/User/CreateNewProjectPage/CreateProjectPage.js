@@ -1,7 +1,11 @@
-import React from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components';
 import ReactQuill from 'react-quill';
 import Selector from '../../../Shared/Components/Select';
+import {Modal as UploadIconModal} from 'antd';
+import Dragger from '../DragAndDrop/DragAndDrop';
+import FileUploaderButton from '../PhotoUploader/PhotoUploader';
+import {hover} from "@testing-library/user-event/dist/hover";
 
 const PageWrapper = styled.div`
   background-color: #fff;
@@ -18,21 +22,6 @@ const Header = styled.header`
 
 const Details = styled.h1`
   margin: 0;
-`;
-
-const OptionButton = styled.button`
-  background-color: transparent;
-  border: none;
-  color: #000;
-  cursor: pointer;
-  font-size: 2rem;
-  font-weight: bold;
-  padding: 0.5rem 1rem;
-  transition: background-color 0.3s ease-in-out;
-
-  &:hover {
-    background-color: #ECEDF0;
-  }
 `;
 
 const ImageWrapper = styled.div`
@@ -86,29 +75,6 @@ const UploadButton = styled.button`
   }
 `;
 
-const StyledSelect = styled.select`
-  border: 2px solid #ccc;
-  border-radius: 5px;
-  padding: 0.5rem;
-  font-size: 1rem;
-  margin-bottom: 2%;
-  background-color: ${({ isBlue }) => (isBlue ? "#0000FF" : "#FAFBFC")};
-  color: ${({ isBlue }) => (isBlue ? "#FFFFFF" : "#000000")};
-  width: 380px;
-
-  :hover {
-    background-color: ${({ isBlue }) => (isBlue ? "#0000DD" : "#EBECF0")};
-  }
-  
-  option:checked {
-    background-color: blue;
-  }
-`;
-
-const Option = styled.option`
-  padding: 0.5rem;
-`;
-
 const FormWrapper = styled.form`
   display: flex;
   flex-direction: column;
@@ -122,7 +88,6 @@ const LabelForProject = styled.label`
   margin-right: 305px;
 `;
 
-
 const LabelForKey = styled.label`
   font-weight: bold;
   margin-bottom: 0.5rem;
@@ -134,7 +99,6 @@ const LabelForDescriptionBoc = styled.label`
   margin-bottom: 0.5rem;
   margin-right: 270px;
 `;
-
 
 const LabelforLead = styled.label`
   font-weight: bold;
@@ -162,7 +126,7 @@ const Description = styled.p`
 `;
 
 const LabelforDefaultassignee
- = styled.label`
+    = styled.label`
   font-weight: bold;
   margin-bottom: 0.5rem;
   margin-right: 288px;
@@ -187,17 +151,20 @@ const SaveButton = styled.button`
 `;
 
 const StyledReactQuill = styled(ReactQuill)`
-  width: 50%;
-  max-width: 50%;
+  width: 55%;
+  max-width: 45%;
+
   .ql-toolbar {
-    width: 100%;
+    //width: 100%;
     position: relative;
     z-index: 1;
+    margin-left: -14px;
+    width: 109%;
   }
 
   .ql-container {
     box-sizing: border-box;
-    width: 100%;
+    //width: 100%;
     height: 100%;
     font-size: 16px;
     line-height: 1.4;
@@ -208,6 +175,9 @@ const StyledReactQuill = styled(ReactQuill)`
     border: 1px solid #ced4da;
     border-radius: 4px;
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    margin-left: -14px;
+    width: 109%;
+
     &:focus {
       outline: 0;
       border-color: #80bdff;
@@ -221,34 +191,110 @@ const StyledReactQuill = styled(ReactQuill)`
   padding-bottom: 10px;
 `;
 
-
 function CreateProject() {
+
+    const [visibleForIcon, setVisibleForIcon] = useState(false);
+
+    const [image, setImage] = useState(null);
+
+    const [select, setSelect] = useState(null);
+
+    const handleUpload = (file) => {
+        setImage(file);
+        setVisibleForIcon(false);
+    };
+
+    const handleUploadfForDragAndDrop = (file) => {
+        setImage(file);
+        setVisibleForIcon(false);
+    }
+
+    const Onpreview = (file) => {
+        setImage(file);
+    }
+
+    const showModalForIcon = () => {
+        setVisibleForIcon(true);
+        setSelect(1);
+    };
+
+    const handleOkForIcon = () => {
+        setVisibleForIcon(false);
+    };
+
+    const handleCancelForIcon = () => {
+        setVisibleForIcon(false);
+        setImage(null);
+    };
+
+    const handleCloseForIcon = () => {
+        setVisibleForIcon(false);
+    };
+
+    const modalStyle = {
+        borderRadius: 0,
+        height: '1000px',
+        cancelButton: {backgroundColor: 'red'}
+    };
+
     return (
         <PageWrapper>
+            <UploadIconModal title={
+                <h3 style={{fontSize: '18px', marginTop: '-5px'}}>Choose an icon</h3>
+            }
+                             open={visibleForIcon}
+                             onOk={handleOkForIcon}
+                             onCancel={handleCancelForIcon}
+                             okText="Select"
+                             cancelText="Delete existing"
+                             style={modalStyle}
+                             maskClosable={false}
+                             closable={false}
+                             cancelButtonProps={{
+                                 style: {
+                                     backgroundColor: 'red',
+                                     color: 'black',
+                                     border: 'black',
+
+                                 },
+                                 className: 'cancel-button',
+                             }}
+            >
+                <Dragger handleUploadfForDragAndDrop={handleUploadfForDragAndDrop}/>
+                <p style={{marginLeft: '225px'}}>or</p>
+                <FileUploaderButton handleUpload={handleUpload}/>
+
+            </UploadIconModal>
             <Header>
                 <Details>Project Details</Details>
-                <OptionButton>...</OptionButton>
             </Header>
-            <ImageWrapper>
-                <Image src="https://i.pravatar.cc/300" alt="Profile Picture"/>
-            </ImageWrapper>
+
+            {image && select ? (
+                <ImageWrapper>
+                    <Image src={'http://localhost:3000/Images/' + image} alt="Profile Picture"/>
+                </ImageWrapper>
+            ) : (
+                <ImageWrapper>
+                    <Image src={'http://localhost:3000/Images/NoImage.jpeg'} alt="No Profile Picture"/>
+                </ImageWrapper>
+            )}
             <ButtonWrapper>
-                <UploadButton>Change icon</UploadButton>
+                <UploadButton onClick={showModalForIcon}>Change icon</UploadButton>
             </ButtonWrapper>
             <FormWrapper>
                 <LabelForProject htmlFor="project">Project:</LabelForProject>
-                <Input type="text" id="project" value="Project Name" name="project" placeholder="Enter project name"/>
+                <Input type="text" id="project" name="project" placeholder="Enter project name"/>
                 <LabelForKey htmlFor="key">Key:</LabelForKey>
-                <Input type="text" id="key" value="Key" name="key" placeholder="Enter project key"/>
+                <Input type="text" id="key" name="key" placeholder="Enter project key"/>
                 <LabelForDescriptionBoc htmlFor="key">Description:</LabelForDescriptionBoc>
-                <StyledReactQuill id="example-editor" />
+                <StyledReactQuill id="example-editor"/>
                 <LabelForCompany htmlFor="category">Company:</LabelForCompany>
-                <Selector />
+                <Selector/>
                 <Description>Make sure your project lead has access to issues in the project.</Description>
                 <LabelforDefaultassignee htmlFor="category">Catagory:</LabelforDefaultassignee>
-                <Selector />
+                <Selector/>
                 <LabelforLead htmlFor="category">Project Lead:</LabelforLead>
-                <Selector />
+                <Selector/>
                 <SaveButton>Save</SaveButton>
             </FormWrapper>
         </PageWrapper>
@@ -256,3 +302,18 @@ function CreateProject() {
 }
 
 export default CreateProject;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

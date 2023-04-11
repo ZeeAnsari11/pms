@@ -1,5 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
+import {HiDotsHorizontal} from 'react-icons/hi'
+import Dropdown from "../../Dashboard/Dropdown";
+import {Link} from "react-router-dom";
+import Selector from '../../../Shared/Components/Select';
 
 const PageWrapper = styled.div`
   background-color: #fff;
@@ -115,13 +119,18 @@ const Label = styled.label`
   font-weight: bold;
   margin-bottom: 0.5rem;
   margin-right: 325px;
+`;
 
+const LabelForKey = styled.label`
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  margin-right: 342px;
 `;
 
 const Labelforlead = styled.label`
   font-weight: bold;
-  margin-bottom: 0.5rem;
-  margin-right: 260px;
+  margin-bottom: 1px;
+  margin-right: 278px;
 
 `;
 
@@ -134,9 +143,8 @@ const Description = styled.p`
 const LabelforDefaultassignee
  = styled.label`
   font-weight: bold;
-  margin-bottom: 0.5rem;
-
-  margin-right: 227px;
+  margin-bottom: 1px;
+  margin-right: 245px;
 `;
 
 const SaveButton = styled.button`
@@ -158,14 +166,20 @@ const SaveButton = styled.button`
 `;
 
 
-
-
 function ProjectSettingPage() {
+
+    const items = [
+        {
+            label: <Link to="/Hello">Move to trash</Link>,
+            key: '0',
+        },
+    ];
+
     return (
         <PageWrapper>
             <Header>
                 <Details>Details</Details>
-                <OptionButton>...</OptionButton>
+                <Dropdown items={items} icon={<HiDotsHorizontal size={24}/>}/>
             </Header>
             <ImageWrapper>
                 <Image src="https://i.pravatar.cc/300" alt="Profile Picture"/>
@@ -176,23 +190,13 @@ function ProjectSettingPage() {
             <FormWrapper>
                 <Label htmlFor="name">Name:</Label>
                 <Input type="text" id="name" value="New Project" name="name" placeholder="Enter project name"/>
-                <Label htmlFor="name">Key:</Label>
-                <Input type="text" id="name" value="NP" name="name" placeholder="Enter project key"/>
+                <LabelForKey htmlFor="key">Key:</LabelForKey>
+                <Input type="text" id="key" value="NP" name="key" placeholder="Enter project key"/>
                 <Labelforlead htmlFor="category">Project lead:</Labelforlead>
-                <Select id="category" name="category">
-                    <Option value="Web Development">Web Development</Option>
-                    <Option value="Mobile Development">Mobile Development</Option>
-                    <Option value="UI/UX Design">UI/UX Design</Option>
-                    <Option value="Marketing">Marketing</Option>
-                </Select>
+                <Selector/>
                 <Description>Make sure your project lead has access to issues in the project.</Description>
                 <LabelforDefaultassignee htmlFor="category">Default assignee</LabelforDefaultassignee>
-                <Select id="category" name="category">
-                    <Option value="Web Development">Web Development</Option>
-                    <Option value="Mobile Development">Mobile Development</Option>
-                    <Option value="UI/UX Design">UI/UX Design</Option>
-                    <Option value="Marketing">Marketing</Option>
-                </Select>
+                <Selector/>
                 <SaveButton>Save</SaveButton>
             </FormWrapper>
         </PageWrapper>
