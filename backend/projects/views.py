@@ -62,7 +62,7 @@ class ProjectViewSet(ModelViewSet):
 
     def get_permissions(self):
         if self.request.method in ['POST', 'PATCH', 'DELETE']:
-            return [IsAdminUser()]
+            return [IsAuthenticated()]
         return [IsAuthenticated()]
 
     def get_serializer_context(self):
@@ -71,9 +71,9 @@ class ProjectViewSet(ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         if user.is_staff:
-            return Project.objects.prefetch_related('assignee').select_related('company').select_related(
+            return Project.objects.prefetch_related('assignee').prefetch_related('project_lead').select_related('company').select_related(
                 'project_category').all()
-        return Project.objects.filter(assignee=self.request.user)
+        return Project.objects.filter(Q(project_lead=self.request.user) | Q(assignee=self.request.user))
 
     # serializer_class = serializers.ProjectSerializer
 
