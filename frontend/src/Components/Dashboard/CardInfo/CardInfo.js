@@ -190,7 +190,6 @@ function CardInfo(props) {
                             placeholder={"Enter New Task"}
                             buttonText="Save Task"
                             onSubmit={(value) => addTask(value)}
-
                         />
                     </div>
                 </div>
