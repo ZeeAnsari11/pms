@@ -14,6 +14,7 @@ function Login() {
     const [usernameForSignIn, setUsernameForSignIn] = useState('');
     const [passwordForSignIn, setPasswordForSignIn] = useState('');
     const [authToken, setAuthToken] = useState('');
+
     const handleSubmitSignIn = (e) => {
         e.preventDefault();
 
@@ -24,6 +25,7 @@ function Login() {
 
         axios.post('http://127.0.0.1:8000/api/auth/token/login/', data)
             .then(response => {
+                sessionStorage.setItem('auth_token', response.data.auth_token)
                 setAuthToken(response.data.auth_token);
                 axios.defaults.headers.common['Authorization'] = `Token ${authToken}`;
                 window.location.href = '/dashboard';
@@ -31,71 +33,71 @@ function Login() {
             .catch(error => {
                 console.error(error.message);
                 const notify = () => toast.error('🦄 ' + "Incorrect username or password. Please try again.", {
-                            position: "top-right",
-                            autoClose: 5000,
-                            hideProgressBar: false,
-                            closeOnClick: true,
-                            pauseOnHover: true,
-                            draggable: true,
-                            progress: undefined,
-                            theme: "colored",
-                        });
-                        notify();
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+                });
+                notify();
             });
 
-        if(authToken){
-        axios.get('http://127.0.0.1:8000/api/projects/', {headers: {"Authorization": `Token ${authToken}`}})
-            .then(response => {
-                console.log("success project:");
-                console.log(response.data);
+        if (authToken) {
+            axios.get('http://127.0.0.1:8000/api/projects/', {headers: {"Authorization": `Token ${authToken}`}})
+                .then(response => {
+                    console.log("success project:");
+                    console.log(response.data);
 
-            }).catch(error => {
+                }).catch(error => {
                 console.log("failed project");
                 console.error(error);
             });
         }
 
-        if(authToken){
+        if (authToken) {
             axios.get('http://127.0.0.1:8000/api/issues/', {headers: {"Authorization": `Token ${authToken}`}})
-            .then(response => {
-                console.log("success issues:");
-                console.log(response.data);
-            }).catch(error => {
+                .then(response => {
+                    console.log("success issues:");
+                    console.log(response.data);
+                }).catch(error => {
                 console.log("failed issues");
                 console.error(error);
             });
         }
 
-        if(authToken){
+        if (authToken) {
             axios.get('http://127.0.0.1:8000/api/comments/', {headers: {"Authorization": `Token ${authToken}`}})
-            .then(response => {
-                console.log("success comments:");
-                console.log(response.data);
-            }).catch(error => {
+                .then(response => {
+                    console.log("success comments:");
+                    console.log(response.data);
+                }).catch(error => {
                 console.log("failed comments");
                 console.error(error);
             });
 
         }
 
-        if(authToken){
+        if (authToken) {
             axios.get('http://127.0.0.1:8000/api/worklogs/', {headers: {"Authorization": `Token ${authToken}`}})
-            .then(response => {
-                console.log("success worklogs:");
-                console.log(response.data);
-            }).catch(error => {
+                .then(response => {
+                    console.log("success worklogs:");
+                    console.log(response.data);
+                }).catch(error => {
                 console.log("failed worklogs");
                 console.error(error);
             });
 
         }
 
-        if(authToken){
+        if (authToken) {
             axios.get('http://127.0.0.1:8000/api/watchers/', {headers: {"Authorization": `Token ${authToken}`}})
-            .then(response => {
-                console.log("success watchers:");
-                console.log(response.data);
-            }).catch(error => {
+                .then(response => {
+                    console.log("success watchers:");
+                    console.log(response.data);
+                }).catch(error => {
                 console.log("failed watchers");
                 console.error(error);
             });
