@@ -83,103 +83,123 @@ const modalStyle = {
     borderRadius: 0,
 };
 
+
+const NoProjectsMessage = styled.tr`
+  text-align: center;
+  font-weight: bold;
+
+  td {
+    padding: 24px 0;
+  }
+`;
 const ProjectListing = () => {
-  const [visible, setVisible] = useState(false);
-  const [projects, setProjects] = useState([]);
+    let authToken = sessionStorage.getItem('auth_token')
+    const [visible, setVisible] = useState(false);
+    const [projects, setProjects] = useState([]);
 
-  const showModal = () => {
-    setVisible(true);
-  };
 
-  const handleOk = () => {
-    setVisible(false);
-  };
+    useEffect(() => {
+        const fetchProjects = async () => {
+            const response = await axios.get('http://0.0.0.0:8000/api/projects/', {
+                headers: {
+                    Authorization: `Token ${authToken}`,
+                },
+            });
+            setProjects(response.data);
+        };
 
-  const handleCancel = () => {
-    setVisible(false);
-  };
+        fetchProjects();
+    }, [projects]);
 
-  const items = [
-    {
-      label: <Link to="/project-setting">Project Setting</Link>,
-      key: '0',
-    },
-    {
-      label: <Link onClick={showModal}>Move to trash</Link>,
-      key: '1',
-    },
-  ];
+    const showModal = () => {
+        setVisible(true);
+    };
 
-  const userIcon = <GrAlert/>;
-  const message = `Welcome, {userIcon}!`;
+    const handleOk = () => {
+        setVisible(false);
+    };
 
-  useEffect(() => {
-    axios.get('API_ENDPOINT', {
-      headers: {
-        Authorization: 'TOKEN',
-      },
-    })
-      .then(response => {
-        setProjects(response.data.projects);
-      })
-      .catch(error => {
-        console.error(error);
-      });
-  }, []);
+    const handleCancel = () => {
+        setVisible(false);
+    };
 
-  return (
-    <ProjectListingTable>
-      <Modal
-        title={`Welcome, ${userIcon}!`}
-        visible={visible}
-        onOk={handleOk}
-        onCancel={handleCancel}
-        style={modalStyle}
-      >
-        <p><GrAlert/> The project along with its issues, components, attachments, and versions will be available in the trash for 60 days after which it will be permanently deleted.</p>
-        <p>Only Jira admins can restore the project from the trash.</p>
-      </Modal>
+    const items = [
+        {
+            label: <Link to='/project-setting'>Project Setting</Link>,
+            key: '0',
+        },
+        {
+            type: 'divider',
+        },
+        {
+            label: <Link onClick={showModal}>Move to trash</Link>,
+            key: '1',
+        },
+    ];
 
-      <thead>
-        <tr>
-          <th><span className="star-column">★</span></th>
-          <th>Name</th>
-          <th>Key</th>
-          <th>Type</th>
-          <th>Lead</th>
-          <th className="options-column"></th>
-        </tr>
-      </thead>
+    const userIcon = <GrAlert/>;
+    const message = `Welcome, ${userIcon}!`;
 
-      {projects.length ? (
-        <tbody>
-          {projects.map((project) => (
-            <tr key={project.id}>
-              <td className="star-column">★</td>
-              <td className="name-column">
-                <img src={project.icon} alt="Project Avatar"/>
-                <a href={project.link}>{project.name}</a>
-              </td>
-              <td>{project.key}</td>
-              <td>{project.type}</td>
-              <td className="lead-column">
-                <img src={project.lead.avatarUrl} alt="Lead Avatar"/>
-                <a href={project.lead.link}>{project.lead.name}</a>
-              </td>
-              <td className="options-column"><Dropdown items={items} icon={<HiDotsHorizontal size={24}/>}/></td>
+    return (
+        <ProjectListingTable>
+            <Modal
+                title={`Welcome, ${userIcon}!`}
+                visible={visible}
+                onOk={handleOk}
+                onCancel={handleCancel}
+                style={modalStyle}
+            >
+                <p>
+                    <GrAlert/> The project along with its issues, components, attachments, and versions will be
+                    available in the trash for 60 days after which it will be permanently deleted.
+                </p>
+                <p>Only Jira admins can restore the project from the trash.</p>
+            </Modal>
+            <thead>
+            <tr>
+                <th>
+                    <span className='star-column'>★</span>
+                </th>
+                <th>Name</th>
+                <th>Key</th>
+                <th>Type</th>
+                <th>Lead</th>
+                <th className='options-column'></th>
             </tr>
-          ))}
-        </tbody>
-      ) : (
-        <tbody>
-          <tr>
-            <td colSpan="6">No Projects to Show</td>
-          </tr>
-        </tbody>
-      )}
-    </ProjectListingTable>
-  );
+            </thead>
+            <tbody>
+            {projects.length === 0 ? (
+                <NoProjectsMessage>
+                    <td colSpan="6">No Projects to show</td>
+                </NoProjectsMessage>
+            ) : (
+
+                projects.map((project) => (
+                    <tr key={project.id}>
+                        <td className='star-column'>★</td>
+                        <td className='name-column'>
+                            <img src="https://i.pravatar.cc/300" alt="Lead Avatar"/>
+                            {/*<img src={project.icon} alt='Project Avatar'/>*/}
+                            {/*<img src={`http://0.0.0.0:8000/media/${project.icon}`} alt='Project Avatar'/>*/}
+                            <Link to={`${project.id}/${project.name}`}>{project.name}</Link>
+                        </td>
+                        <td>{project.key}</td>
+                        {/*<td>{project.type}Team-managed software</td>*/}
+                        <td>{project.project_category.project_category}</td>
+                        <td className='lead-column'>
+                            <img src="https://i.pravatar.cc/300" alt="Lead Avatar"/>
+                            {/*<img src={project.leadAvatarUrl} alt='Lead Avatar'/>*/}
+                            <p>{project.project_lead.username}</p>
+                        </td>
+                        <td className='options-column'>
+                            <Dropdown items={items} icon={<HiDotsHorizontal size={24}/>}/>
+                        </td>
+                    </tr>
+                ))
+            )}
+            </tbody>
+        </ProjectListingTable>
+    );
 };
 
 export default ProjectListing;
-
