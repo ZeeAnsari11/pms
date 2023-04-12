@@ -36,9 +36,13 @@ class IssuesPriority(models.Model):
 
 
 class Project(models.Model):
+    icon = models.ImageField(upload_to='attachments/projects/icons', blank=True, null=True,
+                             validators=[validate_file_size])
     name = models.CharField(max_length=255)
     slug = models.SlugField('shortcut', blank=True)
+    key = models.CharField(max_length=100, blank=True)
     assignee = models.ManyToManyField(User)
+    project_lead = models.ForeignKey(User, on_delete=models.CASCADE, related_name='project_lead')
     description = models.TextField()
     company = models.ForeignKey('register.Company', on_delete=models.CASCADE, default=1)
     project_category = models.ForeignKey(ProjectCategory, on_delete=models.PROTECT, blank=True, null=True)

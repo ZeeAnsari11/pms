@@ -1,10 +1,11 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
+import axios from 'axios';
 import styled from 'styled-components';
 import Dropdown from '../../Dashboard/Dropdown/index';
-import {HiDotsHorizontal} from "react-icons/hi";
-import {Link} from "react-router-dom";
+import {HiDotsHorizontal} from 'react-icons/hi';
+import {Link} from 'react-router-dom';
 import {Button, Modal} from 'antd';
-import {GrAlert} from "react-icons/gr";
+import {GrAlert} from 'react-icons/gr';
 
 const ProjectListingTable = styled.table`
   width: 100%;
@@ -40,9 +41,9 @@ const ProjectListingTable = styled.table`
     border-radius: 50%;
     margin-right: 8px;
   }
-  
+
   .option-column-align {
-        margin-right: 45%;
+    margin-right: 45%;
   }
 
   .star-column {
@@ -82,9 +83,33 @@ const modalStyle = {
     borderRadius: 0,
 };
 
-const ProjectListing = () => {
 
+const NoProjectsMessage = styled.tr`
+  text-align: center;
+  font-weight: bold;
+
+  td {
+    padding: 24px 0;
+  }
+`;
+const ProjectListing = () => {
+    let authToken = sessionStorage.getItem('auth_token')
     const [visible, setVisible] = useState(false);
+    const [projects, setProjects] = useState([]);
+
+
+    useEffect(() => {
+        const fetchProjects = async () => {
+            const response = await axios.get('http://0.0.0.0:8000/api/projects/', {
+                headers: {
+                    Authorization: `Token ${authToken}`,
+                },
+            });
+            setProjects(response.data);
+        };
+
+        fetchProjects();
+    }, [projects]);
 
     const showModal = () => {
         setVisible(true);
@@ -98,11 +123,13 @@ const ProjectListing = () => {
         setVisible(false);
     };
 
-
     const items = [
         {
-            label: <Link to="/project-setting">Project Setting</Link>,
+            label: <Link to='/project-setting'>Project Setting</Link>,
             key: '0',
+        },
+        {
+            type: 'divider',
         },
         {
             label: <Link onClick={showModal}>Move to trash</Link>,
@@ -111,8 +138,7 @@ const ProjectListing = () => {
     ];
 
     const userIcon = <GrAlert/>;
-
-    const message = `Welcome, {userIcon}!`;
+    const message = `Welcome, ${userIcon}!`;
 
     return (
         <ProjectListingTable>
@@ -123,51 +149,54 @@ const ProjectListing = () => {
                 onCancel={handleCancel}
                 style={modalStyle}
             >
-                <p><GrAlert/> The project along with its issues, components, attachments, and versions will be available
-                    in the
-                    trash for 60 days after which it will be permanently deleted.</p>
+                <p>
+                    <GrAlert/> The project along with its issues, components, attachments, and versions will be
+                    available in the trash for 60 days after which it will be permanently deleted.
+                </p>
                 <p>Only Jira admins can restore the project from the trash.</p>
             </Modal>
             <thead>
             <tr>
-                <th><span className="star-column">★</span></th>
+                <th>
+                    <span className='star-column'>★</span>
+                </th>
                 <th>Name</th>
                 <th>Key</th>
                 <th>Type</th>
                 <th>Lead</th>
-                <th className="options-column"></th>
+                <th className='options-column'></th>
             </tr>
             </thead>
             <tbody>
-            <tr>
-                <td className="star-column">★</td>
-                <td className="name-column">
-                    <img src="https://i.pravatar.cc/300" alt="Project Avatar"/>
-                    <a href="project-link">Project Name</a>
-                </td>
-                <td>PROJ-001</td>
-                <td>Task Management</td>
-                <td className="lead-column">
-                    <img src="https://i.pravatar.cc/300" alt="Lead Avatar"/>
-                    <a href="lead-link">Lead Name</a>
-                </td>
-                <td className="options-column"><Dropdown items={items} icon={<HiDotsHorizontal size={24}/>}/></td>
-            </tr>
-            <tr>
-                <td className="star-column">★</td>
-                <td className="name-column">
-                    <img src="https://i.pravatar.cc/300" alt="Project Avatar"/>
-                    <a href="project-link">Project Name</a>
-                </td>
-                <td>PROJ-002</td>
-                <td>Bug Tracking</td>
-                <td className="lead-column">
-                    <img src="https://i.pravatar.cc/300" alt="Lead Avatar"/>
-                    <a href="lead-link">Lead Name</a>
-                </td>
-                <td className="options-column"><Dropdown items={items} icon={<HiDotsHorizontal size={24}/>}/></td>
-            </tr>
-            {/* more project rows */}
+            {projects.length === 0 ? (
+                <NoProjectsMessage>
+                    <td colSpan="6">No Projects to show</td>
+                </NoProjectsMessage>
+            ) : (
+
+                projects.map((project) => (
+                    <tr key={project.id}>
+                        <td className='star-column'>★</td>
+                        <td className='name-column'>
+                            <img src="https://i.pravatar.cc/300" alt="Lead Avatar"/>
+                            {/*<img src={project.icon} alt='Project Avatar'/>*/}
+                            {/*<img src={`http://0.0.0.0:8000/media/${project.icon}`} alt='Project Avatar'/>*/}
+                            <Link to={`${project.id}/${project.name}`}>{project.name}</Link>
+                        </td>
+                        <td>{project.key}</td>
+                        {/*<td>{project.type}Team-managed software</td>*/}
+                        <td>{project.project_category.project_category}</td>
+                        <td className='lead-column'>
+                            <img src="https://i.pravatar.cc/300" alt="Lead Avatar"/>
+                            {/*<img src={project.leadAvatarUrl} alt='Lead Avatar'/>*/}
+                            <p>{project.project_lead.username}</p>
+                        </td>
+                        <td className='options-column'>
+                            <Dropdown items={items} icon={<HiDotsHorizontal size={24}/>}/>
+                        </td>
+                    </tr>
+                ))
+            )}
             </tbody>
         </ProjectListingTable>
     );

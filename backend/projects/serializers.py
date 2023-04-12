@@ -55,22 +55,20 @@ class ProjectIssuesSerializer(serializers.ModelSerializer):
 class CreateProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Project
-        fields = ["id", 'name', 'slug', 'assignee', 'description', 'company', 'project_category']
+        fields = ["id", 'icon', 'name', 'slug', 'key', 'assignee', 'project_lead', 'description', 'company',
+                  'project_category']
 
 
 class ProjectSerializer(serializers.ModelSerializer):
     project_category = ProjectCategorySerializer(read_only=True)
     assignee = CustomUserSerializer(read_only=True, many=True)
     company = CompanySerializer(read_only=True)
+    project_lead = CustomUserSerializer(read_only=True)
 
     class Meta:
         model = models.Project
-        fields = ["id", 'name', 'slug', 'assignee', 'description', 'company', 'project_category']
-
-    # issues_count = serializers.SerializerMethodField(method_name='cal_issues_count')
-    #
-    # def cal_issues_count(self, project):
-    #     return Count(project.issues_count)
+        fields = ["id", 'icon', 'name', 'slug', 'key', 'assignee', 'project_lead', 'description', 'company',
+                  'project_category']
 
 
 class CreateIssueSerializer(serializers.ModelSerializer):

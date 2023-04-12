@@ -294,7 +294,7 @@ function CreateProject() {
                 <LabelforDefaultassignee htmlFor="category">Catagory:</LabelforDefaultassignee>
                 <Selector/>
                 <LabelforLead htmlFor="category">Project Lead:</LabelforLead>
-                <Selector/>
+                <Selector />
                 <SaveButton>Save</SaveButton>
             </FormWrapper>
         </PageWrapper>
