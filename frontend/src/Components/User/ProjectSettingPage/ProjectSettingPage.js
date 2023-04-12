@@ -1,9 +1,13 @@
-import React from 'react';
+import React, {useState, useRef} from 'react';
 import styled from 'styled-components';
 import {HiDotsHorizontal} from 'react-icons/hi'
 import Dropdown from "../../Dashboard/Dropdown";
 import {Link} from "react-router-dom";
+import {Button, Modal as UploadIconModal, notification} from 'antd';
 import Selector from '../../../Shared/Components/Select';
+import Dragger from "../DragAndDrop/DragAndDrop";
+import FileUploaderButton from "../PhotoUploader/PhotoUploader";
+import NotificationModal from '../Notification/Notification';
 
 const PageWrapper = styled.div`
   background-color: #fff;
@@ -89,25 +93,6 @@ const UploadButton = styled.button`
   }
 `;
 
-const Select = styled.select`
-  border: 2px solid #ccc;
-  border-radius: 5px;
-  padding: 0.5rem;
-  font-size: 1rem;
-  margin-bottom: 2%;
-  background-color: #FAFBFC;
-  width: 380px;
-
-
-  :hover {
-    background-color: #EBECF0;
-  }
-`;
-
-const Option = styled.option`
-  padding: 0.5rem;
-`;
-
 const FormWrapper = styled.form`
   display: flex;
   flex-direction: column;
@@ -140,8 +125,8 @@ const Description = styled.p`
   //margin-top: 0.5rem;
   margin-top: -15px;
 `;
-const LabelforDefaultassignee
- = styled.label`
+
+const LabelforDefaultassignee = styled.label`
   font-weight: bold;
   margin-bottom: 1px;
   margin-right: 245px;
@@ -165,33 +150,110 @@ const SaveButton = styled.button`
   }
 `;
 
-
 function ProjectSettingPage() {
 
-    const items = [
-        {
-            label: <Link to="/Hello">Move to trash</Link>,
-            key: '0',
-        },
-    ];
+    const [modalVisible, setModalVisible] = useState(false);
+
+    const handleCancel = () => {
+        setModalVisible(false);
+    };
+
+    const handleConfirm = () => {
+        // Do something when confirm button is clicked
+        setModalVisible(false);
+    };
+
+    const showModalForNotification = () => {
+        setModalVisible(true);
+    }
+
+    const items = [{
+        label: <Link onClick={showModalForNotification}>Move to trash </Link>, key: '0',
+    },];
+
+    const [visibleForIcon, setVisibleForIcon] = useState(false);
+
+    const [image, setImage] = useState(null);
+
+    const [select, setSelect] = useState(null);
+
+    const handleUpload = (file) => {
+        setImage(file);
+        setVisibleForIcon(false);
+    };
+
+    const handleUploadfForDragAndDrop = (file) => {
+        setImage(file);
+        setVisibleForIcon(false);
+    }
+
+    const showModalForIcon = () => {
+        setVisibleForIcon(true);
+        setSelect(1);
+    };
+
+    const handleOkForIcon = () => {
+        setVisibleForIcon(false);
+    };
+
+    const handleCancelForIcon = () => {
+        setVisibleForIcon(false);
+        setImage(null);
+    };
+
+
+    const modalStyle = {
+        borderRadius: 0, height: '1000px', cancelButton: {backgroundColor: 'red'}
+    };
 
     return (
         <PageWrapper>
+            <NotificationModal
+                visible={modalVisible}
+                onCancel={handleCancel}
+                onConfirm={handleConfirm}
+                title="Confirm delete project?"
+                content="Are you sure about deleting this project?"
+            />
+            <UploadIconModal title={<h3 style={{fontSize: '18px', marginTop: '-5px'}}>Choose an icon</h3>}
+                             open={visibleForIcon}
+                             onOk={handleOkForIcon}
+                             onCancel={handleCancelForIcon}
+                             okText="Select"
+                             cancelText="Delete existing"
+                             style={modalStyle}
+                             maskClosable={false}
+                             closable={false}
+                             cancelButtonProps={{
+                                 style: {
+                                     backgroundColor: 'red', color: 'black', border: 'black',
+
+                                 }, className: 'cancel-button',
+                             }}
+            >
+                <Dragger handleUploadfForDragAndDrop={handleUploadfForDragAndDrop}/>
+                <p style={{marginLeft: '225px'}}>or</p>
+                <FileUploaderButton handleUpload={handleUpload}/>
+
+            </UploadIconModal>
             <Header>
                 <Details>Details</Details>
                 <Dropdown items={items} icon={<HiDotsHorizontal size={24}/>}/>
             </Header>
-            <ImageWrapper>
-                <Image src="https://i.pravatar.cc/300" alt="Profile Picture"/>
-            </ImageWrapper>
+
+            {image && select ? (<ImageWrapper>
+                <Image src={'http://localhost:3000/Images/' + image} alt="Profile Picture"/>
+            </ImageWrapper>) : (<ImageWrapper>
+                <Image src={'http://localhost:3000/Images/NoImage.jpeg'} alt="No Profile Picture"/>
+            </ImageWrapper>)}
             <ButtonWrapper>
-                <UploadButton>Change icon</UploadButton>
+                <UploadButton onClick={showModalForIcon}>Change icon</UploadButton>
             </ButtonWrapper>
             <FormWrapper>
                 <Label htmlFor="name">Name:</Label>
-                <Input type="text" id="name" value="New Project" name="name" placeholder="Enter project name"/>
+                <Input type="text" id="name" name="name" placeholder="Project name"/>
                 <LabelForKey htmlFor="key">Key:</LabelForKey>
-                <Input type="text" id="key" value="NP" name="key" placeholder="Enter project key"/>
+                <Input type="text" id="key" name="key" placeholder="Project key"/>
                 <Labelforlead htmlFor="category">Project lead:</Labelforlead>
                 <Selector/>
                 <Description>Make sure your project lead has access to issues in the project.</Description>
@@ -199,8 +261,8 @@ function ProjectSettingPage() {
                 <Selector/>
                 <SaveButton>Save</SaveButton>
             </FormWrapper>
-        </PageWrapper>
-    );
+        </PageWrapper>);
 }
+
 
 export default ProjectSettingPage;
