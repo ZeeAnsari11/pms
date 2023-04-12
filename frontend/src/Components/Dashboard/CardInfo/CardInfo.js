@@ -171,9 +171,6 @@ function CardInfo(props) {
                         <CheckSquare/>
                         Tasks
                     </div>
-                    <div className="task_progress-bar">
-                        <div className="task_progress" style={{width: calculatePercent() + "%"}}/>
-                    </div>
                     <div className="task_list">
                         {values.tasks?.map((item) => (
                             <div key={item.id} className="task">
