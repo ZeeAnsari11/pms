@@ -19,13 +19,13 @@ class IssueInline(admin.StackedInline):
 
 
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ['name', 'company', 'project_category', 'issues']
+    list_display = ['name', 'company', 'project_category', 'project_lead', 'issues']
     prepopulated_fields = {
         'slug': ['name']
     }
-    autocomplete_fields = ['company', 'project_category']
+    autocomplete_fields = ['company', 'project_category', 'project_lead']
     search_fields = ['name']
-    list_editable = ['project_category']
+    list_editable = ['project_category', 'project_lead']
 
     # inlines = [IssueInline]
 
