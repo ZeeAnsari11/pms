@@ -40,7 +40,7 @@ COPY ./entrypoint.prod.sh $APP_HOME
 
 COPY . $APP_HOME
 
-RUN chown -R ubuntu:ubuntu $APP_HOME
+RUN chown -R app:app $APP_HOME
 
 USER app
 
