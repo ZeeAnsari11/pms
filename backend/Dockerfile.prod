@@ -27,9 +27,8 @@ RUN useradd -ms /bin/bash app
 ENV HOME=/home/app
 ENV APP_HOME=/home/app/web
 RUN mkdir $APP_HOME
-RUN mkdir $APP_HOME/api
-RUN mkdir $APP_HOME/api/static
-RUN mkdir $APP_HOME/api/media
+RUN mkdir $APP_HOME/static
+RUN mkdir $APP_HOME/media
 WORKDIR $APP_HOME
 
 RUN apt-get update && apt-get install -y python3-dev gcc musl-dev libffi-dev netcat
@@ -41,8 +40,9 @@ COPY ./entrypoint.prod.sh $APP_HOME
 
 COPY . $APP_HOME
 
-RUN chown -R app:app $APP_HOME
+RUN chown -R ubuntu:ubuntu $APP_HOME
 
 USER app
 
+RUN ["chmod","+x","/home/app/web/entrypoint.prod.sh"]
 ENTRYPOINT ["/home/app/web/entrypoint.prod.sh"]
