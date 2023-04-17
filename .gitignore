@@ -100,7 +100,6 @@ atlassian-ide-plugin.xml
 # React Stuff
 
 /frontend/node_modules/
-/frontend/package-lock.json
 /frontend/build/
 /frontend/.DS_Store
 /frontend/*.tgz
@@ -160,4 +159,3 @@ out/
 ./backend/.DS_Store
 ./frontend/.DS_Store
 /node_modules/
-/package-lock.json
