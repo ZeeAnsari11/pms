@@ -154,7 +154,7 @@ const ProjectListing = () => {
     let authToken = sessionStorage.getItem('auth_token')
     const [visible, setVisible] = useState(false);
     const [projects, setProjects] = useState([]);
-
+    const [userimage, setuserimage] = useState([]);
 
     useEffect(() => {
         const fetchProjects = async () => {
@@ -165,9 +165,28 @@ const ProjectListing = () => {
             });
             setProjects(response.data);
         };
-
-        fetchProjects();
+        fetchProjects()
     }, [projects]);
+
+
+    useEffect(() => {
+        const fetchuserImage = async () => {
+            const userResponse = await axios.get('http://127.0.0.1:8000/api/auth/users/me/', {
+                headers: {
+                    Authorization: `Token ${authToken}`,
+                },
+            });
+            const avatarResponse = await axios.get('http://127.0.0.1:8000/api/avatar/', {
+                headers: {
+                    Authorization: `Token ${authToken}`,
+                },
+            });
+            if (avatarResponse.data.user.username === userResponse.data.username) {
+                setuserimage(avatarResponse.data);
+            }
+        };
+        fetchuserImage();
+    }, [userimage]);
 
     const showModal = () => {
         setVisible(true);
