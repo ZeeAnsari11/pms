@@ -1,6 +1,9 @@
 import os
 import random
 import shutil
+from django.dispatch import receiver
+from django.db.models.signals import post_save
+from django.utils.html import format_html
 
 from django.conf import settings
 from django.db import models
@@ -23,7 +26,18 @@ def get_default_avatar():
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    image = models.ImageField(default=get_default_avatar(), upload_to='users_avatars')
+    image = models.ImageField(upload_to='users_avatars', default=get_default_avatar)
+
+    def image_tag(self):
+        return format_html('<img src="{}" style="width: 100px; height: 100px;" />'.format(self.image.url))
+
+    image_tag.short_description = 'Image Thumbnail'
 
     def __str__(self):
-        return f'{self.user.username} Profile'
+        return f'{self.user.username} Profile Avatar'
+
+
+@receiver(post_save, sender=User)
+def create_profile(sender, instance, created, **kwargs):
+    if created:
+        UserProfile.objects.create(user=instance)
