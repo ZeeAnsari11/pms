@@ -29,6 +29,8 @@ ENV APP_HOME=/home/app/web
 RUN mkdir $APP_HOME
 RUN mkdir $APP_HOME/static
 RUN mkdir $APP_HOME/media
+RUN mkdir $APP_HOME/media/default_avatars
+RUN mkdir $APP_HOME/media/users_avatars
 WORKDIR $APP_HOME
 
 RUN apt-get update && apt-get install -y python3-dev gcc musl-dev libffi-dev netcat
@@ -39,6 +41,8 @@ RUN pip install --no-cache /wheels/*
 COPY ./entrypoint.prod.sh $APP_HOME
 
 COPY . $APP_HOME
+COPY ./media/default_avatars $APP_HOME/media/default_avatars
+COPY ./media/users_avatars $APP_HOME/media/users_avatars
 
 RUN chown -R app:app $APP_HOME
 
