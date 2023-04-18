@@ -96,20 +96,39 @@ const ProjectListing = () => {
     let authToken = sessionStorage.getItem('auth_token')
     const [visible, setVisible] = useState(false);
     const [projects, setProjects] = useState([]);
-
+    const [userimage, setuserimage] = useState([]);
 
     useEffect(() => {
         const fetchProjects = async () => {
-            const response = await axios.get('http://0.0.0.0:8000/api/projects/', {
+            const response = await axios.get('http://127.0.0.1:8000/api/projects/', {
                 headers: {
                     Authorization: `Token ${authToken}`,
                 },
             });
             setProjects(response.data);
         };
-
-        fetchProjects();
+        fetchProjects()
     }, [projects]);
+
+
+    useEffect(() => {
+        const fetchuserImage = async () => {
+            const userResponse = await axios.get('http://127.0.0.1:8000/api/auth/users/me/', {
+                headers: {
+                    Authorization: `Token ${authToken}`,
+                },
+            });
+            const avatarResponse = await axios.get('http://127.0.0.1:8000/api/avatar/', {
+                headers: {
+                    Authorization: `Token ${authToken}`,
+                },
+            });
+            if (avatarResponse.data.user.username === userResponse.data.username) {
+                setuserimage(avatarResponse.data);
+            }
+        };
+        fetchuserImage();
+    }, [userimage]);
 
     const showModal = () => {
         setVisible(true);
@@ -173,22 +192,24 @@ const ProjectListing = () => {
                     <td colSpan="6">No Projects to show</td>
                 </NoProjectsMessage>
             ) : (
-
                 projects.map((project) => (
                     <tr key={project.id}>
                         <td className='star-column'>★</td>
                         <td className='name-column'>
-                            <img src="https://i.pravatar.cc/300" alt="Lead Avatar"/>
+                            {/*<img src="https://i.pravatar.cc/300" alt="Lead Avatar"/>*/}
                             {/*<img src={project.icon} alt='Project Avatar'/>*/}
-                            {/*<img src={`http://0.0.0.0:8000/media/${project.icon}`} alt='Project Avatar'/>*/}
+                            <img
+                                src={project.icon ? `http://127.0.0.1:8000/${project.icon}` : 'http://localhost:3000/Images/NoImage.jpeg'}
+                                alt='Project Avatar'/>
                             <Link to={`${project.id}/${project.name}`}>{project.name}</Link>
                         </td>
                         <td>{project.key}</td>
                         {/*<td>{project.type}Team-managed software</td>*/}
                         <td>{project.project_category.project_category}</td>
                         <td className='lead-column'>
-                            <img src="https://i.pravatar.cc/300" alt="Lead Avatar"/>
-                            {/*<img src={project.leadAvatarUrl} alt='Lead Avatar'/>*/}
+                            {/*<img src="https://i.pravatar.cc/300" alt="Lead Avatar"/>*/}
+                            <img src={userimage.image ? userimage.image : 'http://localhost:3000/Images/NoImage.jpeg'}
+                                 alt='Lead Avatar'/>
                             <p>{project.project_lead.username}</p>
                         </td>
                         <td className='options-column'>
