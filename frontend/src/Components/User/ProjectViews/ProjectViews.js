@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components';
-import { FaSearch } from 'react-icons/fa';
+import {FaSearch} from 'react-icons/fa';
 import ProjectListing from "../ProjectListing/ProjectListing";
 import {Link} from "react-router-dom";
+import NavBar from "../../Dashboard/Navbar";
 
 const ProjectsPageContainer = styled.div`
   background-color: #FFFFFF;
@@ -18,6 +19,7 @@ const ProjectsPageContainer = styled.div`
 `;
 
 const ProjectsHeaderContainer = styled.div`
+  margin-top: 20px;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -118,31 +120,35 @@ const SearchIcon = styled(FaSearch)`
 const ProjectsPage = () => {
     const [searchValue, setSearchValue] = useState('');
 
-  const handleSearchChange = (event) => {
-    setSearchValue(event.target.value);
-  };
+    const handleSearchChange = (event) => {
+        setSearchValue(event.target.value);
+    };
 
-  const submit = () => {
-    window.location.href = '/create-project';
-  };
+    const submit = () => {
+        window.location.href = '/create-project';
+    };
 
-  return (
-    <ProjectsPageContainer>
-      <ProjectsHeaderContainer>
-        <ProjectsHeader>Projects</ProjectsHeader>
-        <ProjectButton onClick={submit}>Create Project</ProjectButton>
-      </ProjectsHeaderContainer>
-      <SearchContainer>
-        <SearchInputContainer>
-          <SearchIcon />
-          <SearchInput type="text" placeholder="Search Projects" value={searchValue} onChange={handleSearchChange} />
-        </SearchInputContainer>
-      </SearchContainer>
-        <ProjectListing/>
-        <hr></hr>
-      {/* Add your projects list here */}
-    </ProjectsPageContainer>
-  );
+    return (
+        <div>
+            <NavBar/>
+            <ProjectsPageContainer>
+                <ProjectsHeaderContainer>
+                    <ProjectsHeader>Projects</ProjectsHeader>
+                    <ProjectButton onClick={submit}>Create Project</ProjectButton>
+                </ProjectsHeaderContainer>
+                <SearchContainer>
+                    <SearchInputContainer>
+                        <SearchIcon/>
+                        <SearchInput type="text" placeholder="Search Projects" value={searchValue}
+                                     onChange={handleSearchChange}/>
+                    </SearchInputContainer>
+                </SearchContainer>
+                <ProjectListing/>
+                <hr></hr>
+                {/* Add your projects list here */}
+            </ProjectsPageContainer>
+        </div>
+    );
 };
 
 export default ProjectsPage;
