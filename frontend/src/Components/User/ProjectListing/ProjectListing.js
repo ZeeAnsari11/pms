@@ -79,6 +79,16 @@ const ProjectListingTable = styled.table`
   }
 `;
 
+const OptionsColumn = styled.th`
+  text-align: center;
+  cursor: pointer;
+  justify-content: center;
+
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
 const modalStyle = {
     borderRadius: 0,
 };
@@ -92,8 +102,54 @@ const NoProjectsMessage = styled.tr`
     padding: 24px 0;
   }
 `;
+
+const StarColumn = styled.span`
+  color: #ccc;
+  cursor: pointer;
+  transition: color 0.2s ease-in-out;
+
+  &:hover {
+    color: #ffd700;
+  }
+`;
+
+const NameColumn = styled.td`
+  display: flex;
+  align-items: center;
+
+  img {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    margin-right: 8px;
+  }
+`;
+
+const LeadColumn = styled.td`
+  display: flex;
+  align-items: center;
+
+  img {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    margin-right: 8px;
+  }
+`;
+
+const OptionsColumns = styled.td`
+  text-align: center;
+  cursor: pointer;
+  justify-content: center;
+
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
+
 const ProjectListing = () => {
-    let authToken = sessionStorage.getItem('auth_token')
+    let authToken = localStorage.getItem('auth_token')
     const [visible, setVisible] = useState(false);
     const [projects, setProjects] = useState([]);
     const [userimage, setuserimage] = useState([]);
@@ -163,7 +219,7 @@ const ProjectListing = () => {
         <ProjectListingTable>
             <Modal
                 title={`Welcome, ${userIcon}!`}
-                visible={visible}
+                open={visible}
                 onOk={handleOk}
                 onCancel={handleCancel}
                 style={modalStyle}
@@ -192,29 +248,27 @@ const ProjectListing = () => {
                     <td colSpan="6">No Projects to show</td>
                 </NoProjectsMessage>
             ) : (
+
                 projects.map((project) => (
                     <tr key={project.id}>
-                        <td className='star-column'>★</td>
-                        <td className='name-column'>
-                            {/*<img src="https://i.pravatar.cc/300" alt="Lead Avatar"/>*/}
-                            {/*<img src={project.icon} alt='Project Avatar'/>*/}
+                        <StarColumn>★</StarColumn>
+                        <NameColumn>
                             <img
                                 src={project.icon ? `http://127.0.0.1:8000/${project.icon}` : 'http://localhost:3000/Images/NoImage.jpeg'}
                                 alt='Project Avatar'/>
                             <Link to={`${project.id}/${project.name}`}>{project.name}</Link>
-                        </td>
+                        </NameColumn>
                         <td>{project.key}</td>
                         {/*<td>{project.type}Team-managed software</td>*/}
                         <td>{project.project_category.project_category}</td>
-                        <td className='lead-column'>
-                            {/*<img src="https://i.pravatar.cc/300" alt="Lead Avatar"/>*/}
+                        <LeadColumn>
                             <img src={userimage.image ? userimage.image : 'http://localhost:3000/Images/NoImage.jpeg'}
                                  alt='Lead Avatar'/>
                             <p>{project.project_lead.username}</p>
-                        </td>
-                        <td className='options-column'>
+                        </LeadColumn>
+                        <OptionsColumns>
                             <Dropdown items={items} icon={<HiDotsHorizontal size={24}/>}/>
-                        </td>
+                        </OptionsColumns>
                     </tr>
                 ))
             )}
