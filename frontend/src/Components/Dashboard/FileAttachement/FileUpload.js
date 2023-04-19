@@ -1,5 +1,50 @@
 import React, { useState } from "react";
-import "./FileUpload.css";
+import styled from "styled-components";
+
+const UploadContainer = styled.div`
+  border: 2px dashed #ccc;
+  border-radius: 5px;
+  padding: 20px;
+  text-align: center;
+
+  &:hover {
+    border-color: #666;
+  }
+
+  .upload-text {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+
+  .input {
+    margin-left: 65px;
+  }
+
+  .upload-button {
+    background-color: #2196f3;
+    border: none;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #0c7cd5;
+    }
+  }
+`;
+
+const UploadText = styled.div`
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+`;
+
+const Input = styled.input`
+  margin-left: 65px;
+`;
 
 function FileUpload(props) {
   const [files, setFiles] = useState([]);
@@ -29,13 +74,12 @@ function FileUpload(props) {
   };
 
   return (
-    <div
-      class="file-upload-container"
+    <UploadContainer
       onDragOver={handleDragOver}
       onDrop={handleDrop}
     >
-      <div className="upload-text">Drag and drop files here
-      <input type="file" multiple onChange={handleFileInput} style={{marginLeft: "65px", marginTop:"15px"}}/>
+      <UploadText>Drag and drop files here
+      <Input type="file" multiple onChange={handleFileInput} style={{marginLeft: "65px", marginTop:"15px"}}/>
       <ul>
         {files.map((file, index) => (
           <li key={file.name}>
@@ -44,8 +88,8 @@ function FileUpload(props) {
           </li>
         ))}
       </ul>
-        </div>
-    </div>
+        </UploadText>
+    </UploadContainer>
   );
 }
 
