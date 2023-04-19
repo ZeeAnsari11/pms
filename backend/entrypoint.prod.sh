@@ -1,17 +1,10 @@
 #!/bin/sh
+until python manage.py migrate --noinput
+do
+    echo "Waiting for db to be ready..."
+    sleep 2
+done
 
-if [ "$DATABASE" = "postgres" ]
-then
-    echo "Waiting for postgres..."
-
-    while ! nc -z $MYSQL_DATABASE_HOST $MYSQL_DATABASE_PORT; do
-      sleep 0.1
-    done
-
-    echo "PostgreSQL started"
-fi
-
-python manage.py migrate --noinput
-python manage.py collectstatic --no-input
+python manage.py collectstatic --noinput
 
 exec "$@"

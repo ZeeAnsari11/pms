@@ -1,52 +1,65 @@
 version: '3.9'
 
 services:
-  backend-prod:
+  postgres:
+    container_name: postgres
+    image: postgres:15.2-alpine
+    restart: unless-stopped
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres:/var/lib/postgresql/data/
+    env_file:
+      - ./postgres/.env.prod
+
+  backend:
+    container_name: backend
+    image: backend:custom
     build:
       context: ./backend
       dockerfile: Dockerfile.prod
-    container_name: "backend-app-prod"
-    command: gunicorn app.wsgi:application --bind 0.0.0.0:8000
-    volumes:
-      - static_volume:/home/app/web/static
-    networks:
-      - prod
+    restart: unless-stopped
     expose:
       - 8000
-    env_file:
-      - ./backend/.env.prod
+    volumes:
+      - static:/usr/src/app/static
+      - media:/usr/src/app/media
+    command: gunicorn app.wsgi:application --bind 0.0.0.0:8000 -w 2
     depends_on:
-      - db-prod
+      - postgres
 
-  frontend-prod:
+  frontend:
+    container_name: frontend
+    image: frontend:custom
     build:
       context: ./frontend
       dockerfile: Dockerfile.prod
-    container_name: "frontend-app-prod"
-    volumes:
-      - static_volume:/home/app/web/static
-    networks:
-      - prod
+    restart: unless-stopped
+    expose:
+      - 3000
+    command: serve -s /usr/src/app/build -l 3000
+    depends_on:
+      - backend
+
+  nginx:
+    container_name: nginx
+    image: nginx:custom
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile.prod
+    restart: unless-stopped
     ports:
       - 80:80
-    environment:
-      - NODE_ENV=production
-    depends_on:
-      - "backend-prod"
-
-  db-prod:
-    image: postgres:15.2-alpine
-    container_name: "db-prod"
     volumes:
-      - postgres_data_prod:/var/lib/postgresql/data
-    networks:
-      - prod
-    env_file:
-      - ./backend/.env.prod.db
+      - static:/usr/src/app/static
+      - media:/usr/src/app/media
+    depends_on:
+      - frontend
 
 volumes:
-  postgres_data_prod:
-  static_volume:
-
-networks:
-  prod:
+  postgres:
+    external: true
+  static:
+    external: false
+  media:
+    external: true

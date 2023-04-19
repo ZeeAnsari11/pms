@@ -1,14 +1,17 @@
-from .base import *  # noqa
+from .base import *
 
+# Database
+# https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 if not DEBUG:
     DATABASES = {
         "default": {
-            "ENGINE": os.environ.get("MYSQL_ENGINE", "django.db.backends.sqlite3"),
-            "NAME": os.environ.get("MYSQL_DATABASE", os.path.join(BASE_DIR, "db.sqlite3")),
-            "USER": os.environ.get("MYSQL_ROOT_USER", "root"),
-            "PASSWORD": os.environ.get("MYSQL_PASSWORD", "root"),
-            "HOST": os.environ.get("MYSQL_DATABASE_HOST", "localhost"),
-            "PORT": os.environ.get("MYSQL_DATABASE_PORT", "5432"),
+            "ENGINE": os.environ.get("SQL_ENGINE"),
+            "NAME": os.environ.get("SQL_DATABASE"),
+            "TEST_NAME": os.environ.get("SQL_TEST_DATABASE"),
+            "USER": os.environ.get("SQL_USER"),
+            "PASSWORD": os.environ.get("SQL_PASSWORD"),
+            "HOST": os.environ.get("SQL_HOST"),
+            "PORT": os.environ.get("SQL_PORT"),
         }
     }
