@@ -54,23 +54,14 @@ services:
     restart: unless-stopped
     ports:
       - 80:80
+      - 443:443
     volumes:
       - static:/usr/src/app/static
       - media:/usr/src/app/media
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - /etc/letsencrypt/:/etc/letsencrypt/
+      - /etc/letsencrypt/live/projex.phpstudios.com/fullchain.pem:/etc/nginx/certs/fullchain.pem
+      - /etc/letsencrypt/live/projex.phpstudios.com/privkey.pem:/etc/nginx/certs/privkey.pem
     depends_on:
       - frontend
-      - certbot
-
-  certbot:
-    container_name: certbot
-    image: certbot/certbot
-    volumes:
-      - /etc/letsencrypt/:/etc/letsencrypt/
-    command: certonly --webroot --webroot-path=/var/www/projex --email usman.ilamdin@phpstudios.com --agree-tos --no-eff-email -d projex.phpstudios.com
-    depends_on:
-      - nginx
 
 volumes:
   postgres:
@@ -78,8 +69,4 @@ volumes:
   static:
     external: false
   media:
-    external: true
-  ./nginx/nginx.conf:
-    external: true
-  /etc/letsencrypt/:
     external: true
