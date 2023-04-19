@@ -106,9 +106,14 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class CreateWorkLogSerializer(serializers.ModelSerializer):
+    issue_id = serializers.PrimaryKeyRelatedField(
+        queryset=models.Issue.objects.all(),
+        source='issue',
+        required=True
+    )
     class Meta:
         model = models.WorkLog
-        fields = "__all__"
+        fields = ('time_spent', 'comment', 'issue_id')
 
 
 class WorkLogSerializer(serializers.ModelSerializer):
