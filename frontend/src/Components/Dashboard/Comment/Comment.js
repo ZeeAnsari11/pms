@@ -1,4 +1,48 @@
 import {useState} from 'react';
+import styled from 'styled-components';
+
+const CommentContainer = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const Avatar = styled.div`
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 10px;
+  background-color: #ccc;
+  margin-bottom: 40px;
+`;
+
+const CommentInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const CommentAuthor = styled.p`
+  font-weight: bold;
+  margin-right: 5px;
+`;
+
+const CommentText = styled.p`
+  margin-top: -20px;
+  font-size: 14px;
+`;
+
+const CommentButtons = styled.div`
+  display: flex;
+`;
+
+const CommentActionButton = styled.button`
+  background: none;
+  border: none;
+  color: gray;
+  font-weight: bold;
+  cursor: pointer;
+`;
+
 
 function Comment({comment, index, onDelete, onEdit, selectedComment}) {
     const [editComment, setEditComment] = useState(comment);
@@ -18,10 +62,10 @@ function Comment({comment, index, onDelete, onEdit, selectedComment}) {
 
     return (
         <li key={index} style={{listStyle:'none'}}>
-            <div className="comment-container">
-                <div className="avatar"></div>
-                <div className="comment-info">
-                    <p className="comment-author">User {index + 1}</p>
+            <CommentContainer>
+                <Avatar></Avatar>
+                <CommentInfo>
+                    <CommentAuthor>User {index + 1}</CommentAuthor>
                     {selectedComment === index ? (
                         <>
                             <input
@@ -34,15 +78,15 @@ function Comment({comment, index, onDelete, onEdit, selectedComment}) {
                         </>
                     ) : (
                         <>
-                            <p className="comment-text">{comment}</p>
-                            <div className="comment-buttons">
-                                <button className="comment-action-button" onClick={handleEdit}>Edit</button>
-                                <button className="comment-action-button" onClick={handleDelete}>Delete</button>
-                            </div>
+                            <CommentText>{comment}</CommentText>
+                            <CommentButtons>
+                                <CommentActionButton onClick={handleEdit}>Edit</CommentActionButton>
+                                <CommentActionButton onClick={handleDelete}>Delete</CommentActionButton>
+                            </CommentButtons>
                         </>
                     )}
-                </div>
-            </div>
+                </CommentInfo>
+            </CommentContainer>
         </li>
     );
 }

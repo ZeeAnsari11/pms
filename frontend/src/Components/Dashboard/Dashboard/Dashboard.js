@@ -1,9 +1,50 @@
 import React, {useState} from 'react';
-import "../../../App.css";
 import Board from '../Board/Board';
 import Editable from '../Editable/Editable';
 import Sidebar from '../Sidebar/index';
 import NavBar from "../Navbar/index";
+import styled from 'styled-components';
+
+const DashboardContainer = styled.div`
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+`;
+
+const DashboardOuter = styled.div`
+    flex: 1;
+    overflow-x: auto;
+    padding: 0px 20px 0px 20px;
+    margin-left: 200px;
+    margin-bottom: -10px;
+`;
+
+const DashboardBoards =styled.div`
+  min-width: fit-content;
+  display: flex;
+  gap: 30px;
+  height: 100%;
+  margin-top: 50px;
+`;
+
+const BoardDashboardBoards = styled.div`
+  min-width: 290px;
+  width: 290px;
+`;
+
+const BoardAdd = styled.div`
+  width: 100%;
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 1px 2px 0 1px rgba(0, 0, 0, 0.15);
+
+  &:hover {
+    box-shadow: 1px 2px 0 1px #ccc;
+  }
+`;
+
+
 
 function Dashboard(props) {
     const [target, setTarget] = useState({
@@ -151,7 +192,6 @@ function Dashboard(props) {
         const tempBoards = [...boards];
         tempBoards[bIndex].cards[cIndex] = card;
         setboards(tempBoards);
-
     }
 
     const project = {
@@ -160,13 +200,11 @@ function Dashboard(props) {
     }
 
     return (
-
-        <div className="app">
+        <DashboardContainer>
             <Sidebar project={project}/>
             <NavBar/>
-
-            <div className="app_outer">
-                <div className="app_boards">
+            <DashboardOuter>
+                <DashboardBoards>
                     {
                         boards.map((item) => (<Board
                                 key={item.id} board={item}
@@ -179,15 +217,15 @@ function Dashboard(props) {
                             />
                         ))
                     }
-                    <div className='app_boards_board'>
-                        <Editable className='app_boards_board_add'
+                    <BoardDashboardBoards>
+                        <Editable className={BoardAdd}
                                   text="Add Board" placeholder="Enter Board Title"
                                   onSubmit={(value) => addBoard(value)}
                         />
-                    </div>
-                </div>
-            </div>
-        </div>
+                    </BoardDashboardBoards>
+                </DashboardBoards>
+            </DashboardOuter>
+        </DashboardContainer>
     );
 };
 export default Dashboard;
