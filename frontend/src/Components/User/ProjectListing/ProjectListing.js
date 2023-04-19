@@ -158,7 +158,7 @@ const ProjectListing = () => {
 
     useEffect(() => {
         const fetchProjects = async () => {
-            const response = await axios.get('http://0.0.0.0:8000/api/projects/', {
+            const response = await axios.get('http://127.0.0.1:8000/api/projects/', {
                 headers: {
                     Authorization: `Token ${authToken}`,
                 },
