@@ -165,3 +165,10 @@ export const StyledError = styled.p`
   font-weight: bold;
   color: whitesmoke;
 `;
+
+export const ParentContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Set the height of the container to fill the viewport */
+`;

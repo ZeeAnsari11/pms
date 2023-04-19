@@ -1,10 +1,10 @@
 import React, {useState} from "react";
 import * as Components from "../../../StyledComponents/Components.js";
 import {Link} from "react-router-dom";
-import "./index.css";
 import axios from 'axios';
 import {ToastContainer, toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import {ParentContainer} from "../../../StyledComponents/Components.js";
 
 function Login() {
     const [signIn, toggle] = React.useState(true);
@@ -189,7 +189,8 @@ function Login() {
             });
     }
 
-    return (<div className="Container">
+    return (
+        <ParentContainer>
         <Components.Container>
             <Components.SignUpContainer signingIn={signIn}>
                 <Components.Form onSubmit={handleSubmitSignUp}>
@@ -254,7 +255,7 @@ function Login() {
             pauseOnHover
             theme="colored"
         />
-    </div>);
+    </ParentContainer>);
 }
 
 export default Login;
