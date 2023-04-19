@@ -4,6 +4,7 @@ from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework.mixins import RetrieveModelMixin, CreateModelMixin
 from rest_framework.decorators import api_view, action
 from rest_framework.response import Response
+from rest_framework import status
 from django.db.models import Q
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated, IsAdminUser
 from .models import Project, Issue, Comment, WorkLog, Watcher, ProjectCategory, IssuesType, IssuesPriority, IssuesStatus
@@ -71,7 +72,8 @@ class ProjectViewSet(ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         if user.is_staff:
-            return Project.objects.prefetch_related('assignee').prefetch_related('project_lead').select_related('company').select_related(
+            return Project.objects.prefetch_related('assignee').prefetch_related('project_lead').select_related(
+                'company').select_related(
                 'project_category').all()
         return Project.objects.filter(Q(project_lead=self.request.user) | Q(assignee=self.request.user))
 
@@ -97,7 +99,7 @@ class IssueViewSet(ModelViewSet):
 
     def get_permissions(self):
         if self.request.method in ['POST', 'PATCH', 'DELETE']:
-            return [IsAdminUser()]
+            return [IsAuthenticated()]
         return [IsAuthenticated()]
 
     def get_serializer_context(self):
@@ -138,10 +140,6 @@ class CommentViewSet(ModelViewSet):
 class WorklogViewSet(ModelViewSet):
     http_method_names = ['get', 'post', 'put', 'patch', 'delete']
 
-    queryset = WorkLog.objects.select_related('issue').select_related('user').all()
-
-    # serializer_class = serializers.WorkLogSerializer
-
     def get_serializer_class(self):
         if self.request.method == 'POST':
             return serializers.CreateWorkLogSerializer
@@ -149,14 +147,31 @@ class WorklogViewSet(ModelViewSet):
 
     permission_classes = [IsAuthenticated]
 
-    def get_serializer_context(self):
-        return {'user_id': self.request.user.id}
-
     def get_queryset(self):
         user = self.request.user
         if user.is_staff:
             return WorkLog.objects.select_related('issue').select_related('user').all()
-        return WorkLog.objects.filter(user_id=self.request.user)
+        else:
+            return WorkLog.objects.filter(user=user)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        # Set the user to the current user
+        serializer.validated_data['user'] = self.request.user
+
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    def perform_create(self, serializer):
+        serializer.validated_data['user'] = self.request.user
+        serializer.save()
+
+    def perform_update(self, serializer):
+        serializer.validated_data['user'] = self.request.user
+        serializer.save()
 
 
 class WatcherViewSet(ModelViewSet):
