@@ -1,15 +1,15 @@
 .app {
-  height: 100vh;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
-  .app_navbar_one img{
+.app_navbar_one img {
     width: 150px;
-  }
+}
 
-  .app_navbar_one {
+.app_navbar_one {
     width: 100%;
     padding: 2px 7px;
     border-bottom: 3px solid rgb(128 128 128);
@@ -17,9 +17,9 @@
     color: black;
     height: 51px;
     /* text-align: center; */
-  }
+}
 
-  .Dashboard_nav {
+.Dashboard_nav {
     border-radius: 20px;
     padding: 8px 16px;
     gap: 5px;
@@ -27,29 +27,29 @@
     font-size: 15px;
     margin-top: 11px;
     background-color: #b9b9b9;
-  }
+}
 
-  .Dashboard_nav:hover {
-  background-color: #F46F26;
-  cursor: pointer;
+.Dashboard_nav:hover {
+    background-color: #F46F26;
+    cursor: pointer;
 }
 
 
-  .app_outer {
+.app_outer {
     flex: 1;
     overflow-x: auto;
     padding: 0px 20px 0px 20px;
     margin-left: 200px;
     margin-bottom: -10px;
 
-  }
+}
 
 .app_boards {
     min-width: fit-content;
     display: flex;
     gap: 30px;
     height: 100%;
-  margin-top: 40px;
+    margin-top: 50px;
 }
 
 .app_boards_board {
@@ -58,31 +58,29 @@
 }
 
 .app_boards_board_add {
-  width: 100%;
-  background-color: #fff;
-  border-radius: 5px;
-  box-shadow: 1px 2px 0 1px rgba(0, 0, 0, 0.15);
+    width: 100%;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 1px 2px 0 1px rgba(0, 0, 0, 0.15);
 }
 
 .app_boards_board_add:hover {
-  box-shadow: 1px 2px 0 1px #ccc;
+    box-shadow: 1px 2px 0 1px #ccc;
 }
 
-.user-profile
-{
-  padding-top: 6px;
-  margin-top: 3px;
-  margin-left: 565px;
+.user-profile {
+    padding-top: 6px;
+    margin-top: 3px;
+    margin-left: 565px;
 }
 
 
-.logo-container
-{
-  display: flex;
-  align-items: center;
+.logo-container {
+    display: flex;
+    align-items: center;
 }
 
 .logo-container img {
-  height: 50px;
-  margin-right: 10px;
+    height: 50px;
+    margin-right: 10px;
 }
