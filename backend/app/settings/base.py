@@ -24,7 +24,6 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 
 DEBUG = int(os.environ.get("DEBUG"))
 
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
 
 # Application definition
 
@@ -135,3 +134,5 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # we whitelist localhost:3000 because that's where frontend will be served
 CORS_ORIGIN_WHITELIST = os.environ.get('CORS_ORIGIN_WHITELIST').split(' ')
+CSRF_TRUSTED_ORIGINS = os.environ.get('DJANGO_CSRF_TRUSTED_ORIGINS').split(' ')
+ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS').split(' ')
