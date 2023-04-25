@@ -19,4 +19,5 @@ COPY . .
 COPY .env.prod ./server
 
 # run entrypoint.sh
-ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
+RUN ["chmod","+x","/usr/src/app/entrypoint.prod.sh"]
+ENTRYPOINT ["sh", "/usr/src/app/entrypoint.prod.sh"]
