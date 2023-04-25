@@ -9,7 +9,7 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 # install dependencies
-COPY ./requirements ./requirements
+COPY ./requirements .
 RUN pip install --no-cache --upgrade pip
 RUN pip install --no-cache -r requirements/production.txt
 RUN pip install --no-cache gunicorn
@@ -19,4 +19,4 @@ COPY . .
 COPY .env.prod ./server
 
 # run entrypoint.sh
-ENTRYPOINT ["/usr/src/app/entrypoint.prod.sh"]
+ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
