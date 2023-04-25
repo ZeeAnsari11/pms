@@ -26,7 +26,7 @@ services:
       - media:/usr/src/app/media
     env_file:
       - ./backend/.env.prod
-    command: gunicorn app.wsgi:application --bind 0.0.0.0:8000 -w 2
+    command: gunicorn server.wsgi:application --bind 0.0.0.0:8000 -w 2
     depends_on:
       - postgres
 
@@ -58,8 +58,6 @@ services:
     volumes:
       - static:/usr/src/app/static
       - media:/usr/src/app/media
-      - /etc/letsencrypt/live/projex.phpstudios.com/fullchain.pem:/etc/nginx/certs/fullchain.pem
-      - /etc/letsencrypt/live/projex.phpstudios.com/privkey.pem:/etc/nginx/certs/privkey.pem
     depends_on:
       - frontend
 
