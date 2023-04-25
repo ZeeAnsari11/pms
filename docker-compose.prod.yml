@@ -26,7 +26,7 @@ services:
       - media:/usr/src/app/media
     env_file:
       - ./backend/.env.prod
-    command: gunicorn server.wsgi:application --bind 0.0.0.0:8000 -w 2
+    command: gunicorn app.wsgi:application --bind 0.0.0.0:8000 -w 2
     depends_on:
       - postgres
 
