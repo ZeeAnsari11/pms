@@ -1,7 +1,11 @@
-.idea
-*.log
-*.pot
-*.pyc
+.git
+.gitignore
+.dockerignore
+.DS_Store
+
+db.sqlite3
+Dockerfile
+
+venv/
 __pycache__/
-**/static/*
-./db.sqlite3
+server/.env
