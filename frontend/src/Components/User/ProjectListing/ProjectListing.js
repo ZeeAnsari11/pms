@@ -6,6 +6,8 @@ import {HiDotsHorizontal} from 'react-icons/hi';
 import {Link} from 'react-router-dom';
 import {Button, Modal} from 'antd';
 import {GrAlert} from 'react-icons/gr';
+import queryString from 'query-string';
+
 
 const ProjectListingTable = styled.table`
   width: 100%;
@@ -148,6 +150,8 @@ const OptionsColumns = styled.td`
 `;
 
 
+
+
 const ProjectListing = () => {
     let authToken = localStorage.getItem('auth_token')
     const [visible, setVisible] = useState(false);
@@ -214,6 +218,7 @@ const ProjectListing = () => {
 
     const userIcon = <GrAlert/>;
     const message = `Welcome, ${userIcon}!`;
+    const someData = {id: 1, name: 'John'};
 
     return (
         <ProjectListingTable>
@@ -233,13 +238,13 @@ const ProjectListing = () => {
             <thead>
             <tr>
                 <th>
-                    <span className='star-column'>★</span>
+                    <StarColumn>★</StarColumn>
                 </th>
                 <th>Name</th>
                 <th>Key</th>
                 <th>Type</th>
                 <th>Lead</th>
-                <th className='options-column'></th>
+                <OptionsColumn></OptionsColumn>
             </tr>
             </thead>
             <tbody>

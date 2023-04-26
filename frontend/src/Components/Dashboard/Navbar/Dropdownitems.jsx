@@ -7,10 +7,24 @@ import {AiOutlineLogout} from 'react-icons/ai'
 import {BsArrowRightCircleFill, BsMicrosoftTeams} from "react-icons/bs";
 import {MdOutlineCreate} from 'react-icons/md'
 import {GoKeyboard} from 'react-icons/go'
+import axios from 'axios';
 import React from "react";
 
-
 const iconSize = 20
+
+async function logout() {
+    let authToken = localStorage.getItem('auth_token')
+    try {
+        const config = {
+            headers: {
+                Authorization: `Token ${authToken}`,
+            },
+        };
+        await axios.post('http://127.0.0.1:8000/api/auth/token/logout/', null, config);
+    } catch (error) {
+        window.location.href = '#';
+    }
+};
 
 export const accountitems = [
     {
@@ -51,7 +65,7 @@ export const accountitems = [
     {
         key: '3',
         icon: <AiOutlineLogout size={iconSize}/>,
-        label: <Link to="/logout">Logout</Link>,
+        label: <Link to="/" onClick={logout}>Logout</Link>,
     },
 
 ];

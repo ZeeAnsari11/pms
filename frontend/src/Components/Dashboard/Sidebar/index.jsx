@@ -27,8 +27,8 @@ const ProjectSidebar = ({project}) => {
             <ProjectInfo>
                 <ProjectAvatar/>
                 <ProjectTexts>
-                    <ProjectName>{project.name}</ProjectName>
-                    <ProjectCategory>{ProjectCategoryCopy[project.category]} project</ProjectCategory>
+                    <ProjectName><strong>{project.name? project.name : 'Project Name' }</strong></ProjectName>
+                    <ProjectCategory>{ProjectCategoryCopy[project.category]} {project.category? project.category : 'Category Name'}</ProjectCategory>
                 </ProjectTexts>
             </ProjectInfo>
 
