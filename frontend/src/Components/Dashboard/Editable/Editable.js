@@ -105,7 +105,7 @@ const EditableDisplay = styled.p`
   background-color: transparent;
   font-size: 24px;
   font-weight: bold;
-  width: 120px;
+  //width: 120px;
   display: flex;
 
   &:hover {
