@@ -22,7 +22,7 @@ function Login() {
             "password": passwordForSignIn,
             "username": usernameForSignIn,
         };
-        axios.post('${process.env.REACT_APP_HOST}/api/auth/token/login/', data)
+        axios.post(`${process.env.REACT_APP_HOST}/api/auth/token/login/`, data)
             .then(response => {
                 sessionStorage.setItem('auth_token', response.data.auth_token)
                 setAuthToken(response.data.auth_token);
@@ -45,7 +45,7 @@ function Login() {
             });
 
         if (authToken) {
-            axios.get('${process.env.REACT_APP_HOST}/api/projects/', {headers: {"Authorization": `Token ${authToken}`}})
+            axios.get(`${process.env.REACT_APP_HOST}/api/projects/`, {headers: {"Authorization": `Token ${authToken}`}})
                 .then(response => {
                     console.log("success project:");
                     console.log(response.data);
@@ -57,7 +57,7 @@ function Login() {
         }
 
         if (authToken) {
-            axios.get('${process.env.REACT_APP_HOST}/api/issues/', {headers: {"Authorization": `Token ${authToken}`}})
+            axios.get(`${process.env.REACT_APP_HOST}/api/issues/`, {headers: {"Authorization": `Token ${authToken}`}})
                 .then(response => {
                     console.log("success issues:");
                     console.log(response.data);
@@ -68,7 +68,7 @@ function Login() {
         }
 
         if (authToken) {
-            axios.get('${process.env.REACT_APP_HOST}/api/comments/', {headers: {"Authorization": `Token ${authToken}`}})
+            axios.get(`${process.env.REACT_APP_HOST}/api/comments/`, {headers: {"Authorization": `Token ${authToken}`}})
                 .then(response => {
                     console.log("success comments:");
                     console.log(response.data);
@@ -80,7 +80,7 @@ function Login() {
         }
 
         if (authToken) {
-            axios.get('${process.env.REACT_APP_HOST}/api/worklogs/', {headers: {"Authorization": `Token ${authToken}`}})
+            axios.get(`${process.env.REACT_APP_HOST}/api/worklogs/`, {headers: {"Authorization": `Token ${authToken}`}})
                 .then(response => {
                     console.log("success worklogs:");
                     console.log(response.data);
@@ -92,7 +92,7 @@ function Login() {
         }
 
         if (authToken) {
-            axios.get('${process.env.REACT_APP_HOST}/api/watchers/', {headers: {"Authorization": `Token ${authToken}`}})
+            axios.get(`${process.env.REACT_APP_HOST}/api/watchers/`, {headers: {"Authorization": `Token ${authToken}`}})
                 .then(response => {
                     console.log("success watchers:");
                     console.log(response.data);
@@ -114,7 +114,7 @@ function Login() {
             "password": password,
         };
 
-        axios.post('${process.env.REACT_APP_HOST}/api/auth/users/', data)
+        axios.post(`${process.env.REACT_APP_HOST}/api/auth/users/`, data)
             .then(response => {
                 if (response.data.username) {
                     const notify = () => toast.success('Thanks for registration! Check your email ' + response.data.email + '  and click the link to activate your account. If you need help, contact us. We appreciate your business!', {
