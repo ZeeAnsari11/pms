@@ -13,12 +13,13 @@ import {
     NavbarLinkExtended,
 } from "./styles";
 import Dropdown from '../Dropdown/index'
-import {accountitems,projectitems, yourworkitems, teamitems, notificationsitems, helpitems} from "./Dropdownitems";
+import {accountitems, projectitems, yourworkitems, teamitems, notificationsitems, helpitems} from "./Dropdownitems";
 import {MdKeyboardArrowDown} from 'react-icons/md'
 import {IoMdNotifications} from 'react-icons/io'
 import {RxAvatar} from 'react-icons/rx'
 import {AiFillQuestionCircle} from 'react-icons/ai'
 import SearchBar from './SearchBar/index'
+import {Link} from "react-router-dom";
 
 function NavBar() {
     const [extendNavbar, setExtendNavbar] = useState(false);
@@ -27,8 +28,9 @@ function NavBar() {
         <NavbarContainer extendNavbar={extendNavbar}>
             <NavbarInnerContainer>
                 <LeftContainer>
-                    <Logo src="https://lh3.google.com/u/0/d/1IxWCTZL5L9PRa1DwoKw8wu8EA7Ez_hT0=w2560-h848-iv1"
-                          alt="PHPStudios"></Logo>
+                    <Link to="/project-views">
+                        <Logo src="phpstudios_logo.png" alt="PHPStudios"></Logo>
+                    </Link>
                     <NavbarLinkContainer>
                         <OpenLinksButton
                             onClick={() => {
