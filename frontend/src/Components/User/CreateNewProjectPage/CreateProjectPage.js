@@ -1,11 +1,13 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import styled from 'styled-components';
 import ReactQuill from 'react-quill';
 import Selector from '../../../Shared/Components/Select';
 import {Modal as UploadIconModal} from 'antd';
 import Dragger from '../DragAndDrop/DragAndDrop';
 import FileUploaderButton from '../PhotoUploader/PhotoUploader';
-import {hover} from "@testing-library/user-event/dist/hover";
+import axios from "axios";
+import {text} from "@fortawesome/fontawesome-svg-core";
+import NavBar from "../../Dashboard/Navbar";
 
 const PageWrapper = styled.div`
   background-color: #fff;
@@ -21,7 +23,7 @@ const Header = styled.header`
 `;
 
 const Details = styled.h1`
-  margin: 0;
+  margin-top: 50px;
 `;
 
 const ImageWrapper = styled.div`
@@ -193,11 +195,19 @@ const StyledReactQuill = styled(ReactQuill)`
 
 function CreateProject() {
 
+    let authToken = localStorage.getItem('auth_token')
+
     const [visibleForIcon, setVisibleForIcon] = useState(false);
 
     const [image, setImage] = useState(null);
 
     const [select, setSelect] = useState(null);
+
+    const [text, setText] = useState('');
+
+    const handleTextChange = (value) => {
+        setText(value);
+    }
 
     const handleUpload = (file) => {
         setImage(file);
@@ -237,8 +247,43 @@ function CreateProject() {
         cancelButton: {backgroundColor: 'red'}
     };
 
+    function handleSubmit(event) {
+        event.preventDefault();
+
+        const form = event.target;
+        const data = {
+            "icon": 'backend/media/attachments/projects/icons/crocodile.png',
+            "name": form.elements.project.value,
+            "slug": "",
+            "key": form.elements.key.value,
+            "assignee": [2],
+            "project_lead": 1,
+            "description": text,
+            "company": 1,
+            "project_category": 1
+        };
+
+        fetch('http://127.0.0.1:8000/api/projects/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Token ${authToken}`,
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => {
+                // handle the response
+                console.log(data)
+            })
+            .catch(error => {
+                // handle the error
+                console.log(error)
+            });
+    }
     return (
-        <PageWrapper>
+        <div>
+            <NavBar />
+        <PageWrapper >
             <UploadIconModal title={
                 <h3 style={{fontSize: '18px', marginTop: '-5px'}}>Choose an icon</h3>
             }
@@ -281,39 +326,25 @@ function CreateProject() {
             <ButtonWrapper>
                 <UploadButton onClick={showModalForIcon}>Change icon</UploadButton>
             </ButtonWrapper>
-            <FormWrapper>
+            <FormWrapper onSubmit={handleSubmit} encType="multipart/form-data" method="POST">
                 <LabelForProject htmlFor="project">Project:</LabelForProject>
                 <Input type="text" id="project" name="project" placeholder="Enter project name"/>
                 <LabelForKey htmlFor="key">Key:</LabelForKey>
                 <Input type="text" id="key" name="key" placeholder="Enter project key"/>
                 <LabelForDescriptionBoc htmlFor="key">Description:</LabelForDescriptionBoc>
-                <StyledReactQuill id="example-editor"/>
+                <StyledReactQuill id="exampleEditor" value={text} onChange={handleTextChange}/>
                 <LabelForCompany htmlFor="category">Company:</LabelForCompany>
                 <Selector/>
                 <Description>Make sure your project lead has access to issues in the project.</Description>
                 <LabelforDefaultassignee htmlFor="category">Catagory:</LabelforDefaultassignee>
                 <Selector/>
                 <LabelforLead htmlFor="category">Project Lead:</LabelforLead>
-                <Selector />
+                <Selector/>
                 <SaveButton>Save</SaveButton>
             </FormWrapper>
         </PageWrapper>
+            </div>
     );
 }
 
 export default CreateProject;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

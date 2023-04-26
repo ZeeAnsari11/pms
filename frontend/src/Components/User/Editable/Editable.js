@@ -144,7 +144,6 @@ const HoverText = styled.div`
 
 const EditableDisplay = styled.p`
   font-size: 16px;
-  background: #ffffff;
 
   &:hover {
     background: #ebecf0;
@@ -202,7 +201,7 @@ function Editable(props) {
                         >
                             {props.text || inputText || props.frontendText || props.frontendText}
                         </EditableDisplay>
-                        <HoverTexts>Click to enter</HoverTexts>
+                        {/*<HoverTexts>Click to enter</HoverTexts>*/}
                     </HoverDiv>
                 )}
             </EditableK>

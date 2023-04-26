@@ -67,7 +67,7 @@ export const projectitems = [
     },
     {
         icon: <MdOutlineCreate size={iconSize}/>,
-        label: <Link to="/project">Create Project</Link>,
+        label: <Link to="/create-project">Create Project</Link>,
         key: '1',
     },
 ];
@@ -76,25 +76,25 @@ export const teamitems = [
     {
         icon: <BiPlus size={iconSize}/>,
         key: '0',
-        label: <Link to="/project">Invite People to Jira</Link>,
+        label: <Link to="/invite">Invite People to Jira</Link>,
     },
     {
         icon: <BsMicrosoftTeams size={iconSize}/>,
-        label: <Link to="/project">Create a Team</Link>,
+        label: <Link to="/team">Create a Team</Link>,
         key: '1',
     },
     {
         type: 'divider',
     },
     {
-        label: <Link to="/project">Search people and teams</Link>,
+        label: <Link to="/people/search">Search people and teams</Link>,
         key: '2',
     },
 ];
 export const yourworkitems = [
     {
         icon: <BsArrowRightCircleFill size={iconSize}/>,
-        label: <Link to="/project">Go to Your work Page</Link>,
+        label: <Link to="/project-views">Go to Your work Page</Link>,
         key: '0',
     },
 ];
@@ -116,7 +116,7 @@ export const notificationsitems = [
 export const helpitems = [
     {
         icon: <GoKeyboard size={iconSize}/>,
-        label: <Link to="/notifcations">KeyBoard Shortcuts</Link>,
+        label: <Link to="/shortcuts">KeyBoard Shortcuts</Link>,
         key: '0',
 
     },
@@ -125,7 +125,7 @@ export const helpitems = [
     },
     {
         icon: <RiFeedbackFill size={iconSize}/>,
-        label: <Link to="/notifcations">Give Feedback About ProjeX</Link>,
+        label: <Link to="/feedback">Give Feedback About ProjeX</Link>,
         key: '1',
     },
 ];
