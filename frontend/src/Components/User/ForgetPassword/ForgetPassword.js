@@ -30,7 +30,7 @@ const Label = styled.label`
 `;
 
 const Input = styled.input`
-  width: 300px;
+  width: 280px;
   padding: 10px;
   margin-bottom: 20px;
   border: none;
@@ -39,6 +39,7 @@ const Input = styled.input`
   background-color: #eee;
   display: flex;
   justify-content: center;
+  margin-left: 20px;
 
   &:last-child {
     margin-left: 27px;
@@ -58,10 +59,10 @@ const Button = styled.button`
   padding: 12px 45px;
   letter-spacing: 1px;
   text-transform: uppercase;
-  border-color: whitesmoke;
+  //border-color: whitesmoke;
 
   &:last-child {
-    margin-left: 77px;
+    margin-left: 54px;
   }
 
   &:hover {
