@@ -7,6 +7,7 @@ import Dragger from '../DragAndDrop/DragAndDrop';
 import FileUploaderButton from '../PhotoUploader/PhotoUploader';
 import axios from "axios";
 import {text} from "@fortawesome/fontawesome-svg-core";
+import NavBar from "../../Dashboard/Navbar";
 
 const PageWrapper = styled.div`
   background-color: #fff;
@@ -22,7 +23,7 @@ const Header = styled.header`
 `;
 
 const Details = styled.h1`
-  margin: 0;
+  margin-top: 50px;
 `;
 
 const ImageWrapper = styled.div`
@@ -194,7 +195,7 @@ const StyledReactQuill = styled(ReactQuill)`
 
 function CreateProject() {
 
-    let authToken = sessionStorage.getItem('auth_token')
+    let authToken = localStorage.getItem('auth_token')
 
     const [visibleForIcon, setVisibleForIcon] = useState(false);
 
@@ -251,7 +252,7 @@ function CreateProject() {
 
         const form = event.target;
         const data = {
-            "icon": null,
+            "icon": 'backend/media/attachments/projects/icons/crocodile.png',
             "name": form.elements.project.value,
             "slug": "",
             "key": form.elements.key.value,
@@ -280,6 +281,8 @@ function CreateProject() {
             });
     }
     return (
+        <div>
+            <NavBar />
         <PageWrapper >
             <UploadIconModal title={
                 <h3 style={{fontSize: '18px', marginTop: '-5px'}}>Choose an icon</h3>
@@ -323,7 +326,7 @@ function CreateProject() {
             <ButtonWrapper>
                 <UploadButton onClick={showModalForIcon}>Change icon</UploadButton>
             </ButtonWrapper>
-            <FormWrapper onSubmit={handleSubmit}>
+            <FormWrapper onSubmit={handleSubmit} encType="multipart/form-data" method="POST">
                 <LabelForProject htmlFor="project">Project:</LabelForProject>
                 <Input type="text" id="project" name="project" placeholder="Enter project name"/>
                 <LabelForKey htmlFor="key">Key:</LabelForKey>
@@ -340,6 +343,7 @@ function CreateProject() {
                 <SaveButton>Save</SaveButton>
             </FormWrapper>
         </PageWrapper>
+            </div>
     );
 }
 
