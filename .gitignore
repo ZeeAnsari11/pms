@@ -1,7 +1,6 @@
 # Django Stuff
 
 /backend/.venv
-/backend/api
 /backend/db.sqlite3
 /backend/*.log
 /backend/*.pot
@@ -143,11 +142,17 @@ out/
 
 # Docker Stuff
 
-**/.env.dev/*
+**/.env.prod/*
 /.env.prod.db
-/docker-compose.yml
-/backend/Dockerfile
-/frontend/Dockerfile
+/docker-compose.prod.yml
+/backend/Dockerfile.prod
+/backend/entrypoint.prod.sh
+/backend/.env.prod
+/frontend/Dockerfile.prod
+/frontend/.env.prod
+/nginx/Dockerfile.prod
+/nginx/nginx.conf
+/postgres/.env.prod
 
 
 # Ignore the Dose files
