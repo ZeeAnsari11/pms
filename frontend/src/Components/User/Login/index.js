@@ -214,7 +214,7 @@ function Login() {
                         <Link to="/forgot-password">Forgot Password?</Link>
                         <br></br>
                         <br></br>
-                        <Link to="/rest-password">Password Rest?</Link>
+                        <Link to="/reset-password">Password Reset?</Link>
                     </Components.Anchor>
                     <Components.Button>Sign In</Components.Button>
                 </Components.Form>

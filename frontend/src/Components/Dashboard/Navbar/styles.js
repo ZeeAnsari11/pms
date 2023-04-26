@@ -76,6 +76,7 @@ export const Logo = styled.img`
   margin: 10px;
   max-width: 100px;
   height: auto;
+  cursor: pointer;
 `;
 
 export const OpenLinksButton = styled.button`

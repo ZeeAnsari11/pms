@@ -15,7 +15,7 @@ function Url() {
             <Routes>
                 <Route index element={<Login />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
-                <Route path="/rest-password" element={<ResetPasswordPage />} />
+                <Route path="/reset-password" element={<ResetPasswordPage />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/profile" element={<UserProfilePage />} />
                 <Route path="/project-views" element={<ProjectsPage />} />
