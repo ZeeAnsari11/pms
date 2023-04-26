@@ -100,7 +100,6 @@ atlassian-ide-plugin.xml
 
 /frontend/node_modules/
 /frontend/build/
-/frontend/.DS_Store
 /frontend/*.tgz
 /frontend/template/src/__tests__/__snapshots__/
 /frontend/lerna-debug.log
@@ -143,16 +142,10 @@ out/
 # Docker Stuff
 
 **/.env.prod/*
-/.env.prod.db
+**/Dockerfile.prod/*
 /docker-compose.prod.yml
-/backend/Dockerfile.prod
 /backend/entrypoint.prod.sh
-/backend/.env.prod
-/frontend/Dockerfile.prod
-/frontend/.env.prod
-/nginx/Dockerfile.prod
 /nginx/nginx.conf
-/postgres/.env.prod
 
 
 # Ignore the Dose files
