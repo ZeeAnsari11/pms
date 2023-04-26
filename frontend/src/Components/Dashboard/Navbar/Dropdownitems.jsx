@@ -67,7 +67,7 @@ export const projectitems = [
     },
     {
         icon: <MdOutlineCreate size={iconSize}/>,
-        label: <Link to="/project">Create Project</Link>,
+        label: <Link to="/create-project">Create Project</Link>,
         key: '1',
     },
 ];

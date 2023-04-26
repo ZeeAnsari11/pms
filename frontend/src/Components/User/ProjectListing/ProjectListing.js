@@ -148,10 +148,8 @@ const OptionsColumns = styled.td`
 `;
 
 
-
-
 const ProjectListing = () => {
-    let authToken = sessionStorage.getItem('auth_token')
+    let authToken = localStorage.getItem('auth_token')
     const [visible, setVisible] = useState(false);
     const [projects, setProjects] = useState([]);
     const [userimage, setuserimage] = useState([]);
