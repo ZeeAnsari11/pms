@@ -8,6 +8,7 @@ import Selector from '../../../Shared/Components/Select';
 import Dragger from "../DragAndDrop/DragAndDrop";
 import FileUploaderButton from "../PhotoUploader/PhotoUploader";
 import NotificationModal from '../Notification/Notification';
+import NavBar from "../../Dashboard/Navbar";
 
 const PageWrapper = styled.div`
   background-color: #fff;
@@ -23,7 +24,7 @@ const Header = styled.header`
 `;
 
 const Details = styled.h1`
-  margin: 0;
+  margin: 50px;
 `;
 
 const OptionButton = styled.button`
@@ -207,61 +208,65 @@ function ProjectSettingPage() {
     };
 
     return (
-        <PageWrapper>
-            <NotificationModal
-                visible={modalVisible}
-                onCancel={handleCancel}
-                onConfirm={handleConfirm}
-                title="Confirm delete project?"
-                content="Are you sure about deleting this project?"
-            />
-            <UploadIconModal title={<h3 style={{fontSize: '18px', marginTop: '-5px'}}>Choose an icon</h3>}
-                             open={visibleForIcon}
-                             onOk={handleOkForIcon}
-                             onCancel={handleCancelForIcon}
-                             okText="Select"
-                             cancelText="Delete existing"
-                             style={modalStyle}
-                             maskClosable={false}
-                             closable={false}
-                             cancelButtonProps={{
-                                 style: {
-                                     backgroundColor: 'red', color: 'black', border: 'black',
+        <div>
+            <NavBar />
+            <PageWrapper>
+                <NotificationModal
+                    visible={modalVisible}
+                    onCancel={handleCancel}
+                    onConfirm={handleConfirm}
+                    title="Confirm delete project?"
+                    content="Are you sure about deleting this project?"
+                />
+                <UploadIconModal title={<h3 style={{fontSize: '18px', marginTop: '-5px'}}>Choose an icon</h3>}
+                                 open={visibleForIcon}
+                                 onOk={handleOkForIcon}
+                                 onCancel={handleCancelForIcon}
+                                 okText="Select"
+                                 cancelText="Delete existing"
+                                 style={modalStyle}
+                                 maskClosable={false}
+                                 closable={false}
+                                 cancelButtonProps={{
+                                     style: {
+                                         backgroundColor: 'red', color: 'black', border: 'black',
 
-                                 }, className: 'cancel-button',
-                             }}
-            >
-                <Dragger handleUploadfForDragAndDrop={handleUploadfForDragAndDrop}/>
-                <p style={{marginLeft: '225px'}}>or</p>
-                <FileUploaderButton handleUpload={handleUpload}/>
+                                     }, className: 'cancel-button',
+                                 }}
+                >
+                    <Dragger handleUploadfForDragAndDrop={handleUploadfForDragAndDrop}/>
+                    <p style={{marginLeft: '225px'}}>or</p>
+                    <FileUploaderButton handleUpload={handleUpload}/>
 
-            </UploadIconModal>
-            <Header>
-                <Details>Details</Details>
-                <Dropdown items={items} icon={<HiDotsHorizontal size={24}/>}/>
-            </Header>
+                </UploadIconModal>
+                <Header>
+                    <Details>Details</Details>
+                    <Dropdown items={items} icon={<HiDotsHorizontal size={24}/>}/>
+                </Header>
 
-            {image && select ? (<ImageWrapper>
-                <Image src={'http://localhost:3000/Images/' + image} alt="Profile Picture"/>
-            </ImageWrapper>) : (<ImageWrapper>
-                <Image src={'http://localhost:3000/Images/NoImage.jpeg'} alt="No Profile Picture"/>
-            </ImageWrapper>)}
-            <ButtonWrapper>
-                <UploadButton onClick={showModalForIcon}>Change icon</UploadButton>
-            </ButtonWrapper>
-            <FormWrapper>
-                <Label htmlFor="name">Name:</Label>
-                <Input type="text" id="name" name="name" placeholder="Project name"/>
-                <LabelForKey htmlFor="key">Key:</LabelForKey>
-                <Input type="text" id="key" name="key" placeholder="Project key"/>
-                <Labelforlead htmlFor="category">Project lead:</Labelforlead>
-                <Selector/>
-                <Description>Make sure your project lead has access to issues in the project.</Description>
-                <LabelforDefaultassignee htmlFor="category">Default assignee</LabelforDefaultassignee>
-                <Selector/>
-                <SaveButton>Save</SaveButton>
-            </FormWrapper>
-        </PageWrapper>);
+                {image && select ? (<ImageWrapper>
+                    <Image src={'http://localhost:3000/Images/' + image} alt="Profile Picture"/>
+                </ImageWrapper>) : (<ImageWrapper>
+                    <Image src={'http://localhost:3000/Images/NoImage.jpeg'} alt="No Profile Picture"/>
+                </ImageWrapper>)}
+                <ButtonWrapper>
+                    <UploadButton onClick={showModalForIcon}>Change icon</UploadButton>
+                </ButtonWrapper>
+                <FormWrapper>
+                    <Label htmlFor="name">Name:</Label>
+                    <Input type="text" id="name" name="name" placeholder="Project name"/>
+                    <LabelForKey htmlFor="key">Key:</LabelForKey>
+                    <Input type="text" id="key" name="key" placeholder="Project key"/>
+                    <Labelforlead htmlFor="category">Project lead:</Labelforlead>
+                    <Selector/>
+                    <Description>Make sure your project lead has access to issues in the project.</Description>
+                    <LabelforDefaultassignee htmlFor="category">Default assignee</LabelforDefaultassignee>
+                    <Selector/>
+                    <SaveButton>Save</SaveButton>
+                </FormWrapper>
+            </PageWrapper>
+        </div>
+    );
 }
 
 
