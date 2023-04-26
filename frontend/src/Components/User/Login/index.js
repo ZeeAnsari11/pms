@@ -24,7 +24,7 @@ function Login() {
         };
         axios.post(`${process.env.REACT_APP_HOST}/api/auth/token/login/`, data)
             .then(response => {
-                sessionStorage.setItem('auth_token', response.data.auth_token)
+                localStorage.setItem('auth_token', response.data.auth_token)
                 setAuthToken(response.data.auth_token);
                 axios.defaults.headers.common['Authorization'] = `Token ${authToken}`;
                 window.location.href = '/dashboard';
@@ -214,7 +214,7 @@ function Login() {
                         <Link to="/forgot-password">Forgot Password?</Link>
                         <br></br>
                         <br></br>
-                        <Link to="/rest-password">Password Rest?</Link>
+                        <Link to="/reset-password">Password Reset?</Link>
                     </Components.Anchor>
                     <Components.Button>Sign In</Components.Button>
                 </Components.Form>

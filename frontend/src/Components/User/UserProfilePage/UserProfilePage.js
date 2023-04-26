@@ -4,10 +4,12 @@ import {faBriefcase, faEdit, faSitemap} from '@fortawesome/free-solid-svg-icons'
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import Editable from "../Editable/Editable";
 import DatePicker from "../DatePicker/DatePicker";
+import NavBar from "../../Dashboard/Navbar";
 
 
 const ProfileWrapper = styled.div`
   display: flex;
+  margin-bottom: 10px;
   flex-direction: column;
   align-items: center;
 `;
@@ -15,6 +17,7 @@ const ProfileWrapper = styled.div`
 const ProfileHeader = styled.header`
   background-color: #0052CC;
   width: 100%;
+  margin-top: 40px;
   padding: 30px;
   color: #fff;
   display: flex;
@@ -121,7 +124,7 @@ const HorizontalLine = styled.div`
   height: 3px;
   background-color: lightgray;
   position: relative;
-  margin-top: 20px;
+  margin-bottom: 20px;
 
   ::before {
     content: "";
@@ -136,6 +139,8 @@ const HorizontalLine = styled.div`
 
 const UserProfilePage = () => {
     return (
+        <div>
+            <NavBar />
         <ProfileWrapper>
             <ProfileHeader>
                 <ProfileImage src="https://i.pravatar.cc/300" alt="Profile Picture"/>
@@ -159,6 +164,7 @@ const UserProfilePage = () => {
                 <DatePicker/>
             </ProfileDetailsWrapper>
         </ProfileWrapper>
+            </div>
     );
 };
 

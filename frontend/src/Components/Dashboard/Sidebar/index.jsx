@@ -33,7 +33,7 @@ const ProjectSidebar = ({project}) => {
             </ProjectInfo>
 
             {renderLinkItem(match, 'Kanban Board', 'kanban', '/board')}
-            {renderLinkItem(match, 'Project Settings', 'settings', '/settings')}
+            {renderLinkItem(match, 'Project Settings', 'settings', '/project-setting')}
             <Divider/>
             {renderLinkItem(match, 'Roadmap', 'roadmap')}
             {renderLinkItem(match, 'Releases', 'release')}
@@ -48,7 +48,7 @@ const renderLinkItem = (match, text, iconType, path) => {
     const isImplemented = !!path;
 
     const linkItemProps = isImplemented
-        ? {as: NavLink, exact: true, to: `${match.pathname}${path}`}
+        ? {as: NavLink, exact: true, to: `${path}`}
         : {as: 'div'};
 
     return (
