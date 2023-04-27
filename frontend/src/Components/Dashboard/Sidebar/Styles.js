@@ -51,6 +51,7 @@ export const LinkItem = styled.div`
   position: relative;
   display: flex;
   padding: 8px 12px;
+  margin-bottom: 5px;
   border-radius: 3px;
   ${mixin.clickable}
   ${props =>

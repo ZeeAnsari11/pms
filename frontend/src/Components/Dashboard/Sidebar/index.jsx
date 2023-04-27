@@ -4,6 +4,7 @@ import {NavLink,useLocation} from 'react-router-dom';
 import {ProjectCategoryCopy} from './constants/projects';
 import Icon from './components/Icon/index';
 import ProjectAvatar from './components/ProjectAvatar'
+
 import {
     Sidebar,
     ProjectInfo,
@@ -22,6 +23,7 @@ const propTypes = {
 
 const ProjectSidebar = ({project}) => {
     const match = useLocation();
+
     return (
         <Sidebar>
             <ProjectInfo>
@@ -32,7 +34,7 @@ const ProjectSidebar = ({project}) => {
                 </ProjectTexts>
             </ProjectInfo>
 
-            {renderLinkItem(match, 'Kanban Board', 'kanban', '/board')}
+            {renderLinkItem(match, 'Kanban Board', 'kanban', '/dashboard')}
             {renderLinkItem(match, 'Project Settings', 'settings', '/project-setting')}
             <Divider/>
             {renderLinkItem(match, 'Roadmap', 'roadmap')}
