@@ -12,6 +12,7 @@ export const NavbarContainer = styled.nav`
     height: 45px;
   }
   border: 1px solid black;
+  z-index: 1;
 `;
 
 export const Button = styled.button`
