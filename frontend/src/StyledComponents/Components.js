@@ -68,7 +68,7 @@ export const Input = styled.input`
 
 export const Button = styled.button`
   border-radius: 20px;
-  border: 1px solid ${colorCode};
+  border: 1px solid whitesmoke;
   background-color: ${colorCode};
   color: #ffffff;
   font-size: 12px;
@@ -83,11 +83,20 @@ export const Button = styled.button`
   &:focus {
     outline: none;
   }
+  &:hover {
+    background-color: #000000;
+  }
+  
 `;
 
 export const GhostButton = styled(Button)`
   background-color: transparent;
   border-color: #ffffff;
+  color: #ffffff;
+
+  &:hover {
+    background-color: #000000;
+  }
 `;
 
 export const Anchor = styled.a`

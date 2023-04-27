@@ -8,6 +8,7 @@ import UserProfilePage from "../Components/User/UserProfilePage/UserProfilePage"
 import ProjectsPage from "../Components/User/ProjectViews/ProjectViews";
 import ProjectSettingPage from "../Components/User/ProjectSettingPage/ProjectSettingPage";
 import CreateProject from "../Components/User/CreateNewProjectPage/CreateProjectPage";
+import ManageAccount from "../Components/User/ManageAccount/ManageAccount";
 import PersonalSettingsPage from "../Components/User/PersonalSettingPage/PersonalSettingsPage";
 
 function Url() {
@@ -23,6 +24,8 @@ function Url() {
                 <Route path="/project-setting" element={<ProjectSettingPage/>}/>
                 <Route path="/create-project" element={<CreateProject/>}/>
                 <Route path="/personal-settings" element={<PersonalSettingsPage/>}/>
+                <Route path="/manage-account" element={<ManageAccount />} />
+
             </Routes>
         </BrowserRouter>
     );
