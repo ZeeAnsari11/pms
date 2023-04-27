@@ -6,8 +6,6 @@ import {HiDotsHorizontal} from 'react-icons/hi';
 import {Link} from 'react-router-dom';
 import {Button, Modal} from 'antd';
 import {GrAlert} from 'react-icons/gr';
-import queryString from 'query-string';
-
 
 const ProjectListingTable = styled.table`
   width: 100%;
