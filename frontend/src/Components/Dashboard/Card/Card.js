@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {CheckSquare, Clock, MoreHorizontal, PlusCircle} from "react-feather";
+import {CheckSquare, Clock, MoreHorizontal} from "react-feather";
 import Chip from "../Chip/Chip";
 import Dropdown from "../Dropdown/Dropdown";
 import CardInfo from "../CardInfo/CardInfo";
