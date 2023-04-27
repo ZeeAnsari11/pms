@@ -31,7 +31,7 @@ const CommentText = styled.p`
   font-size: 14px;
 `;
 
-const CommentButtons = styled.div`
+const CommentButtons = styled.button`
   display: flex;
 `;
 

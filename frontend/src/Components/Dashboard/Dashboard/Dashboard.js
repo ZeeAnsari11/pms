@@ -4,6 +4,7 @@ import Editable from '../Editable/Editable';
 import Sidebar from '../Sidebar/index';
 import NavBar from "../Navbar/index";
 import styled from 'styled-components';
+import { useLocation } from 'react-router-dom';
 
 const DashboardContainer = styled.div`
   height: 100vh;
@@ -45,8 +46,12 @@ const BoardAdd = styled.div`
 `;
 
 
-
 function Dashboard(props) {
+
+    const location = useLocation();
+    const searchParams = new URLSearchParams(location.search);
+
+
     const [target, setTarget] = useState({
         cid: "",
         bid: "",
@@ -195,8 +200,8 @@ function Dashboard(props) {
     }
 
     const project = {
-        name: "New Project",
-        category: 'SOFTWARE'
+        name: searchParams.get('name'),
+        category: searchParams.get('category')
     }
 
     return (
