@@ -27,7 +27,7 @@ import {RxStopwatch} from 'react-icons/rx'
 import styled from 'styled-components';
 
 const ModalTitleStyling = styled.div`
-  width: fit-content;
+  width: 100%;
 `;
 
 const CardInfoBoxCustom = styled.div`

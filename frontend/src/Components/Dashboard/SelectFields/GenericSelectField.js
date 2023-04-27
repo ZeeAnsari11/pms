@@ -13,12 +13,13 @@ const StyledOption = styled(Option)`
   padding-left: ${({icon}) => icon && '30px'};
 `;
 
-const GenericSelectField = ({options, isMultiple, placeholder, defaultValue}) => {
+const GenericSelectField = ({options, isMultiple, placeholder, defaultValue, isDisabled}) => {
     return (
         <StyledSelect
             mode={isMultiple ? 'multiple' : undefined}
             placeholder={placeholder}
             defaultValue={defaultValue}
+            disabled={isDisabled}
         >
             {options.map((option) => (
                 <StyledOption key={option.value} value={option.value} icon={option.icon}>
