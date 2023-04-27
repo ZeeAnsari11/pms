@@ -58,7 +58,7 @@ function Dashboard(props) {
             cards: [
                 {
                     id: Date.now() + Math.random(),
-                    title: "Card 1",
+                    title: "I am testing this to check whether styling remains consistent or not.",
                     tasks: [],
                     labels: [
                         {
