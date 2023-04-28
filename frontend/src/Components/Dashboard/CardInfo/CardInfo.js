@@ -217,6 +217,7 @@ function CardInfo(props) {
                         text={values.title}
                         default={values.title}
                         placeholder={"Enter Title"}
+                        fontWeight={"bold"}
                         buttonText="Set Title"
                         onSubmit={(value) => setValues({...values, title: value})}
                         style={{backgroundColor: "none"}}
@@ -261,6 +262,8 @@ function CardInfo(props) {
                             text={"Add New Task"}
                             placeholder={"Enter New Task"}
                             buttonText="Save Task"
+                            fontWeight={"bold"}
+                            hoverBackgroundColor={"#EBECF0"}
                             onSubmit={(value) => addTask(value)}
                         />
                     </ModalTitle>

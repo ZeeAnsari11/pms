@@ -3,9 +3,11 @@ import PropTypes from "prop-types";
 import {faCheck, faTimes} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import styled from "styled-components";
+import {BsPlusSquare} from "react-icons/bs";
 
 const EditableWrapper = styled.div`
-    width: 100%;
+  width: 100%;
+  width: 100%;
 
   .editable_display {
     padding: 2px 8px;
@@ -68,6 +70,7 @@ const EditableWrapper = styled.div`
 const EditableEdit = styled.form`
   display: flex;
   flex-direction: column;
+  margin-top: 15px;
   gap: 10px;
 
   input {
@@ -103,13 +106,15 @@ const EditableEditFooter = styled.div`
 
 const EditableDisplay = styled.p`
   background-color: transparent;
-  font-size: 24px;
-  font-weight: bold;
+  font-size: 22px;
+  font-weight: ${props => props.fontWeight || 'normal'};
+
   //width: 120px;
   display: flex;
 
   &:hover {
-    background-color: #EBECF0;
+    background-color: ${props => props.hoverBackgroundColor || '#ffffff'};
+    border-radius: 5px;
   }
 `;
 
@@ -159,12 +164,27 @@ const Editable = (props) => {
                     </EditableEditFooter>
                 </EditableEdit>
             ) : (
+                // <EditableDisplay
+                //     className={`${props.displayClass || ""}`}
+                //     onClick={() => setIsEditable(true)}
+                // >
+                //     {props.text || "Add Card"}
+                // </EditableDisplay>
+
                 <EditableDisplay
                     className={`${props.displayClass || ""}`}
                     onClick={() => setIsEditable(true)}
+                    hoverBackgroundColor={`${props.hoverBackgroundColor}`}
+                    fontWeight={`${props.fontWeight}`}
                 >
-                    {props.text || "Add Card"}
+                    {props.icon && (
+                        <span style={{marginRight: "5px"}}>
+                            {props.icon}
+                        </span>
+                    )}
+                    {props.text}
                 </EditableDisplay>
+
             )}
         </EditableWrapper>
     );
@@ -175,7 +195,10 @@ Editable.propTypes = {
     placeholder: PropTypes.string,
     buttonText: PropTypes.string,
     editClass: PropTypes.string,
+    icon: PropTypes.element,
     displayClass: PropTypes.string,
+    fontWeight: PropTypes.string,
+    hoverBackgroundColor: PropTypes.string,
     onSubmit: PropTypes.func.isRequired,
 };
 

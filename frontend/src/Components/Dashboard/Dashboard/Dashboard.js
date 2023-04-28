@@ -4,7 +4,8 @@ import Editable from '../Editable/Editable';
 import Sidebar from '../Sidebar/index';
 import NavBar from "../Navbar/index";
 import styled from 'styled-components';
-import { useLocation } from 'react-router-dom';
+import {useLocation} from 'react-router-dom';
+import {BsPlusSquare} from "react-icons/bs";
 
 const DashboardContainer = styled.div`
   height: 100vh;
@@ -14,14 +15,14 @@ const DashboardContainer = styled.div`
 `;
 
 const DashboardOuter = styled.div`
-    flex: 1;
-    overflow-x: auto;
-    padding: 0px 20px 0px 20px;
-    margin-left: 200px;
-    margin-bottom: -10px;
+  flex: 1;
+  overflow-x: auto;
+  padding: 0px 20px 0px 20px;
+  margin-left: 200px;
+  margin-bottom: -10px;
 `;
 
-const DashboardBoards =styled.div`
+const DashboardBoards = styled.div`
   min-width: fit-content;
   display: flex;
   gap: 30px;
@@ -223,9 +224,11 @@ function Dashboard(props) {
                         ))
                     }
                     <BoardDashboardBoards>
-                        <Editable className={BoardAdd}
-                                  text="Add Board" placeholder="Enter Board Title"
-                                  onSubmit={(value) => addBoard(value)}
+                        <Editable
+                            icon={<BsPlusSquare size={30}/>}
+                            className={BoardAdd}
+                            placeholder="Enter Board Title"
+                            onSubmit={(value) => addBoard(value)}
                         />
                     </BoardDashboardBoards>
                 </DashboardBoards>
