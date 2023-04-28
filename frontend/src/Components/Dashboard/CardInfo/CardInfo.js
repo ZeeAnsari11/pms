@@ -14,6 +14,7 @@ import {
 import Editable from "../Editable/Editable";
 import Description from "../TextEditor/TextEditor"
 import Comment from "../Comment/Comment"
+import Worklog from "../Worklog/Worklog";
 
 import 'react-quill/dist/quill.snow.css';
 import UserSelectField from '../SelectFields/UserSelectField'
@@ -35,7 +36,6 @@ const CardInfoBoxCustom = styled.div`
   flex-direction: column;
   gap: 20px;
   padding-bottom: 25px;
-  padding-top: 30px;
 `;
 
 const CardInfoBoxTitle = styled.div`
@@ -50,7 +50,6 @@ const CardInfoBox = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding-bottom: 20px;
 `;
 
 const TaskList = styled.div`
@@ -68,18 +67,24 @@ const Task = styled.div`
   align-items: center;
 `;
 
+
+const ActivityButton = styled.button`
+  cursor: pointer;
+  border-radius: 5px;
+  background-color: #F4F5F7;
+  color: black;
+  border: none;
+  transition: 100ms ease;
+  padding: 10px;
+  font-size: inherit;
+`;
+
 const CommentInput = styled.input`
   flex: 1;
   margin-right: 8px;
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 3px;
-`;
-
-const FormContainer = styled.div`
-  display: flex;
-  align-items: center;
-  margin-bottom: 16px;
 `;
 
 const CommentButton = styled.button`
@@ -89,6 +94,13 @@ const CommentButton = styled.button`
   border: none;
   border-radius: 3px;
 `;
+
+const FormContainer = styled.form`
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+`;
+
 
 const CardInfoClose = styled.div`
   gap: 10px;
@@ -124,10 +136,31 @@ const priorityoptions = [
 
 function CardInfo(props) {
 
+    const initialworklogs = [
+        {username: 'John', timeTracked: '2', description: 'Worklog 1'},
+        {username: 'Jane', timeTracked: '3', description: 'Worklog 2'},
+        {username: 'Bob', timeTracked: '1', description: 'Worklog 3'},
+    ];
+
+    const handleWorklogDelete = (index) => {
+        const newWorklogs = [...worklogs];
+        newWorklogs.splice(index, 1);
+        setWorklogs(newWorklogs);
+    };
+
+    const handleWorklogEdit = (index) => {
+    };
+
+
     //Comments
     const [comments, setComments] = useState([]);
     const [newComment, setNewComment] = useState('');
     const [selectedComment, setSelectedComment] = useState(null);
+    const [showComments, setShowComments] = useState(true);
+    const [worklogs, setWorklogs] = useState(initialworklogs);
+    const [showWorklog, setShowWorklog] = useState(false);
+    const [selectedWorklog, setSelectedWorklog] = useState(null);
+
 
     const handleCommentSubmit = (event) => {
         event.preventDefault();
@@ -153,6 +186,7 @@ function CardInfo(props) {
             );
         }
     };
+
 
 //Description
     const [desc, setDesc] = useState('initial value');
@@ -220,7 +254,7 @@ function CardInfo(props) {
                         fontWeight={"bold"}
                         buttonText="Set Title"
                         onSubmit={(value) => setValues({...values, title: value})}
-                        style={{backgroundColor: "none"}}
+                        bold={props.bold}
                     />
                 </ModalTitleStyling>
                 <div>
@@ -269,33 +303,71 @@ function CardInfo(props) {
                     </ModalTitle>
                 </CardInfoBox>
                 <CardInfoBox style={{marginTop: '15px'}}>
-                    <diCardInfoBoxTitlev>
-                        <Type/>
-                        Comments
-                    </diCardInfoBoxTitlev>
-                    <FormContainer onSubmit={handleCommentSubmit}>
-                        <CommentInput
-                            type="text"
-                            placeholder="Leave a comment"
-                            value={newComment}
-                            onChange={handleNewCommentChange}
-                        />
-                        <CommentButton type="submit">
-                            Send
-                        </CommentButton>
-                    </FormContainer>
-                    <ul>
-                        {comments.map((comment, index) => (
-                            <Comment
-                                key={index}
-                                comment={comment}
-                                index={index}
-                                onDelete={handleCommentDelete}
-                                onEdit={handleCommentEdit}
-                                selectedComment={selectedComment}
-                            />
-                        ))}
-                    </ul>
+
+                    <>
+                        <CardInfoBoxCustom>
+                            <CardInfoBoxTitle>Activity</CardInfoBoxTitle>
+                            <div style={{display: 'flex', gap: '8px', borderRadius: '4px'}}>
+                                <ActivityButton active={showComments} onClick={() => {
+                                    setShowComments(true);
+                                    setShowWorklog(false);
+                                    setSelectedWorklog(null);
+                                }}>
+                                    Comments
+                                </ActivityButton>
+                                <ActivityButton active={showWorklog} onClick={() => {
+                                    setShowWorklog(true);
+                                    setShowComments(false);
+                                    setSelectedComment(null);
+                                }}>
+                                    Work log
+                                </ActivityButton>
+                            </div>
+                        </CardInfoBoxCustom>
+                        {showComments && (
+                            <CardInfoBoxCustom>
+                                <CardInfoBoxTitle>Comments</CardInfoBoxTitle>
+                                <FormContainer onSubmit={handleCommentSubmit}>
+                                    <CommentInput
+                                        type="text"
+                                        placeholder="Leave a comment"
+                                        value={newComment}
+                                        onChange={handleNewCommentChange}
+                                    />
+                                    <CommentButton type="submit">Send</CommentButton>
+                                </FormContainer>
+                                <ul>
+                                    {comments.map((comment, index) => (
+                                        <Comment
+                                            key={index}
+                                            comment={comment}
+                                            index={index}
+                                            onDelete={handleCommentDelete}
+                                            onEdit={handleCommentEdit}
+                                            selectedComment={selectedComment}
+                                        />
+                                    ))}
+                                </ul>
+                            </CardInfoBoxCustom>
+                        )}
+                        {showWorklog && (
+                            <CardInfoBoxCustom>
+                                <CardInfoBoxTitle>Worklog</CardInfoBoxTitle>
+                                <ul style={{marginTop: "-30px"}}>
+                                    {worklogs.map((worklog, index) => (
+                                        <Worklog
+                                            key={index}
+                                            index={index}
+                                            worklog={worklog}
+                                            onDelete={handleWorklogDelete}
+                                            onEdit={handleWorklogEdit}
+                                            selectedWorklog={selectedWorklog}
+                                        />
+                                    ))}
+                                </ul>
+                            </CardInfoBoxCustom>
+                        )}
+                    </>
                 </CardInfoBox>
             </div>
             <div style={{width: "35%", float: "right"}}>

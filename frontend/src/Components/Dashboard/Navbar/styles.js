@@ -19,7 +19,6 @@ export const Button = styled.button`
   padding: 8px 20px;
   border-radius: 4px;
   margin-left: 10px;
-  margin-bottom: 5px;
   outline: none;
   border: none;
   font-size: 16px;
@@ -74,7 +73,7 @@ export const NavbarLinkExtended = styled(Link)`
 `;
 
 export const Logo = styled.img`
-  margin: 10px;
+  margin: 4px 10px 3px 10px;
   max-width: 100px;
   height: auto;
   cursor: pointer;
