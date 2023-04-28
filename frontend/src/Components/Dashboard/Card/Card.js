@@ -3,6 +3,7 @@ import {CheckSquare, Clock, MoreHorizontal} from "react-feather";
 import Chip from "../Chip/Chip";
 import Dropdown from "../Dropdown/Dropdown";
 import CardInfo from "../CardInfo/CardInfo";
+import Avatar from 'react-avatar';
 import styled from 'styled-components';
 
 const CardContainer = styled.div`
@@ -28,6 +29,13 @@ const CardTopMore = styled.div`
   cursor: pointer;
   opacity: 0;
   transition: 200ms;
+  text-align: right;
+  margin-right: 10px;
+
+  &:hover {
+    opacity: 1;
+  }
+
 `;
 
 
@@ -44,26 +52,28 @@ const BoardDropdown = styled.div`
 `;
 
 const Paragraph = styled.div`
-    border-bottom: 1px solid #f8f8f8;
-    cursor: pointer;
+  border-bottom: 1px solid #f8f8f8;
+  cursor: pointer;
 `;
 
 const CardTitle = styled.div`
   flex: 1;
   font-weight: bold;
   font-size: 1rem;
-  line-height: 1.875rem;
+  line-height: 1.4rem;
 `;
 
-const CardFooter  = styled.div`
+const CardFooter = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
 `;
 
 export const CardProfile = styled.div`
-  margin-left: 124px;
+  text-align: end;
   z-index: 1;
+  margin-left: 175px;
+  margin-top: -60px;
 
   &:hover .card_profile_name {
     opacity: 1;
@@ -77,6 +87,8 @@ export const CardProfileName = styled.div`
 function Card(props) {
     const [showDropDown, setShowDropdown] = useState(false);
     const [showModal, setshowModal] = useState(false);
+    const [showName, setshowName] = useState(false);
+
 
     return (
         <>
@@ -100,7 +112,11 @@ function Card(props) {
                         <Chip key={index} text={item.text} color={item.color}/>
                     ))}
 
-                    <CardTopMore onClick={() => setShowDropdown(!showDropDown)}>
+                    <CardTopMore
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setShowDropdown(!showDropDown)
+                        }}>
                         <MoreHorizontal/>
                         {showDropDown && (
                             <Dropdown onClick={() => setShowDropdown(!showDropDown)}>
@@ -112,7 +128,7 @@ function Card(props) {
                     </CardTopMore>
                 </CardTop>
                 <CardTitle>{props.Card?.title}</CardTitle>
-                <CardFooter >
+                <CardFooter>
                     {props.Card?.date && (
                         <p>
                             <Clock/>
@@ -127,8 +143,17 @@ function Card(props) {
                     }
                 </CardFooter>
                 <CardProfile>
-                    <img src={props.Card?.assignedTo?.profilePic} alt="Assignee"/>
-                    <CardProfileName >{props.Card?.assignedTo?.name}</CardProfileName>
+                    <Avatar
+                        name={"User"}
+                        size={30}
+                        round={true}
+                        color="#DE350B"
+                        title={"User"}
+                        style={{marginRight: '10px'}}
+                    />
+                    <CardProfileName onMouseEnter={() => setshowName(true)} onMouseLeave={() => setshowName(false)}>
+                        {props.Card?.assignedTo?.name}
+                    </CardProfileName>
                 </CardProfile>
             </CardContainer>
         </>
