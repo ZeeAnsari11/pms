@@ -1,5 +1,5 @@
-import React, {useState,} from "react";
-import {MoreHorizontal} from "react-feather";
+import React, { useState,  } from "react";
+import { MoreHorizontal } from "react-feather";
 import Card from "../Card/Card";
 import Editable from "../Editable/Editable";
 import Dropdown from "../Dropdown/Dropdown";
@@ -28,6 +28,7 @@ const BoardTop = styled.div`
 
 const BoardTopTitle = styled.p`
   margin-left: 10px;
+  width: 100%;
 `;
 
 const BoardTopMore = styled.div`
@@ -90,7 +91,6 @@ const BoardCardsAdd = styled.div`
   }
 `;
 
-
 const BoardAddCard = styled.div`
   background-color: #fff;
   color: #000;
@@ -113,7 +113,6 @@ function Board(props) {
             <BoardTop>
                 <BoardTopTitle>
                     {props.board?.title} <span>{`(${props.board?.cards?.length})`}</span>
-                    {/* <b>To Do </b><span>2</span> */}
                     <BoardTopMore onClick={() => setShowDropdown(!showDropDown)}>
                         <MoreHorizontal/>
                         {showDropDown && (
