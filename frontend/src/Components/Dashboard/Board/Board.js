@@ -1,9 +1,10 @@
-import React, { useState,  } from "react";
-import { MoreHorizontal } from "react-feather";
+import React, {useState,} from "react";
+import {MoreHorizontal} from "react-feather";
 import Card from "../Card/Card";
 import Editable from "../Editable/Editable";
 import Dropdown from "../Dropdown/Dropdown";
 import styled from "styled-components";
+import {BsPlus} from "react-icons/bs";
 
 
 const BoardContainer = styled.div`
@@ -89,6 +90,7 @@ const BoardCardsAdd = styled.div`
   }
 `;
 
+
 const BoardAddCard = styled.div`
   background-color: #fff;
   color: #000;
@@ -105,45 +107,47 @@ const BoardAddCardEdit = styled.div`
 `;
 
 function Board(props) {
-    const [showDropDown, setShowDropdown]= useState(false);
-return (
-    <BoardContainer>
-     <BoardTop>
-        <BoardTopTitle>
-            {props.board?.title} <span>{`(${props.board?.cards?.length})`}</span>
-            {/* <b>To Do </b><span>2</span> */}
-        <BoardTopMore onClick={()=> setShowDropdown(!showDropDown)}>
-        <MoreHorizontal />
-        {showDropDown && (
-        <Dropdown onClick={()=> setShowDropdown(!showDropDown)}>
-            <BoardDropdown>
-                <p onClick={()=>props.removeBoard(props.board?.id)}>Delete Board</p>
-            </BoardDropdown>
-        </Dropdown>
-        )}
-        </BoardTopMore>
-        </BoardTopTitle>
-        </BoardTop>
-        <BoardCards>
-        {props.board?.cards?.map((item)=>(
-        <Card
-            key={item.id}
-            Card={item}
-            removeCard={props.removeCard}
-            boardId={props.board?.id}
-            handleDragEnd={props.handleDragEnd}
-            handleDragEnter={props.handleDragEnter}
-            updateCard={props.updateCard}
-        />
-        ))}
-            <Editable
-            text = "Add Card"
-            Placeholder = "Enter Card Title"
-            onSubmit = {(value) => props.addCard(value, props.board?.id)}
-            />
-        </BoardCards>
+    const [showDropDown, setShowDropdown] = useState(false);
+    return (
+        <BoardContainer>
+            <BoardTop>
+                <BoardTopTitle>
+                    {props.board?.title} <span>{`(${props.board?.cards?.length})`}</span>
+                    {/* <b>To Do </b><span>2</span> */}
+                    <BoardTopMore onClick={() => setShowDropdown(!showDropDown)}>
+                        <MoreHorizontal/>
+                        {showDropDown && (
+                            <Dropdown onClick={() => setShowDropdown(!showDropDown)}>
+                                <BoardDropdown>
+                                    <p onClick={() => props.removeBoard(props.board?.id)}>Delete Board</p>
+                                </BoardDropdown>
+                            </Dropdown>
+                        )}
+                    </BoardTopMore>
+                </BoardTopTitle>
+            </BoardTop>
+            <BoardCards>
+                {props.board?.cards?.map((item) => (
+                    <Card
+                        key={item.id}
+                        Card={item}
+                        removeCard={props.removeCard}
+                        boardId={props.board?.id}
+                        handleDragEnd={props.handleDragEnd}
+                        handleDragEnter={props.handleDragEnter}
+                        updateCard={props.updateCard}
+                    />
+                ))}
+                <Editable
+                    text={"Create Issue"}
+                    icon={<BsPlus size={30}/>}
+                    hoverBackgroundColor={"#dadada"}
+                    Placeholder="Enter Card Title"
+                    onSubmit={(value) => props.addCard(value, props.board?.id)}
+                />
+            </BoardCards>
 
-    </BoardContainer>
+        </BoardContainer>
     );
 }
 
