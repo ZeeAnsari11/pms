@@ -148,7 +148,7 @@ const SaveButton = styled.button`
   margin-bottom: 10px;
   cursor: pointer;
   transition: background-color 0.3s ease-in-out;
-  margin-right: 280px;
+  margin-right: 310px;
 
   &:hover {
     background-color: #3e81ed;
