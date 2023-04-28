@@ -192,7 +192,8 @@ const SaveButton = styled.button`
   margin-top: 1rem;
   cursor: pointer;
   transition: background-color 0.3s ease-in-out;
-  margin-right: 280px;
+  margin-right: 310px;
+  margin-bottom: 10px;
 
   &:hover {
     background-color: #3e81ed;
@@ -292,56 +293,52 @@ function ProjectSettingPage() {
             <NavBar/>
             <Sidebar project={project}/>
             <PageWrapper>
-                {/*<NotificationModal*/}
-                {/*    visible={modalVisible}*/}
-                {/*    onCancel={handleCancel}*/}
-                {/*    onConfirm={handleConfirm}*/}
-                {/*    title="Confirm delete project?"*/}
-                {/*    content="Are you sure about deleting this project?"*/}
-                {/*/>*/}
-                {/*<UploadIconModal title={<h3 style={{fontSize: '18px', marginTop: '-5px'}}>Choose an icon</h3>}*/}
-                {/*                 open={visibleForIcon}*/}
-                {/*                 onOk={handleOkForIcon}*/}
-                {/*                 onCancel={handleCancelForIcon}*/}
-                {/*                 okText="Select"*/}
-                {/*                 cancelText="Delete existing"*/}
-                {/*                 style={modalStyle}*/}
-                {/*                 maskClosable={false}*/}
-                {/*                 closable={false}*/}
-                {/*                 cancelButtonProps={{*/}
-                {/*                     style: {*/}
-                {/*                         backgroundColor: 'red', color: 'black', border: 'black',*/}
+                <NotificationModal
+                    visible={modalVisible}
+                    onCancel={handleCancel}
+                    onConfirm={handleConfirm}
+                    title="Confirm delete project?"
+                    content="Are you sure about deleting this project?"
+                />
+                <UploadIconModal title={<h3 style={{fontSize: '18px', marginTop: '-5px'}}>Choose an icon</h3>}
+                                 open={visibleForIcon}
+                                 onOk={handleOkForIcon}
+                                 onCancel={handleCancelForIcon}
+                                 okText="Select"
+                                 cancelText="Delete existing"
+                                 style={modalStyle}
+                                 maskClosable={false}
+                                 closable={false}
+                                 cancelButtonProps={{
+                                     style: {
+                                         backgroundColor: 'red', color: 'black', border: 'black',
 
-                {/*                     }, className: 'cancel-button',*/}
-                {/*                 }}*/}
-                {/*>*/}
-                {/*    <Dragger handleUploadfForDragAndDrop={handleUploadfForDragAndDrop}/>*/}
-                {/*    <p style={{marginLeft: '225px'}}>or</p>*/}
-                {/*    <FileUploaderButton handleUpload={handleUpload}/>*/}
+                                     }, className: 'cancel-button',
+                                 }}
+                >
+                    <Dragger handleUploadfForDragAndDrop={handleUploadfForDragAndDrop}/>
+                    <p style={{marginLeft: '225px'}}>or</p>
+                    <FileUploaderButton handleUpload={handleUpload}/>
 
-                {/*</UploadIconModal>*/}
+                </UploadIconModal>
                 <Header>
                     <Details>Details</Details>
                 </Header>
 
-                {/*{image && select ? (<ImageWrapper>*/}
-                {/*    <Image src={'http://localhost:3000/Images/' + image} alt="Profile Picture"/>*/}
-                {/*</ImageWrapper>) : (<ImageWrapper>*/}
-                {/*    <Image src={'http://localhost:3000/Images/NoImage.jpeg'} alt="No Profile Picture"/>*/}
-                {/*</ImageWrapper>)}*/}
-                {/*<ButtonWrapper>*/}
-                {/*    <UploadButton onClick={showModalForIcon}>Change icon</UploadButton>*/}
-                {/*</ButtonWrapper>*/}
+                {image && select ? (<ImageWrapper>
+                    <Image src={'http://localhost:3000/Images/' + image} alt="Profile Picture"/>
+                </ImageWrapper>) : (<ImageWrapper>
+                    <Image src={'http://localhost:3000/Images/NoImage.jpeg'} alt="No Profile Picture"/>
+                </ImageWrapper>)}
+                <ButtonWrapper>
+                    <UploadButton onClick={showModalForIcon}>Change icon</UploadButton>
+                </ButtonWrapper>
 
                 <FormWrapper>
                     <Label htmlFor="name">Name:</Label>
                     <NameInput type="text" id="name" name="name" placeholder="Project name"/>
                     <LabelForKey htmlFor="key">Key:</LabelForKey>
                     <KeyInput type="text" id="key" name="key" placeholder="Project key"/>
-                    <LabelForUrl htmlFor="url">URL:</LabelForUrl>
-                    <UrlInput type="text" id="url" name="url" placeholder="Project URL"/>
-                    <LabelForDescription htmlFor="description">Description:</LabelForDescription>
-                    <ReactQuill value={description} onChange={handleDescriptionChange}/>
                     <Labelforlead htmlFor="category">Project lead:</Labelforlead>
                     <UserSelectField users={users} defaultValue={`${users[0].username}`} width="50%"/>
                     <Description>Make sure your project lead has access to issues in the project.</Description>
