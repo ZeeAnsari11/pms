@@ -4,9 +4,11 @@ import styled from 'styled-components';
 const StyledDropdown = styled.div`
   position: absolute;
   right: 0;
-  top: 100%;
-  background-color: #fff;
-  border-radius: 3px;
+  //top: 100%;
+  //background-color: #fff;
+  //border-radius: 3px;
+  margin-right: 5px;
+  margin-top: -20px;
   min-height: 40px;
   min-width: 80px;
   width: fit-content;

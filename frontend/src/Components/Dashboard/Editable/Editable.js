@@ -72,6 +72,7 @@ const EditableEdit = styled.form`
   flex-direction: column;
   margin-top: 15px;
   gap: 10px;
+  margin-top: 15px;
 
   input {
     border: 2px solid #0079bf;
