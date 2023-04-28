@@ -27,7 +27,7 @@ const UserIcon = ({user}) => {
     return <span style={{marginRight: "8px"}}>{userIcon}</span>;
 };
 
-const UserSelect = ({users, isMultiple, placeholder, ...rest}) => {
+const UserSelect = ({users, isMultiple, placeholder, defaultValue, width = "100%", ...rest}) => {
     const [value, setValue] = useState(undefined);
 
     const handleChange = (value) => {
@@ -46,13 +46,15 @@ const UserSelect = ({users, isMultiple, placeholder, ...rest}) => {
         <Select
             mode={isMultiple ? 'multiple' : undefined}
             style={{
-                width: "100%",
-                marginTop:"5px"
+                width: width,
+                marginTop: "5px"
             }}
             placeholder={placeholder}
             showSearch={true}
             filterOption={filterOption}
             value={value}
+            defaultValue={defaultValue}
+            allowClear
             onChange={handleChange}
             {...rest}
         >

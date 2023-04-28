@@ -2,13 +2,16 @@ import React, {useState, useRef} from 'react';
 import styled from 'styled-components';
 import {HiDotsHorizontal} from 'react-icons/hi'
 import Dropdown from "../../Dashboard/Dropdown";
-import {Link} from "react-router-dom";
+import {Link, useLocation} from "react-router-dom";
 import {Button, Modal as UploadIconModal, notification} from 'antd';
 import Selector from '../../../Shared/Components/Select';
 import Dragger from "../DragAndDrop/DragAndDrop";
 import FileUploaderButton from "../PhotoUploader/PhotoUploader";
 import NotificationModal from '../Notification/Notification';
 import NavBar from "../../Dashboard/Navbar";
+import ReactQuill from "react-quill";
+import Sidebar from '../../Dashboard/Sidebar'
+import UserSelectField from "../../Dashboard/SelectFields/UserSelectField";
 
 const PageWrapper = styled.div`
   background-color: #fff;
@@ -19,7 +22,7 @@ const PageWrapper = styled.div`
 const Header = styled.header`
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   padding: 1rem;
 `;
 
@@ -55,7 +58,40 @@ const Image = styled.img`
   border-radius: 4%;
 `;
 
-const Input = styled.input`
+const NameInput = styled.input`
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  padding: 0.5rem;
+  font-size: 1rem;
+  //width: 40%;
+  margin-bottom: 2%;
+  background-color: #FAFBFC;
+  width: 359px;
+
+
+  :hover {
+    background-color: #EBECF0;
+  }
+`;
+
+
+const KeyInput = styled.input`
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  padding: 0.5rem;
+  font-size: 1rem;
+  //width: 40%;
+  margin-bottom: 2%;
+  background-color: #FAFBFC;
+  width: 359px;
+
+
+  :hover {
+    background-color: #EBECF0;
+  }
+`;
+
+const UrlInput = styled.input`
   border: 2px solid #ccc;
   border-radius: 5px;
   padding: 0.5rem;
@@ -113,9 +149,22 @@ const LabelForKey = styled.label`
   margin-right: 342px;
 `;
 
+const LabelForUrl = styled.label`
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  margin-right: 342px;
+`;
+
+const LabelForDescription = styled.label`
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  margin-right: 280px;
+`;
+
 const Labelforlead = styled.label`
   font-weight: bold;
-  margin-bottom: 1px;
+  margin-bottom: 0.5rem;
+  margin-top: 10px;
   margin-right: 278px;
 
 `;
@@ -123,13 +172,12 @@ const Labelforlead = styled.label`
 const Description = styled.p`
   font-size: 0.7rem;
   color: #555;
-  //margin-top: 0.5rem;
-  margin-top: -15px;
+  margin-top: 5px;
 `;
 
 const LabelforDefaultassignee = styled.label`
   font-weight: bold;
-  margin-bottom: 1px;
+  margin-bottom: 0.5rem;
   margin-right: 245px;
 `;
 
@@ -144,14 +192,19 @@ const SaveButton = styled.button`
   margin-top: 1rem;
   cursor: pointer;
   transition: background-color 0.3s ease-in-out;
-  margin-right: 280px;
+  margin-right: 310px;
+  margin-bottom: 10px;
 
   &:hover {
     background-color: #3e81ed;
   }
 `;
 
+
 function ProjectSettingPage() {
+
+    const location = useLocation();
+    const searchParams = new URLSearchParams(location.search);
 
     const [modalVisible, setModalVisible] = useState(false);
 
@@ -178,10 +231,17 @@ function ProjectSettingPage() {
 
     const [select, setSelect] = useState(null);
 
+    const [description, setDescription] = useState('');
+
+
     const handleUpload = (file) => {
         setImage(file);
         setVisibleForIcon(false);
     };
+
+    const handleDescriptionChange = (value) => {
+        setDescription(value);
+    }
 
     const handleUploadfForDragAndDrop = (file) => {
         setImage(file);
@@ -207,9 +267,31 @@ function ProjectSettingPage() {
         borderRadius: 0, height: '1000px', cancelButton: {backgroundColor: 'red'}
     };
 
+    const LinkedIssue1 = [
+        {value: 'option1', label: 'blocks'},
+        {value: 'option2', label: 'is blocked by'},
+        {value: 'option3', label: 'clones'},
+        {value: 'option4', label: 'is cloned by'},
+        {value: 'option5', label: 'duplicates'},
+        {value: 'option6', label: 'is duplicated by'},
+        {value: 'option7', label: 'relates to'},
+
+    ];
+
+    const users = [
+        {id: 1, username: "Hashim Doe"},
+        {id: 2, username: "Jane Doe"},
+        {id: 3, username: "Bob Smith"},
+    ];
+
+    const project = {
+        name: searchParams.get('name'),
+        category: searchParams.get('category')
+    }
     return (
         <div>
-            <NavBar />
+            <NavBar/>
+            <Sidebar project={project}/>
             <PageWrapper>
                 <NotificationModal
                     visible={modalVisible}
@@ -241,7 +323,6 @@ function ProjectSettingPage() {
                 </UploadIconModal>
                 <Header>
                     <Details>Details</Details>
-                    <Dropdown items={items} icon={<HiDotsHorizontal size={24}/>}/>
                 </Header>
 
                 {image && select ? (<ImageWrapper>
@@ -252,16 +333,17 @@ function ProjectSettingPage() {
                 <ButtonWrapper>
                     <UploadButton onClick={showModalForIcon}>Change icon</UploadButton>
                 </ButtonWrapper>
+
                 <FormWrapper>
                     <Label htmlFor="name">Name:</Label>
-                    <Input type="text" id="name" name="name" placeholder="Project name"/>
+                    <NameInput type="text" id="name" name="name" placeholder="Project name"/>
                     <LabelForKey htmlFor="key">Key:</LabelForKey>
-                    <Input type="text" id="key" name="key" placeholder="Project key"/>
+                    <KeyInput type="text" id="key" name="key" placeholder="Project key"/>
                     <Labelforlead htmlFor="category">Project lead:</Labelforlead>
-                    <Selector/>
+                    <UserSelectField users={users} defaultValue={`${users[0].username}`} width="50%"/>
                     <Description>Make sure your project lead has access to issues in the project.</Description>
                     <LabelforDefaultassignee htmlFor="category">Default assignee</LabelforDefaultassignee>
-                    <Selector/>
+                    <UserSelectField users={users} defaultValue={`${users[1].username}`} width="50%"/>
                     <SaveButton>Save</SaveButton>
                 </FormWrapper>
             </PageWrapper>

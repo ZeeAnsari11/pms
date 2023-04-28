@@ -8,6 +8,7 @@ import FileUploaderButton from '../PhotoUploader/PhotoUploader';
 import axios from "axios";
 import {text} from "@fortawesome/fontawesome-svg-core";
 import NavBar from "../../Dashboard/Navbar";
+import GenericSelectField from "../../Dashboard/SelectFields/GenericSelectField";
 
 const PageWrapper = styled.div`
   background-color: #fff;
@@ -105,6 +106,7 @@ const LabelForDescriptionBoc = styled.label`
 const LabelforLead = styled.label`
   font-weight: bold;
   margin-bottom: 0.5rem;
+  margin-top: 15px;
   margin-right: 265px;
 `;
 
@@ -124,10 +126,10 @@ const Description = styled.p`
   font-size: 0.7rem;
   color: #555;
   //margin-top: 0.5rem;
-  margin-top: -15px;
+  margin-top: 5px;
 `;
 
-const LabelforDefaultassignee
+const LabelforCategory
     = styled.label`
   font-weight: bold;
   margin-bottom: 0.5rem;
@@ -143,6 +145,7 @@ const SaveButton = styled.button`
   font-weight: bold;
   padding: 0.5rem 1rem;
   margin-top: 1rem;
+  margin-bottom: 10px;
   cursor: pointer;
   transition: background-color 0.3s ease-in-out;
   margin-right: 280px;
@@ -247,6 +250,13 @@ function CreateProject() {
         cancelButton: {backgroundColor: 'red'}
     };
 
+    const statusoptions = [
+        {value: 'option1', label: 'Backlog'},
+        {value: 'option2', label: 'Selected for Development'},
+        {value: 'option3', label: 'In Progress'},
+        {value: 'option4', label: 'Done'},
+    ];
+
     function handleSubmit(event) {
         event.preventDefault();
 
@@ -280,70 +290,86 @@ function CreateProject() {
                 console.log(error)
             });
     }
+
     return (
         <div>
-            <NavBar />
-        <PageWrapper >
-            <UploadIconModal title={
-                <h3 style={{fontSize: '18px', marginTop: '-5px'}}>Choose an icon</h3>
-            }
-                             open={visibleForIcon}
-                             onOk={handleOkForIcon}
-                             onCancel={handleCancelForIcon}
-                             okText="Select"
-                             cancelText="Delete existing"
-                             style={modalStyle}
-                             maskClosable={false}
-                             closable={false}
-                             cancelButtonProps={{
-                                 style: {
-                                     backgroundColor: 'red',
-                                     color: 'black',
-                                     border: 'black',
+            <NavBar/>
+            <PageWrapper>
+                <UploadIconModal title={
+                    <h3 style={{fontSize: '18px', marginTop: '-5px'}}>Choose an icon</h3>
+                }
+                                 open={visibleForIcon}
+                                 onOk={handleOkForIcon}
+                                 onCancel={handleCancelForIcon}
+                                 okText="Select"
+                                 cancelText="Delete existing"
+                                 style={modalStyle}
+                                 maskClosable={false}
+                                 closable={false}
+                                 cancelButtonProps={{
+                                     style: {
+                                         backgroundColor: 'red',
+                                         color: 'black',
+                                         border: 'black',
 
-                                 },
-                                 className: 'cancel-button',
-                             }}
-            >
-                <Dragger handleUploadfForDragAndDrop={handleUploadfForDragAndDrop}/>
-                <p style={{marginLeft: '225px'}}>or</p>
-                <FileUploaderButton handleUpload={handleUpload}/>
+                                     },
+                                     className: 'cancel-button',
+                                 }}
+                >
+                    <Dragger handleUploadfForDragAndDrop={handleUploadfForDragAndDrop}/>
+                    <p style={{marginLeft: '225px'}}>or</p>
+                    <FileUploaderButton handleUpload={handleUpload}/>
 
-            </UploadIconModal>
-            <Header>
-                <Details>Project Details</Details>
-            </Header>
+                </UploadIconModal>
+                <Header>
+                    <Details>Project Details</Details>
+                </Header>
 
-            {image && select ? (
-                <ImageWrapper>
-                    <Image src={'http://localhost:3000/Images/' + image} alt="Profile Picture"/>
-                </ImageWrapper>
-            ) : (
-                <ImageWrapper>
-                    <Image src={'http://localhost:3000/Images/NoImage.jpeg'} alt="No Profile Picture"/>
-                </ImageWrapper>
-            )}
-            <ButtonWrapper>
-                <UploadButton onClick={showModalForIcon}>Change icon</UploadButton>
-            </ButtonWrapper>
-            <FormWrapper onSubmit={handleSubmit} encType="multipart/form-data" method="POST">
-                <LabelForProject htmlFor="project">Project:</LabelForProject>
-                <Input type="text" id="project" name="project" placeholder="Enter project name"/>
-                <LabelForKey htmlFor="key">Key:</LabelForKey>
-                <Input type="text" id="key" name="key" placeholder="Enter project key"/>
-                <LabelForDescriptionBoc htmlFor="key">Description:</LabelForDescriptionBoc>
-                <StyledReactQuill id="exampleEditor" value={text} onChange={handleTextChange}/>
-                <LabelForCompany htmlFor="category">Company:</LabelForCompany>
-                <Selector/>
-                <Description>Make sure your project lead has access to issues in the project.</Description>
-                <LabelforDefaultassignee htmlFor="category">Catagory:</LabelforDefaultassignee>
-                <Selector/>
-                <LabelforLead htmlFor="category">Project Lead:</LabelforLead>
-                <Selector/>
-                <SaveButton>Save</SaveButton>
-            </FormWrapper>
-        </PageWrapper>
-            </div>
+                {image && select ? (
+                    <ImageWrapper>
+                        <Image src={'http://localhost:3000/Images/' + image} alt="Profile Picture"/>
+                    </ImageWrapper>
+                ) : (
+                    <ImageWrapper>
+                        <Image src={'http://localhost:3000/Images/NoImage.jpeg'} alt="No Profile Picture"/>
+                    </ImageWrapper>
+                )}
+                <ButtonWrapper>
+                    <UploadButton onClick={showModalForIcon}>Change icon</UploadButton>
+                </ButtonWrapper>
+                <FormWrapper onSubmit={handleSubmit} encType="multipart/form-data" method="POST">
+                    <LabelForProject htmlFor="project">Project:</LabelForProject>
+                    <Input type="text" id="project" name="project" placeholder="Enter project name"/>
+                    <LabelForKey htmlFor="key">Key:</LabelForKey>
+                    <Input type="text" id="key" name="key" placeholder="Enter project key"/>
+                    <LabelForDescriptionBoc htmlFor="key">Description:</LabelForDescriptionBoc>
+                    <StyledReactQuill id="exampleEditor" value={text} onChange={handleTextChange}/>
+                    <LabelForCompany htmlFor="category">Company:</LabelForCompany>
+                    <GenericSelectField
+                        options={statusoptions}
+                        isMultiple={false}
+                        placeholder={"Unassigned"}
+                        defaultValue={"Backlog"}
+                        width="50%"/>
+                    <Description>Make sure your project lead has access to issues in the project.</Description>
+                    <LabelforCategory htmlFor="category">Category:</LabelforCategory>
+                    <GenericSelectField
+                        options={statusoptions}
+                        isMultiple={false}
+                        placeholder={"Unassigned"}
+                        defaultValue={"Backlog"}
+                        width="50%"/>
+                    <LabelforLead htmlFor="category">Project Lead:</LabelforLead>
+                    <GenericSelectField
+                        options={statusoptions}
+                        isMultiple={false}
+                        placeholder={"Unassigned"}
+                        defaultValue={"Backlog"}
+                        width="50%"/>
+                    <SaveButton>Save</SaveButton>
+                </FormWrapper>
+            </PageWrapper>
+        </div>
     );
 }
 
