@@ -5,7 +5,9 @@ import styled from 'styled-components';
 const {Option} = Select;
 
 const StyledSelect = styled(Select)`
-  width: 70%;
+  width: ${({width}) => width ? width : '70%'};
+  height: ${({height}) => height ? height : '32px'};
+
 `;
 
 const StyledOption = styled(Option)`
@@ -13,13 +15,15 @@ const StyledOption = styled(Option)`
   padding-left: ${({icon}) => icon && '30px'};
 `;
 
-const GenericSelectField = ({options, isMultiple, placeholder, defaultValue, isDisabled}) => {
+const GenericSelectField = ({options, isMultiple, placeholder, defaultValue, isDisabled, width, height}) => {
     return (
         <StyledSelect
             mode={isMultiple ? 'multiple' : undefined}
             placeholder={placeholder}
             defaultValue={defaultValue}
             disabled={isDisabled}
+            width={width}
+            height={height}
         >
             {options.map((option) => (
                 <StyledOption key={option.value} value={option.value} icon={option.icon}>
