@@ -8,6 +8,8 @@ import {FiUser, FiUsers} from "react-icons/fi";
 import UserSelectField from "../SelectFields/UserSelectField";
 import {File} from "react-feather";
 import FileUpload from "../FileAttachement/FileUpload";
+import {DatePicker, TimePicker} from 'antd'
+import moment from "moment/moment";
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -208,6 +210,8 @@ const MyModalComponent = ({onClose}) => {
     const [time, setTime] = useState("");
     const [description, setDescription] = useState('');
     const [values, setValues] = useState("");
+    const [startDate, setStartDate] = useState(null);
+    const [startTime, setStartTime] = useState(null);
     const handleSummaryChange = (event) => {
         setSummary(event.target.value);
     };
@@ -215,8 +219,12 @@ const MyModalComponent = ({onClose}) => {
         setDescription(value);
     }
 
-    const handleTimeChange = (event) => {
-        setTime(event.target.value);
+    const handleDateChange = (date, dateString) => {
+        setStartDate(dateString);
+    };
+
+    const handleTimeChange = (time, timeString) => {
+        setStartTime(timeString);
     };
 
     return (
@@ -334,8 +342,9 @@ const MyModalComponent = ({onClose}) => {
                         <TaskList>
                             <TimeTrackingField>
                                 <TimeTrackingLabel>Original Estimate</TimeTrackingLabel>
-                                <DateInput type="date"/>
-                                <TimeTrackingInput type="time"/>
+                                <DatePicker onChange={handleDateChange}/>
+                                <TimePicker style={{marginLeft:"10px"}} use12Hours format="h:mm a" defaultValue={moment()}
+                                            onChange={handleTimeChange}/>
                             </TimeTrackingField>
                         </TaskList>
                     </CardInfoBox>
