@@ -69,6 +69,7 @@ const EditableWrapper = styled.div`
 
 const EditableK = styled.div`
   width: 30%;
+  margin-left: 20px;
 `;
 
 const EditableEditK = styled.form`
@@ -134,14 +135,6 @@ const HoverDiv = styled.div`
   }
 `;
 
-const HoverText = styled.div`
-  opacity: 0;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-`;
-
 const EditableDisplay = styled.p`
   font-size: 16px;
 
@@ -150,10 +143,6 @@ const EditableDisplay = styled.p`
   }
 `;
 
-
-const HoverTexts = styled.span`
-  opacity: 1;
-`;
 
 function Editable(props) {
     const [isEditable, setIsEditable] = useState(false);
