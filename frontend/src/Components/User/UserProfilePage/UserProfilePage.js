@@ -1,10 +1,10 @@
-import React from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components';
-import {faBriefcase, faEdit, faSitemap} from '@fortawesome/free-solid-svg-icons';
+import {faBriefcase, faCalendar, faEdit, faSitemap} from '@fortawesome/free-solid-svg-icons';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import Editable from "../Editable/Editable";
-import DatePicker from "../DatePicker/DatePicker";
 import NavBar from "../../Dashboard/Navbar";
+import {DatePicker} from 'antd'
 
 
 const ProfileWrapper = styled.div`
@@ -108,12 +108,17 @@ const ProfileDetailsValue = styled.p`
   color: #666;
 `;
 
+const DateValue = styled.p`
+  font-size: 18px;
+  color: #666;
+`;
+
 const PersonalDetailHeading = styled.p`
   font-size: 18px;
   color: #0052CC;
   margin-right: 1000px;
   font-weight: bolder;
-  
+
   @media (max-width: 768px) {
     margin: 5px 0;
   }
@@ -138,33 +143,39 @@ const HorizontalLine = styled.div`
 `;
 
 const UserProfilePage = () => {
+    const [startDate, setStartDate] = useState(null);
+    const handleDateChange = (date, dateString) => {
+        setStartDate(dateString);
+    };
+
     return (
         <div>
-            <NavBar />
-        <ProfileWrapper>
-            <ProfileHeader>
-                <ProfileImage src="https://i.pravatar.cc/300" alt="Profile Picture"/>
-                <div>
-                    <ProfileName>John Doe</ProfileName>
-                    <ProfileEmail>
-                        john.doe@example.com</ProfileEmail>
-                </div>
-                <EditIcon className="fas fa-edit">
-                    <FontAwesomeIcon icon={faEdit}/>
-                </EditIcon>
-            </ProfileHeader>
-            <ProfileDetailsWrapper>
-                <PersonalDetailHeading>Personal Information</PersonalDetailHeading>
-                <HorizontalLine></HorizontalLine>
-                <ProfileDetailsLabel>Work</ProfileDetailsLabel>
-                <ProfileDetailsValue><FontAwesomeIcon icon={faBriefcase}/> Organization </ProfileDetailsValue>
-                <Editable placeholder={"Enter Organization Name"} frontendText={"Enter Organization Name"} />
-                <ProfileDetailsValue><FontAwesomeIcon icon={faSitemap}/> Department </ProfileDetailsValue>
-                <Editable placeholder={"Enter Department Name"} frontendText={"Enter Department Name"}/>
-                <DatePicker/>
-            </ProfileDetailsWrapper>
-        </ProfileWrapper>
-            </div>
+            <NavBar/>
+            <ProfileWrapper>
+                <ProfileHeader>
+                    <ProfileImage src="https://i.pravatar.cc/300" alt="Profile Picture"/>
+                    <div>
+                        <ProfileName>John Doe</ProfileName>
+                        <ProfileEmail>
+                            john.doe@example.com</ProfileEmail>
+                    </div>
+                    <EditIcon className="fas fa-edit">
+                        <FontAwesomeIcon icon={faEdit}/>
+                    </EditIcon>
+                </ProfileHeader>
+                <ProfileDetailsWrapper>
+                    <PersonalDetailHeading>Personal Information</PersonalDetailHeading>
+                    <HorizontalLine></HorizontalLine>
+                    <ProfileDetailsLabel>Work</ProfileDetailsLabel>
+                    <ProfileDetailsValue><FontAwesomeIcon icon={faBriefcase}/> Organization </ProfileDetailsValue>
+                    <Editable placeholder={"Enter Organization Name"} frontendText={"Enter Organization Name"}/>
+                    <ProfileDetailsValue><FontAwesomeIcon icon={faSitemap}/> Department </ProfileDetailsValue>
+                    <Editable placeholder={"Enter Department Name"} frontendText={"Enter Department Name"}/>
+                    <DateValue><FontAwesomeIcon icon={faCalendar}/> Started work on </DateValue>
+                    <DatePicker style={{marginLeft: "20px"}} onChange={handleDateChange}/>
+                </ProfileDetailsWrapper>
+            </ProfileWrapper>
+        </div>
     );
 };
 
