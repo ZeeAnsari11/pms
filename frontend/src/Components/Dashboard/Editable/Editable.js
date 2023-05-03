@@ -7,11 +7,7 @@ import {BsPlusSquare} from "react-icons/bs";
 
 const EditableWrapper = styled.div`
   width: 100%;
-<<<<<<< Updated upstream
-  width: 100%;
-=======
   height: 100%;
->>>>>>> Stashed changes
 
   .editable_display {
     padding: 2px 8px;
@@ -111,13 +107,8 @@ const EditableEditFooter = styled.div`
 
 const EditableDisplay = styled.p`
   background-color: transparent;
-<<<<<<< Updated upstream
   font-size: 22px;
   font-weight: ${props => props.fontWeight || 'normal'};
-
-=======
-  font-size: 24px;
->>>>>>> Stashed changes
   //width: 120px;
   display: flex;
 
