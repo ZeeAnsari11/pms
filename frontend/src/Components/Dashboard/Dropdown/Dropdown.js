@@ -4,9 +4,6 @@ import styled from 'styled-components';
 const StyledDropdown = styled.div`
   position: absolute;
   right: 0;
-  //top: 100%;
-  //background-color: #fff;
-  //border-radius: 3px;
   margin-right: 5px;
   margin-top: -20px;
   min-height: 40px;
@@ -22,19 +19,19 @@ const StyledDropdown = styled.div`
 function Dropdown(props) {
   const dropdownRef = useRef();
 
-  const handleClick = (event) => {
-    if (dropdownRef && !dropdownRef?.current?.contains(event?.target)) {
-      if (props.onClose) props.onClose();
+  const handleClickOutside = (event) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      props.onClose();
     }
   };
 
   useEffect(() => {
-    document.addEventListener('click', handleClick);
+    document.addEventListener('mousedown', handleClickOutside);
 
     return () => {
-      document.removeEventListener('click', handleClick);
+      document.removeEventListener('mousedown', handleClickOutside);
     };
-  });
+  }, []);
 
   return (
     <StyledDropdown ref={dropdownRef} className={props.class}>
