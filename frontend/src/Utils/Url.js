@@ -10,6 +10,7 @@ import ProjectSettingPage from "../Components/User/ProjectSettingPage/ProjectSet
 import CreateProject from "../Components/User/CreateNewProjectPage/CreateProjectPage";
 import ManageAccount from "../Components/User/ManageAccount/ManageAccount";
 import PersonalSettingsPage from "../Components/User/PersonalSettingPage/PersonalSettingsPage";
+import ProjectSummary from "../Components/Project/ProjectSummaryPage/ProjectSummary";
 
 function Url() {
     return (
@@ -25,7 +26,7 @@ function Url() {
                 <Route path="/create-project" element={<CreateProject/>}/>
                 <Route path="/personal-settings" element={<PersonalSettingsPage/>}/>
                 <Route path="/manage-account" element={<ManageAccount />} />
-
+                <Route path="/project-summary" element={<ProjectSummary />} />
             </Routes>
         </BrowserRouter>
     );
