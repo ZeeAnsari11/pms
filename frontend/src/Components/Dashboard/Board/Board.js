@@ -1,11 +1,10 @@
-import React, { useState,  } from "react";
-import { MoreHorizontal } from "react-feather";
+import React, {useState,} from "react";
+import {MoreHorizontal} from "react-feather";
 import Card from "../Card/Card";
 import Editable from "../Editable/Editable";
 import Dropdown from "../Dropdown/Dropdown";
 import styled from "styled-components";
 import {BsPlus} from "react-icons/bs";
-
 
 const BoardContainer = styled.div`
   min-width: 290px;
@@ -31,13 +30,28 @@ const BoardTopTitle = styled.p`
   width: 100%;
 `;
 
-const BoardTopMore = styled.div`
+const BoardTopMore = styled.button`
   position: relative;
   cursor: pointer;
-  margin-left: 73.6px;
   float: right;
   padding: 4px;
+  height: 29px;
+  width: 35px;
+  margin-right: 5px;
+  border: none;
+  border-radius: 3px;
 
+  &:hover {
+    background-color: white;
+  }
+
+  &:active {
+    background-color: #253858;
+  }
+
+  &:focus {
+    background-color: #253858;
+  }
 `;
 
 const BoardHeaderTitle = styled.div`
@@ -57,11 +71,17 @@ const BoardDropdown = styled.div`
   box-shadow: 1px 0px 20px rgba(0, 0, 0, 0.12);
   width: 100px !important;
   cursor: default;
-  background-color: #fff;
+  border-radius: 3px;
+  margin-top: 25px;
+  background-color: whitesmoke;
+
 
   p {
-    border-bottom: 1px solid #f8f8f8;
     cursor: pointer;
+  }
+
+  &:hover {
+    background-color: #DADADA;
   }
 `;
 
@@ -106,19 +126,33 @@ const BoardAddCardEdit = styled.div`
   padding: 10px;
 `;
 
+const ParagraphWrapper = styled.p`
+
+`;
+
 function Board(props) {
     const [showDropDown, setShowDropdown] = useState(false);
+
+    const handleDropdownClose = () => {
+        setShowDropdown(false);
+    };
+
     return (
         <BoardContainer>
             <BoardTop>
                 <BoardTopTitle>
                     {props.board?.title} <span>{`(${props.board?.cards?.length})`}</span>
-                    <BoardTopMore onClick={() => setShowDropdown(!showDropDown)}>
-                        <MoreHorizontal/>
+                    <BoardTopMore onClick={() => setShowDropdown(true)}>
+                        {
+
+                            <MoreHorizontal onClick={() => setShowDropdown(!showDropDown)}/>
+
+                        }
                         {showDropDown && (
-                            <Dropdown onClick={() => setShowDropdown(!showDropDown)}>
+                            <Dropdown onClose={handleDropdownClose}>
                                 <BoardDropdown>
-                                    <p onClick={() => props.removeBoard(props.board?.id)}>Delete Board</p>
+                                    <ParagraphWrapper onClick={() => props.removeBoard(props.board?.id)}>Delete
+                                        Board</ParagraphWrapper>
                                 </BoardDropdown>
                             </Dropdown>
                         )}
