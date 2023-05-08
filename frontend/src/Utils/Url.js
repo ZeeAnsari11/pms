@@ -11,7 +11,7 @@ import CreateProject from "../Components/User/CreateNewProjectPage/CreateProject
 import ManageAccount from "../Components/User/ManageAccount/ManageAccount";
 import PersonalSettingsPage from "../Components/User/PersonalSettingPage/PersonalSettingsPage";
 import ProjectSummary from "../Components/Project/ProjectSummaryPage/ProjectSummary";
-
+import Notification from "../Components/Project/Notification/Notification";
 function Url() {
     return (
         <BrowserRouter>
@@ -27,6 +27,7 @@ function Url() {
                 <Route path="/personal-settings" element={<PersonalSettingsPage/>}/>
                 <Route path="/manage-account" element={<ManageAccount />} />
                 <Route path="/project-summary" element={<ProjectSummary />} />
+                <Route path="/notification" element={<Notification />} />
             </Routes>
         </BrowserRouter>
     );
