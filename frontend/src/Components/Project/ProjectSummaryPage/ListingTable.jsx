@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import {color} from "../Sidebar/utils/styles";
 
 const Container = styled.div`
   display: flex;
@@ -39,6 +40,12 @@ const TableHeader = styled.th`
   text-align: left;
   padding: 16px;
   font-weight: bold;
+`;
+
+export const Divider = styled.div`
+  margin-top: 17px;
+  padding-top: 18px;
+  border-top: 1px solid ${color.borderLight};
 `;
 
 const TableRow = styled.tr`
@@ -132,9 +139,9 @@ const Listing = ({ columns }) => {
               <TableData>Open tasks value</TableData>
               <TableData>Closed tasks value</TableData>
             </TableRow>
-
           </tbody>
         </Table>
+        <Divider/>
       </TableContainer>
     </Container>
   );

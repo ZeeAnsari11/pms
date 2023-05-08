@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import styled from 'styled-components';
 import NavBar from "../../Dashboard/Navbar/index";
-import Sidebar from "../../Dashboard/Sidebar/index";
+import Sidebar from "../../Project/Sidebar/index";
 import Listing from "../ProjectSummaryPage/ListingTable"
 
 const PageContainer = styled.div`
