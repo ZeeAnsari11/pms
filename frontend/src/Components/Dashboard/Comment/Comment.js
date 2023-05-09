@@ -28,6 +28,7 @@ const CommentInfo = styled.div`
 const CommentAuthor = styled.p`
   font-weight: bold;
   margin-right: 5px;
+  margin-top: 5px;
 `;
 
 const CommentText = styled.p`
@@ -45,6 +46,24 @@ const CommentActionButton = styled.button`
   color: gray;
   font-weight: bold;
   cursor: pointer;
+`;
+
+const InputField = styled.input`
+    width: 456px;
+    height: 29px;
+    margin-left: -43px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+`;
+
+const ButtonForEditComment = styled.button`
+    background-color: rgb(0, 82, 204);
+    color: rgb(255, 255, 255);
+    border: none;
+    border-radius: 3px;
+    margin-left: 428px;
+    padding: 8px 13px;
+    margin-top: -32px;
 `;
 
 
@@ -81,13 +100,13 @@ function Comment({comment, index, onDelete, onEdit, selectedComment}) {
                     <CommentAuthor>User {index + 1}</CommentAuthor>
                     {selectedComment === index ? (
                         <>
-                            <input
+                            <InputField
                                 type="text"
                                 placeholder="Edit comment"
                                 value={editComment}
                                 onChange={(e) => setEditComment(e.target.value)}
                             />
-                            <button onClick={handleSave}>Save</button>
+                            <ButtonForEditComment onClick={handleSave}>Save</ButtonForEditComment>
                         </>
                     ) : (
                         <>
