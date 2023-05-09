@@ -12,6 +12,7 @@ import NavBar from "../../Dashboard/Navbar";
 import ReactQuill from "react-quill";
 import Sidebar from '../../Dashboard/Sidebar'
 import UserSelectField from "../../Dashboard/SelectFields/UserSelectField";
+import ImageUploader from "../ImageUploader";
 
 const PageWrapper = styled.div`
   background-color: #fff;
@@ -293,48 +294,13 @@ function ProjectSettingPage() {
             <NavBar/>
             <Sidebar project={project}/>
             <PageWrapper>
-                <NotificationModal
-                    visible={modalVisible}
-                    onCancel={handleCancel}
-                    onConfirm={handleConfirm}
-                    title="Confirm delete project?"
-                    content="Are you sure about deleting this project?"
-                />
-                <UploadIconModal title={<h3 style={{fontSize: '18px', marginTop: '-5px'}}>Choose an icon</h3>}
-                                 open={visibleForIcon}
-                                 onOk={handleOkForIcon}
-                                 onCancel={handleCancelForIcon}
-                                 okText="Select"
-                                 cancelText="Delete existing"
-                                 style={modalStyle}
-                                 maskClosable={false}
-                                 closable={false}
-                                 cancelButtonProps={{
-                                     style: {
-                                         backgroundColor: 'red', color: 'black', border: 'black',
 
-                                     }, className: 'cancel-button',
-                                 }}
-                >
-                    <Dragger handleUploadfForDragAndDrop={handleUploadfForDragAndDrop}/>
-                    <p style={{marginLeft: '225px'}}>or</p>
-                    <FileUploaderButton handleUpload={handleUpload}/>
-
-                </UploadIconModal>
                 <Header>
                     <Details>Details</Details>
                 </Header>
 
-                {image && select ? (<ImageWrapper>
-                    <Image src={'http://localhost:3000/Images/' + image} alt="Profile Picture"/>
-                </ImageWrapper>) : (<ImageWrapper>
-                    <Image src={'http://localhost:3000/Images/NoImage.jpeg'} alt="No Profile Picture"/>
-                </ImageWrapper>)}
-                <ButtonWrapper>
-                    <UploadButton onClick={showModalForIcon}>Change icon</UploadButton>
-                </ButtonWrapper>
-
                 <FormWrapper>
+                    <ImageUploader id="image"/>
                     <Label htmlFor="name">Name:</Label>
                     <NameInput type="text" id="name" name="name" placeholder="Project name"/>
                     <LabelForKey htmlFor="key">Key:</LabelForKey>
