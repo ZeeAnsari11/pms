@@ -1,9 +1,9 @@
 import React from 'react';
 import {MdNotifications, MdSummarize} from 'react-icons/md';
-import {CiDeliveryTruck} from 'react-icons/ci';
 import {RiRoadMapLine, RiPagesLine} from 'react-icons/ri'
 import {BiCodeAlt} from 'react-icons/bi'
 import {BsGraphUpArrow} from 'react-icons/bs'
+import {GrSettingsOption} from 'react-icons/gr';
 
 const Icon = ({type, size}) => {
     switch (type) {
@@ -11,8 +11,8 @@ const Icon = ({type, size}) => {
             return <MdSummarize size={size} color={"black"}/>;
         case 'MdNotifications':
             return <MdNotifications size={size} color={"black"}/>;
-        case 'release':
-            return <CiDeliveryTruck size={size}/>;
+        case 'GrSettingsOption':
+            return <GrSettingsOption size={size}/>;
         case 'roadmap':
             return <RiRoadMapLine size={size}/>;
         case 'code':
