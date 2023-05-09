@@ -1,23 +1,30 @@
 from django.shortcuts import render
-from django.http import JsonResponse
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
-from rest_framework.mixins import RetrieveModelMixin, CreateModelMixin
 from rest_framework.decorators import api_view, action
+from rest_framework.mixins import RetrieveModelMixin
+from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework import status
 from django.db.models import Q
+from django.contrib.auth.models import User
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated, IsAdminUser
 from .models import Project, Issue, Comment, WorkLog, Watcher, ProjectCategory, IssuesType, IssuesPriority, IssuesStatus
 from . import serializers
 
 
 # Create your views here.
+class UserViewSet(ModelViewSet):
+    http_method_names = ['get']
+    serializer_class = serializers.CustomUserSerializer
+    permission_classes = [IsAuthenticated]
+
+    queryset = User.objects.all()
+
 
 class ProjectCategoryViewSet(ModelViewSet):
     http_method_names = ['get', 'post', 'patch', 'delete']
-
     serializer_class = serializers.ProjectCategorySerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAuthenticated]
 
     queryset = ProjectCategory.objects.all()
 
@@ -26,7 +33,7 @@ class IssuesTypeViewSet(ModelViewSet):
     http_method_names = ['get', 'post', 'patch', 'delete']
 
     serializer_class = serializers.IssuesTypeSerialzer
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAuthenticated]
 
     queryset = IssuesType.objects.all()
 
@@ -35,7 +42,7 @@ class IssuesStatusViewSet(ModelViewSet):
     http_method_names = ['get', 'post', 'patch', 'delete']
 
     serializer_class = serializers.IssuesStatusSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAuthenticated]
 
     queryset = IssuesStatus.objects.all()
 
@@ -44,12 +51,13 @@ class IssuesPriorityViewSet(ModelViewSet):
     http_method_names = ['get', 'post', 'patch', 'delete']
 
     serializer_class = serializers.IssuesPrioritySerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAuthenticated]
 
     queryset = IssuesPriority.objects.all()
 
 
 class ProjectViewSet(ModelViewSet):
+    parser_classes = (MultiPartParser, FormParser)
     http_method_names = ['get', 'post', 'patch', 'delete']
 
     # queryset = Project.objects.prefetch_related('assignee').select_related('company').all()
