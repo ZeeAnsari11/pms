@@ -36,6 +36,7 @@ const ProjectSidebar = ({project}) => {
 
             {renderLinkItem(match, 'Summary', 'MdSummarize', '/project-summary')}
             {renderLinkItem(match, 'Notification', 'MdNotifications', '/notification')}
+            {renderLinkItem(match, 'Integrations', 'GrSettingsOption', '/integrations')}
             <Divider/>
             {renderLinkItem(match, 'Roadmap', 'roadmap')}
             {renderLinkItem(match, 'Releases', 'release')}

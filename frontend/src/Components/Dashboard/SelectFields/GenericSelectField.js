@@ -37,7 +37,8 @@ const GenericSelectField = ({options, isMultiple, placeholder, defaultValue, isD
                 <StyledOption key={option.value} value={option.label} icon={option.icon}>
                     {option.icon} {option.label}
                 </StyledOption>
-            ))}
+
+                ))}
         </StyledSelect>
     );
 };
