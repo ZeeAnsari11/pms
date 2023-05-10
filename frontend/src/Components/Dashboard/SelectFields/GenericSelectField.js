@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {Select} from 'antd';
 import styled from 'styled-components';
 
@@ -15,30 +15,35 @@ const StyledOption = styled(Option)`
   padding-left: ${({icon}) => icon && '30px'};
 `;
 
-const GenericSelectField = ({options, isMultiple, placeholder, defaultValue, isDisabled, width, height, onSelect}) => {
-    const [selectedValues, setSelectedValues] = useState(defaultValue);
+const GenericSelectField = ({
+                                options,
+                                isMultiple,
+                                placeholder,
+                                defaultValue,
+                                isDisabled,
+                                width,
+                                height,
+                                onSelectChange
+                            }) => {
 
-    const handleSelectChange = (values) => {
-        setSelectedValues(values);
-        onSelect(values); // Pass selected values back to parent component
+    const handleSelectChange = (value) => {
+        onSelectChange(value);
     };
-
     return (
         <StyledSelect
             mode={isMultiple ? 'multiple' : undefined}
             placeholder={placeholder}
-            value={selectedValues}
-            onChange={handleSelectChange}
+            defaultValue={defaultValue}
             disabled={isDisabled}
             width={width}
             height={height}
+            onChange={handleSelectChange}
         >
             {options.map((option) => (
-                <StyledOption key={option.value} value={option.label} icon={option.icon}>
+                <StyledOption key={option.value} value={option.id} icon={option.icon}>
                     {option.icon} {option.label}
                 </StyledOption>
-
-                ))}
+            ))}
         </StyledSelect>
     );
 };
