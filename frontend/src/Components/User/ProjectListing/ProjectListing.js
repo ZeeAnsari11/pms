@@ -79,6 +79,48 @@ const ProjectListingTable = styled.table`
   }
 `;
 
+
+const NameColumn = styled.td`
+  display: flex;
+  align-items: center;
+
+  img {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    margin-right: 8px;
+  }
+
+  span {
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: calc(100% - 32px);
+  }
+`;
+
+const ProjectAvatar = styled.img`
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  margin-right: 8px;
+`;
+
+const ProjectName = styled.span`
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: calc(100% - 32px);
+`;
+
+
+const ProjectAvatarWrapper = styled.div`
+  width: 24px;
+  height: 24px;
+  margin-right: 8px;
+`;
 const OptionsColumn = styled.th`
   text-align: center;
   cursor: pointer;
@@ -104,6 +146,7 @@ const NoProjectsMessage = styled.tr`
 `;
 
 const StarColumn = styled.span`
+  margin-right: 5px;
   color: #ccc;
   cursor: pointer;
   transition: color 0.2s ease-in-out;
@@ -112,8 +155,7 @@ const StarColumn = styled.span`
     color: #ffd700;
   }
 `;
-
-const NameColumn = styled.td`
+const StarSelect = styled.td`
   display: flex;
   align-items: center;
 
@@ -148,8 +190,6 @@ const OptionsColumns = styled.td`
 `;
 
 
-
-
 const ProjectListing = () => {
     let authToken = localStorage.getItem('auth_token')
     const [visible, setVisible] = useState(false);
@@ -166,7 +206,8 @@ const ProjectListing = () => {
             setProjects(response.data);
         };
         fetchProjects()
-    }, [projects]);
+    }, []);
+    console.log("Projects Data:", projects)
 
 
     useEffect(() => {
@@ -176,7 +217,7 @@ const ProjectListing = () => {
                     Authorization: `Token ${authToken}`,
                 },
             });
-            const avatarResponse = await axios.get('http://127.0.0.1:8000/api/avatar/', {
+            const avatarResponse = await axios.get('http://127.0.0.1:8000/api/avatar/all/', {
                 headers: {
                     Authorization: `Token ${authToken}`,
                 },
@@ -186,7 +227,7 @@ const ProjectListing = () => {
             }
         };
         fetchuserImage();
-    }, [userimage]);
+    }, []);
 
     const showModal = () => {
         setVisible(true);
@@ -254,19 +295,33 @@ const ProjectListing = () => {
 
                 projects.map((project) => (
                     <tr key={project.id}>
-                        <StarColumn>★</StarColumn>
-                        <NameColumn>
-                            <img
-                                src={project.icon ? `http://127.0.0.1:8000/${project.icon}` : 'http://localhost:3000/Images/NoImage.jpeg'}
-                                alt='Project Avatar'/>
-                            <Link to={`${project.id}/${project.name}`}>{project.name}</Link>
-                        </NameColumn>
+
+                        <StarSelect>
+                            <StarColumn>★</StarColumn>
+                        </StarSelect>
+                        <td>
+                            <NameColumn>
+                                <ProjectAvatarWrapper>
+                                    <ProjectAvatar
+                                        src={
+                                            project.icon
+                                                ? `http://127.0.0.1:8000/${project.icon}`
+                                                : 'http://localhost:3000/Images/NoImage.jpeg'
+                                        }
+                                        alt='Project Avatar'
+                                    />
+                                </ProjectAvatarWrapper>
+                                <ProjectName>
+                                    <Link to={`/${project.id}/${project.name}/dashboard`}>{project.name}</Link>
+                                </ProjectName>
+                            </NameColumn>
+                        </td>
                         <td>{project.key}</td>
                         {/*<td>{project.type}Team-managed software</td>*/}
                         <td>{project.project_category.project_category}</td>
                         <LeadColumn>
-                            <img src={userimage.image ? userimage.image : 'http://localhost:3000/Images/NoImage.jpeg'}
-                                 alt='Lead Avatar'/>
+                            {/*<img src={userimage.image ? userimage.image : 'http://localhost:3000/Images/NoImage.jpeg'}*/}
+                            {/*     alt='Lead Avatar'/>*/}
                             <p>{project.project_lead.username}</p>
                         </LeadColumn>
                         <OptionsColumns>

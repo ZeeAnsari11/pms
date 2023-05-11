@@ -1,14 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import styled from 'styled-components';
 import ReactQuill from 'react-quill';
-import Selector from '../../../Shared/Components/Select';
-import {Modal as UploadIconModal} from 'antd';
-import Dragger from '../DragAndDrop/DragAndDrop';
-import FileUploaderButton from '../PhotoUploader/PhotoUploader';
 import axios from "axios";
 import {text} from "@fortawesome/fontawesome-svg-core";
 import NavBar from "../../Dashboard/Navbar";
 import GenericSelectField from "../../Dashboard/SelectFields/GenericSelectField";
+import ImageUploader from "../ImageUploader";
 
 const PageWrapper = styled.div`
   background-color: #fff;
@@ -106,7 +103,7 @@ const LabelForDescriptionBoc = styled.label`
 const LabelforLead = styled.label`
   font-weight: bold;
   margin-bottom: 0.5rem;
-  margin-top: 15px;
+  margin-top: 10px;
   margin-right: 265px;
 `;
 
@@ -134,6 +131,15 @@ const LabelforCategory
   font-weight: bold;
   margin-bottom: 0.5rem;
   margin-right: 288px;
+`;
+
+
+const LabelforAssignees
+    = styled.label`
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  margin-right: 288px;
+  margin-top: 0.5rem;
 `;
 
 const SaveButton = styled.button`
@@ -203,6 +209,20 @@ function CreateProject() {
     const [visibleForIcon, setVisibleForIcon] = useState(false);
 
     const [image, setImage] = useState(null);
+    const [companyData, setCompanyData] = useState([]);
+
+    const [categoryData, setCategoryData] = useState([]);
+    const [usersData, setUsersData] = useState([]);
+
+
+    const [selectedCompany, setSelectedCompany] = useState([]);
+
+    const [selectedCategory, setSelectedCategory] = useState([]);
+
+    const [selectedProjectLead, setSelectedProjectLead] = useState([]);
+
+    const [selectedProjectAssignees, setSelectedProjectAssignees] = useState([]);
+
 
     const [select, setSelect] = useState(null);
 
@@ -211,6 +231,25 @@ function CreateProject() {
     const handleTextChange = (value) => {
         setText(value);
     }
+    const handleImageChange = (image) => {
+        setImage(image);
+    }
+    const handleSelectedCompanyChange = (value) => {
+        setSelectedCompany(parseInt(value));
+    };
+
+    const handleSelectedCategoryChange = (value) => {
+        setSelectedCategory(parseInt(value));
+    };
+
+    const handleSelectedProjectLeadChange = (value) => {
+        setSelectedProjectLead(parseInt(value));
+    };
+
+    const handleSelectedProjectAssigneesChange = (value) => {
+        setSelectedProjectAssignees(parseInt(value));
+    };
+
 
     const handleUpload = (file) => {
         setImage(file);
@@ -244,50 +283,131 @@ function CreateProject() {
         setVisibleForIcon(false);
     };
 
+
+    useEffect(() => {
+        const fetchCompanies = async () => {
+            const response = await axios.get('http://127.0.0.1:8000/register/companies/', {
+                headers: {
+                    Authorization: `Token ${authToken}`,
+                },
+            });
+            setCompanyData(response.data);
+        };
+
+        const fetchCategories = async () => {
+            const response = await axios.get('http://127.0.0.1:8000/api/project_categories/', {
+                headers: {
+                    Authorization: `Token ${authToken}`,
+                },
+            });
+            setCategoryData(response.data);
+        };
+
+        const fetchUsers = async () => {
+            const response = await axios.get('http://127.0.0.1:8000/api/users_list/', {
+                headers: {
+                    Authorization: `Token ${authToken}`,
+                },
+            });
+            setUsersData(response.data);
+        };
+        fetchCompanies()
+        fetchCategories()
+        fetchUsers()
+    }, []);
+    console.log("Company Data:", companyData)
+    console.log("Category Data:", categoryData)
+
+
+    const companyoptions = companyData
+        ? companyData.map((company) => ({
+            label: company.company_name,
+            value: company.id,
+        }))
+        : [];
+
+
+    const categoriesoptions = categoryData
+        ? categoryData.map((category) => ({
+            label: category.project_category,
+            value: category.id,
+        }))
+        : [];
+
+    const useroptions = usersData
+        ? usersData.map((user) => ({
+            label: user.username,
+            value: user.id,
+        }))
+        : [];
+
+
     const modalStyle = {
         borderRadius: 0,
         height: '1000px',
         cancelButton: {backgroundColor: 'red'}
     };
 
-    const statusoptions = [
-        {value: 'option1', label: 'Backlog'},
-        {value: 'option2', label: 'Selected for Development'},
-        {value: 'option3', label: 'In Progress'},
-        {value: 'option4', label: 'Done'},
+
+    const companyydata = [
+        {value: 'option1', label: 'PHPStudios'},
+        {value: 'option2', label: 'ProjeX'},
     ];
+    const categoriesdata = [
+        {value: 'option1', label: 'Software'},
+        {value: 'option2', label: 'Bussiness'},
+        {value: 'option3', label: 'Marketing'},
+    ];
+
+    const userdata = [
+        {value: 'option1', label: 'Asher'},
+        {value: 'option2', label: 'Abdullah'},
+        {value: 'option3', label: 'Kaleem'},
+        {value: 'option3', label: 'Usman Ilam Din'},
+    ];
+
+    function generateSlug(text) {
+        return text.toString().toLowerCase()
+            .replace(/\s+/g, '-')        // Replace spaces with -
+            .replace(/[^\w\-]+/g, '')   // Remove all non-word chars
+            .replace(/\-\-+/g, '-')      // Replace multiple - with single -
+            .replace(/^-+/, '')          // Trim - from start of text
+            .replace(/-+$/, '');         // Trim - from end of text
+    }
+
 
     function handleSubmit(event) {
         event.preventDefault();
-
         const form = event.target;
-        const data = {
-            "icon": 'backend/media/attachments/projects/icons/crocodile.png',
+        const projectdata = {
+            "icon": image,
             "name": form.elements.project.value,
-            "slug": "",
+            "slug": generateSlug(form.elements.project.value),
             "key": form.elements.key.value,
-            "assignee": [2],
-            "project_lead": 1,
+            "assignee": selectedProjectAssignees,
+            "project_lead": selectedProjectLead,
             "description": text,
-            "company": 1,
-            "project_category": 1
+            "company": selectedCompany,
+            "project_category": selectedCategory
         };
+        console.log(selectedCompany, selectedCategory)
 
-        fetch('http://127.0.0.1:8000/api/projects/', {
-            method: 'POST',
+        axios({
+            method: 'post',
+            url: 'http://127.0.0.1:8000/api/projects/',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'multipart/form-data',
                 'Authorization': `Token ${authToken}`,
             },
-            body: JSON.stringify(data)
+            data: projectdata
         })
             .then(response => {
                 // handle the response
-                console.log(data)
+                console.log(response.data);
             })
             .catch(error => {
                 // handle the error
-                console.log(error)
+                console.log(error);
             });
     }
 
@@ -295,49 +415,11 @@ function CreateProject() {
         <div>
             <NavBar/>
             <PageWrapper>
-                <UploadIconModal title={
-                    <h3 style={{fontSize: '18px', marginTop: '-5px'}}>Choose an icon</h3>
-                }
-                                 open={visibleForIcon}
-                                 onOk={handleOkForIcon}
-                                 onCancel={handleCancelForIcon}
-                                 okText="Select"
-                                 cancelText="Delete existing"
-                                 style={modalStyle}
-                                 maskClosable={false}
-                                 closable={false}
-                                 cancelButtonProps={{
-                                     style: {
-                                         backgroundColor: 'red',
-                                         color: 'black',
-                                         border: 'black',
-
-                                     },
-                                     className: 'cancel-button',
-                                 }}
-                >
-                    <Dragger handleUploadfForDragAndDrop={handleUploadfForDragAndDrop}/>
-                    <p style={{marginLeft: '225px'}}>or</p>
-                    <FileUploaderButton handleUpload={handleUpload}/>
-
-                </UploadIconModal>
                 <Header>
-                    <Details>Project Details</Details>
+                    <Details>Details</Details>
                 </Header>
-
-                {image && select ? (
-                    <ImageWrapper>
-                        <Image src={'http://localhost:3000/Images/' + image} alt="Profile Picture"/>
-                    </ImageWrapper>
-                ) : (
-                    <ImageWrapper>
-                        <Image src={'http://localhost:3000/Images/NoImage.jpeg'} alt="No Profile Picture"/>
-                    </ImageWrapper>
-                )}
-                <ButtonWrapper>
-                    <UploadButton onClick={showModalForIcon}>Change icon</UploadButton>
-                </ButtonWrapper>
                 <FormWrapper onSubmit={handleSubmit} encType="multipart/form-data" method="POST">
+                    <ImageUploader onImageChange={handleImageChange}/>
                     <LabelForProject htmlFor="project">Project:</LabelForProject>
                     <Input type="text" id="project" name="project" placeholder="Enter project name"/>
                     <LabelForKey htmlFor="key">Key:</LabelForKey>
@@ -346,25 +428,32 @@ function CreateProject() {
                     <StyledReactQuill id="exampleEditor" value={text} onChange={handleTextChange}/>
                     <LabelForCompany htmlFor="category">Company:</LabelForCompany>
                     <GenericSelectField
-                        options={statusoptions}
+                        onSelectChange={handleSelectedCompanyChange}
+                        options={companyoptions}
                         isMultiple={false}
                         placeholder={"Unassigned"}
-                        defaultValue={"Backlog"}
                         width="50%"/>
                     <Description>Make sure your project lead has access to issues in the project.</Description>
                     <LabelforCategory htmlFor="category">Category:</LabelforCategory>
                     <GenericSelectField
-                        options={statusoptions}
+                        onSelectChange={handleSelectedCategoryChange}
+                        options={categoriesoptions}
                         isMultiple={false}
                         placeholder={"Unassigned"}
-                        defaultValue={"Backlog"}
+                        width="50%"/>
+                    <LabelforAssignees htmlFor="assignee">Assignee:</LabelforAssignees>
+                    <GenericSelectField
+                        onSelectChange={handleSelectedProjectAssigneesChange}
+                        options={useroptions}
+                        isMultiple={false}
+                        placeholder={"Unassigned"}
                         width="50%"/>
                     <LabelforLead htmlFor="category">Project Lead:</LabelforLead>
                     <GenericSelectField
-                        options={statusoptions}
+                        onSelectChange={handleSelectedProjectLeadChange}
+                        options={useroptions}
                         isMultiple={false}
                         placeholder={"Unassigned"}
-                        defaultValue={"Backlog"}
                         width="50%"/>
                     <SaveButton>Save</SaveButton>
                 </FormWrapper>
