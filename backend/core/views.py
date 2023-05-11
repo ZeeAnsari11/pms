@@ -5,6 +5,7 @@ from rest_framework.exceptions import NotFound
 from .models import UserProfile
 from rest_framework import status
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 
 class AvatarView(RetrieveAPIView):
@@ -45,3 +46,12 @@ class AvatarView(RetrieveAPIView):
         user_profile = self.get_object()
         user_profile.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class AllAvatarView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        user_profiles = UserProfile.objects.all()
+        serializer = UserProfileSerializer(user_profiles, many=True)
+        return Response(serializer.data)
