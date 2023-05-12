@@ -13,6 +13,7 @@ import PersonalSettingsPage from "../Components/User/PersonalSettingPage/Persona
 import ProjectSummary from "../Components/Project/ProjectSummaryPage/ProjectSummary";
 import Notification from "../Components/Project/Notification/Notification";
 import Integrations from "../Components/Project/Integrations/Integrations";
+import ProjectTag from "../Components/Project/ProjectTag/ProjectTag";
 function Url() {
     return (
         <BrowserRouter>
@@ -30,6 +31,7 @@ function Url() {
                 <Route path="/project-summary" element={<ProjectSummary />} />
                 <Route path="/notification" element={<Notification />} />
                 <Route path="/integrations" element={<Integrations />} />
+                <Route path="/project-tags" element={<ProjectTag />} />
             </Routes>
         </BrowserRouter>
     );
