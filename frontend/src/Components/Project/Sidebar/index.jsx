@@ -37,12 +37,14 @@ const ProjectSidebar = ({project}) => {
             {renderLinkItem(match, 'Summary', 'MdSummarize', '/project-summary')}
             {renderLinkItem(match, 'Notification', 'MdNotifications', '/notification')}
             {renderLinkItem(match, 'Integrations', 'GrSettingsOption', '/integrations')}
+            {renderLinkItem(match, 'Tag', 'FaTag', '/project-tags')}
+            {renderLinkItem(match, 'Columns', 'FaColumns', '/project-columns')}
             <Divider/>
-            {renderLinkItem(match, 'Roadmap', 'roadmap')}
-            {renderLinkItem(match, 'Releases', 'release')}
-            {renderLinkItem(match, 'Code', 'code')}
-            {renderLinkItem(match, 'Project Pages', 'pages')}
-            {renderLinkItem(match, 'Reports', 'reports')}
+            {/*{renderLinkItem(match, 'Roadmap', 'roadmap')}*/}
+            {/*{renderLinkItem(match, 'Releases', 'release')}*/}
+            {/*{renderLinkItem(match, 'Code', 'code')}*/}
+            {/*{renderLinkItem(match, 'Project Pages', 'pages')}*/}
+            {/*{renderLinkItem(match, 'Reports', 'reports')}*/}
         </Sidebar>
     );
 };
