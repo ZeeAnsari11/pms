@@ -73,7 +73,7 @@ const Image = styled.img`
   object-fit: cover;
   border-radius: 50%;
 `;
-const ImageUploader = ({onImageChange}) => {
+const ImageUploader = ({imagePath, onImageChange}) => {
     const [selectedImage, setSelectedImage] = useState(null);
     const [imageName, setImageName] = useState('');
 
@@ -97,11 +97,21 @@ const ImageUploader = ({onImageChange}) => {
         setImageName('');
     };
 
+    const getImageSrc = () => {
+        if (imagePath) {
+            return imagePath;
+        } else if (selectedImage) {
+            return selectedImage;
+        } else {
+            return "http://localhost:3000/Images/NoImage.jpeg";
+        }
+    };
+
     return (
         <Container>
             <ImageContainer>
-                {selectedImage ? (
-                    <Image src={selectedImage} alt="Selected Image"/>
+                {selectedImage || imagePath ? (
+                    <Image src={selectedImage || imagePath} alt="Selected Image"/>
                 ) : (
                     <Image src="http://localhost:3000/Images/NoImage.jpeg" alt="Default Image"/>
                 )}
