@@ -1,18 +1,11 @@
-import React, {useState, useRef} from 'react';
+import React from 'react';
 import styled from 'styled-components';
-import {HiDotsHorizontal} from 'react-icons/hi'
-import Dropdown from "../../Dashboard/Dropdown";
-import {Link, useLocation} from "react-router-dom";
-import {Button, Modal as UploadIconModal, notification} from 'antd';
-import Selector from '../../../Shared/Components/Select';
-import Dragger from "../DragAndDrop/DragAndDrop";
-import FileUploaderButton from "../PhotoUploader/PhotoUploader";
-import NotificationModal from '../Notification/Notification';
+import {useLocation} from "react-router-dom";
 import NavBar from "../../Dashboard/Navbar";
-import ReactQuill from "react-quill";
 import Sidebar from '../../Dashboard/Sidebar'
 import UserSelectField from "../../Dashboard/SelectFields/UserSelectField";
 import ImageUploader from "../ImageUploader";
+
 
 const PageWrapper = styled.div`
   background-color: #fff;
@@ -31,103 +24,31 @@ const Details = styled.h1`
   margin: 50px;
 `;
 
-const OptionButton = styled.button`
-  background-color: transparent;
-  border: none;
-  color: #000;
-  cursor: pointer;
-  font-size: 2rem;
-  font-weight: bold;
-  padding: 0.5rem 1rem;
-  transition: background-color 0.3s ease-in-out;
-
-  &:hover {
-    background-color: #00C7E6;
-  }
-`;
-
-const ImageWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 20%;
-`;
-
-const Image = styled.img`
-  max-width: 100%;
-  max-height: 100%;
-  border-radius: 4%;
-`;
-
 const NameInput = styled.input`
   border: 2px solid #ccc;
   border-radius: 5px;
   padding: 0.5rem;
   font-size: 1rem;
-  //width: 40%;
   margin-bottom: 2%;
   background-color: #FAFBFC;
   width: 359px;
-
-
+  
   :hover {
     background-color: #EBECF0;
   }
 `;
-
 
 const KeyInput = styled.input`
   border: 2px solid #ccc;
   border-radius: 5px;
   padding: 0.5rem;
   font-size: 1rem;
-  //width: 40%;
   margin-bottom: 2%;
   background-color: #FAFBFC;
   width: 359px;
-
-
+  
   :hover {
     background-color: #EBECF0;
-  }
-`;
-
-const UrlInput = styled.input`
-  border: 2px solid #ccc;
-  border-radius: 5px;
-  padding: 0.5rem;
-  font-size: 1rem;
-  //width: 40%;
-  margin-bottom: 2%;
-  background-color: #FAFBFC;
-  width: 359px;
-
-
-  :hover {
-    background-color: #EBECF0;
-  }
-`;
-
-const ButtonWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 1rem;
-`;
-
-const UploadButton = styled.button`
-  background-color: #F5F6F8;
-  border-radius: 5%;
-  border: none;
-  color: #050303;
-  cursor: pointer;
-  font-size: 1rem;
-  font-weight: bold;
-  padding: 0.5rem 1rem;
-  transition: background-color 0.3s ease-in-out;
-
-  &:hover {
-    background-color: #ECEDF0;
   }
 `;
 
@@ -150,24 +71,12 @@ const LabelForKey = styled.label`
   margin-right: 342px;
 `;
 
-const LabelForUrl = styled.label`
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-  margin-right: 342px;
-`;
-
-const LabelForDescription = styled.label`
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-  margin-right: 280px;
-`;
 
 const Labelforlead = styled.label`
   font-weight: bold;
   margin-bottom: 0.5rem;
   margin-top: 10px;
   margin-right: 278px;
-
 `;
 
 const Description = styled.p`
@@ -207,77 +116,6 @@ function ProjectSettingPage() {
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
 
-    const [modalVisible, setModalVisible] = useState(false);
-
-    const handleCancel = () => {
-        setModalVisible(false);
-    };
-
-    const handleConfirm = () => {
-        // Do something when confirm button is clicked
-        setModalVisible(false);
-    };
-
-    const showModalForNotification = () => {
-        setModalVisible(true);
-    }
-
-    const items = [{
-        label: <Link onClick={showModalForNotification}>Move to trash </Link>, key: '0',
-    },];
-
-    const [visibleForIcon, setVisibleForIcon] = useState(false);
-
-    const [image, setImage] = useState(null);
-
-    const [select, setSelect] = useState(null);
-
-    const [description, setDescription] = useState('');
-
-
-    const handleUpload = (file) => {
-        setImage(file);
-        setVisibleForIcon(false);
-    };
-
-    const handleDescriptionChange = (value) => {
-        setDescription(value);
-    }
-
-    const handleUploadfForDragAndDrop = (file) => {
-        setImage(file);
-        setVisibleForIcon(false);
-    }
-
-    const showModalForIcon = () => {
-        setVisibleForIcon(true);
-        setSelect(1);
-    };
-
-    const handleOkForIcon = () => {
-        setVisibleForIcon(false);
-    };
-
-    const handleCancelForIcon = () => {
-        setVisibleForIcon(false);
-        setImage(null);
-    };
-
-
-    const modalStyle = {
-        borderRadius: 0, height: '1000px', cancelButton: {backgroundColor: 'red'}
-    };
-
-    const LinkedIssue1 = [
-        {value: 'option1', label: 'blocks'},
-        {value: 'option2', label: 'is blocked by'},
-        {value: 'option3', label: 'clones'},
-        {value: 'option4', label: 'is cloned by'},
-        {value: 'option5', label: 'duplicates'},
-        {value: 'option6', label: 'is duplicated by'},
-        {value: 'option7', label: 'relates to'},
-
-    ];
 
     const users = [
         {id: 1, username: "Hashim Doe"},
