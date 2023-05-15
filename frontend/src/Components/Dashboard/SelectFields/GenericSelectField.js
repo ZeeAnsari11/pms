@@ -29,6 +29,7 @@ const GenericSelectField = ({
     const handleSelectChange = (value) => {
         onSelectChange(value);
     };
+
     return (
         <StyledSelect
             mode={isMultiple ? 'multiple' : undefined}

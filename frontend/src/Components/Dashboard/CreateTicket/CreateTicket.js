@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import styled from "styled-components";
 import {AiFillCloseCircle} from "react-icons/ai";
 import {TbStatusChange} from "react-icons/tb";
@@ -8,8 +8,8 @@ import {FiUser, FiUsers} from "react-icons/fi";
 import UserSelectField from "../SelectFields/UserSelectField";
 import {File} from "react-feather";
 import FileUpload from "../FileAttachement/FileUpload";
-import {DatePicker, TimePicker} from 'antd'
-import moment from "moment/moment";
+import axios from "axios";
+import EstimateTimer from "../EstimateTimer/EstimateTimer";
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -23,20 +23,6 @@ const ModalOverlay = styled.div`
   justify-content: center;
   align-items: center;
 `;
-
-const Projects = [
-    {value: 'option1', label: 'New Project (NP)'},
-    {value: 'option2', label: 'ProjeX'},
-    {value: 'option3', label: 'TCS'},
-    {value: 'option4', label: 'CBDMD'},
-];
-
-const statusoptions = [
-    {value: 'option1', label: 'Backlog'},
-    {value: 'option2', label: 'Selected for Development'},
-    {value: 'option3', label: 'In Progress'},
-    {value: 'option4', label: 'Done'},
-];
 
 const Issue = [
     {value: 'option1', label: 'Task'},
@@ -99,24 +85,6 @@ const ModalContent = styled.div`
   margin-bottom: 16px;
 `;
 
-const ModalButton = styled.button`
-  background-color: #0077ff;
-  color: white;
-  font-size: 16px;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-
-  &:hover {
-    background-color: #0066cc;
-  }
-
-  &:focus {
-    outline: none;
-  }
-`;
-
 const CardInfoBox = styled.div`
   display: flex;
   flex-direction: column;
@@ -152,44 +120,6 @@ const SummaryInput = styled.input`
   background: rgb(242 242 242);
 `;
 
-const TimeInput = styled.input`
-  font-size: 16px;
-  padding: 8px;
-  border-radius: 4px;
-  border: 2px solid #ccc;
-  margin-bottom: 16px;
-  width: 30%;
-  background: rgb(242 242 242);
-`;
-
-const TimeTrackingField = styled.div`
-  display: flex;
-  align-items: center;
-`;
-
-const DateInput = styled.input`
-  width: 80px;
-  height: 20px;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px 0 0 4px;
-  font-size: 14px;
-`;
-
-const TimeTrackingInput = styled.input`
-  width: 60px;
-  height: 20px;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 0 4px 4px 0;
-  font-size: 14px;
-`;
-
-const TimeTrackingLabel = styled.label`
-  margin-right: 8px;
-  font-size: 14px;
-`;
-
 const Task = styled.div`
   display: flex;
   gap: 10px;
@@ -204,14 +134,44 @@ const CardInfoBoxCustom = styled.div`
   padding-top: 30px;
 `;
 
+const FormWrapper = styled.form`
+  display: flex;
+  flex-direction: column;
+  margin-top: 1rem;
+`;
+
+const SaveButton = styled.button`
+  background-color: #0077ff;
+  color: white;
+  font-size: 16px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  width: fit-content;
+
+  &:hover {
+    background-color: #0066cc;
+  }
+
+  &:focus {
+    outline: none;
+  }
+`;
 
 const MyModalComponent = ({onClose}) => {
+    let authToken = localStorage.getItem('auth_token')
     const [summary, setSummary] = useState("");
-    const [time, setTime] = useState("");
     const [description, setDescription] = useState('');
+    const [project, setProject] = useState('');
     const [values, setValues] = useState("");
-    const [startDate, setStartDate] = useState(null);
-    const [startTime, setStartTime] = useState(null);
+    const [IssueType, setIssueType] = useState('');
+    const [Status, setStatus] = useState('');
+    const [hours, setHours] = useState("");
+    const [selectedProject, setSelectedProject] = useState('');
+    const [selectedIssueType, setSelectedIssueType] = useState('');
+    const [selectedStatus, setSelectedStatus] = useState('');
+
     const handleSummaryChange = (event) => {
         setSummary(event.target.value);
     };
@@ -219,13 +179,112 @@ const MyModalComponent = ({onClose}) => {
         setDescription(value);
     }
 
-    const handleDateChange = (date, dateString) => {
-        setStartDate(dateString);
-    };
+    const handleProjectChange = (value) => {
+        setSelectedProject(parseInt(value));
+    }
 
-    const handleTimeChange = (time, timeString) => {
-        setStartTime(timeString);
-    };
+    const handleStatusChange = (value) => {
+        setSelectedStatus(parseInt(value));
+    }
+
+    const handleIssueChange = (value) => {
+    setSelectedIssueType(parseInt(value));
+  };
+
+    useEffect(() => {
+        const fetchProject = async () => {
+            const response = await axios.get('http://127.0.0.1:8000/api/projects/', {
+                headers: {
+                    Authorization: `Token ${authToken}`,
+                },
+            });
+            setProject(response.data);
+        };
+
+        const fetchIssueType = async () => {
+            const response = await axios.get('http://127.0.0.1:8000/api/issues_type/', {
+                headers: {
+                    Authorization: `Token ${authToken}`,
+                },
+            });
+            setIssueType(response.data);
+        };
+
+        const fetchStatusOptions = async () => {
+            const response = await axios.get('http://127.0.0.1:8000/api/issues_status/', {
+                headers: {
+                    Authorization: `Token ${authToken}`,
+                },
+            });
+            setStatus(response.data);
+        };
+        fetchIssueType()
+        fetchProject()
+        fetchStatusOptions()
+    }, []);
+    console.log("Projects:", project)
+
+
+    const Projectoptions = project
+        ? project.map((project) => ({
+            label: project.name,
+            value: project.id,
+        }))
+        : [];
+
+    const IssueTypeoptions = IssueType
+        ? IssueType.map((IssueType) => ({
+            label: IssueType.issue_type,
+            value: IssueType.id,
+        }))
+        : [];
+
+    const Statusoptions = Status
+        ? Status.map((Status) => ({
+            label: Status.issue_status,
+            value: Status.id,
+        }))
+        : [];
+
+    const handleHoursChange = (totalHours) => {
+    setHours(totalHours);
+  };
+
+
+    function handleSubmit(event) {
+        event.preventDefault();
+
+        const data = {
+            "name": "testing",
+            "summary": summary,
+            "description": description,
+            "file": '',
+            "project": selectedProject,
+            "reporter": 1,
+            "type": selectedIssueType,
+            "status": selectedStatus,
+            "assignee": [2],
+
+        };
+
+
+        fetch('http://127.0.0.1:8000/api/issues/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Token ${authToken}`,
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => {
+                // handle the response
+                console.log(data)
+            })
+            .catch(error => {
+                // handle the error
+                console.log(error)
+            });
+    }
 
     return (
 
@@ -240,7 +299,7 @@ const MyModalComponent = ({onClose}) => {
                 </CardInfoBoxClose>
                 <ModalTitle>Create Issue</ModalTitle>
                 <ModalContent>
-
+                <FormWrapper onSubmit={handleSubmit} encType="multipart/form-data" method="POST">
                     <CardInfoBox>
                         <CardInfoBoxTitle>
                             <TbStatusChange/>
@@ -248,10 +307,10 @@ const MyModalComponent = ({onClose}) => {
                         </CardInfoBoxTitle>
                         <TaskList>
                             <GenericSelectField
-                                options={Projects}
+                                options={Projectoptions}
                                 isMultiple={false}
                                 placeholder={"Unassigned"}
-                                defaultValue={"New Project"}/>
+                                onSelectChange={handleProjectChange} />
                         </TaskList>
                     </CardInfoBox>
 
@@ -262,10 +321,10 @@ const MyModalComponent = ({onClose}) => {
                         </CardInfoBoxTitle>
                         <TaskList>
                             <GenericSelectField
-                                options={Issue}
+                                options={IssueTypeoptions}
                                 isMultiple={false}
                                 placeholder={"Unassigned"}
-                                defaultValue={"Task"}/>
+                                onSelectChange={handleIssueChange} />
                         </TaskList>
                     </CardInfoBox>
                     <Divider/>
@@ -277,10 +336,10 @@ const MyModalComponent = ({onClose}) => {
                         </CardInfoBoxTitle>
                         <TaskList>
                             <GenericSelectField
-                                options={statusoptions}
+                                options={Statusoptions}
                                 isMultiple={false}
                                 placeholder={"Unassigned"}
-                                defaultValue={"Backlog"}/>
+                                onSelectChange={handleStatusChange}/>
                         </TaskList>
                     </CardInfoBox>
 
@@ -314,13 +373,10 @@ const MyModalComponent = ({onClose}) => {
                             Original Estimate
                         </CardInfoBoxTitle>
                         <TaskList>
-                            <TimeInput
-                                type="text"
-                                value={time}
-                                onChange={handleTimeChange}
-                                placeholder="Enter Estimation in hours"
-                            />
+                            <EstimateTimer onHoursChange={handleHoursChange}/>
                             <p>An estimate of how much work remains until this issue will be resolved.</p>
+                            <span>The format of this is ' *w *d *h *m ' (representing weeks, days, hours and minutes - where * can be any number).
+                            Examples: 4d, 5h 30m, 60m and 4w 0d 0h 0m.</span>
                         </TaskList>
                     </CardInfoBox>
 
@@ -331,21 +387,6 @@ const MyModalComponent = ({onClose}) => {
                         </CardInfoBoxTitle>
                         <TaskList>
                             <UserSelectField users={users} isMultiple={true} placeholder={"Unassigned"}/>
-                        </TaskList>
-                    </CardInfoBox>
-
-                    <CardInfoBox>
-                        <CardInfoBoxTitle>
-                            <FiUsers/>
-                            Time Tracking
-                        </CardInfoBoxTitle>
-                        <TaskList>
-                            <TimeTrackingField>
-                                <TimeTrackingLabel>Original Estimate</TimeTrackingLabel>
-                                <DatePicker onChange={handleDateChange}/>
-                                <TimePicker style={{marginLeft:"10px"}} use12Hours format="h:mm a" defaultValue={moment()}
-                                            onChange={handleTimeChange}/>
-                            </TimeTrackingField>
                         </TaskList>
                     </CardInfoBox>
 
@@ -404,10 +445,9 @@ const MyModalComponent = ({onClose}) => {
                                 placeholder={"Select Issue"}/>
                         </TaskList>
                     </CardInfoBox>
-
-
+                    <SaveButton>Save</SaveButton>
+                </FormWrapper>
                 </ModalContent>
-                <ModalButton onClick={onClose}>Close</ModalButton>
             </ModalContainer>
         </ModalOverlay>
     )
