@@ -24,21 +24,6 @@ const ModalOverlay = styled.div`
   align-items: center;
 `;
 
-const Issue = [
-    {value: 'option1', label: 'Task'},
-    {value: 'option2', label: 'Epic'},
-];
-
-const users = [
-    {id: 1, username: "Hashim Doe"},
-    {id: 2, username: "Jane Doe"},
-    {id: 3, username: "Bob Smith"},
-];
-
-const label = [
-    {value: 'option1', label: 'QA'},
-    {value: 'option2', label: 'Development'},
-];
 
 const LinkedIssue1 = [
     {value: 'option1', label: 'blocks'},
@@ -163,14 +148,25 @@ const MyModalComponent = ({onClose}) => {
     let authToken = localStorage.getItem('auth_token')
     const [summary, setSummary] = useState("");
     const [description, setDescription] = useState('');
-    const [project, setProject] = useState('');
     const [values, setValues] = useState("");
     const [IssueType, setIssueType] = useState('');
     const [Status, setStatus] = useState('');
+    const [Labels, setLabels] = useState('');
+    const [Users, setUsers] = useState('');
     const [hours, setHours] = useState("");
     const [selectedProject, setSelectedProject] = useState('');
     const [selectedIssueType, setSelectedIssueType] = useState('');
     const [selectedStatus, setSelectedStatus] = useState('');
+    const [selectedLabels, setSelectedLabels] = useState('');
+    const [selectedUsers, setSelectedUsers] = useState('');
+    const [selectedReporter, setSelectedReporter] = useState('');
+    const [files, setFiles] = useState([]);
+    const [project, setProject] = useState('');
+
+
+    const handleFilesChange = (newFiles) => {
+        setFiles(newFiles);
+    };
 
     const handleSummaryChange = (event) => {
         setSummary(event.target.value);
@@ -188,8 +184,24 @@ const MyModalComponent = ({onClose}) => {
     }
 
     const handleIssueChange = (value) => {
-    setSelectedIssueType(parseInt(value));
-  };
+        setSelectedIssueType(parseInt(value));
+    };
+
+    const handleLabelChange = (value) => {
+        setSelectedLabels([parseInt(value)]);
+        console.log("Labels", selectedLabels)
+    };
+
+    const handleUserChange = (value) => {
+        setSelectedUsers([parseInt(value)]);
+        console.log("Users", selectedUsers)
+    };
+
+    const handleReporterChange = (value) => {
+        setSelectedReporter([parseInt(value)]);
+        console.log("Reporter", selectedReporter)
+    };
+
 
     useEffect(() => {
         const fetchProject = async () => {
@@ -217,11 +229,32 @@ const MyModalComponent = ({onClose}) => {
                 },
             });
             setStatus(response.data);
+        }
+
+        const fetchLabelOptions = async () => {
+            const response = await axios.get('http://127.0.0.1:8000/api/labels/', {
+                headers: {
+                    Authorization: `Token ${authToken}`,
+                },
+            });
+            setLabels(response.data);
         };
+
+        const fetchUserOptions = async () => {
+            const response = await axios.get('http://127.0.0.1:8000/api/users_list/', {
+                headers: {
+                    Authorization: `Token ${authToken}`,
+                },
+            });
+            setUsers(response.data);
+        };
+
         fetchIssueType()
         fetchProject()
         fetchStatusOptions()
-    }, []);
+        fetchLabelOptions()
+        fetchUserOptions()
+    }, [authToken]);
     console.log("Projects:", project)
 
 
@@ -246,9 +279,25 @@ const MyModalComponent = ({onClose}) => {
         }))
         : [];
 
+    const Labeloptions = Labels
+        ? Labels.map((Labels) => ({
+            label: Labels.label,
+            value: Labels.id,
+        }))
+        : [];
+
+    const Useroptions = Users
+        ? Users.map((Users) => ({
+            username: Users.username,
+            id: Users.id,
+        }))
+        : [];
+
+    console.log("User Options:", Useroptions)
+
     const handleHoursChange = (totalHours) => {
-    setHours(totalHours);
-  };
+        setHours(totalHours);
+    };
 
 
     function handleSubmit(event) {
@@ -258,12 +307,12 @@ const MyModalComponent = ({onClose}) => {
             "name": "testing",
             "summary": summary,
             "description": description,
-            "file": '',
+            "file": files,
             "project": selectedProject,
-            "reporter": 1,
+            "reporter": selectedReporter,
             "type": selectedIssueType,
             "status": selectedStatus,
-            "assignee": [2],
+            "assignee": selectedUsers,
 
         };
 
@@ -274,7 +323,7 @@ const MyModalComponent = ({onClose}) => {
                 'Content-Type': 'application/json',
                 'Authorization': `Token ${authToken}`,
             },
-            body: JSON.stringify(data)
+            body: data
         })
             .then(response => {
                 // handle the response
@@ -299,154 +348,158 @@ const MyModalComponent = ({onClose}) => {
                 </CardInfoBoxClose>
                 <ModalTitle>Create Issue</ModalTitle>
                 <ModalContent>
-                <FormWrapper onSubmit={handleSubmit} encType="multipart/form-data" method="POST">
-                    <CardInfoBox>
-                        <CardInfoBoxTitle>
-                            <TbStatusChange/>
-                            Project
-                        </CardInfoBoxTitle>
-                        <TaskList>
-                            <GenericSelectField
-                                options={Projectoptions}
-                                isMultiple={false}
-                                placeholder={"Unassigned"}
-                                onSelectChange={handleProjectChange} />
-                        </TaskList>
-                    </CardInfoBox>
+                    <FormWrapper onSubmit={handleSubmit} encType="multipart/form-data" method="POST">
+                        <CardInfoBox>
+                            <CardInfoBoxTitle>
+                                <TbStatusChange/>
+                                Project
+                            </CardInfoBoxTitle>
+                            <TaskList>
+                                <GenericSelectField
+                                    options={Projectoptions}
+                                    isMultiple={false}
+                                    placeholder={"Unassigned"}
+                                    onSelectChange={handleProjectChange}/>
+                            </TaskList>
+                        </CardInfoBox>
 
-                    <CardInfoBox>
-                        <CardInfoBoxTitle>
-                            <TbStatusChange/>
-                            Issue Type
-                        </CardInfoBoxTitle>
-                        <TaskList>
-                            <GenericSelectField
-                                options={IssueTypeoptions}
-                                isMultiple={false}
-                                placeholder={"Unassigned"}
-                                onSelectChange={handleIssueChange} />
-                        </TaskList>
-                    </CardInfoBox>
-                    <Divider/>
+                        <CardInfoBox>
+                            <CardInfoBoxTitle>
+                                <TbStatusChange/>
+                                Issue Type
+                            </CardInfoBoxTitle>
+                            <TaskList>
+                                <GenericSelectField
+                                    options={IssueTypeoptions}
+                                    isMultiple={false}
+                                    placeholder={"Unassigned"}
+                                    onSelectChange={handleIssueChange}/>
+                            </TaskList>
+                        </CardInfoBox>
+                        <Divider/>
 
-                    <CardInfoBox>
-                        <CardInfoBoxTitle>
-                            <TbStatusChange/>
-                            Status
-                        </CardInfoBoxTitle>
-                        <TaskList>
-                            <GenericSelectField
-                                options={Statusoptions}
-                                isMultiple={false}
-                                placeholder={"Unassigned"}
-                                onSelectChange={handleStatusChange}/>
-                        </TaskList>
-                    </CardInfoBox>
+                        <CardInfoBox>
+                            <CardInfoBoxTitle>
+                                <TbStatusChange/>
+                                Status
+                            </CardInfoBoxTitle>
+                            <TaskList>
+                                <GenericSelectField
+                                    options={Statusoptions}
+                                    isMultiple={false}
+                                    placeholder={"Unassigned"}
+                                    onSelectChange={handleStatusChange}/>
+                            </TaskList>
+                        </CardInfoBox>
 
-                    <CardInfoBox>
-                        <CardInfoBoxTitle>
-                            <TbStatusChange/>
-                            Summary
-                        </CardInfoBoxTitle>
-                        <TaskList>
-                            <SummaryInput
-                                type="text"
-                                value={summary}
-                                onChange={handleSummaryChange}
-                            />
-                        </TaskList>
-                    </CardInfoBox>
+                        <CardInfoBox>
+                            <CardInfoBoxTitle>
+                                <TbStatusChange/>
+                                Summary
+                            </CardInfoBoxTitle>
+                            <TaskList>
+                                <SummaryInput
+                                    type="text"
+                                    value={summary}
+                                    onChange={handleSummaryChange}
+                                />
+                            </TaskList>
+                        </CardInfoBox>
 
-                    <CardInfoBox>
-                        <CardInfoBoxTitle>
-                            <TbStatusChange/>
-                            Description
-                        </CardInfoBoxTitle>
-                        <TaskList>
-                            <ReactQuill value={description} onChange={handleDescriptionChange}/>
-                        </TaskList>
-                    </CardInfoBox>
+                        <CardInfoBox>
+                            <CardInfoBoxTitle>
+                                <TbStatusChange/>
+                                Description
+                            </CardInfoBoxTitle>
+                            <TaskList>
+                                <ReactQuill value={description} onChange={handleDescriptionChange}/>
+                            </TaskList>
+                        </CardInfoBox>
 
-                    <CardInfoBox>
-                        <CardInfoBoxTitle>
-                            <TbStatusChange/>
-                            Original Estimate
-                        </CardInfoBoxTitle>
-                        <TaskList>
-                            <EstimateTimer onHoursChange={handleHoursChange}/>
-                            <p>An estimate of how much work remains until this issue will be resolved.</p>
-                            <span>The format of this is ' *w *d *h *m ' (representing weeks, days, hours and minutes - where * can be any number).
+                        <CardInfoBox>
+                            <CardInfoBoxTitle>
+                                <TbStatusChange/>
+                                Original Estimate
+                            </CardInfoBoxTitle>
+                            <TaskList>
+                                <EstimateTimer onHoursChange={handleHoursChange}/>
+                                <p>An estimate of how much work remains until this issue will be resolved.</p>
+                                <span>The format of this is ' *w *d *h *m ' (representing weeks, days, hours and minutes - where * can be any number).
                             Examples: 4d, 5h 30m, 60m and 4w 0d 0h 0m.</span>
-                        </TaskList>
-                    </CardInfoBox>
+                            </TaskList>
+                        </CardInfoBox>
 
-                    <CardInfoBox>
-                        <CardInfoBoxTitle>
-                            <FiUsers/>
-                            Assignees
-                        </CardInfoBoxTitle>
-                        <TaskList>
-                            <UserSelectField users={users} isMultiple={true} placeholder={"Unassigned"}/>
-                        </TaskList>
-                    </CardInfoBox>
+                        <CardInfoBox>
+                            <CardInfoBoxTitle>
+                                <FiUsers/>
+                                Assignees
+                            </CardInfoBoxTitle>
+                            <TaskList>
+                                <UserSelectField users={Useroptions} isMultiple={true} placeholder={"Unassigned"}
+                                                 onChange={handleUserChange}/>
+                            </TaskList>
+                        </CardInfoBox>
 
-                    <CardInfoBox>
-                        <CardInfoBoxTitle>
-                            <FiUsers/>
-                            Labels
-                        </CardInfoBoxTitle>
-                        <TaskList>
-                            <GenericSelectField
-                                options={label}
-                                isMultiple={true}
-                                placeholder={" "}/>
-                        </TaskList>
-                    </CardInfoBox>
+                        <CardInfoBox>
+                            <CardInfoBoxTitle>
+                                <FiUsers/>
+                                Labels
+                            </CardInfoBoxTitle>
+                            <TaskList>
+                                <GenericSelectField
+                                    options={Labeloptions}
+                                    isMultiple={true}
+                                    placeholder={" "}
+                                    onSelectChange={handleLabelChange}/>
+                            </TaskList>
+                        </CardInfoBox>
 
-                    <CardInfoBox>
-                        <CardInfoBoxTitle>
-                            <FiUser/>
-                            Reporter
-                        </CardInfoBoxTitle>
-                        <UserSelectField users={users} isMultiple={false} placeholder={"Unassigned"}/>
-                        <TaskList>
-                            {values.reporter?.map((item) => (
-                                <Task key={item.id}>
-                                    <p>{item.text}</p>
-                                    <p>{item.picture}</p>
-                                </Task>
-                            ))}
-                        </TaskList>
-                    </CardInfoBox>
+                        <CardInfoBox>
+                            <CardInfoBoxTitle>
+                                <FiUser/>
+                                Reporter
+                            </CardInfoBoxTitle>
+                            <UserSelectField users={Useroptions} isMultiple={false} placeholder={"Unassigned"}
+                                             onChange={handleReporterChange}/>
+                            <TaskList>
+                                {values.reporter?.map((item) => (
+                                    <Task key={item.id}>
+                                        <p>{item.username}</p>
+                                        <p>{item.picture}</p>
+                                    </Task>
+                                ))}
+                            </TaskList>
+                        </CardInfoBox>
 
-                    <CardInfoBoxCustom>
-                        <CardInfoBoxTitle>
-                            <File/>
-                            File Attachments
-                        </CardInfoBoxTitle>
-                        <FileUpload/>
-                    </CardInfoBoxCustom>
+                        <CardInfoBoxCustom>
+                            <CardInfoBoxTitle>
+                                <File/>
+                                File Attachments
+                            </CardInfoBoxTitle>
+                            <FileUpload
+                                onFilesChange={handleFilesChange}/>
+                        </CardInfoBoxCustom>
 
-                    <CardInfoBox>
-                        <CardInfoBoxTitle>
-                            <TbStatusChange/>
-                            Linked Issues
-                        </CardInfoBoxTitle>
-                        <TaskList>
-                            <GenericSelectField
-                                options={LinkedIssue1}
-                                isMultiple={false}
-                                defaultValue={"blocks"}/>
-                        </TaskList>
-                        <TaskList>
-                            <GenericSelectField
-                                options={LinkedIssue2}
-                                isMultiple={true}
-                                placeholder={"Select Issue"}/>
-                        </TaskList>
-                    </CardInfoBox>
-                    <SaveButton>Save</SaveButton>
-                </FormWrapper>
+                        <CardInfoBox>
+                            <CardInfoBoxTitle>
+                                <TbStatusChange/>
+                                Linked Issues
+                            </CardInfoBoxTitle>
+                            <TaskList>
+                                <GenericSelectField
+                                    options={LinkedIssue1}
+                                    isMultiple={false}
+                                    defaultValue={"blocks"}/>
+                            </TaskList>
+                            <TaskList>
+                                <GenericSelectField
+                                    options={LinkedIssue2}
+                                    isMultiple={true}
+                                    placeholder={"Select Issue"}/>
+                            </TaskList>
+                        </CardInfoBox>
+                        <SaveButton>Save</SaveButton>
+                    </FormWrapper>
                 </ModalContent>
             </ModalContainer>
         </ModalOverlay>
