@@ -42,22 +42,9 @@ const SubHeading = styled.p`
   }
 `;
 
-
 const SubHeadingForNotificationMethods = styled.p`
   margin-left: 10px;
   font-size: 16px;
-  color: black;
-  font-weight: bolder;
-  width: 250px;
-
-  @media (max-width: 768px) {
-    margin: 5px 0;
-  }
-`;
-
-const NoMethod = styled.p`
-  margin-left: 40px;
-  font-size: 20px;
   color: black;
   font-weight: bolder;
   width: 250px;
@@ -125,13 +112,6 @@ const NotificationWrapper = styled.div`
   width: 100%;
   height: 100%;
   padding: 10px;
-`;
-
-const ListingWrapper = styled.div`
-  width: 100%;
-  min-height: 100px;
-  height: auto;
-  padding-top: 0px;
 `;
 
 const Divider = styled.div`
@@ -251,7 +231,7 @@ function Notification() {
                                                 isMultiple={true}
                                                 options={items}
                                                 width={"250px"}
-                                                onSelect={handleSelect}
+                                                onSelectChange={handleSelect}
                             />
                         </OptionWrapper>
                     </HeadingWrapper>
