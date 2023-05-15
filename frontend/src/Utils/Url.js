@@ -25,6 +25,7 @@ function Url() {
                 <Route path="/dashboard" element={<Dashboard/>}/>
                 <Route path="/profile" element={<UserProfilePage/>}/>
                 <Route path="/project-views" element={<ProjectsPage/>}/>
+                <Route path="/project-views/:projectId/project-setting" element={<ProjectSettingPage/>}/>
                 <Route path="/project-setting" element={<ProjectSettingPage/>}/>
                 <Route path="/create-project" element={<CreateProject/>}/>
                 <Route path="/personal-settings" element={<PersonalSettingsPage/>}/>
