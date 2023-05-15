@@ -8,7 +8,8 @@ from rest_framework import status
 from django.db.models import Q
 from django.contrib.auth.models import User
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated, IsAdminUser
-from .models import Project, Issue, Comment, WorkLog, Watcher, ProjectCategory, IssuesType, IssuesPriority, IssuesStatus
+from rest_framework.parsers import MultiPartParser, FormParser
+from .models import Project, Issue, Comment, WorkLog, Watcher, ProjectCategory, IssuesType, IssuesPriority, IssuesStatus,Labels
 from . import serializers
 
 
@@ -56,6 +57,15 @@ class IssuesPriorityViewSet(ModelViewSet):
     queryset = IssuesPriority.objects.all()
 
 
+class LabelViewSet(ModelViewSet):
+    http_method_names = ['get', 'post', 'patch', 'delete']
+
+    serializer_class = serializers.LabelsSerializer
+    permission_classes = [IsAuthenticated]
+
+    queryset = Labels.objects.all()
+
+
 class ProjectViewSet(ModelViewSet):
     parser_classes = (MultiPartParser, FormParser)
     http_method_names = ['get', 'post', 'patch', 'delete']
@@ -93,6 +103,7 @@ class ProjectViewSet(ModelViewSet):
 
 class IssueViewSet(ModelViewSet):
     http_method_names = ['get', 'post', 'put', 'patch', 'delete']
+    parser_classes = (MultiPartParser, FormParser)
 
     # queryset = Issue.objects.prefetch_related('assignee').select_related('reporter').select_related('project').all()
 

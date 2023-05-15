@@ -29,6 +29,12 @@ class IssuesPrioritySerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class LabelsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Labels
+        fields = "__all__"
+
+
 class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User

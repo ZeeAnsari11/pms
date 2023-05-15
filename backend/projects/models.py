@@ -35,6 +35,15 @@ class IssuesPriority(models.Model):
         return self.issue_priority
 
 
+class Labels(models.Model):
+    label = models.CharField(max_length=50)
+    color = models.CharField(max_length=7)
+
+    def __str__(self):
+        return self.label
+
+
+
 class Project(models.Model):
     icon = models.ImageField(upload_to='attachments/projects/icons', blank=True, null=True,
                              validators=[validate_file_size])
@@ -66,6 +75,8 @@ class Issue(models.Model):
     type = models.ForeignKey(IssuesType, on_delete=models.PROTECT, blank=True, null=True)
 
     status = models.ForeignKey(IssuesStatus, on_delete=models.PROTECT, blank=True, null=True)
+
+    label = models.ForeignKey(Labels, on_delete=models.CASCADE, blank=True, null=True)
 
     priority = models.ForeignKey(IssuesPriority, on_delete=models.PROTECT, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -116,3 +127,5 @@ class Watcher(models.Model):
 
     class Meta:
         ordering = ['user', 'issue']
+
+
