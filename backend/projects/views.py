@@ -63,7 +63,7 @@ class ProjectViewSet(ModelViewSet):
     # queryset = Project.objects.prefetch_related('assignee').select_related('company').all()
 
     def get_serializer_class(self):
-        if self.request.method == 'POST':
+        if self.request.method in ['POST', 'PATCH']:
             return serializers.CreateProjectSerializer
         return serializers.ProjectSerializer
 
