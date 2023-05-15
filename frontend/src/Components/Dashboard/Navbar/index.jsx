@@ -13,7 +13,7 @@ import {
     NavbarLinkExtended,
 } from "./styles";
 import Dropdown from '../Dropdown/index'
-import {accountitems,projectitems, yourworkitems, teamitems, notificationsitems, helpitems} from "./Dropdownitems";
+import {accountitems, projectitems, yourworkitems, teamitems, notificationsitems, helpitems} from "./Dropdownitems";
 import {MdKeyboardArrowDown} from 'react-icons/md'
 import {IoMdNotifications} from 'react-icons/io'
 import {RxAvatar} from 'react-icons/rx'
@@ -42,7 +42,7 @@ function NavBar() {
                 <NavbarInnerContainer>
                     <LeftContainer>
                         <Link to="/project-views">
-                            <Logo src="phpstudios_logo.png" alt="PHPStudios"></Logo>
+                            <Logo src='http://localhost:3000/phpstudios_logo.png' alt="PHPStudios"></Logo>
                         </Link>
                         <NavbarLinkContainer>
                             <OpenLinksButton

@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {NavLink,useLocation} from 'react-router-dom';
+import {NavLink, useLocation} from 'react-router-dom';
 import {ProjectCategoryCopy} from './constants/projects';
 import Icon from './components/Icon/index';
 import ProjectAvatar from './components/ProjectAvatar'
@@ -27,10 +27,10 @@ const ProjectSidebar = ({project}) => {
     return (
         <Sidebar>
             <ProjectInfo>
-                <ProjectAvatar/>
+                <ProjectAvatar iconImage={project.icon}/>
                 <ProjectTexts>
-                    <ProjectName><strong>{project.name? project.name : 'Project Name' }</strong></ProjectName>
-                    <ProjectCategory>{ProjectCategoryCopy[project.category]} {project.category? project.category : 'Category Name'}</ProjectCategory>
+                    <ProjectName><strong>{project.name ? project.name : 'Project Name'}</strong></ProjectName>
+                    <ProjectCategory>{ProjectCategoryCopy[project.category]} {project.category ? project.category : 'Category Name'}</ProjectCategory>
                 </ProjectTexts>
             </ProjectInfo>
 
