@@ -7,7 +7,6 @@ import {DownOutlined} from '@ant-design/icons';
 import {Modal as Modal1, Input} from 'antd';
 import {Modal as Modal2} from 'antd';
 import {Modal as Modal3} from 'antd';
-import {ChromePicker} from "react-color";
 import {Dropdown, Space} from 'antd';
 import {Pagination} from 'antd';
 
@@ -94,7 +93,7 @@ const TableHeader = styled.div`
 
 const TableHeaderCell = styled.div`
   display: table-cell;
-  padding: 10px;
+  padding: 10px 544px 10px 10px;
   border: none;
   text-align: center;
 
@@ -118,19 +117,6 @@ const TableRow = styled.div`
   }
 `;
 
-const TableCell = styled.div`
-  display: table-cell;
-  padding: 10px;
-  border: none;
-  text-align: center;
-  
-  @media (max-width: 768px) {
-    display: block;
-    width: 50%;
-    float: left;
-  }
-`;
-
 const TableCellForTag = styled.div`
   display: table-cell;
   padding: 10px;
@@ -141,19 +127,14 @@ const TableCellForTag = styled.div`
 
 `;
 
-const Tag = styled.span`
-  padding: 5px;
-  border-radius: 5px;
-  color: black;
-`;
 
 const NameTag = styled.span`
-  padding: 5px;
-  margin-left: 30px;
-  margin-right: 30px;
+  margin: 0 30px;
   border-radius: 5px;
   color: black;
+  padding: 5px 544px 5px 5px;
 `;
+
 
 const IconWrapper = styled.div`
   width: 30px;
@@ -169,17 +150,15 @@ const PaginationWrapper = styled.div`
   margin-top: 15px;
 `;
 
-function ProjectTags() {
+function Columns() {
 
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [inputValue, setInputValue] = useState('');
     const [color, setColor] = useState('#FFFFFF');
-    const [isChecked, setIsChecked] = useState(false);
     const [newArray, setNewArray] = useState([]);
     const [isEmpty, setIsEmpty] = useState(false);
     const [isModalVisible2, setIsModalVisible2] = useState(false);
     const [inputValue2, setInputValue2] = useState('');
-    const [isChecked2, setIsChecked2] = useState(false);
     const [isEmpty2, setIsEmpty2] = useState(false);
     const [color2, setColor2] = useState('#FFFFFF');
     const [id, setId] = useState(0);
@@ -208,22 +187,6 @@ function ProjectTags() {
     const handleInputChange2 = (e) => {
         setInputValue2(e.target.value);
     };
-
-    function handleChange(newColor) {
-        setColor(newColor.hex);
-    }
-
-    function handleChange2(newColor) {
-        setColor2(newColor.hex);
-    }
-
-    function handleCheckboxChange(event) {
-        setIsChecked(event.target.checked);
-    }
-
-    function handleCheckboxChange2(event) {
-        setIsChecked2(event.target.checked);
-    }
 
     const project = {
         name: 'Project Name',
@@ -299,7 +262,7 @@ function ProjectTags() {
         setDeleteId(id);
         Modal3.confirm({
             title: 'Confirm',
-            content: 'Are you sure you want to delete this tag: ' + name + ' ?',
+            content: 'Are you sure you want to delete this column: ' + name + ' ?',
             onOk() {
                 // Set the isDelete state to true
                 setIsDelete(true);
@@ -317,7 +280,6 @@ function ProjectTags() {
     }, [isDelete]);
 
     const ITEMS_PER_PAGE = 10;
-    const totalPages = Math.ceil(newArray.length / ITEMS_PER_PAGE);
 
     const handlePageChange = (page) => {
         setCurrentPage(page);
@@ -334,11 +296,11 @@ function ProjectTags() {
                 <NavBar/>
                 <ContentWrapper>
                     <HeadingWrapper>
-                        <SummaryHeading>Project Tags</SummaryHeading>
+                        <SummaryHeading>Project Columns</SummaryHeading>
                     </HeadingWrapper>
                     <BodyWrapper>
                         <ButtonWrapper>
-                            <AddTagButton label="Click me!" onClick={showModal}>Add Tag </AddTagButton>
+                            <AddTagButton label="Click me!" onClick={showModal}>Add Columns </AddTagButton>
                             <PaginationWrapper>
                                 <Pagination
                                     current={currentPage}
@@ -352,8 +314,8 @@ function ProjectTags() {
                         </ButtonWrapper>
                         <TableContainer>
                             <TableHeader>
-                                <TableHeaderCell>Tags</TableHeaderCell>
-                                <TableHeaderCell>Color</TableHeaderCell>
+                                <TableHeaderCell>Columns</TableHeaderCell>
+
                             </TableHeader>
                             {currentItems.map(tag => (
                                 <TableRow key={tag.id}>
@@ -385,9 +347,6 @@ function ProjectTags() {
                                         </IconWrapper>
                                         <NameTag color={tag.color}>{tag.name}</NameTag>
                                     </TableCellForTag>
-                                    <TableCell>
-                                        <Tag color={tag.color}>{tag.color}</Tag>
-                                    </TableCell>
                                 </TableRow>
                             ))}
                         </TableContainer>
@@ -396,26 +355,16 @@ function ProjectTags() {
             </PageContainer>
 
             <Modal1
-                title="Add New Tag"
+                title="Add New Column"
                 open={isModalVisible}
                 onOk={handleOk}
                 onCancel={handleCancel}
             >
                 <label>Name</label>
                 <Input style={{marginBottom: `10px`}} value={inputValue} onChange={handleInputChange}/>
-                <label style={{marginTop: '10px', marginBottom: '10px'}}>
-                    <input type="checkbox" checked={isChecked} onChange={handleCheckboxChange}/>
-                    Show color picker
-                </label>
-
-                {isChecked && (
-                    <div>
-                        <ChromePicker color={color} onChange={handleChange}/>
-                    </div>
-                )}
 
                 {isEmpty && (
-                    <WarningDiv>Oops! The name field is empty. Please enter tag name.</WarningDiv>
+                    <WarningDiv>Oops! The name field is empty. Please enter column name.</WarningDiv>
                 )}
 
             </Modal1>
@@ -426,29 +375,18 @@ function ProjectTags() {
                 onOk={handleOk2}
                 onCancel={handleCancel2}
             >
-
                 <label>Name</label>
                 <Input style={{marginBottom: `10px`}} value={inputValue2} onChange={handleInputChange2}/>
-                <label style={{marginTop: '10px', marginBottom: '10px'}}>
-                    <input type="checkbox" checked={isChecked2} onChange={handleCheckboxChange2}/>
-                    Show color picker
-                </label>
-
-                {isChecked2 && (
-                    <div>
-                        <ChromePicker color={color2} onChange={handleChange2}/>
-                    </div>
-                )}
 
                 {isEmpty2 && (
-                    <WarningDiv>Oops! The name field is empty. Please enter tag name.</WarningDiv>
+                    <WarningDiv>Oops! The name field is empty. Please enter Column name.</WarningDiv>
                 )}
             </Modal2>
         </div>
     );
 }
 
-export default ProjectTags;
+export default Columns;
 
 
 
