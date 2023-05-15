@@ -404,6 +404,7 @@ function CreateProject() {
             .then(response => {
                 // handle the response
                 console.log(response.data);
+                window.location.href = 'project-views';
             })
             .catch(error => {
                 // handle the error
