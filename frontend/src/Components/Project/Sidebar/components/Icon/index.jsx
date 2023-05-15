@@ -4,6 +4,9 @@ import {RiRoadMapLine, RiPagesLine} from 'react-icons/ri'
 import {BiCodeAlt} from 'react-icons/bi'
 import {BsGraphUpArrow} from 'react-icons/bs'
 import {GrSettingsOption} from 'react-icons/gr';
+import { FaTag } from 'react-icons/fa';
+import { FaColumns } from 'react-icons/fa';
+
 
 const Icon = ({type, size}) => {
     switch (type) {
@@ -13,10 +16,10 @@ const Icon = ({type, size}) => {
             return <MdNotifications size={size} color={"black"}/>;
         case 'GrSettingsOption':
             return <GrSettingsOption size={size}/>;
-        case 'roadmap':
-            return <RiRoadMapLine size={size}/>;
-        case 'code':
-            return <BiCodeAlt size={size}/>;
+        case 'FaTag':
+            return <FaTag color={'Black'} size={size}/>;
+        case 'FaColumns':
+            return <FaColumns color={'Black'} size={size}/>;
         case 'pages':
             return <RiPagesLine size={size}/>;
         case 'reports':

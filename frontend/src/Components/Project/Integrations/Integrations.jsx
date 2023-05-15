@@ -7,8 +7,7 @@ import {AiFillSlackCircle} from 'react-icons/ai';
 import {FcGoogle} from 'react-icons/fc';
 import {color} from "../../Dashboard/Sidebar/utils/styles";
 import {ToastContainer, toast} from 'react-toastify';
-import {Input, Button, Select, Form} from 'antd';
-
+import {Input, Button, Form} from 'antd';
 
 
 const PageContainer = styled.div`
@@ -41,7 +40,6 @@ const SubHeading = styled.p`
     margin: 5px 0;
   }
 `;
-
 
 const SubHeadingForNotificationMethods = styled.p`
   margin-left: 10px;
@@ -167,7 +165,6 @@ function Integrations() {
         category: 'Project Setting'
     };
 
-
     const handleWebhookUrlChange = (event) => {
         setWebhookUrl(event.target.value);
     };
@@ -177,11 +174,10 @@ function Integrations() {
     };
 
     const handleSave = () => {
-        // Do something with webhookUrl and channel values
         console.log(`Webhook URL: ${webhookUrl}, Channel: ${channel}`);
     };
 
-    const onFinish = (values) => {
+    const onFinish = () => {
         toast.success(<><FcGoogle/> Gmail is Integrated</>, {
             position: "bottom-left",
             autoClose: 5000,
@@ -212,7 +208,7 @@ function Integrations() {
                                                 isMultiple={true}
                                                 options={items}
                                                 width={"250px"}
-                                                onSelect={handleSelect}
+                                                onSelectChange={handleSelect}
                             />
                         </OptionWrapper>
                     </HeadingWrapper>

@@ -14,6 +14,7 @@ import ProjectSummary from "../Components/Project/ProjectSummaryPage/ProjectSumm
 import Notification from "../Components/Project/Notification/Notification";
 import Integrations from "../Components/Project/Integrations/Integrations";
 import ProjectTag from "../Components/Project/ProjectTag/ProjectTag";
+import Columns from "../Components/Project/Columns/columns";
 function Url() {
     return (
         <BrowserRouter>
@@ -32,6 +33,7 @@ function Url() {
                 <Route path="/notification" element={<Notification />} />
                 <Route path="/integrations" element={<Integrations />} />
                 <Route path="/project-tags" element={<ProjectTag />} />
+                <Route path="/project-columns" element={<Columns />} />
             </Routes>
         </BrowserRouter>
     );
