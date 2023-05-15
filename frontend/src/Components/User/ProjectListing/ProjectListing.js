@@ -6,6 +6,8 @@ import {HiDotsHorizontal} from 'react-icons/hi';
 import {Link} from 'react-router-dom';
 import {Button, Modal} from 'antd';
 import {GrAlert} from 'react-icons/gr';
+import {CiSettings} from 'react-icons/ci'
+import ProjectSettingPage from "../ProjectSettingPage/ProjectSettingPage";
 
 const ProjectListingTable = styled.table`
   width: 100%;
@@ -84,6 +86,40 @@ const NameColumn = styled.td`
   display: flex;
   align-items: center;
 
+  a {
+    color: #000;
+    text-decoration: none;
+    position: relative;
+
+    &:hover {
+      &:after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: -2px;
+        width: 100%;
+        height: 2px;
+        background-color: #000;
+        transition: transform 0.2s ease-in-out;
+        transform: scaleX(0);
+        transform-origin: left;
+      }
+
+      &:before {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: -2px;
+        width: 100%;
+        height: 2px;
+        background-color: #000;
+        transform: scaleX(1);
+        transform-origin: right;
+        transition: transform 0.2s ease-in-out;
+      }
+    }
+  }
+
   img {
     width: 24px;
     height: 24px;
@@ -99,6 +135,7 @@ const NameColumn = styled.td`
     max-width: calc(100% - 32px);
   }
 `;
+
 
 const ProjectAvatar = styled.img`
   width: 24px;
@@ -198,7 +235,7 @@ const ProjectListing = () => {
 
     useEffect(() => {
         const fetchProjects = async () => {
-            const response = await axios.get('http://127.0.0.1:8000/api/projects/', {
+            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/projects/`, {
                 headers: {
                     Authorization: `Token ${authToken}`,
                 },
@@ -212,12 +249,12 @@ const ProjectListing = () => {
 
     useEffect(() => {
         const fetchuserImage = async () => {
-            const userResponse = await axios.get('http://127.0.0.1:8000/api/auth/users/me/', {
+            const userResponse = await axios.get(`${process.env.REACT_APP_HOST}/api/auth/users/me/`, {
                 headers: {
                     Authorization: `Token ${authToken}`,
                 },
             });
-            const avatarResponse = await axios.get('http://127.0.0.1:8000/api/avatar/all/', {
+            const avatarResponse = await axios.get(`${process.env.REACT_APP_HOST}/api/avatar/all/`, {
                 headers: {
                     Authorization: `Token ${authToken}`,
                 },
@@ -240,6 +277,25 @@ const ProjectListing = () => {
     const handleCancel = () => {
         setVisible(false);
     };
+
+    const imagePaths = [
+        `${process.env.REACT_APP_HOST}//media/default_avatars/flamingo.png`,
+        `${process.env.REACT_APP_HOST}//media/default_avatars/butterfly.png`,
+        `${process.env.REACT_APP_HOST}//media/default_avatars/leopard.png`,
+        `${process.env.REACT_APP_HOST}//media/default_avatars/squirrel.png`,
+        `${process.env.REACT_APP_HOST}//media/default_avatars/starfish.png`,
+
+        // Add more image paths here
+    ];
+
+    function getRandomImagePath(imagePaths) {
+        // Generate a random index within the range of available image paths
+        const randomIndex = Math.floor(Math.random() * imagePaths.length);
+
+        // Retrieve the randomly selected image path
+        const randomImagePath = imagePaths[randomIndex];
+        return randomImagePath;
+    }
 
     const items = [
         {
@@ -305,18 +361,18 @@ const ProjectListing = () => {
                                     <ProjectAvatar
                                         src={
                                             project.icon
-                                                ? `http://127.0.0.1:8000/${project.icon}`
-                                                : 'http://localhost:3000/Images/NoImage.jpeg'
+                                                ? `${process.env.REACT_APP_HOST}${project.icon}`
+                                                : getRandomImagePath(imagePaths)
                                         }
                                         alt='Project Avatar'
                                     />
                                 </ProjectAvatarWrapper>
                                 <ProjectName>
-                                    <Link to={`/${project.id}/${project.name}/dashboard`}>{project.name}</Link>
+                                    <Link to={`/dashboard`}>{project.name}</Link>
                                 </ProjectName>
                             </NameColumn>
                         </td>
-                        <td>{project.key}</td>
+                        <td>{project.key.toUpperCase()}</td>
                         {/*<td>{project.type}Team-managed software</td>*/}
                         <td>{project.project_category.project_category}</td>
                         <LeadColumn>
@@ -325,8 +381,14 @@ const ProjectListing = () => {
                             <p>{project.project_lead.username}</p>
                         </LeadColumn>
                         <OptionsColumns>
-                            <Dropdown items={items} icon={<HiDotsHorizontal size={24}/>}/>
+                            <Link to={`${project.id}/project-setting`}>
+                                {project && (
+                                    <CiSettings size={24} component={<ProjectSettingPage/>}/>
+                                )}
+                            </Link>
                         </OptionsColumns>
+
+
                     </tr>
                 ))
             )}
