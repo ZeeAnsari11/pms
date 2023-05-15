@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Select} from 'antd';
 import styled from 'styled-components';
 
@@ -23,12 +23,15 @@ const GenericSelectField = ({
                                 isDisabled,
                                 width,
                                 height,
-                                onSelectChange
+                                onSelectChange,
                             }) => {
+
+    const [selectedValues, setSelectedValues] = useState(defaultValue);
 
     const handleSelectChange = (value) => {
         onSelectChange(value);
     };
+
 
     return (
         <StyledSelect
