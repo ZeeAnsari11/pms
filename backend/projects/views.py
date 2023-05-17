@@ -228,3 +228,14 @@ class ProjectIssuesViewSet(ModelViewSet):
 
     def get_queryset(self):
         return Issue.objects.filter(project_id=self.kwargs['project_pk']).select_related('reporter')
+
+
+
+def upload(request):
+    if request.method == "POST":
+        file = request.FILES.getlist('file')
+        for i in file:
+            Issue.objects.file.create(file=i)
+            data = Issue.objects.file.all()
+
+            return render(request, "", locals())
