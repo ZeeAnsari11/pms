@@ -147,6 +147,7 @@ const SaveButton = styled.button`
 const MyModalComponent = ({onClose}) => {
     let authToken = localStorage.getItem('auth_token')
     const [summary, setSummary] = useState("");
+    const [name, setName] = useState("");
     const [description, setDescription] = useState('');
     const [values, setValues] = useState("");
     const [IssueType, setIssueType] = useState('');
@@ -170,6 +171,10 @@ const MyModalComponent = ({onClose}) => {
 
     const handleSummaryChange = (event) => {
         setSummary(event.target.value);
+    };
+
+    const handleNameChange = (event) => {
+        setName(event.target.value);
     };
     const handleDescriptionChange = (value) => {
         setDescription(value);
@@ -304,15 +309,18 @@ const MyModalComponent = ({onClose}) => {
         event.preventDefault();
 
         const data = {
-            "name": "testing",
+            "name": name,
             "summary": summary,
             "description": description,
             "file": files,
             "project": selectedProject,
             "reporter": selectedReporter,
             "type": selectedIssueType,
+            "label": selectedLabels,
+            "estimate": hours,
             "status": selectedStatus,
             "assignee": selectedUsers,
+            // "priority": setPriority,
 
         };
 
@@ -349,6 +357,19 @@ const MyModalComponent = ({onClose}) => {
                 <ModalTitle>Create Issue</ModalTitle>
                 <ModalContent>
                     <FormWrapper onSubmit={handleSubmit} encType="multipart/form-data" method="POST">
+                        <CardInfoBox>
+                            <CardInfoBoxTitle>
+                                <TbStatusChange/>
+                                Name
+                            </CardInfoBoxTitle>
+                            <TaskList>
+                                <SummaryInput
+                                    type="text"
+                                    value={name}
+                                    onChange={handleNameChange}
+                                />
+                            </TaskList>
+                        </CardInfoBox>
                         <CardInfoBox>
                             <CardInfoBoxTitle>
                                 <TbStatusChange/>
