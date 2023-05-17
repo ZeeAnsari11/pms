@@ -43,6 +43,13 @@ class Labels(models.Model):
         return self.label
 
 
+# class Attachment(models.Model):
+#     issue = models.ForeignKey('Issue', on_delete=models.CASCADE, related_name='attachments')
+#     file = models.FileField(upload_to='attachments/issues/', validators=[validate_file_size])
+#
+#     def __str__(self):
+#         return self.file.name
+
 
 class Project(models.Model):
     icon = models.ImageField(upload_to='attachments/projects/icons', blank=True, null=True,
@@ -68,6 +75,9 @@ class Issue(models.Model):
     summary = models.CharField(max_length=100)
     description = models.TextField()
     file = models.FileField(upload_to='attachments/issues/', blank=True, null=True, validators=[validate_file_size])
+
+    # file = models.JSONField(blank=True, null=True, validators=[validate_file_size],
+    #                         default=list)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     assignee = models.ManyToManyField(User, related_name='issues_assigned')
     reporter = models.ForeignKey(User, on_delete=models.CASCADE, related_name='issues_reported')
@@ -77,6 +87,8 @@ class Issue(models.Model):
     status = models.ForeignKey(IssuesStatus, on_delete=models.PROTECT, blank=True, null=True)
 
     label = models.ForeignKey(Labels, on_delete=models.CASCADE, blank=True, null=True)
+
+    estimate = models.FloatField(default=0.0)
 
     priority = models.ForeignKey(IssuesPriority, on_delete=models.PROTECT, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -127,5 +139,3 @@ class Watcher(models.Model):
 
     class Meta:
         ordering = ['user', 'issue']
-
-
