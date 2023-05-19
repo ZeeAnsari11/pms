@@ -74,10 +74,10 @@ class Issue(models.Model):
     name = models.CharField(max_length=255)
     summary = models.CharField(max_length=100)
     description = models.TextField()
-    file = models.FileField(upload_to='attachments/issues/', blank=True, null=True, validators=[validate_file_size])
+    # file = models.FileField(upload_to='attachments/issues/', blank=True, null=True, validators=[validate_file_size])
 
-    # file = models.JSONField(blank=True, null=True, validators=[validate_file_size],
-    #                         default=list)
+    file = models.JSONField(blank=True, null=True, validators=[validate_file_size],
+                            default=list)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     assignee = models.ManyToManyField(User, related_name='issues_assigned')
     reporter = models.ForeignKey(User, on_delete=models.CASCADE, related_name='issues_reported')
