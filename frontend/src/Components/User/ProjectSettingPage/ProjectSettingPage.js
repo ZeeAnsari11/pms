@@ -124,7 +124,11 @@ function ProjectSettingPage() {
     const [usersData, setUsersData] = useState([]);
     const [projectData, setProjectData] = useState({});
     const [projectLeadData, setProjectLeadData] = useState([]);
+    const [projectAssigneesData, setProjectAssigneesData] = useState([]);
     const [icon, setIcon] = useState(null);
+    const [selectedProjectLead, setSelectedProjectLead] = useState([]);
+    const [selectedProjectAssignees, setSelectedProjectAssignees] = useState([]);
+
     const defaultIconPath = "Images/NoImage.jpeg"
     useEffect(() => {
         const fetchProjects = async () => {
@@ -153,6 +157,9 @@ function ProjectSettingPage() {
     useEffect(() => {
         if (projectData.project_lead) {
             setProjectLeadData(projectData.project_lead.username);
+        }
+        if (projectData.assignee) {
+            setProjectAssigneesData(projectData.assignee[0].username)
         }
     }, [projectData]);
 
@@ -186,6 +193,7 @@ function ProjectSettingPage() {
     console.log("Icon:", icon)
     console.log("Project Data:", projectData)
     console.log("Project Lead:", projectLeadData)
+    console.log("Project Assignee:", projectAssigneesData)
 
 
     const [name, setName] = useState(''); // Set initial value from project object
@@ -286,6 +294,16 @@ function ProjectSettingPage() {
     //     }))
     //     : [];
 
+    // const projectAssignee = projectAssigneesData
+    //     ? projectAssigneesData.map((projectAssignee) => ({
+    //         username: projectAssignee.username,
+    //         id: projectAssignee.id,
+    //     }))
+    //     : [];
+
+    // const projectLead = [
+    //     {id: projectLeadData.id, username: projectLeadData.username}
+    // ]
 
     const users = [
         {id: 1, username: "Hashim Doe"},
@@ -293,7 +311,13 @@ function ProjectSettingPage() {
         {id: 3, username: "Bob Smith"},
     ];
 
+    const handleSelectedProjectLeadChange = (value) => {
+        setSelectedProjectLead(parseInt(value));
+    };
 
+    const handleSelectedProjectAssigneesChange = (value) => {
+        setSelectedProjectAssignees(parseInt(value));
+    };
     const handleNameChange = (event) => {
         setName(event.target.value);
     };
@@ -313,6 +337,23 @@ function ProjectSettingPage() {
         icon: IconPath
     }
 
+    function getProjectLeadUsername(projectLeadData, useroptions) {
+        // Get the username of the project lead from the projectLeadData object.
+        const projectLeadUsername = projectLeadData.username;
+
+        // Loop through the useroptions object and find the user with the matching username.
+        for (const user of useroptions) {
+            if (user.username === projectLeadUsername) {
+                // Return the username of the project lead.
+                return user.username;
+            }
+        }
+
+        // If the project lead username is not found in the useroptions object, return undefined.
+        return undefined;
+    }
+
+
     function handleSubmit(event) {
         event.preventDefault();
         const form = event.target;
@@ -320,6 +361,8 @@ function ProjectSettingPage() {
             "name": name,
             "key": key,
             "icon": image,
+            "project_lead": selectedProjectLead,
+            "assignee": selectedProjectAssignees
         };
 
         axios({
@@ -334,7 +377,7 @@ function ProjectSettingPage() {
             .then(response => {
                 // handle the response
                 console.log(response.data);
-                // window.location.href = '';
+                window.location.href = window.location.href;
             })
             .catch(error => {
                 // handle the error
@@ -364,11 +407,14 @@ function ProjectSettingPage() {
                               onChange={handleKeyChange}/>
                     <Labelforlead htmlFor="category">Project lead:</Labelforlead>
                     <UserSelectField users={useroptions}
-                                     defaultValue={`${users[1].username}`}
+                                     defaultValue={projectLeadData}
+                                     onSelectChange={handleSelectedProjectLeadChange}
                                      width="50%"/>
                     <Description>Make sure your project lead has access to issues in the project.</Description>
                     <LabelforDefaultassignee htmlFor="category">Default assignee</LabelforDefaultassignee>
-                    <UserSelectField users={useroptions} defaultValue={`${users[1].username}`} width="50%"/>
+                    <UserSelectField users={useroptions} defaultValue={`${projectAssigneesData}`}
+                                     onSelectChange={handleSelectedProjectAssigneesChange}
+                                     width="50%"/>
                     <SaveButton>Save</SaveButton>
                 </FormWrapper>
             </PageWrapper>
