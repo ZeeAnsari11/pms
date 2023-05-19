@@ -312,7 +312,7 @@ const MyModalComponent = ({onClose}) => {
             "name": name,
             "summary": summary,
             "description": description,
-            "file": files,
+            // "file": files,
             "project": selectedProject,
             "reporter": selectedReporter,
             "type": selectedIssueType,
