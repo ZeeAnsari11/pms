@@ -15,6 +15,9 @@ import Notification from "../Components/Project/Notification/Notification";
 import Integrations from "../Components/Project/Integrations/Integrations";
 import ProjectTag from "../Components/Project/ProjectTag/ProjectTag";
 import Columns from "../Components/Project/Columns/columns";
+import Permissions from "../Components/Project/Permissions/Permissions";
+import CloseProject from "../Components/Project/CloseProject/CloseProject";
+import AccountActivation from "../Components/User/AccountActivate/AccountActivation";
 
 function Url() {
     return (
@@ -36,6 +39,9 @@ function Url() {
                 <Route path="/integrations" element={<Integrations/>}/>
                 <Route path="/project-tags" element={<ProjectTag/>}/>
                 <Route path="/project-columns" element={<Columns/>}/>
+                <Route path="/project-permissions" element={<Permissions/>}/>
+                <Route path="/close-project" element={<CloseProject/>}/>
+                <Route path="/user-activate" element={<AccountActivation/>}/>
             </Routes>
         </BrowserRouter>
     );

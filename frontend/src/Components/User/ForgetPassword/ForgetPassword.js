@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components';
-import   '../../../Configurations/colors';
+import '../../../Configurations/colors';
+import axios from 'axios';
 
 const Container = styled.div`
   position: absolute;
@@ -59,7 +60,6 @@ const Button = styled.button`
   padding: 12px 45px;
   letter-spacing: 1px;
   text-transform: uppercase;
-  //border-color: whitesmoke;
 
   &:last-child {
     margin-left: 54px;
@@ -81,34 +81,45 @@ const Message = styled.p`
 `;
 
 const ForgotPassword = () => {
-  const [email, setEmail] = useState('');
-  const [submitted, setSubmitted] = useState(false);
+    const [email, setEmail] = useState('');
+    const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setSubmitted(true);
-    console.log(email);
-  };
+    const handleSubmit = (e) => {
+        e.preventDefault();
 
-  return (
-    <Container>
-      <Headline>---- Forgot Password! ----</Headline>
-      {submitted ? (
-        <Message>An email has been sent to your email address with instructions on how to reset your password.</Message>
-      ) : (
-        <form onSubmit={handleSubmit}>
-          <Label>Email Address</Label>
-          <Input
-            type="email"
-            placeholder="Enter your email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <Button type="submit">Reset Password</Button>
-        </form>
-      )}
-    </Container>
-  );
+        axios.post(`${process.env.REACT_APP_HOST}/api/auth/users/reset_password/`, {"email": email})
+            .then(response => {
+                if (response.status === 204) {
+                    setSubmitted(true);
+                } else {
+                    console.error('Error sending password reset email:');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    };
+
+    return (
+        <Container>
+            <Headline>---- Forgot Password! ----</Headline>
+            {submitted ? (
+                <Message>An email has been sent to your email address with instructions on how to reset your
+                    password.</Message>
+            ) : (
+                <form onSubmit={handleSubmit}>
+                    <Label>Email Address</Label>
+                    <Input
+                        type="email"
+                        placeholder="Enter your email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    />
+                    <Button type="submit">Reset Password</Button>
+                </form>
+            )}
+        </Container>
+    );
 };
 
 export default ForgotPassword;
