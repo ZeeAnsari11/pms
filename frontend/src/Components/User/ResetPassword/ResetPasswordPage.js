@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, {useState, useEffect} from 'react';
+import {useNavigate, useLocation} from 'react-router-dom';
 import styled from 'styled-components';
-
+import axios from 'axios';
 
 const ForgotPasswordContainer = styled.div`
   position: absolute;
@@ -73,60 +73,105 @@ const Button = styled.button`
   }
 `;
 
-
+const WarningDiv = styled.div`
+  background-color: #fff6f6;
+  border: 1px solid #e0b4b4;
+  color: #9f3a38;
+  margin-top: 10px;
+  padding: 5px;
+`;
 
 const ResetPasswordPage = () => {
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState('');
-  const history = useNavigate();
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [uid, setUid] = useState('');
+    const [token, setToken] = useState('');
+    const [error, setError] = useState('');
+    const [error2, setError2] = useState('');
 
-  const handlePasswordChange = (event) => {
-    setPassword(event.target.value);
-  };
 
-  const handleConfirmPasswordChange = (event) => {
-    setConfirmPassword(event.target.value);
-  };
+    const navigate = useNavigate();
+    const location = useLocation();
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
+    useEffect(() => {
+        const searchParams = new URLSearchParams(location.search);
+        const uid = searchParams.get('uid');
+        const token = searchParams.get('token');
+        if (uid && token) {
+            setUid(uid);
+            setToken(token);
+        }
 
-    if (password !== confirmPassword) {
-      setError('Passwords do not match');
-      return;
-    }
+        console.log('uid:', uid);
+        console.log('token:', token);
 
-    // send password reset request to server here
+    }, [location.search]);
 
-    history.push('/login');
-  };
+    const handlePasswordChange = (event) => {
+        setPassword(event.target.value);
+    };
 
-  return (
-    <ForgotPasswordContainer>
-      <form onSubmit={handleSubmit}>
-        <ForgotPasswordHeadline>---- Reset Password! ----</ForgotPasswordHeadline>
-        {error && <div className="error">{error}</div>}
-        <ForgotPasswordLabel htmlFor="password">New Password:</ForgotPasswordLabel>
-        <ResetPasswordInput
-          type="password"
-          id="password"
-          value={password}
-          onChange={handlePasswordChange}
-          required
-        />
-        <ForgotPasswordLabel htmlFor="confirmPassword">Confirm Password:</ForgotPasswordLabel>
-        <ResetPasswordInput
-          type="password"
-          id="confirmPassword"
-          value={confirmPassword}
-          onChange={handleConfirmPasswordChange}
-          required
-        />
-        <Button type="submit">Reset Password</Button>
-      </form>
-    </ForgotPasswordContainer>
-  );
+    const handleConfirmPasswordChange = (event) => {
+        setConfirmPassword(event.target.value);
+    };
+
+    const handleSubmit = (event) => {
+        event.preventDefault();
+
+        if (password === confirmPassword) {
+            axios
+                .post(`${process.env.REACT_APP_HOST}/api/auth/users/reset_password_confirm/`, {
+                    uid: uid,
+                    token: token,
+                    new_password: password
+                })
+                .then(response => {
+                    if (response.status === 204) {
+                        console.log('The password has been changed');
+                        navigate('/');
+                    } else {
+                        console.error('Error sending password reset email');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    setError2('Please click on the password reset link and try again');
+                    setError('');
+                });
+        } else {
+            setError('Passwords do not match');
+            setError2('');
+        }
+    };
+
+    return (
+        <ForgotPasswordContainer>
+            <form onSubmit={handleSubmit}>
+                <ForgotPasswordHeadline>---- Reset Password! ----</ForgotPasswordHeadline>
+                {error && !error2 && <WarningDiv className="error">{error}</WarningDiv>}
+                {error2 && !error && <WarningDiv className="error">{error2}</WarningDiv>}
+                {!error && !error2 && <WarningDiv className="error" style={{display: 'none'}}></WarningDiv>}
+                {error && error2 && <WarningDiv className="error">{error2}</WarningDiv>}
+                <ForgotPasswordLabel htmlFor="password">New Password:</ForgotPasswordLabel>
+                <ResetPasswordInput
+                    type="password"
+                    id="password"
+                    value={password}
+                    onChange={handlePasswordChange}
+                    required
+                />
+                <ForgotPasswordLabel htmlFor="confirmPassword">Confirm Password:</ForgotPasswordLabel>
+                <ResetPasswordInput
+                    type="password"
+                    id="confirmPassword"
+                    value={confirmPassword}
+                    onChange={handleConfirmPasswordChange}
+                    required
+                />
+                <Button type="submit">Reset Password</Button>
+            </form>
+        </ForgotPasswordContainer>
+    );
 };
 
 export default ResetPasswordPage;

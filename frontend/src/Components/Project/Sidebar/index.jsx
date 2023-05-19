@@ -39,6 +39,9 @@ const ProjectSidebar = ({project}) => {
             {renderLinkItem(match, 'Integrations', 'GrSettingsOption', '/integrations')}
             {renderLinkItem(match, 'Tag', 'FaTag', '/project-tags')}
             {renderLinkItem(match, 'Columns', 'FaColumns', '/project-columns')}
+            {renderLinkItem(match, 'Permissions', 'FaUnlock', '/project-permissions')}
+            {renderLinkItem(match, 'Close Project', 'AiFillCloseCircle', '/close-project')}
+
             <Divider/>
             {/*{renderLinkItem(match, 'Roadmap', 'roadmap')}*/}
             {/*{renderLinkItem(match, 'Releases', 'release')}*/}
