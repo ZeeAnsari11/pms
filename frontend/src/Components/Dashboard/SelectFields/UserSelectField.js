@@ -27,11 +27,22 @@ const UserIcon = ({user}) => {
     return <span style={{marginRight: "8px"}}>{userIcon}</span>;
 };
 
-const UserSelect = ({users, isMultiple, placeholder, defaultValue, width = "100%", ...rest}) => {
-    const [value, setValue] = useState(undefined);
+const UserSelect = ({
+                        users,
+                        isMultiple,
+                        placeholder,
+                        isDisabled,
+                        defaultValue,
+                        width = "100%",
+                        onSelectChange,
+                        ...rest
+                    }) => {
+    const [value, setValue] = useState(defaultValue);
 
-    const handleChange = (value) => {
-        setValue(value);
+
+    const handleSelectChange = (value) => {
+        setValue(value)
+        onSelectChange(value);
     };
 
     const filterOption = (input, option) => {
@@ -53,9 +64,10 @@ const UserSelect = ({users, isMultiple, placeholder, defaultValue, width = "100%
             showSearch={true}
             filterOption={filterOption}
             value={value}
+            disabled={isDisabled}
             defaultValue={defaultValue}
             allowClear
-            onChange={handleChange}
+            onChange={handleSelectChange}
             {...rest}
         >
             {users.map((user) => (
