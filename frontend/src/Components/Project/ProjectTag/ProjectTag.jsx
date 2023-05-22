@@ -10,6 +10,7 @@ import {Modal as Modal3} from 'antd';
 import {ChromePicker} from "react-color";
 import {Dropdown, Space} from 'antd';
 import {Pagination} from 'antd';
+import axios from 'axios';
 
 
 const PageContainer = styled.div`
@@ -188,6 +189,47 @@ function ProjectTags() {
     const [deleteId, setDeleteId] = useState(0);
 
 
+    const fetchLabels = () => {
+        axios
+            .get(`${process.env.REACT_APP_HOST}/api/labels`)
+            .then(response => {
+                console.log(response.data);
+                const newDataArray = response.data.map((item, index) => {
+                    const {id, label, color} = item;
+                    return {id, label, color};
+                });
+                setNewArray(newDataArray);
+            })
+            .catch(error => {
+                // Handle the error
+                console.error(error);
+            });
+    };
+
+// Function to delete a label
+    const deleteLabel = (id) => {
+        axios
+            .delete(`${process.env.REACT_APP_HOST}/api/labels/${id}`)
+            .then(response => {
+                // Handle success if needed
+                console.log('Data deleted successfully');
+            })
+            .catch(error => {
+                // Handle error if needed
+                console.error('Error deleting data', error);
+            });
+    };
+
+    useEffect(() => {
+        fetchLabels();
+
+        if (isDelete) {
+            deleteLabel(deleteId);
+            setIsDelete(false);
+            setDeleteId(0);
+        }
+    }, [isDelete]);
+
     const showModal = () => {
         setIsModalVisible(true);
     };
@@ -239,10 +281,10 @@ function ProjectTags() {
     `;
 
     const handleOk = () => {
+
         const newTag = {
-            id: newArray.length + 1,
-            name: inputValue,
-            color: color
+            "label": inputValue,
+            "color": color
         };
 
         if (inputValue === '' || color === '') {
@@ -250,6 +292,13 @@ function ProjectTags() {
         }
 
         if (inputValue && color) {
+            try {
+                const response = axios.post(`${process.env.REACT_APP_HOST}/api/labels/`, newTag)
+
+                console.log(response.data); // Assuming the response contains the created label object
+            } catch (error) {
+                console.error(error);
+            }
             setNewArray([...newArray, newTag]);
             setIsModalVisible(false);
             setIsEmpty(false);
@@ -262,14 +311,24 @@ function ProjectTags() {
     const handleOk2 = () => {
         const newTag = {
             id: id,
-            name: inputValue2,
-            color: color2
+            color: color2,
+            label: inputValue2
         };
 
         if (inputValue2 === '' || color2 === '') {
             setIsEmpty2(true);
             return;
         }
+
+        axios.patch(`${process.env.REACT_APP_HOST}/api/labels/${id}/`, newTag)
+            .then(response => {
+                // Handle successful response
+                console.log('Data updated successfully:', response.data);
+            })
+            .catch(error => {
+                // Handle error
+                console.error('Error updating data:', error);
+            });
 
         const updatedArray = newArray.filter((item) => item.id !== id);
         let insertIndex = 0;
@@ -292,29 +351,21 @@ function ProjectTags() {
 
     const handleEditTag = (id) => {
         setIsModalVisible2(true);
+
         setId(id);
     };
 
     const handleDeleteTag = (id, name) => {
-        setDeleteId(id);
         Modal3.confirm({
             title: 'Confirm',
             content: 'Are you sure you want to delete this tag: ' + name + ' ?',
             onOk() {
-                // Set the isDelete state to true
                 setIsDelete(true);
+                setDeleteId(id);
             },
         });
     };
 
-    useEffect(() => {
-        if (isDelete) {
-            const updatedArray = newArray.filter((item) => item.id !== deleteId);
-            setNewArray(updatedArray);
-            setIsDelete(false);
-            setDeleteId(0);
-        }
-    }, [isDelete]);
 
     const ITEMS_PER_PAGE = 10;
     const totalPages = Math.ceil(newArray.length / ITEMS_PER_PAGE);
@@ -370,7 +421,7 @@ function ProjectTags() {
                                                         {
                                                             key: 'delete',
                                                             label: 'Delete',
-                                                            onClick: () => handleDeleteTag(tag.id, tag.name)
+                                                            onClick: () => handleDeleteTag(tag.id, tag.label)
                                                         }
                                                     ]
                                                 }}
@@ -383,7 +434,7 @@ function ProjectTags() {
                                                 </a>
                                             </Dropdown>
                                         </IconWrapper>
-                                        <NameTag color={tag.color}>{tag.name}</NameTag>
+                                        <NameTag color={tag.color}>{tag.label}</NameTag>
                                     </TableCellForTag>
                                     <TableCell>
                                         <Tag color={tag.color}>{tag.color}</Tag>
