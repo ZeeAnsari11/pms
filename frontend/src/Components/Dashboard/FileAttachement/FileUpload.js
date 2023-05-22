@@ -124,17 +124,23 @@ function FileUpload(props) {
 
         const fileList = [...event.dataTransfer.files];
         setFiles([...files, ...fileList]);
+
+        props.onFilesChange([...files, ...fileList]);
     };
 
     const handleFileInput = (event) => {
         const fileList = [...event.target.files];
         setFiles([...files, ...fileList]);
+
+        props.onFilesChange([...files, ...fileList]);
     };
 
     const handleRemoveFile = (index) => {
         const newFiles = [...files];
         newFiles.splice(index, 1);
         setFiles(newFiles);
+
+        props.onFilesChange(newFiles);
     };
 
 

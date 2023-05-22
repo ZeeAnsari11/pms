@@ -18,6 +18,11 @@ class IssueInline(admin.StackedInline):
     can_delete = False
 
 
+class LabelAdmin(admin.ModelAdmin):
+    list_display = ['label', 'color']
+    search_fields = ['Label']
+
+
 class ProjectAdmin(admin.ModelAdmin):
     list_display = ['name', 'company', 'project_category', 'project_lead', 'issues']
     prepopulated_fields = {
@@ -108,6 +113,8 @@ admin.site.register(models.Issue, IssueAdmin)
 admin.site.register(models.Comment, CommentAdmin)
 # admin.site.register(models.Attachment, AttachmentAdmin)
 admin.site.register(models.WorkLog, WorkLogAdmin)
+admin.site.register(models.Labels, LabelAdmin)
+
 admin.site.register(models.Watcher, WatcherAdmin)
 admin.site.register(models.ProjectCategory, ProjectCategoryAdmin)
 admin.site.register(models.IssuesType, IssuesTypeAdmin)
