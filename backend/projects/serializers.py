@@ -3,6 +3,7 @@ from . import models
 from django.contrib.auth.models import User
 from django.db.models.aggregates import Count
 from register.serializers import CompanySerializer
+# from rest_framework import serializers
 
 
 class ProjectCategorySerializer(serializers.ModelSerializer):
@@ -29,6 +30,12 @@ class IssuesPrioritySerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class LabelsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Labels
+        fields = "__all__"
+
+
 class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -50,6 +57,10 @@ class ProjectIssuesSerializer(serializers.ModelSerializer):
     # def create(self, validated_data):
     #     project_id = self.context['issue_id']
     #     return models.Project.objects.create(project_id=project_id, **validated_data)
+
+
+# class FileSerializer(serializers.Serializer):
+#     file = serializers.FileField(max_length=None, allow_empty_file=False)
 
 
 class CreateProjectSerializer(serializers.ModelSerializer):
