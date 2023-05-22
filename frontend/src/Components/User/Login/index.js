@@ -101,8 +101,6 @@ function Login() {
                 console.error(error);
             });
         }
-
-
     }
 
     const handleSubmitSignUp = (e) => {
@@ -190,71 +188,71 @@ function Login() {
 
     return (
         <ParentContainer>
-        <Components.Container>
-            <Components.SignUpContainer signingIn={signIn}>
-                <Components.Form onSubmit={handleSubmitSignUp}>
-                    <Components.Title>Create Account</Components.Title>
-                    <Components.Input type="text" placeholder="Name" value={name}
-                                      onChange={(e) => setName(e.target.value)}/>
-                    <Components.Input type="email" placeholder="Email" value={email}
-                                      onChange={(e) => setEmail(e.target.value)}/>
-                    <Components.Input type="password" placeholder="Password" value={password}
-                                      onChange={(e) => setPassword(e.target.value)}/>
-                    <Components.Button>Sign Up</Components.Button>
-                </Components.Form>
-            </Components.SignUpContainer>
-            <Components.SignInContainer signingIn={signIn}>
-                <Components.Form onSubmit={handleSubmitSignIn}>
-                    <Components.Title>Sign In</Components.Title>
-                    <Components.Input type="text" placeholder="Name" value={usernameForSignIn}
-                                      onChange={(e) => setUsernameForSignIn(e.target.value)}/>
-                    <Components.Input type="password" placeholder="Password" value={passwordForSignIn}
-                                      onChange={(e) => setPasswordForSignIn(e.target.value)}/>
-                    <Components.Anchor>
-                        <Link to="/forgot-password">Forgot Password?</Link>
-                        <br></br>
-                        <br></br>
-                        <Link to="/reset-password">Password Reset?</Link>
-                    </Components.Anchor>
-                    <Components.Button>Sign In</Components.Button>
-                </Components.Form>
-            </Components.SignInContainer>
-            <Components.OverlayContainer signingIn={signIn}>
-                <Components.Overlay signingIn={signIn}>
-                    <Components.LeftOverlayPanel signingIn={signIn}>
-                        <Components.Title>Welcome Back!</Components.Title>
-                        <Components.Paragraph>
-                            To keep connected with us please login with your personal info
-                        </Components.Paragraph>
-                        <Components.GhostButton onClick={() => toggle(true)}>
-                            Sign In
-                        </Components.GhostButton>
-                    </Components.LeftOverlayPanel>
-                    <Components.RightOverlayPanel signingIn={signIn}>
-                        <Components.Title>PHP Studios!</Components.Title>
-                        <Components.Paragraph>
-                            Enter your personal details and start journey with us
-                        </Components.Paragraph>
-                        <Components.GhostButton onClick={() => toggle(false)}>
-                            Sign Up
-                        </Components.GhostButton>
-                    </Components.RightOverlayPanel>
-                </Components.Overlay>
-            </Components.OverlayContainer>
-        </Components.Container>
-        <ToastContainer
-            position="top-right"
-            autoClose={5000}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            theme="colored"
-        />
-    </ParentContainer>);
+            <Components.Container>
+                <Components.SignUpContainer signingIn={signIn}>
+                    <Components.Form onSubmit={handleSubmitSignUp}>
+                        <Components.Title>Create Account</Components.Title>
+                        <Components.Input type="text" placeholder="Name" value={name}
+                                          onChange={(e) => setName(e.target.value)}/>
+                        <Components.Input type="email" placeholder="Email" value={email}
+                                          onChange={(e) => setEmail(e.target.value)}/>
+                        <Components.Input type="password" placeholder="Password" value={password}
+                                          onChange={(e) => setPassword(e.target.value)}/>
+                        <Components.Button>Sign Up</Components.Button>
+                    </Components.Form>
+                </Components.SignUpContainer>
+                <Components.SignInContainer signingIn={signIn}>
+                    <Components.Form onSubmit={handleSubmitSignIn}>
+                        <Components.Title>Sign In</Components.Title>
+                        <Components.Input type="text" placeholder="Name" value={usernameForSignIn}
+                                          onChange={(e) => setUsernameForSignIn(e.target.value)}/>
+                        <Components.Input type="password" placeholder="Password" value={passwordForSignIn}
+                                          onChange={(e) => setPasswordForSignIn(e.target.value)}/>
+                        <Components.Anchor>
+                            <Link to="/forgot-password">Forgot Password?</Link>
+                            <br></br>
+                            <br></br>
+                            <Link to="/reset-password">Password Reset?</Link>
+                        </Components.Anchor>
+                        <Components.Button>Sign In</Components.Button>
+                    </Components.Form>
+                </Components.SignInContainer>
+                <Components.OverlayContainer signingIn={signIn}>
+                    <Components.Overlay signingIn={signIn}>
+                        <Components.LeftOverlayPanel signingIn={signIn}>
+                            <Components.Title>Welcome Back!</Components.Title>
+                            <Components.Paragraph>
+                                To keep connected with us please login with your personal info
+                            </Components.Paragraph>
+                            <Components.GhostButton onClick={() => toggle(true)}>
+                                Sign In
+                            </Components.GhostButton>
+                        </Components.LeftOverlayPanel>
+                        <Components.RightOverlayPanel signingIn={signIn}>
+                            <Components.Title>PHP Studios!</Components.Title>
+                            <Components.Paragraph>
+                                Enter your personal details and start journey with us
+                            </Components.Paragraph>
+                            <Components.GhostButton onClick={() => toggle(false)}>
+                                Sign Up
+                            </Components.GhostButton>
+                        </Components.RightOverlayPanel>
+                    </Components.Overlay>
+                </Components.OverlayContainer>
+            </Components.Container>
+            <ToastContainer
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="colored"
+            />
+        </ParentContainer>);
 }
 
 export default Login;

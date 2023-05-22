@@ -6,6 +6,8 @@ import {BsGraphUpArrow} from 'react-icons/bs'
 import {GrSettingsOption} from 'react-icons/gr';
 import { FaTag } from 'react-icons/fa';
 import { FaColumns } from 'react-icons/fa';
+import { FaUnlock } from 'react-icons/fa';
+import { AiFillCloseCircle } from 'react-icons/ai';
 
 
 const Icon = ({type, size}) => {
@@ -20,10 +22,10 @@ const Icon = ({type, size}) => {
             return <FaTag color={'Black'} size={size}/>;
         case 'FaColumns':
             return <FaColumns color={'Black'} size={size}/>;
-        case 'pages':
-            return <RiPagesLine size={size}/>;
-        case 'reports':
-            return <BsGraphUpArrow size={size}/>;
+        case 'FaUnlock':
+            return <FaUnlock color={'Black'} size={size}/>;
+        case 'AiFillCloseCircle':
+            return <AiFillCloseCircle color={'Black'} size={size}/>;
         default:
             return null;
     }
