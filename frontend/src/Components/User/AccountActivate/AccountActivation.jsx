@@ -60,7 +60,6 @@ const AccountActivation = () => {
         axios.post(`${process.env.REACT_APP_HOST}/api/auth/users/activation/`, {uid, token})
             .then(response => {
                 if (response.status === 204) {
-                    console.log('Your Account is activated');
                     setActivated(true);
                     sessionStorage.setItem('activated', 'true');
                 } else {
@@ -68,7 +67,7 @@ const AccountActivation = () => {
                 }
             })
             .catch(error => {
-                console.error('Error:');
+                console.error(`Error: ${error}`);
             });
     }, [location.search]);
 
