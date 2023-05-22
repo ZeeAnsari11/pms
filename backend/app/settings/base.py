@@ -62,7 +62,11 @@ REST_FRAMEWORK = {
 }
 
 DJOSER = {
-    "USER_ID_FIELD": "username"
+    "USER_ID_FIELD": "username",
+    'PASSWORD_RESET_CONFIRM_URL': 'reset-password?uid={uid}&token={token}',
+    'USERNAME_RESET_CONFIRM_URL': '#/username/reset/confirm/{uid}/{token}',
+    'ACTIVATION_URL': 'user-activate?uid={uid}&token={token}',
+    'SEND_ACTIVATION_EMAIL': True,
 }
 
 ROOT_URLCONF = 'app.urls'

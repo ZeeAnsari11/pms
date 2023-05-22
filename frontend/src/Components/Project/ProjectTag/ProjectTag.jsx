@@ -123,7 +123,7 @@ const TableCell = styled.div`
   padding: 10px;
   border: none;
   text-align: center;
-  
+
   @media (max-width: 768px) {
     display: block;
     width: 50%;
@@ -295,7 +295,7 @@ function ProjectTags() {
         setId(id);
     };
 
-    const handleDeleteTag = (id,name) => {
+    const handleDeleteTag = (id, name) => {
         setDeleteId(id);
         Modal3.confirm({
             title: 'Confirm',
@@ -370,7 +370,7 @@ function ProjectTags() {
                                                         {
                                                             key: 'delete',
                                                             label: 'Delete',
-                                                            onClick: () => handleDeleteTag(tag.id,tag.name)
+                                                            onClick: () => handleDeleteTag(tag.id, tag.name)
                                                         }
                                                     ]
                                                 }}
