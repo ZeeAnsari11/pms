@@ -15,7 +15,7 @@ router.register('issues_type', views.IssuesTypeViewSet, basename="issues_type")
 router.register('issues_status', views.IssuesStatusViewSet, basename="issues_status")
 router.register('issues_priority', views.IssuesPriorityViewSet, basename="issues_priority")
 router.register('users_list', views.UserViewSet, basename='users')
-
+router.register('labels', views.LabelViewSet, basename='labels')
 
 projects_router = routers.NestedDefaultRouter(router, 'projects', lookup='project')
 projects_router.register('issues', views.ProjectIssuesViewSet, basename='projects-issues')
