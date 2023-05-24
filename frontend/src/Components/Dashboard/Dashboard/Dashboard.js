@@ -1,11 +1,12 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import Board from '../Board/Board';
 import Editable from '../Editable/Editable';
 import Sidebar from '../Sidebar/index';
 import NavBar from "../Navbar/index";
 import styled from 'styled-components';
-import {useLocation} from 'react-router-dom';
+import {useLocation, useParams} from 'react-router-dom';
 import {BsPlusSquare} from "react-icons/bs";
+import axios from "axios";
 
 const DashboardContainer = styled.div`
   height: 100vh;
@@ -48,6 +49,51 @@ const BoardAdd = styled.div`
 
 
 function Dashboard(props) {
+    let authToken = localStorage.getItem('auth_token')
+
+    const [projectData, setProjectData] = useState({});
+    const [issuesData, setIssuesData] = useState({});
+
+    const [name, setName] = useState(''); // Set initial value from project object
+    const [projectCategory, setProjectCategory] = useState(''); // Set initial value from project object
+    const [projectIcon, setProjectIcon] = useState(''); // Set initial value from project object
+
+
+    const {projectId} = useParams()
+    useEffect(() => {
+        const fetchProjects = async () => {
+            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/projects/${projectId}`, {
+                headers: {
+                    Authorization: `Token ${authToken}`,
+                },
+            });
+            setProjectData(response.data);
+
+        };
+
+        const fetchIssues = async () => {
+            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/projects/${projectId}/issues`, {
+                headers: {
+                    Authorization: `Token ${authToken}`,
+                },
+            });
+            setIssuesData(response.data);
+        };
+        fetchProjects();
+        fetchIssues();
+    }, []);
+
+
+    useEffect(() => {
+        if (projectData.name) {
+            setName(projectData.name);
+            setProjectIcon(projectData.icon);
+            setProjectCategory(projectData.project_category)
+        }
+    }, [projectData]);
+    console.log("Project Issues:", issuesData)
+
+    console.log("Project Icon:", projectIcon)
 
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
@@ -58,9 +104,54 @@ function Dashboard(props) {
         bid: "",
     })
     const [boards, setboards] = useState([
+        // {
+        //     id: Date.now() + Math.random() * 2,
+        //     title: "Dashboard Frontend",
+        //     cards: [
+        //         {
+        //             id: Date.now() + Math.random(),
+        //             title: "I am testing this to check whether styling remains consistent or not.",
+        //             tasks: [],
+        //             labels: [
+        //                 {
+        //                     text: "critical",
+        //                     color: "red",
+        //                 },
+        //             ],
+        //             desc: "Frontend of Dashboard",
+        //             date: "",
+        //         },
+        //         {
+        //             id: Date.now() + Math.random(),
+        //             title: "Card 2",
+        //             tasks: [],
+        //             labels: [
+        //                 {
+        //                     text: "In queue",
+        //                     color: "Grey",
+        //                 },
+        //             ],
+        //             desc: "Second frontend of Dashboard",
+        //             date: "",
+        //         },
+        //         {
+        //             id: Date.now() + Math.random(),
+        //             title: "Card 3",
+        //             tasks: [],
+        //             labels: [
+        //                 {
+        //                     text: "In Progress",
+        //                     color: "Blue",
+        //                 },
+        //             ],
+        //             desc: "Backend of Dashboard",
+        //             date: "",
+        //         },
+        //     ],
+        // },
         {
             id: Date.now() + Math.random() * 2,
-            title: "Dashboard Frontend",
+            title: "To Do",
             cards: [
                 {
                     id: Date.now() + Math.random(),
@@ -75,33 +166,33 @@ function Dashboard(props) {
                     desc: "Frontend of Dashboard",
                     date: "",
                 },
+            ],
+        },
+
+        {
+            id: Date.now() + Math.random() * 2,
+            title: "Done",
+            cards: [
                 {
                     id: Date.now() + Math.random(),
-                    title: "Card 2",
+                    title: "I am testing this to check whether styling remains consistent or not.",
                     tasks: [],
                     labels: [
                         {
-                            text: "In queue",
-                            color: "Grey",
+                            text: "critical",
+                            color: "red",
                         },
                     ],
-                    desc: "Second frontend of Dashboard",
-                    date: "",
-                },
-                {
-                    id: Date.now() + Math.random(),
-                    title: "Card 3",
-                    tasks: [],
-                    labels: [
-                        {
-                            text: "In Progress",
-                            color: "Blue",
-                        },
-                    ],
-                    desc: "Backend of Dashboard",
+                    desc: "Frontend of Dashboard",
                     date: "",
                 },
             ],
+        },
+
+        {
+            id: Date.now() + Math.random() * 2,
+            title: "In Progress",
+            cards: [],
         },
     ]);
 
@@ -200,9 +291,24 @@ function Dashboard(props) {
         setboards(tempBoards);
     }
 
+    // const project = {
+    //     name: projectData.name,
+    //     category: projectData.project_category,
+    //     icon: projectData.icon
+    // }
+
+    let IconPath = projectData.icon
+    if (IconPath != null) {
+        IconPath = `${process.env.REACT_APP_HOST}/${projectIcon}`
+    } else {
+        IconPath = 'http://localhost:3000/Images/NoImage.jpeg'
+    }
+
+
     const project = {
-        name: searchParams.get('name'),
-        category: searchParams.get('category')
+        name: name,
+        category: projectCategory.project_category,
+        icon: IconPath,
     }
 
     return (
