@@ -76,7 +76,7 @@ class Issue(models.Model):
     description = models.TextField()
     # file = models.FileField(upload_to='attachments/issues/', blank=True, null=True, validators=[validate_file_size])
 
-    file = models.JSONField(blank=True, null=True, validators=[validate_file_size],
+    file = models.JSONField(blank=True, null=True,
                             default=list)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     assignee = models.ManyToManyField(User, related_name='issues_assigned')

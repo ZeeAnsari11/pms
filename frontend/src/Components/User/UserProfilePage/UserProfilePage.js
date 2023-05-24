@@ -1,10 +1,12 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import styled from 'styled-components';
 import {faBriefcase, faCalendar, faEdit, faSitemap} from '@fortawesome/free-solid-svg-icons';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import Editable from "../Editable/Editable";
 import NavBar from "../../Dashboard/Navbar";
 import {DatePicker} from 'antd'
+import axios from "axios";
+import {User} from "react-feather";
 
 
 const ProfileWrapper = styled.div`
@@ -137,6 +139,61 @@ const HorizontalLine = styled.div`
 
 const UserProfilePage = () => {
     const [startDate, setStartDate] = useState(null);
+    const [userData, setUserData] = useState(null);
+    const [LoggedInUser, setLoggedInUser] = useState(null);
+
+    const [Users, setUsers] = useState('');
+    let authToken = localStorage.getItem('auth_token')
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                const response = await axios.get(`${process.env.REACT_APP_HOST}/api/auth/users/me/`, {
+                    headers: {"Authorization": `Token ${authToken}`}
+                });
+                setUserData(response.data);
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        const fetchUsers = async () => {
+            try {
+                const response = await axios.get('http://127.0.0.1:8000/api/users_list/', {
+                    headers: {"Authorization": `Token ${authToken}`}
+                });
+                setUsers(response.data);
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        fetchUserData();
+        fetchUsers();
+    }, []);
+
+    useEffect(() => {
+        const checkUser = (email) => {
+            if (email && Users.length > 0) {
+                for (let i = 0; i < Users.length; i++) {
+                    if (Users[i].email === email) {
+                        const loggedInUser = Users[i];
+                        setLoggedInUser(loggedInUser);
+                        // Do something with the logged-in user's data
+                        // console.log("logged In User",loggedInUser);
+                        break; // Exit the loop once a match is found
+                    }
+                }
+            }
+        };
+
+
+        checkUser(userData?.email);
+    }, [Users]);
+
+    console.log("Hello jee", LoggedInUser);
+
+
     const handleDateChange = (date, dateString) => {
         setStartDate(dateString);
     };
@@ -148,9 +205,8 @@ const UserProfilePage = () => {
                 <ProfileHeader>
                     <ProfileImage src="https://i.pravatar.cc/300" alt="Profile Picture"/>
                     <div>
-                        <ProfileName>John Doe</ProfileName>
-                        <ProfileEmail>
-                            john.doe@example.com</ProfileEmail>
+                        <ProfileName>{LoggedInUser?.username}</ProfileName>
+                        <ProfileEmail>{LoggedInUser?.email}</ProfileEmail>
                     </div>
                     <EditIcon className="fas fa-edit">
                         <FontAwesomeIcon icon={faEdit}/>

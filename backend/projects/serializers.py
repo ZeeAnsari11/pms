@@ -59,8 +59,8 @@ class ProjectIssuesSerializer(serializers.ModelSerializer):
     #     return models.Project.objects.create(project_id=project_id, **validated_data)
 
 
-# class FileSerializer(serializers.Serializer):
-#     file = serializers.FileField(max_length=None, allow_empty_file=False)
+class FileSerializer(serializers.Serializer):
+    file = serializers.FileField(max_length=None, allow_empty_file=False)
 
 
 class CreateProjectSerializer(serializers.ModelSerializer):

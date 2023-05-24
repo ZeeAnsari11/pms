@@ -154,6 +154,7 @@ const MyModalComponent = ({onClose}) => {
     const [Status, setStatus] = useState('');
     const [Labels, setLabels] = useState('');
     const [Users, setUsers] = useState('');
+    const [Reporter, setReporter] = useState('');
     const [hours, setHours] = useState("");
     const [selectedProject, setSelectedProject] = useState('');
     const [selectedIssueType, setSelectedIssueType] = useState('');
@@ -164,6 +165,7 @@ const MyModalComponent = ({onClose}) => {
     const [files, setFiles] = useState([]);
     const [project, setProject] = useState('');
 
+    console.log("File", files)
 
     const handleFilesChange = (newFiles) => {
         setFiles(newFiles);
@@ -193,7 +195,7 @@ const MyModalComponent = ({onClose}) => {
     };
 
     const handleLabelChange = (value) => {
-        setSelectedLabels([parseInt(value)]);
+        setSelectedLabels(parseInt(value));
         console.log("Labels", selectedLabels)
     };
 
@@ -203,7 +205,7 @@ const MyModalComponent = ({onClose}) => {
     };
 
     const handleReporterChange = (value) => {
-        setSelectedReporter([parseInt(value)]);
+        setSelectedReporter(parseInt(value));
         console.log("Reporter", selectedReporter)
     };
 
@@ -300,6 +302,15 @@ const MyModalComponent = ({onClose}) => {
 
     console.log("User Options:", Useroptions)
 
+    const Reporteroptions = Users
+        ? Users.map((Users) => ({
+            username: Users.username,
+            id: Users.id,
+        }))
+        : [];
+
+    console.log("Reporter Options:", Reporteroptions)
+
     const handleHoursChange = (totalHours) => {
         setHours(totalHours);
     };
@@ -312,7 +323,7 @@ const MyModalComponent = ({onClose}) => {
             "name": name,
             "summary": summary,
             "description": description,
-            // "file": files,
+            "file": files,
             "project": selectedProject,
             "reporter": selectedReporter,
             "type": selectedIssueType,
@@ -324,14 +335,14 @@ const MyModalComponent = ({onClose}) => {
 
         };
 
-
+        console.log(data, "DATA")
         fetch('http://127.0.0.1:8000/api/issues/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Token ${authToken}`,
             },
-            body: data
+            body: JSON.stringify(data) // Serialize the data object as JSON
         })
             .then(response => {
                 // handle the response
@@ -480,7 +491,7 @@ const MyModalComponent = ({onClose}) => {
                                 <FiUser/>
                                 Reporter
                             </CardInfoBoxTitle>
-                            <UserSelectField users={Useroptions} isMultiple={false} placeholder={"Unassigned"}
+                            <UserSelectField users={Reporteroptions} isMultiple={false} placeholder={"Unassigned"}
                                              onChange={handleReporterChange}/>
                             <TaskList>
                                 {values.reporter?.map((item) => (
