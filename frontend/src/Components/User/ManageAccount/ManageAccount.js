@@ -1,10 +1,11 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import styled from 'styled-components';
 import {faCircleInfo, faEarthAfrica, faImage} from '@fortawesome/free-solid-svg-icons';
 import Editable from '../../Dashboard/Editable/Editable';
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {color, font, mixin} from "../../Dashboard/Sidebar/utils/styles";
 import Dropdown from "./ManageAccountDropDown";
+import axios from "axios";
 
 
 const Wrapper = styled.div`
@@ -149,7 +150,6 @@ const CircleImage = styled.div`
   width: 100px;
   height: 100px;
   border-radius: 50%;
-  background-image: url('/image.png');
   background-size: cover;
   background-position: center;
 
@@ -478,6 +478,25 @@ const ProfileVisibility = () => {
 
     const [isEditable, setIsEditable] = useState(false);
     const options = ['Option 1', 'Option 2', 'Option 3'];
+    const [userData, setUserData] = useState({});
+
+    let authToken = localStorage.getItem('auth_token')
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                const response = await axios.get(`${process.env.REACT_APP_HOST}/api/userprofile/`, {
+                    headers: {"Authorization": `Token ${authToken}`}
+                });
+                setUserData(response.data);
+
+            } catch (error) {
+                console.error(error);
+            }
+        }
+        fetchUserData();
+    }, []);
+
     return (
         <Wrapper>
             <Heading>Profile and visibility</Heading>
@@ -486,7 +505,7 @@ const ProfileVisibility = () => {
             <SubHeading>Profile photo and header image</SubHeading>
             <ImageWrapper>
                 <CoverPictureWrapper>
-                    <CircleImage>
+                    <CircleImage style={{ backgroundImage: `url(${userData?.image})` }}>
                         <UpdateProfile className="update-cover">
                             <FontAwesomeIcon icon={faImage} fontSize={"30px"} onClick={() => {
                                 console.log("Clicked")
@@ -539,8 +558,8 @@ const ProfileVisibility = () => {
                                         <InputFieldSecondInner>
                                             <AlignEdiableField>
 
-                                                <Editable text={"Kaleem Shahzad"}
-                                                          placeholder={"Kaleem Shahzad"}
+                                                <Editable text={userData?.user?.username}
+                                                          placeholder={userData?.user?.username}
                                                 />
                                             </AlignEdiableField>
                                         </InputFieldSecondInner>
@@ -575,8 +594,8 @@ const ProfileVisibility = () => {
                                         <InputFieldSecondInner>
                                             <AlignEdiableField>
 
-                                                <Editable text={"Kaleem Shahzad"}
-                                                          placeholder={"Kaleem Shahzad"}
+                                                <Editable text={userData?.user?.username}
+                                                          placeholder={userData?.user?.username}
                                                 />
                                             </AlignEdiableField>
                                         </InputFieldSecondInner>
@@ -611,8 +630,8 @@ const ProfileVisibility = () => {
                                         <InputFieldSecondInner>
                                             <AlignEdiableField>
 
-                                                <Editable text={"Web Developer"}
-                                                          placeholder={"Web Developer"}
+                                                <Editable text={userData?.job_title}
+                                                          placeholder={userData?.job_title}
                                                 />
                                             </AlignEdiableField>
                                         </InputFieldSecondInner>
@@ -647,8 +666,8 @@ const ProfileVisibility = () => {
                                         <InputFieldSecondInner>
                                             <AlignEdiableField>
 
-                                                <Editable text={"Your Department"}
-                                                          placeholder={"Department"}
+                                                <Editable text={userData?.department}
+                                                          placeholder={userData?.department}
                                                 />
                                             </AlignEdiableField>
                                         </InputFieldSecondInner>
@@ -683,8 +702,8 @@ const ProfileVisibility = () => {
                                         <InputFieldSecondInner>
                                             <AlignEdiableField>
 
-                                                <Editable text={"Pakistan Lahore"}
-                                                          placeholder={"Pakistan Lahore"}
+                                                <Editable text={userData?.company?.company_name}
+                                                          placeholder={userData?.company?.company_name}
                                                 />
                                             </AlignEdiableField>
                                         </InputFieldSecondInner>
@@ -719,8 +738,8 @@ const ProfileVisibility = () => {
                                         <InputFieldSecondInner>
                                             <AlignEdiableField>
 
-                                                <Editable text={"Pakistan Lahore"}
-                                                          placeholder={"Pakistan Lahore"}
+                                                <Editable text={userData?.company?.city}
+                                                          placeholder={userData?.company?.city}
                                                 />
                                             </AlignEdiableField>
                                         </InputFieldSecondInner>
@@ -747,7 +766,7 @@ const ProfileVisibility = () => {
                         <LabelHeadingWrapper>
                             <HeadingLabel>Email address</HeadingLabel>
                         </LabelHeadingWrapper>
-                        <EmailAddress>kaleemshahzad131@gmail.com</EmailAddress>
+                        <EmailAddress>{userData?.user?.email}</EmailAddress>
                     </ContentEmailAddressWrapper>
 
                     <ContentAccessWrapper>
