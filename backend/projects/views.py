@@ -103,7 +103,7 @@ class ProjectViewSet(ModelViewSet):
 
 class IssueViewSet(ModelViewSet):
     http_method_names = ['get', 'post', 'put', 'patch', 'delete']
-    parser_classes = (MultiPartParser, FormParser)
+    # parser_classes = (MultiPartParser, FormParser)
 
     # queryset = Issue.objects.prefetch_related('assignee').select_related('reporter').select_related('project').all()
 

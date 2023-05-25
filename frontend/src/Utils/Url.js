@@ -1,6 +1,6 @@
+import Login from "../Components/User/Login"
 import {BrowserRouter, Routes, Route, Navigate} from "react-router-dom";
 import React from 'react';
-import Login from "../Components/User/Login"
 import ResetPasswordPage from "../Components/User/ResetPassword/ResetPasswordPage"
 import ForgotPassword from "../Components/User/ForgetPassword/ForgetPassword"
 import Dashboard from "../Components/Dashboard/Dashboard/Dashboard"
@@ -33,35 +33,33 @@ function PrivateRoute({ element: Component, ...rest }) {
 }
 
 function Url() {
-    return (
-        <BrowserRouter>
-            <Routes>
-                <Route path="/" element={<Login/>}/>
-                <Route path="/forgot-password" element={<ForgotPassword/>}/>
-                <Route path="/reset-password" element={<ResetPasswordPage/>}/>
-                <Route index element={<Login/>}/>
-                {/* Private routes */}
-                <Route path="/dashboard" element={<PrivateRoute element={Dashboard}/>}/>
-                <Route path="/profile" element={<PrivateRoute element={UserProfilePage}/>}/>
-                <Route path="/project-views" element={<PrivateRoute element={ProjectsPage}/>}/>
-                <Route
-                    path="/project-views/:projectId/project-setting"
-                    element={<PrivateRoute element={ProjectSettingPage}/>}
-                />
-                <Route path="/project-setting" element={<ProjectSettingPage/>}/>
-                <Route path="/create-project" element={<CreateProject/>}/>
-                <Route path="/personal-settings" element={<PersonalSettingsPage/>}/>
-                <Route path="/manage-account" element={<ManageAccount/>}/>
-                <Route path="/project-summary" element={<ProjectSummary/>}/>
-                <Route path="/notification" element={<Notification/>}/>
-                <Route path="/integrations" element={<Integrations/>}/>
-                <Route path="/project-tags" element={<ProjectTag/>}/>
-                <Route path="/project-columns" element={<Columns/>}/>
-                <Route path="/project-permissions" element={<Permissions/>}/>
-                <Route path="/close-project" element={<CloseProject/>}/>
-                <Route path="/user-activate" element={<AccountActivation/>}/>
-            </Routes>
-        </BrowserRouter>
-    );
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
+
+        {/* Private routes */}
+        <Route path="/dashboard" element={<PrivateRoute element={Dashboard} />} />
+        <Route path="/profile" element={<PrivateRoute element={UserProfilePage} />} />
+        <Route path="/project-views" element={<PrivateRoute element={ProjectsPage} />} />
+        <Route
+          path="/project-views/:projectId/project-setting"
+          element={<PrivateRoute element={ProjectSettingPage} />}
+        />
+        <Route path="/project-setting" element={<PrivateRoute element={ProjectSettingPage} />} />
+        <Route path="/create-project" element={<PrivateRoute element={CreateProject} />} />
+        <Route path="/personal-settings" element={<PrivateRoute element={PersonalSettingsPage} />} />
+        <Route path="/manage-account" element={<PrivateRoute element={ManageAccount} />} />
+        <Route path="/project-summary" element={<PrivateRoute element={ProjectSummary} />} />
+        <Route path="/notification" element={<PrivateRoute element={Notification} />} />
+        <Route path="/integrations" element={<PrivateRoute element={Integrations} />} />
+        <Route path="/project-tags" element={<PrivateRoute element={ProjectTag} />} />
+        <Route path="/project-columns" element={<PrivateRoute element={Columns} />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
+
 export default Url;
