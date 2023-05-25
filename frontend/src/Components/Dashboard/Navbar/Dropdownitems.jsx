@@ -27,15 +27,15 @@ const Email = styled.div`
 
 const AccountDropdown = () => {
   const [userData, setUserData] = useState(null);
-
+let authToken = localStorage.getItem('auth_token')
   useEffect(() => {
     const fetchUserData = async () => {
-      try {
-        const response = await axios.get("http://127.0.0.1:8000/api/auth/users/me/");
-        setUserData(response.data);
-      } catch (error) {
-        console.log(error);
-      }
+      axios.get(`${process.env.REACT_APP_HOST}/api/auth/users/me/`, {headers: {"Authorization": `Token ${authToken}`}})
+                .then(response => {
+                    setUserData(response.data);
+                }).catch(error => {
+                console.error(error);
+            });
     };
 
     fetchUserData();
@@ -69,6 +69,7 @@ async function logout() {
             },
         };
         await axios.post('http://127.0.0.1:8000/api/auth/token/logout/', null, config);
+        localStorage.removeItem('auth_token');
     } catch (error) {
         window.location.href = '#';
     }
@@ -80,11 +81,6 @@ export const accountitems = [
     type: "group",
     label: <AccountDropdown />,
     children: [
-      // {
-      //   key: "1-1",
-      //   icon: <ImUser size={iconSize} />,
-      //   label: <Link to="/account">PHPStudios Account</Link>,
-      // },
       {
         key: "1-2",
         label: <Link to="/manage-account">Manage Account</Link>,

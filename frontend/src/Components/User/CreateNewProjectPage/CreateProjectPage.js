@@ -349,22 +349,6 @@ function CreateProject() {
     };
 
 
-    const companyydata = [
-        {value: 'option1', label: 'PHPStudios'},
-        {value: 'option2', label: 'ProjeX'},
-    ];
-    const categoriesdata = [
-        {value: 'option1', label: 'Software'},
-        {value: 'option2', label: 'Bussiness'},
-        {value: 'option3', label: 'Marketing'},
-    ];
-
-    const userdata = [
-        {value: 'option1', label: 'Asher'},
-        {value: 'option2', label: 'Abdullah'},
-        {value: 'option3', label: 'Kaleem'},
-        {value: 'option3', label: 'Usman Ilam Din'},
-    ];
 
     function generateSlug(text) {
         return text.toString().toLowerCase()
