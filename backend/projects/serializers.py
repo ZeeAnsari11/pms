@@ -3,6 +3,8 @@ from . import models
 from django.contrib.auth.models import User
 from django.db.models.aggregates import Count
 from register.serializers import CompanySerializer
+
+
 # from rest_framework import serializers
 
 
@@ -95,6 +97,7 @@ class IssueSerializer(serializers.ModelSerializer):
     assignee = CustomUserSerializer(read_only=True, many=True)
     reporter = CustomUserSerializer(read_only=True)
     project = ProjectSerializer(read_only=True)
+    label = LabelsSerializer(read_only=True)
 
     class Meta:
         model = models.Issue
@@ -122,6 +125,7 @@ class CreateWorkLogSerializer(serializers.ModelSerializer):
         source='issue',
         required=True
     )
+
     class Meta:
         model = models.WorkLog
         fields = ('time_spent', 'comment', 'issue_id')

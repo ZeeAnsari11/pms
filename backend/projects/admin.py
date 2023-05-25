@@ -52,7 +52,7 @@ class ProjectAdmin(admin.ModelAdmin):
 class IssueAdmin(admin.ModelAdmin):
     list_display = ['name', 'project', 'summary', 'reporter', 'type', 'status', 'priority']
     search_fields = ['name', 'project__name']
-    autocomplete_fields = ['project', 'reporter', 'type', 'status', 'priority']
+    autocomplete_fields = ['project', 'reporter', 'type', 'status', 'priority','label']
     list_editable = ['type', 'status', 'priority']
 
 
