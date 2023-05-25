@@ -92,6 +92,9 @@ const NameColumn = styled.td`
     position: relative;
 
     &:hover {
+      color: #1E64D1;
+      text-decoration: underline;
+
       &:after {
         content: "";
         position: absolute;
@@ -99,7 +102,7 @@ const NameColumn = styled.td`
         bottom: -2px;
         width: 100%;
         height: 2px;
-        background-color: #000;
+        background-color: #1E64D1;
         transition: transform 0.2s ease-in-out;
         transform: scaleX(0);
         transform-origin: left;
@@ -112,7 +115,7 @@ const NameColumn = styled.td`
         bottom: -2px;
         width: 100%;
         height: 2px;
-        background-color: #000;
+        background-color: #1E64D1;
         transform: scaleX(1);
         transform-origin: right;
         transition: transform 0.2s ease-in-out;
@@ -137,6 +140,7 @@ const NameColumn = styled.td`
 `;
 
 
+
 const ProjectAvatar = styled.img`
   width: 24px;
   height: 24px;
@@ -145,11 +149,6 @@ const ProjectAvatar = styled.img`
 `;
 
 const ProjectName = styled.span`
-  display: inline-block;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: calc(100% - 32px);
 `;
 
 
@@ -362,13 +361,13 @@ const ProjectListing = () => {
                                         src={
                                             project.icon
                                                 ? `${process.env.REACT_APP_HOST}${project.icon}`
-                                                : getRandomImagePath(imagePaths)
+                                                : "http://localhost:3000/Images/NoImage.jpeg"
                                         }
                                         alt='Project Avatar'
                                     />
                                 </ProjectAvatarWrapper>
                                 <ProjectName>
-                                    <Link to={`/dashboard`}>{project.name}</Link>
+                                    <Link to={`${project.id}/dashboard`}>{project.name}</Link>
                                 </ProjectName>
                             </NameColumn>
                         </td>
