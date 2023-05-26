@@ -388,7 +388,7 @@ function CreateProject() {
             .then(response => {
                 // handle the response
                 console.log(response.data);
-                window.location.href = 'project-views';
+                window.location.href = 'project';
             })
             .catch(error => {
                 // handle the error
