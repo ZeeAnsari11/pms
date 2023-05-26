@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {Select} from 'antd';
 import styled from 'styled-components';
 
@@ -26,6 +26,12 @@ const GenericSelectField = ({
                                 onSelectChange
                             }) => {
 
+    const [value, setValue] = useState(defaultValue);
+
+    useEffect(() => {
+        setValue(defaultValue);
+    }, [defaultValue]);
+
     const handleSelectChange = (value) => {
         onSelectChange(value);
     };
@@ -38,6 +44,7 @@ const GenericSelectField = ({
             disabled={isDisabled}
             width={width}
             height={height}
+            value={value}
             onChange={handleSelectChange}
         >
             {options.map((option) => (
