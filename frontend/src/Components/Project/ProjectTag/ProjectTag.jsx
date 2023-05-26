@@ -183,11 +183,11 @@ function ProjectTags() {
     const [isChecked2, setIsChecked2] = useState(false);
     const [isEmpty2, setIsEmpty2] = useState(false);
     const [color2, setColor2] = useState('#FFFFFF');
-    const [id, setId] = useState(0);
+    const [id, setId] = useState(null);
+    const [editTagName, setEditTagName] = useState('');
+    const [editTagColor, setEditTagColor] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [isDelete, setIsDelete] = useState(false);
-    const [deleteId, setDeleteId] = useState(0);
-
 
     const fetchLabels = () => {
         axios
@@ -213,6 +213,7 @@ function ProjectTags() {
             .then(response => {
                 // Handle success if needed
                 console.log('Data deleted successfully');
+                setIsDelete(true);
             })
             .catch(error => {
                 // Handle error if needed
@@ -221,13 +222,10 @@ function ProjectTags() {
     };
 
     useEffect(() => {
-        fetchLabels();
-
-        if (isDelete) {
-            deleteLabel(deleteId);
+        if (isDelete === true) {
             setIsDelete(false);
-            setDeleteId(0);
         }
+        fetchLabels();
     }, [isDelete]);
 
     const showModal = () => {
@@ -249,6 +247,7 @@ function ProjectTags() {
 
     const handleInputChange2 = (e) => {
         setInputValue2(e.target.value);
+        setEditTagName(e.target.value);
     };
 
     function handleChange(newColor) {
@@ -257,6 +256,7 @@ function ProjectTags() {
 
     function handleChange2(newColor) {
         setColor2(newColor.hex);
+        setEditTagColor(newColor.hex);
     }
 
     function handleCheckboxChange(event) {
@@ -292,16 +292,23 @@ function ProjectTags() {
         }
 
         if (inputValue && color) {
-            try {
-                const response = axios.post(`${process.env.REACT_APP_HOST}/api/labels/`, newTag)
-
-                console.log(response.data); // Assuming the response contains the created label object
-            } catch (error) {
-                console.error(error);
-            }
-            setNewArray([...newArray, newTag]);
-            setIsModalVisible(false);
-            setIsEmpty(false);
+            const response = axios
+                .post(`${process.env.REACT_APP_HOST}/api/labels/`, newTag)
+                .then(response => {
+                    const data = response.data;
+                    console.log(data);
+                    const result = {
+                        "id": response.data.id,
+                        "label": response.data.label,
+                        "color": response.data.color
+                    };
+                    setNewArray([...newArray, result]);
+                    setIsModalVisible(false);
+                    setIsEmpty(false);
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
 
         }
         setInputValue('');
@@ -322,11 +329,9 @@ function ProjectTags() {
 
         axios.patch(`${process.env.REACT_APP_HOST}/api/labels/${id}/`, newTag)
             .then(response => {
-                // Handle successful response
                 console.log('Data updated successfully:', response.data);
             })
             .catch(error => {
-                // Handle error
                 console.error('Error updating data:', error);
             });
 
@@ -349,26 +354,31 @@ function ProjectTags() {
         setId(0);
     };
 
-    const handleEditTag = (id) => {
+    const handleEditTag = (id, label, color) => {
         setIsModalVisible2(true);
-
         setId(id);
+        setEditTagName(label);
+        setEditTagColor(color);
+        const tag = newArray.find((item) => item.id === id);
+        if (tag) {
+            setEditTagName(tag.label);
+            setIsModalVisible2(true);
+            setId(id);
+        }
     };
 
     const handleDeleteTag = (id, name) => {
         Modal3.confirm({
             title: 'Confirm',
-            content: 'Are you sure you want to delete this tag: ' + name + ' ?',
+            content: 'Are you sure you want to delete this tag: ' + name + ' id==' + id + ' ?',
             onOk() {
-                setIsDelete(true);
-                setDeleteId(id);
+                deleteLabel(id)
             },
         });
     };
 
 
     const ITEMS_PER_PAGE = 10;
-    const totalPages = Math.ceil(newArray.length / ITEMS_PER_PAGE);
 
     const handlePageChange = (page) => {
         setCurrentPage(page);
@@ -479,7 +489,7 @@ function ProjectTags() {
             >
 
                 <label>Name</label>
-                <Input style={{marginBottom: `10px`}} value={inputValue2} onChange={handleInputChange2}/>
+                <Input style={{marginBottom: `10px`}} value={editTagName} onChange={handleInputChange2}/>
                 <label style={{marginTop: '10px', marginBottom: '10px'}}>
                     <input type="checkbox" checked={isChecked2} onChange={handleCheckboxChange2}/>
                     Show color picker
@@ -487,7 +497,7 @@ function ProjectTags() {
 
                 {isChecked2 && (
                     <div>
-                        <ChromePicker color={color2} onChange={handleChange2}/>
+                        <ChromePicker color={editTagColor} onChange={handleChange2}/>
                     </div>
                 )}
 
