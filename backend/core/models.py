@@ -56,7 +56,7 @@ def validate_date_format(value):
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     image = models.ImageField(upload_to='users_avatars', default=get_default_avatar)
-    company = models.ForeignKey('register.Company', on_delete=models.CASCADE, default=1)
+    company = models.ForeignKey('register.Company', on_delete=models.CASCADE, blank=True, null=True)
     department = models.CharField(max_length=100, default='')
     job_title = models.CharField(max_length=100, default='')
     joining_date = models.DateField(auto_now_add=True)
