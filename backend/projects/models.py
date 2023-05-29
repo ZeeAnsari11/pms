@@ -14,20 +14,6 @@ class ProjectCategory(models.Model):
         return self.project_category
 
 
-class IssuesType(models.Model):
-    issue_type = models.CharField(max_length=255)
-
-    def __str__(self):
-        return self.issue_type
-
-
-class IssuesStatus(models.Model):
-    issue_status = models.CharField(max_length=255)
-
-    def __str__(self):
-        return self.issue_status
-
-
 class IssuesPriority(models.Model):
     issue_priority = models.CharField(max_length=255)
 
@@ -35,12 +21,29 @@ class IssuesPriority(models.Model):
         return self.issue_priority
 
 
-class Labels(models.Model):
-    label = models.CharField(max_length=50)
-    color = models.CharField(max_length=7)
+class ProjectType(models.Model):
+    project = models.ForeignKey('Project', on_delete=models.CASCADE, related_name='types')
+    type = models.CharField(max_length=255)
 
     def __str__(self):
-        return self.label
+        return self.type
+
+
+class ProjectStatus(models.Model):
+    project = models.ForeignKey('Project', on_delete=models.CASCADE, related_name='statuses')
+    status = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.status
+
+
+class ProjectLabels(models.Model):
+    project = models.ForeignKey('Project', on_delete=models.CASCADE, related_name='labels')
+    name = models.CharField(max_length=50)
+    color = models.CharField(max_length=10)
+
+    def __str__(self):
+        return self.name
 
 
 # class Attachment(models.Model):
@@ -58,6 +61,15 @@ class Project(models.Model):
     slug = models.SlugField('shortcut', blank=True)
     key = models.CharField(max_length=100, blank=True)
     assignee = models.ManyToManyField(User)
+    type = models.ForeignKey(ProjectType, on_delete=models.CASCADE, blank=True, null=True,
+                             related_name='project_type')
+
+    status = models.ForeignKey(ProjectStatus, on_delete=models.CASCADE, blank=True, null=True,
+                               related_name='project_status')
+
+    label = models.ForeignKey(ProjectLabels, on_delete=models.CASCADE, blank=True, null=True,
+                              related_name='project_label')
+
     project_lead = models.ForeignKey(User, on_delete=models.CASCADE, related_name='project_lead')
     description = models.TextField()
     company = models.ForeignKey('register.Company', on_delete=models.CASCADE, default=1)
@@ -81,12 +93,6 @@ class Issue(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     assignee = models.ManyToManyField(User, related_name='issues_assigned')
     reporter = models.ForeignKey(User, on_delete=models.CASCADE, related_name='issues_reported')
-
-    type = models.ForeignKey(IssuesType, on_delete=models.PROTECT, blank=True, null=True)
-
-    status = models.ForeignKey(IssuesStatus, on_delete=models.PROTECT, blank=True, null=True)
-
-    label = models.ForeignKey(Labels, on_delete=models.CASCADE, blank=True, null=True)
 
     estimate = models.FloatField(default=0.0)
 

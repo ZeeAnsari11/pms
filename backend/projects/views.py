@@ -12,8 +12,8 @@ from django.db.models import Q
 from django.contrib.auth.models import User
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated, IsAdminUser
 from rest_framework.parsers import MultiPartParser, FormParser
-from .models import Project, Issue, Comment, WorkLog, Watcher, ProjectCategory, IssuesType, IssuesPriority, \
-    IssuesStatus, Labels
+from .models import Project, Issue, Comment, WorkLog, Watcher, ProjectCategory, ProjectType, IssuesPriority, \
+    ProjectStatus, ProjectLabels
 from . import serializers
 
 
@@ -38,26 +38,26 @@ class ProjectCategoryViewSet(ModelViewSet):
     queryset = ProjectCategory.objects.all()
 
 
-class IssuesTypeViewSet(ModelViewSet):
+class ProjectTypeViewSet(ModelViewSet):
     http_method_names = ['get', 'post', 'patch', 'delete']
     filter_backends = [DjangoFilterBackend]
     filterset_fields = "__all__"
 
-    serializer_class = serializers.IssuesTypeSerialzer
+    serializer_class = serializers.ProjectTypeSerialzer
     permission_classes = [IsAuthenticated]
 
-    queryset = IssuesType.objects.all()
+    queryset = ProjectType.objects.all()
 
 
-class IssuesStatusViewSet(ModelViewSet):
+class ProjectStatusViewSet(ModelViewSet):
     http_method_names = ['get', 'post', 'patch', 'delete']
     filter_backends = [DjangoFilterBackend]
     filterset_fields = "__all__"
 
-    serializer_class = serializers.IssuesStatusSerializer
+    serializer_class = serializers.ProjectStatusSerializer
     permission_classes = [IsAuthenticated]
 
-    queryset = IssuesStatus.objects.all()
+    queryset = ProjectStatus.objects.all()
 
 
 class IssuesPriorityViewSet(ModelViewSet):
@@ -71,15 +71,15 @@ class IssuesPriorityViewSet(ModelViewSet):
     queryset = IssuesPriority.objects.all()
 
 
-class LabelViewSet(ModelViewSet):
+class ProjectLabelsViewSet(ModelViewSet):
     http_method_names = ['get', 'post', 'patch', 'delete']
     filter_backends = [DjangoFilterBackend]
     filterset_fields = "__all__"
 
-    serializer_class = serializers.LabelsSerializer
+    serializer_class = serializers.ProjectLabelsSerializer
     permission_classes = [IsAuthenticated]
 
-    queryset = Labels.objects.all()
+    queryset = ProjectLabels.objects.all()
 
 
 class ProjectViewSet(ModelViewSet):
@@ -87,7 +87,7 @@ class ProjectViewSet(ModelViewSet):
     http_method_names = ['get', 'post', 'patch', 'delete']
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['name', 'key', 'assignee__username', 'project_lead__username', 'company__company_name',
-                        'project_category__project_category']
+                        'project_category__project_category', 'status']
 
     # queryset = Project.objects.prefetch_related('assignee').select_related('company').all()
 
@@ -110,8 +110,10 @@ class ProjectViewSet(ModelViewSet):
         user = self.request.user
         if user.is_staff:
             return Project.objects.prefetch_related('assignee').prefetch_related('project_lead').select_related(
-                'company').select_related(
-                'project_category').all()
+                'status').select_related(
+                'type').select_related(
+                'label').select_related(
+                'company').select_related('project_category').all()
         return Project.objects.filter(Q(project_lead=self.request.user) | Q(assignee=self.request.user))
 
     # serializer_class = serializers.ProjectSerializer
@@ -125,6 +127,7 @@ class IssueViewSet(ModelViewSet):
     parser_classes = (MultiPartParser, FormParser)
     filter_backends = [DjangoFilterBackend]
     filterset_class = IssueFilter
+
     # parser_classes = (MultiPartParser, FormParser)
 
     # queryset = Issue.objects.prefetch_related('assignee').select_related('reporter').select_related('project').all()
@@ -150,7 +153,7 @@ class IssueViewSet(ModelViewSet):
         user = self.request.user
         if user.is_staff:
             return Issue.objects.prefetch_related('assignee').select_related('reporter').select_related(
-                'project').select_related('type').select_related('status').select_related('priority').all()
+                'project').select_related('priority').all()
         return Issue.objects.filter(Q(reporter_id=self.request.user) | Q(assignee=self.request.user))
 
 
