@@ -14,15 +14,15 @@ class ProjectCategorySerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class IssuesTypeSerialzer(serializers.ModelSerializer):
+class ProjectTypeSerialzer(serializers.ModelSerializer):
     class Meta:
-        model = models.IssuesType
+        model = models.ProjectType
         fields = "__all__"
 
 
-class IssuesStatusSerializer(serializers.ModelSerializer):
+class ProjectStatusSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.IssuesStatus
+        model = models.ProjectStatus
         fields = "__all__"
 
 
@@ -32,9 +32,9 @@ class IssuesPrioritySerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class LabelsSerializer(serializers.ModelSerializer):
+class ProjectLabelsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.Labels
+        model = models.ProjectLabels
         fields = "__all__"
 
 
@@ -45,8 +45,6 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
 
 class ProjectIssuesSerializer(serializers.ModelSerializer):
-    type = IssuesTypeSerialzer(read_only=True)
-    status = IssuesStatusSerializer(read_only=True)
     priority = IssuesPrioritySerializer(read_only=True)
     assignee = CustomUserSerializer(many=True, read_only=True)
     reporter = CustomUserSerializer(read_only=True)
@@ -68,20 +66,23 @@ class FileSerializer(serializers.Serializer):
 class CreateProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Project
-        fields = ["id", 'icon', 'name', 'slug', 'key', 'assignee', 'project_lead', 'description', 'company',
-                  'project_category']
+        fields = ["id", 'icon', 'name', 'slug', 'key', 'assignee', 'project_lead', 'description', 'company', 'status',
+                  'type', 'label', 'project_category']
 
 
 class ProjectSerializer(serializers.ModelSerializer):
+    type = ProjectTypeSerialzer(read_only=True)
+    status = ProjectStatusSerializer(read_only=True)
     project_category = ProjectCategorySerializer(read_only=True)
     assignee = CustomUserSerializer(read_only=True, many=True)
+    label = ProjectLabelsSerializer(read_only=True)
     company = CompanySerializer(read_only=True)
     project_lead = CustomUserSerializer(read_only=True)
 
     class Meta:
         model = models.Project
-        fields = ["id", 'icon', 'name', 'slug', 'key', 'assignee', 'project_lead', 'description', 'company',
-                  'project_category']
+        fields = ["id", 'icon', 'name', 'slug', 'key', 'assignee', 'project_lead', 'description', 'company', 'status',
+                  'type', 'label', 'project_category']
 
 
 class CreateIssueSerializer(serializers.ModelSerializer):
@@ -91,13 +92,10 @@ class CreateIssueSerializer(serializers.ModelSerializer):
 
 
 class IssueSerializer(serializers.ModelSerializer):
-    type = IssuesTypeSerialzer(read_only=True)
-    status = IssuesStatusSerializer(read_only=True)
     priority = IssuesPrioritySerializer(read_only=True)
     assignee = CustomUserSerializer(read_only=True, many=True)
     reporter = CustomUserSerializer(read_only=True)
     project = ProjectSerializer(read_only=True)
-    label = LabelsSerializer(read_only=True)
 
     class Meta:
         model = models.Issue
