@@ -116,7 +116,7 @@ export const accountitems = [
 export const projectitems = [
   {
     icon: <VscProject size={iconSize} />,
-    label: <Link to="/project-views">View All Projects</Link>,
+    label: <Link to="/project">View All Projects</Link>,
     key: "0",
   },
   {
@@ -152,7 +152,7 @@ export const teamitems = [
 export const yourworkitems = [
   {
     icon: <BsArrowRightCircleFill size={iconSize} />,
-    label: <Link to="/project-views">Go to Your work Page</Link>,
+    label: <Link to="/project">Go to Your work Page</Link>,
     key: "0",
   },
 ];
