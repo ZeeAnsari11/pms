@@ -139,7 +139,7 @@ const HorizontalLine = styled.div`
 
 const UserProfilePage = () => {
     const [startDate, setStartDate] = useState(null);
-    const [userData, setUserData] = useState(null);
+    const [userData, setUserData] = useState({});
     const [LoggedInUser, setLoggedInUser] = useState(null);
 
     const [Users, setUsers] = useState('');
@@ -148,65 +148,31 @@ const UserProfilePage = () => {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const response = await axios.get(`${process.env.REACT_APP_HOST}/api/auth/users/me/`, {
+                const response = await axios.get(`${process.env.REACT_APP_HOST}/api/userprofile/`, {
                     headers: {"Authorization": `Token ${authToken}`}
                 });
                 setUserData(response.data);
+
             } catch (error) {
                 console.error(error);
             }
-        };
-
-        const fetchUsers = async () => {
-            try {
-                const response = await axios.get('http://127.0.0.1:8000/api/users_list/', {
-                    headers: {"Authorization": `Token ${authToken}`}
-                });
-                setUsers(response.data);
-            } catch (error) {
-                console.error(error);
-            }
-        };
-
+        }
         fetchUserData();
-        fetchUsers();
     }, []);
 
-    useEffect(() => {
-        const checkUser = (email) => {
-            if (email && Users.length > 0) {
-                for (let i = 0; i < Users.length; i++) {
-                    if (Users[i].email === email) {
-                        const loggedInUser = Users[i];
-                        setLoggedInUser(loggedInUser);
-                        // Do something with the logged-in user's data
-                        // console.log("logged In User",loggedInUser);
-                        break; // Exit the loop once a match is found
-                    }
-                }
-            }
-        };
+    console.log("userData", userData)
 
-
-        checkUser(userData?.email);
-    }, [Users]);
-
-    console.log("Hello jee", LoggedInUser);
-
-
-    const handleDateChange = (date, dateString) => {
-        setStartDate(dateString);
-    };
 
     return (
         <div>
             <NavBar/>
             <ProfileWrapper>
                 <ProfileHeader>
-                    <ProfileImage src="https://i.pravatar.cc/300" alt="Profile Picture"/>
+                    <ProfileImage src={`${userData?.image}`} alt="Profile Picture"/>
+                    {/*<ProfileImage>{userData?.user?.image}</ProfileImage>*/}
                     <div>
-                        <ProfileName>{LoggedInUser?.username}</ProfileName>
-                        <ProfileEmail>{LoggedInUser?.email}</ProfileEmail>
+                        <ProfileName>{userData?.user?.username}</ProfileName>
+                        <ProfileEmail>{userData?.user?.email}</ProfileEmail>
                     </div>
                     <EditIcon className="fas fa-edit">
                         <FontAwesomeIcon icon={faEdit}/>
@@ -217,11 +183,14 @@ const UserProfilePage = () => {
                     <HorizontalLine></HorizontalLine>
                     <ProfileDetailsLabel>Work</ProfileDetailsLabel>
                     <ProfileDetailsValue><FontAwesomeIcon icon={faBriefcase}/> Organization </ProfileDetailsValue>
-                    <Editable placeholder={"Enter Organization Name"} frontendText={"Enter Organization Name"}/>
+                    {/*<Editable placeholder={"Enter Organization Name"} frontendText={userData?.company?.company_name}/>*/}
+                    <span>{userData?.company?.company_name}</span>
                     <ProfileDetailsValue><FontAwesomeIcon icon={faSitemap}/> Department </ProfileDetailsValue>
-                    <Editable placeholder={"Enter Department Name"} frontendText={"Enter Department Name"}/>
+                    {/*<Editable placeholder={"Enter Department Name"} frontendText={"Enter Department Name"}/>*/}
+                    <span>{userData?.department}</span>
                     <DateValue><FontAwesomeIcon icon={faCalendar}/> Started work on </DateValue>
-                    <DatePicker style={{marginLeft: "20px"}} onChange={handleDateChange}/>
+                    {/*<DatePicker style={{marginLeft: "20px"}} onChange={handleDateChange}/>*/}
+                    <span>{userData?.joining_date}</span>
                 </ProfileDetailsWrapper>
             </ProfileWrapper>
         </div>
