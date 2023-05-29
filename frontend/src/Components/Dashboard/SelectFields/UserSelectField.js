@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import {Select} from "antd";
 import styled from "styled-components";
 import {FaUserCircle} from "react-icons/fa";
@@ -39,9 +39,12 @@ const UserSelect = ({
                     }) => {
     const [value, setValue] = useState(defaultValue);
 
+    useEffect(() => {
+        setValue(defaultValue);
+    }, [defaultValue]);
 
     const handleSelectChange = (value) => {
-        setValue(value)
+        setValue(value);
         onSelectChange(value);
     };
 
@@ -65,8 +68,6 @@ const UserSelect = ({
             filterOption={filterOption}
             value={value}
             disabled={isDisabled}
-            defaultValue={defaultValue}
-            allowClear
             onChange={handleSelectChange}
             {...rest}
         >
