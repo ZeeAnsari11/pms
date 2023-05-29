@@ -18,21 +18,19 @@ class IssueInline(admin.StackedInline):
     can_delete = False
 
 
-class LabelAdmin(admin.ModelAdmin):
-    list_display = ['label', 'color']
-    search_fields = ['Label']
+class ProjectLabelAdmin(admin.ModelAdmin):
+    list_display = ['name', 'color']
+    search_fields = ['name']
 
 
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ['name', 'company', 'project_category', 'project_lead', 'issues']
+    list_display = ['name', 'company', 'project_category', 'project_lead', 'issues', 'status', 'type', 'label']
     prepopulated_fields = {
         'slug': ['name']
     }
-    autocomplete_fields = ['company', 'project_category', 'project_lead']
+    autocomplete_fields = ['company', 'project_category', 'project_lead', 'status', 'type', 'label']
     search_fields = ['name']
-    list_editable = ['project_category', 'project_lead']
-
-    # inlines = [IssueInline]
+    list_editable = ['project_category', 'project_lead', 'status', 'type', 'label']
 
     def issues(self, project):
         url = (
@@ -50,10 +48,10 @@ class ProjectAdmin(admin.ModelAdmin):
 
 
 class IssueAdmin(admin.ModelAdmin):
-    list_display = ['name', 'project', 'summary', 'reporter', 'type', 'status', 'priority']
+    list_display = ['name', 'project', 'summary', 'reporter', 'priority']
     search_fields = ['name', 'project__name']
-    autocomplete_fields = ['project', 'reporter', 'type', 'status', 'priority','label']
-    list_editable = ['type', 'status', 'priority']
+    autocomplete_fields = ['project', 'reporter', 'priority']
+    list_editable = ['priority']
 
 
 class CommentAdmin(admin.ModelAdmin):
@@ -93,13 +91,13 @@ class ProjectCategoryAdmin(admin.ModelAdmin):
     search_fields = ['project_category']
 
 
-class IssuesTypeAdmin(admin.ModelAdmin):
-    list_display = ['issue_type']
+class ProjectTypeAdmin(admin.ModelAdmin):
+    list_display = ['project', 'type']
     search_fields = ['type']
 
 
-class IssuesStatusAdmin(admin.ModelAdmin):
-    list_display = ['issue_status']
+class ProjectStatusAdmin(admin.ModelAdmin):
+    list_display = ['project', 'status']
     search_fields = ['status']
 
 
@@ -113,10 +111,10 @@ admin.site.register(models.Issue, IssueAdmin)
 admin.site.register(models.Comment, CommentAdmin)
 # admin.site.register(models.Attachment, AttachmentAdmin)
 admin.site.register(models.WorkLog, WorkLogAdmin)
-admin.site.register(models.Labels, LabelAdmin)
+admin.site.register(models.ProjectLabels, ProjectLabelAdmin)
 
 admin.site.register(models.Watcher, WatcherAdmin)
 admin.site.register(models.ProjectCategory, ProjectCategoryAdmin)
-admin.site.register(models.IssuesType, IssuesTypeAdmin)
-admin.site.register(models.IssuesStatus, IssuesStatusAdmin)
+admin.site.register(models.ProjectType, ProjectTypeAdmin)
+admin.site.register(models.ProjectStatus, ProjectStatusAdmin)
 admin.site.register(models.IssuesPriority, IssuesPriorityAdmin)
