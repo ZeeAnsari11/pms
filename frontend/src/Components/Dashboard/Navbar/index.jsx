@@ -41,7 +41,7 @@ function NavBar() {
             <NavbarContainer extendNavbar={extendNavbar}>
                 <NavbarInnerContainer>
                     <LeftContainer>
-                        <Link to="/project-views">
+                        <Link to="/project">
                             <Logo src='http://localhost:3000/phpstudios_logo.png' alt="PHPStudios"></Logo>
                         </Link>
                         <NavbarLinkContainer>

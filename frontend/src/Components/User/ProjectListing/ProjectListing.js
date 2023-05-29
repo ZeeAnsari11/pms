@@ -298,7 +298,7 @@ const ProjectListing = () => {
 
     const items = [
         {
-            label: <Link to='/project-setting'>Project Setting</Link>,
+            label: <Link to='/setting'>Project Setting</Link>,
             key: '0',
         },
         {
@@ -380,7 +380,7 @@ const ProjectListing = () => {
                             <p>{project.project_lead.username}</p>
                         </LeadColumn>
                         <OptionsColumns>
-                            <Link to={`${project.id}/project-setting`}>
+                            <Link to={`${project.id}/setting`}>
                                 {project && (
                                     <CiSettings size={24} component={<ProjectSettingPage/>}/>
                                 )}

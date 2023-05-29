@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {useNavigate, useLocation} from 'react-router-dom';
 import styled from 'styled-components';
 import axios from 'axios';
+import {ToastContainer, toast} from 'react-toastify';
 
 const ForgotPasswordContainer = styled.div`
   position: absolute;
@@ -86,8 +87,6 @@ const ResetPasswordPage = () => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [uid, setUid] = useState('');
     const [token, setToken] = useState('');
-    const [error, setError] = useState('');
-    const [error2, setError2] = useState('');
 
 
     const navigate = useNavigate();
@@ -101,9 +100,6 @@ const ResetPasswordPage = () => {
             setUid(uid);
             setToken(token);
         }
-
-        console.log('uid:', uid);
-        console.log('token:', token);
 
     }, [location.search]);
 
@@ -127,50 +123,76 @@ const ResetPasswordPage = () => {
                 })
                 .then(response => {
                     if (response.status === 204) {
-                        console.log('The password has been changed');
                         navigate('/');
                     } else {
                         console.error('Error sending password reset email');
                     }
                 })
                 .catch(error => {
-                    console.error('Error:', error);
-                    setError2('Please click on the password reset link and try again');
-                    setError('');
+                    toast.error('🦄 Please click on the password reset link and try again', {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "colored",
+                    });
                 });
         } else {
-            setError('Passwords do not match');
-            setError2('');
+            toast.error('🦄 Passwords do not match', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+            });
         }
     };
 
+
     return (
-        <ForgotPasswordContainer>
-            <form onSubmit={handleSubmit}>
-                <ForgotPasswordHeadline>---- Reset Password! ----</ForgotPasswordHeadline>
-                {error && !error2 && <WarningDiv className="error">{error}</WarningDiv>}
-                {error2 && !error && <WarningDiv className="error">{error2}</WarningDiv>}
-                {!error && !error2 && <WarningDiv className="error" style={{display: 'none'}}></WarningDiv>}
-                {error && error2 && <WarningDiv className="error">{error2}</WarningDiv>}
-                <ForgotPasswordLabel htmlFor="password">New Password:</ForgotPasswordLabel>
-                <ResetPasswordInput
-                    type="password"
-                    id="password"
-                    value={password}
-                    onChange={handlePasswordChange}
-                    required
-                />
-                <ForgotPasswordLabel htmlFor="confirmPassword">Confirm Password:</ForgotPasswordLabel>
-                <ResetPasswordInput
-                    type="password"
-                    id="confirmPassword"
-                    value={confirmPassword}
-                    onChange={handleConfirmPasswordChange}
-                    required
-                />
-                <Button type="submit">Reset Password</Button>
-            </form>
-        </ForgotPasswordContainer>
+        <>
+            <ForgotPasswordContainer>
+                <form onSubmit={handleSubmit}>
+                    <ForgotPasswordHeadline>---- Reset Password! ----</ForgotPasswordHeadline>
+
+                    <ForgotPasswordLabel htmlFor="password">New Password:</ForgotPasswordLabel>
+                    <ResetPasswordInput
+                        type="password"
+                        id="password"
+                        value={password}
+                        onChange={handlePasswordChange}
+                        required
+                    />
+                    <ForgotPasswordLabel htmlFor="confirmPassword">Confirm Password:</ForgotPasswordLabel>
+                    <ResetPasswordInput
+                        type="password"
+                        id="confirmPassword"
+                        value={confirmPassword}
+                        onChange={handleConfirmPasswordChange}
+                        required
+                    />
+                    <Button type="submit">Reset Password</Button>
+                </form>
+            </ForgotPasswordContainer>
+            <ToastContainer
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="colored"
+            />
+        </>
     );
 };
 
