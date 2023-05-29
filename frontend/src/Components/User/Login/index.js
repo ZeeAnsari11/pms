@@ -101,6 +101,17 @@ function Login() {
                 console.error(error);
             });
         }
+
+        if (authToken) {
+            axios.get(`${process.env.REACT_APP_HOST}/api/labels/`, {headers: {"Authorization": `Token ${authToken}`}})
+                .then(response => {
+                    console.log("success labels:");
+                    console.log(response.data);
+                }).catch(error => {
+                console.log("failed labels");
+                console.error(error);
+            });
+        }
     }
 
     const handleSubmitSignUp = (e) => {

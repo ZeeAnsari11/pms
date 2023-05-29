@@ -9,7 +9,7 @@ import Dragger from "../DragAndDrop/DragAndDrop";
 import FileUploaderButton from "../PhotoUploader/PhotoUploader";
 import NotificationModal from '../Notification/Notification';
 import NavBar from "../../Dashboard/Navbar";
-import Sidebar from '../../Dashboard/Sidebar'
+import Sidebar from "../../Project/Sidebar/index";
 import UserSelectField from "../../Dashboard/SelectFields/UserSelectField";
 import ImageUploader from "../ImageUploader";
 import axios from "axios";
@@ -286,30 +286,6 @@ function ProjectSettingPage() {
             id: user.id,
         }))
         : [];
-
-    // const projectLead = projectLeadData
-    //     ? projectLeadData.map((projectLead) => ({
-    //         username: projectLead.username,
-    //         id: projectLead.id,
-    //     }))
-    //     : [];
-
-    // const projectAssignee = projectAssigneesData
-    //     ? projectAssigneesData.map((projectAssignee) => ({
-    //         username: projectAssignee.username,
-    //         id: projectAssignee.id,
-    //     }))
-    //     : [];
-
-    // const projectLead = [
-    //     {id: projectLeadData.id, username: projectLeadData.username}
-    // ]
-
-    const users = [
-        {id: 1, username: "Hashim Doe"},
-        {id: 2, username: "Jane Doe"},
-        {id: 3, username: "Bob Smith"},
-    ];
 
     const handleSelectedProjectLeadChange = (value) => {
         setSelectedProjectLead(parseInt(value));

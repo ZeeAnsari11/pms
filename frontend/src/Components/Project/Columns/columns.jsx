@@ -9,6 +9,7 @@ import {Modal as Modal2} from 'antd';
 import {Modal as Modal3} from 'antd';
 import {Dropdown, Space} from 'antd';
 import {Pagination} from 'antd';
+import axios from 'axios'
 
 
 const PageContainer = styled.div`
@@ -154,17 +155,15 @@ function Columns() {
 
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [inputValue, setInputValue] = useState('');
-    const [color, setColor] = useState('#FFFFFF');
     const [newArray, setNewArray] = useState([]);
     const [isEmpty, setIsEmpty] = useState(false);
     const [isModalVisible2, setIsModalVisible2] = useState(false);
     const [inputValue2, setInputValue2] = useState('');
     const [isEmpty2, setIsEmpty2] = useState(false);
-    const [color2, setColor2] = useState('#FFFFFF');
-    const [id, setId] = useState(0);
+    const [id, setId] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [isDelete, setIsDelete] = useState(false);
-    const [deleteId, setDeleteId] = useState(0);
+    const [editStatusName, setEditStatusName] = useState('');
 
 
     const showModal = () => {
@@ -203,33 +202,41 @@ function Columns() {
 
     const handleOk = () => {
         const newTag = {
-            id: newArray.length + 1,
-            name: inputValue,
-            color: color
+            "issue_status": inputValue,
         };
 
-        if (inputValue === '' || color === '') {
+        if (inputValue === '') {
             setIsEmpty(true);
         }
 
-        if (inputValue && color) {
-            setNewArray([...newArray, newTag]);
-            setIsModalVisible(false);
-            setIsEmpty(false);
-
+        if (inputValue) {
+            const response = axios
+                .post(`${process.env.REACT_APP_HOST}/api/issues_status/`, newTag)
+                .then(response => {
+                    const data = response.data;
+                    console.log(data);
+                    const result = {
+                        "id": response.data.id,
+                        "issue_status": response.data.issue_status,
+                    };
+                    setNewArray([...newArray, result]);
+                    setIsModalVisible(false);
+                    setIsEmpty(false);
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
         }
         setInputValue('');
-        setColor("#ffffff");
     };
 
     const handleOk2 = () => {
         const newTag = {
             id: id,
-            name: inputValue2,
-            color: color2
+            issue_status: inputValue2,
         };
 
-        if (inputValue2 === '' || color2 === '') {
+        if (inputValue2 === '') {
             setIsEmpty2(true);
             return;
         }
@@ -249,34 +256,63 @@ function Columns() {
         setIsModalVisible2(false);
         setIsEmpty2(false);
         setInputValue2('');
-        setColor2("#ffffff");
         setId(0);
     };
 
     const handleEditTag = (id) => {
         setIsModalVisible2(true);
         setId(id);
+
+        const tag = newArray.find((item) => item.id === id);
+
+        if (tag) {
+            setEditStatusName(tag.issue_status);
+            setIsModalVisible2(true);
+            setId(id);
+        }
     };
 
-    const handleDeleteTag = (id,name) => {
-        setDeleteId(id);
+    const deleteIssueStatus = (id) => {
+        axios
+            .delete(`${process.env.REACT_APP_HOST}/api/issues_status/${id}`)
+            .then(response => {
+                console.log('Data deleted successfully');
+                setIsDelete(true);
+            })
+            .catch(error => {
+                console.error('Error deleting data', error);
+            });
+    };
+
+    const handleDeleteTag = (id, name) => {
         Modal3.confirm({
             title: 'Confirm',
             content: 'Are you sure you want to delete this column: ' + name + ' ?',
             onOk() {
-                // Set the isDelete state to true
-                setIsDelete(true);
+                deleteIssueStatus(id);
             },
         });
     };
 
+
     useEffect(() => {
         if (isDelete) {
-            const updatedArray = newArray.filter((item) => item.id !== deleteId);
-            setNewArray(updatedArray);
             setIsDelete(false);
-            setDeleteId(0);
         }
+
+        axios.get(`${process.env.REACT_APP_HOST}/api/issues_status/`)
+            .then(response => {
+                console.log(response.data);
+                const newDataArray = response.data.map((item) => {
+                        const {id, issue_status} = item;
+                        return {id, issue_status};
+                    }
+                );
+                setNewArray(newDataArray);
+            })
+            .catch(error => {
+                console.log(error)
+            });
     }, [isDelete]);
 
     const ITEMS_PER_PAGE = 10;
@@ -332,7 +368,7 @@ function Columns() {
                                                         {
                                                             key: 'delete',
                                                             label: 'Delete',
-                                                            onClick: () => handleDeleteTag(tag.id,tag.name)
+                                                            onClick: () => handleDeleteTag(tag.id, tag.issue_status)
                                                         }
                                                     ]
                                                 }}
@@ -345,7 +381,7 @@ function Columns() {
                                                 </a>
                                             </Dropdown>
                                         </IconWrapper>
-                                        <NameTag color={tag.color}>{tag.name}</NameTag>
+                                        <NameTag>{tag.issue_status}</NameTag>
                                     </TableCellForTag>
                                 </TableRow>
                             ))}
@@ -366,7 +402,6 @@ function Columns() {
                 {isEmpty && (
                     <WarningDiv>Oops! The name field is empty. Please enter column name.</WarningDiv>
                 )}
-
             </Modal1>
 
             <Modal2
@@ -376,7 +411,7 @@ function Columns() {
                 onCancel={handleCancel2}
             >
                 <label>Name</label>
-                <Input style={{marginBottom: `10px`}} value={inputValue2} onChange={handleInputChange2}/>
+                <Input style={{marginBottom: `10px`}} value={editStatusName} onChange={handleInputChange2}/>
 
                 {isEmpty2 && (
                     <WarningDiv>Oops! The name field is empty. Please enter Column name.</WarningDiv>
