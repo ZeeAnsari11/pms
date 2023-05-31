@@ -1,19 +1,12 @@
 import React, {useEffect, useState} from 'react';
 import styled from 'styled-components';
-import {HiDotsHorizontal} from 'react-icons/hi'
-import Dropdown from "../../Dashboard/Dropdown";
 import {Link, useLocation, useParams} from "react-router-dom";
-import {Button, Modal as UploadIconModal, notification} from 'antd';
-import Selector from '../../../Shared/Components/Select';
-import Dragger from "../DragAndDrop/DragAndDrop";
-import FileUploaderButton from "../PhotoUploader/PhotoUploader";
-import NotificationModal from '../Notification/Notification';
 import NavBar from "../../Dashboard/Navbar";
-import Sidebar from "../../Project/Sidebar/index";
+import Sidebar from "../../Dashboard/Sidebar";
 import UserSelectField from "../../Dashboard/SelectFields/UserSelectField";
 import ImageUploader from "../ImageUploader";
 import axios from "axios";
-
+import {Input} from 'antd';
 
 const PageWrapper = styled.div`
   background-color: #fff;
@@ -159,7 +152,7 @@ function ProjectSettingPage() {
             setProjectLeadData(projectData.project_lead.username);
         }
         if (projectData.assignee) {
-            setProjectAssigneesData(projectData.assignee[0].username)
+            setProjectAssigneesData(projectData.assignee.username)
         }
     }, [projectData]);
 
@@ -365,7 +358,7 @@ function ProjectSettingPage() {
     return (
         <div>
             <NavBar/>
-            <Sidebar project={project}/>
+            <Sidebar/>
             <PageWrapper>
 
                 <Header>
@@ -379,8 +372,9 @@ function ProjectSettingPage() {
                     <NameInput type="text" id="name" name="name" placeholder="Project name" value={name}
                                onChange={handleNameChange}/>
                     <LabelForKey htmlFor="key">Key:</LabelForKey>
-                    <KeyInput type="text" id="key" name="key" placeholder="Project key" value={key}
-                              onChange={handleKeyChange}/>
+                    <Input style={{width: "50%", height: "35px"}} id="key" name="key" placeholder="Project key"
+                           value={key} disabled
+                           onChange={handleKeyChange}/>
                     <Labelforlead htmlFor="category">Project lead:</Labelforlead>
                     <UserSelectField users={useroptions}
                                      defaultValue={projectLeadData}
