@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {Select, Button, Table} from 'antd';
 import styled from 'styled-components';
 import NavBar from '../../Dashboard/Navbar/index';
-import Sidebar from '../../Project/Sidebar/index';
+import Sidebar from "../../Dashboard/Sidebar";
 
 const {Option} = Select;
 

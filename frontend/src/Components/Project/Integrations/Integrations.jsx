@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import styled from 'styled-components';
 import NavBar from "../../Dashboard/Navbar/index";
-import Sidebar from "../../Project/Sidebar/index";
+import Sidebar from "../../Dashboard/Sidebar";
 import GenericSelectField from '../../Dashboard/SelectFields/GenericSelectField';
 import {AiFillSlackCircle} from 'react-icons/ai';
 import {FcGoogle} from 'react-icons/fc';

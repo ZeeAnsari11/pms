@@ -1,10 +1,14 @@
 import React from 'react';
-import {MdOutlineViewKanban} from 'react-icons/md';
+import {MdNotificationsNone, MdOutlineSummarize, MdOutlineViewKanban} from 'react-icons/md';
 import {FiSettings} from 'react-icons/fi';
 import {CiDeliveryTruck} from 'react-icons/ci';
 import {RiRoadMapLine, RiPagesLine} from 'react-icons/ri'
 import {BiCodeAlt} from 'react-icons/bi'
 import {BsGraphUpArrow} from 'react-icons/bs'
+import {GrSettingsOption} from "react-icons/gr";
+import {TiTags} from "react-icons/ti";
+import {TbLayoutColumns} from "react-icons/tb";
+import {AiOutlineCloseCircle, AiOutlineUnlock} from "react-icons/ai";
 
 const Icon = ({type, size}) => {
     switch (type) {
@@ -22,6 +26,22 @@ const Icon = ({type, size}) => {
             return <RiPagesLine size={size}/>;
         case 'reports':
             return <BsGraphUpArrow size={size}/>;
+            case 'Project Settings':
+            return <FiSettings size={size} color={"black"}/>;
+        case 'Summary':
+            return <MdOutlineSummarize size={size} color={"black"}/>;
+        case 'Notifications':
+            return <MdNotificationsNone size={size} color={"black"}/>;
+        case 'Integrations':
+            return <GrSettingsOption size={size}/>;
+        case 'Tags':
+            return <TiTags color={'Black'} size={size}/>;
+        case 'Columns':
+            return <TbLayoutColumns color={'Black'} size={size}/>;
+        case 'Permissions':
+            return <AiOutlineUnlock color={'Black'} size={size}/>;
+        case 'Close Project':
+            return <AiOutlineCloseCircle color={'Black'} size={size}/>;
         default:
             return null;
     }

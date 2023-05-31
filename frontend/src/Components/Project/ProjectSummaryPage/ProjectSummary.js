@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import NavBar from "../../Dashboard/Navbar/index";
-import Sidebar from "../../Project/Sidebar/index";
+import Sidebar from "../../Dashboard/Sidebar";
 import Listing from "../ProjectSummaryPage/ListingTable"
 
 const PageContainer = styled.div`
@@ -77,7 +77,7 @@ function ProjectSummary() {
     return (
         <div>
             <PageContainer>
-                <Sidebar project={project}/>
+                <Sidebar />
                 <NavBar/>
                 <ContentWrapper>
                     <SummaryHeadingWrapper>

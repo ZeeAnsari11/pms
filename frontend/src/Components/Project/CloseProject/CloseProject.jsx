@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {Modal, Button} from 'antd';
 import styled from "styled-components";
 import NavBar from "../../Dashboard/Navbar";
-import Sidebar from '../../Project/Sidebar/index';
+import Sidebar from "../../Dashboard/Sidebar";
 
 const PermissionsContainer = styled.div`
   margin-left: 16%;

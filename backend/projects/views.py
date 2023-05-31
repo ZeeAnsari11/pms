@@ -83,7 +83,7 @@ class ProjectLabelsViewSet(ModelViewSet):
 
 
 class ProjectViewSet(ModelViewSet):
-    parser_classes = (MultiPartParser, FormParser)
+    # parser_classes = (MultiPartParser, FormParser)
     http_method_names = ['get', 'post', 'patch', 'delete']
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['name', 'key', 'assignee__username', 'project_lead__username', 'company__company_name',
