@@ -60,7 +60,7 @@ class Project(models.Model):
     name = models.CharField(max_length=255)
     slug = models.SlugField('shortcut', blank=True)
     key = models.CharField(max_length=100, blank=True)
-    assignee = models.ManyToManyField(User)
+    assignee = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, related_name='projects_assigned')
     type = models.ForeignKey(ProjectType, on_delete=models.CASCADE, blank=True, null=True,
                              related_name='project_type')
 
@@ -91,7 +91,7 @@ class Issue(models.Model):
     file = models.JSONField(blank=True, null=True,
                             default=list)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    assignee = models.ManyToManyField(User, related_name='issues_assigned')
+    assignee = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, related_name='issues_assigned')
     reporter = models.ForeignKey(User, on_delete=models.CASCADE, related_name='issues_reported')
 
     estimate = models.FloatField(default=0.0)
