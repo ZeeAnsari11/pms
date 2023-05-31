@@ -183,11 +183,11 @@ const UserProfilePage = () => {
                     <HorizontalLine></HorizontalLine>
                     <ProfileDetailsLabel>Work</ProfileDetailsLabel>
                     <ProfileDetailsValue><FontAwesomeIcon icon={faBriefcase}/> Organization </ProfileDetailsValue>
-                    {/*<Editable placeholder={"Enter Organization Name"} frontendText={userData?.company?.company_name}/>*/}
-                    <span>{userData?.company?.company_name}</span>
+                    <Editable placeholder={"Enter Organization Name"} frontendText={userData?.company?.company_name}/>
+                    {/*<span>{userData?.company?.company_name}</span>*/}
                     <ProfileDetailsValue><FontAwesomeIcon icon={faSitemap}/> Department </ProfileDetailsValue>
-                    {/*<Editable placeholder={"Enter Department Name"} frontendText={"Enter Department Name"}/>*/}
-                    <span>{userData?.department}</span>
+                    <Editable placeholder={"Enter Department Name"} frontendText={"Enter Department Name"}/>
+                    {/*<span>{userData?.department}</span>*/}
                     <DateValue><FontAwesomeIcon icon={faCalendar}/> Started work on </DateValue>
                     {/*<DatePicker style={{marginLeft: "20px"}} onChange={handleDateChange}/>*/}
                     <span>{userData?.joining_date}</span>
