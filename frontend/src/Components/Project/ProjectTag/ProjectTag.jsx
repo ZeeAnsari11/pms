@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import styled from 'styled-components';
 import NavBar from "../../Dashboard/Navbar/index";
-import Sidebar from "../../Project/Sidebar/index";
+import Sidebar from "../../Dashboard/Sidebar";
 import {AiOutlineSetting} from 'react-icons/ai';
 import {DownOutlined} from '@ant-design/icons';
 import {Modal as Modal1, Input} from 'antd';

@@ -45,14 +45,14 @@ function Url() {
                 <Route path="/profile" element={<PrivateRoute element={UserProfilePage}/>}/>
                 <Route path="/project" element={<PrivateRoute element={ProjectsPage}/>}/>
                 <Route
-                    path="/project/:projectId/setting"
+                    path="/project/:projectId/project-setting"
                     element={<PrivateRoute element={ProjectSettingPage}/>}
                 />
                 <Route
-                    path="/project-views/:projectId/dashboard"
+                    path="/project/:projectId/dashboard"
                     element={<PrivateRoute element={Dashboard}/>}
                 />
-                <Route path="/setting" element={<ProjectSettingPage/>}/>
+                <Route path="/project-setting" element={<ProjectSettingPage/>}/>
                 <Route path="/create-project" element={<CreateProject/>}/>
                 <Route path="/personal-settings" element={<PersonalSettingsPage/>}/>
                 <Route path="/manage-account" element={<ManageAccount/>}/>
@@ -62,7 +62,7 @@ function Url() {
                 <Route path="/project/:projectId/setting/tags" element={<ProjectTag/>}/>
                 <Route path="/project/:projectId/setting/columns" element={<Columns/>}/>
                 <Route path="/project/:projectId/setting/permissions" element={<Permissions/>}/>
-                <Route path="/close-project" element={<CloseProject/>}/>
+                <Route path="/project/:projectId/close-project" element={<CloseProject/>}/>
                 <Route path="/user-activate" element={<AccountActivation/>}/>
             </Routes>
         </BrowserRouter>

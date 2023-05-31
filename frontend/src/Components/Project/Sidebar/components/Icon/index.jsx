@@ -1,31 +1,30 @@
 import React from 'react';
-import {MdNotifications, MdSummarize} from 'react-icons/md';
-import {RiRoadMapLine, RiPagesLine} from 'react-icons/ri'
-import {BiCodeAlt} from 'react-icons/bi'
-import {BsGraphUpArrow} from 'react-icons/bs'
+import {MdNotificationsNone, MdOutlineSummarize} from 'react-icons/md';
 import {GrSettingsOption} from 'react-icons/gr';
-import { FaTag } from 'react-icons/fa';
-import { FaColumns } from 'react-icons/fa';
-import { FaUnlock } from 'react-icons/fa';
-import { AiFillCloseCircle } from 'react-icons/ai';
+import {TiTags} from 'react-icons/ti';
+import {TbLayoutColumns} from 'react-icons/tb';
+import {AiOutlineCloseCircle,AiOutlineUnlock} from 'react-icons/ai';
+import {FiSettings} from 'react-icons/fi'
 
 
 const Icon = ({type, size}) => {
     switch (type) {
-        case 'MdSummarize':
-            return <MdSummarize size={size} color={"black"}/>;
-        case 'MdNotifications':
-            return <MdNotifications size={size} color={"black"}/>;
-        case 'GrSettingsOption':
+        case 'Project Settings':
+            return <FiSettings size={size} color={"black"}/>;
+        case 'Summary':
+            return <MdOutlineSummarize size={size} color={"black"}/>;
+        case 'Notifications':
+            return <MdNotificationsNone size={size} color={"black"}/>;
+        case 'Integrations':
             return <GrSettingsOption size={size}/>;
-        case 'FaTag':
-            return <FaTag color={'Black'} size={size}/>;
-        case 'FaColumns':
-            return <FaColumns color={'Black'} size={size}/>;
-        case 'FaUnlock':
-            return <FaUnlock color={'Black'} size={size}/>;
-        case 'AiFillCloseCircle':
-            return <AiFillCloseCircle color={'Black'} size={size}/>;
+        case 'Tags':
+            return <TiTags color={'Black'} size={size}/>;
+        case 'Columns':
+            return <TbLayoutColumns color={'Black'} size={size}/>;
+        case 'Permissions':
+            return <AiOutlineUnlock color={'Black'} size={size}/>;
+        case 'Close Project':
+            return <AiOutlineCloseCircle color={'Black'} size={size}/>;
         default:
             return null;
     }
