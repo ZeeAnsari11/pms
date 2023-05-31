@@ -6,6 +6,7 @@ import {text} from "@fortawesome/fontawesome-svg-core";
 import NavBar from "../../Dashboard/Navbar";
 import GenericSelectField from "../../Dashboard/SelectFields/GenericSelectField";
 import ImageUploader from "../ImageUploader";
+import {v4 as uuidv4} from 'uuid';
 
 const PageWrapper = styled.div`
   background-color: #fff;
@@ -214,7 +215,7 @@ function CreateProject() {
     const [categoryData, setCategoryData] = useState([]);
     const [usersData, setUsersData] = useState([]);
 
-
+    const uniqueProjectKey = uuidv4();
     const [selectedCompany, setSelectedCompany] = useState([]);
 
     const [selectedCategory, setSelectedCategory] = useState([]);
@@ -349,7 +350,6 @@ function CreateProject() {
     };
 
 
-
     function generateSlug(text) {
         return text.toString().toLowerCase()
             .replace(/\s+/g, '-')        // Replace spaces with -
@@ -367,7 +367,7 @@ function CreateProject() {
             "icon": image,
             "name": form.elements.project.value,
             "slug": generateSlug(form.elements.project.value),
-            "key": form.elements.key.value,
+            "key": uniqueProjectKey,
             "assignee": selectedProjectAssignees,
             "project_lead": selectedProjectLead,
             "description": text,
@@ -407,8 +407,8 @@ function CreateProject() {
                     <ImageUploader onImageChange={handleImageChange}/>
                     <LabelForProject htmlFor="project">Project:</LabelForProject>
                     <Input type="text" id="project" name="project" placeholder="Enter project name"/>
-                    <LabelForKey htmlFor="key">Key:</LabelForKey>
-                    <Input type="text" id="key" name="key" placeholder="Enter project key"/>
+                    {/*<LabelForKey htmlFor="key">Key:</LabelForKey>*/}
+                    {/*<Input type="text" id="key" name="key" placeholder="Enter project key"/>*/}
                     <LabelForDescriptionBoc htmlFor="key">Description:</LabelForDescriptionBoc>
                     <StyledReactQuill id="exampleEditor" value={text} onChange={handleTextChange}/>
                     <LabelForCompany htmlFor="category">Company:</LabelForCompany>

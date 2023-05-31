@@ -367,7 +367,7 @@ const ProjectListing = () => {
                                     />
                                 </ProjectAvatarWrapper>
                                 <ProjectName>
-                                    <Link to={`${project.id}/dashboard`}>{project.name}</Link>
+                                    <Link to={`/project/${project.id}/dashboard`}>{project.name}</Link>
                                 </ProjectName>
                             </NameColumn>
                         </td>
@@ -380,7 +380,7 @@ const ProjectListing = () => {
                             <p>{project.project_lead.username}</p>
                         </LeadColumn>
                         <OptionsColumns>
-                            <Link to={`${project.id}/setting`}>
+                            <Link to={`/project/${project.id}/project-setting`}>
                                 {project && (
                                     <CiSettings size={24} component={<ProjectSettingPage/>}/>
                                 )}
