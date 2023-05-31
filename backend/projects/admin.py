@@ -24,13 +24,14 @@ class ProjectLabelAdmin(admin.ModelAdmin):
 
 
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ['name', 'company', 'project_category', 'project_lead', 'issues', 'status', 'type', 'label']
+    list_display = ['name', 'company', 'project_category', 'project_lead', 'assignee', 'issues', 'status', 'type',
+                    'label']
     prepopulated_fields = {
         'slug': ['name']
     }
-    autocomplete_fields = ['company', 'project_category', 'project_lead', 'status', 'type', 'label']
+    autocomplete_fields = ['company', 'project_category', 'assignee', 'project_lead', 'status', 'type', 'label']
     search_fields = ['name']
-    list_editable = ['project_category', 'project_lead', 'status', 'type', 'label']
+    list_editable = ['project_category', 'project_lead', 'status', 'type', 'label', 'assignee']
 
     def issues(self, project):
         url = (
@@ -48,10 +49,10 @@ class ProjectAdmin(admin.ModelAdmin):
 
 
 class IssueAdmin(admin.ModelAdmin):
-    list_display = ['name', 'project', 'summary', 'reporter', 'priority']
+    list_display = ['name', 'project', 'assignee', 'summary', 'reporter', 'priority']
     search_fields = ['name', 'project__name']
-    autocomplete_fields = ['project', 'reporter', 'priority']
-    list_editable = ['priority']
+    autocomplete_fields = ['project', 'assignee', 'reporter', 'priority']
+    list_editable = ['priority', 'assignee']
 
 
 class CommentAdmin(admin.ModelAdmin):
