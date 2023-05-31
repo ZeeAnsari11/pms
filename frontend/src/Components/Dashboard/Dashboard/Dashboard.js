@@ -291,29 +291,10 @@ function Dashboard(props) {
         setboards(tempBoards);
     }
 
-    // const project = {
-    //     name: projectData.name,
-    //     category: projectData.project_category,
-    //     icon: projectData.icon
-    // }
-
-    let IconPath = projectData.icon
-    if (IconPath != null) {
-        IconPath = `${process.env.REACT_APP_HOST}/${projectIcon}`
-    } else {
-        IconPath = 'http://localhost:3000/Images/NoImage.jpeg'
-    }
-
-
-    const project = {
-        name: name,
-        category: projectCategory.project_category,
-        icon: IconPath,
-    }
 
     return (
         <DashboardContainer>
-            <Sidebar project={project}/>
+            <Sidebar/>
             <NavBar/>
             <DashboardOuter>
                 <DashboardBoards>

@@ -1,11 +1,11 @@
 import React, {useState} from 'react';
 import styled from 'styled-components';
 import NavBar from "../../Dashboard/Navbar/index";
-import Sidebar from "../../Project/Sidebar/index";
+import Sidebar from "../../Dashboard/Sidebar";
 import GenericSelectField from '../../Dashboard/SelectFields/GenericSelectField';
 import {AiFillSlackCircle} from 'react-icons/ai';
 import {FcGoogle} from 'react-icons/fc';
-import { IoNotificationsSharp, IoNotificationsOff } from 'react-icons/io5';
+import {IoNotificationsSharp, IoNotificationsOff} from 'react-icons/io5';
 import {color} from "../../Dashboard/Sidebar/utils/styles";
 import {ToastContainer, toast} from 'react-toastify';
 import {Switch} from 'antd';
@@ -158,9 +158,9 @@ function Notification() {
         category: 'Project Setting'
     }
 
-    const handleSwitchChange = (checked: boolean) => {
+    const handleSwitchChange = (checked) => {
         if (checked === true) {
-             toast.success(<><IoNotificationsSharp /> Slack Notification is enabled</>, {
+            toast.success(<><IoNotificationsSharp/> Slack Notification is enabled</>, {
                 position: "bottom-left",
                 autoClose: 5000,
                 hideProgressBar: false,
@@ -186,9 +186,9 @@ function Notification() {
         setSwitchValue(checked);
     };
 
-    const handleSwitchChangeForGmail = (check: boolean) => {
-        if (check === true) {
-            toast.success(<><IoNotificationsSharp /> Gmail Notification is enabled</>, {
+    const handleSwitchChangeForGmail = (checked) => {
+        if (checked === true) {
+            toast.success(<><IoNotificationsSharp/> Gmail Notification is enabled</>, {
                 position: "bottom-left",
                 autoClose: 5000,
                 hideProgressBar: false,
@@ -210,7 +210,7 @@ function Notification() {
                 theme: "colored",
             });
         }
-        setSwitchValueForGmail(check);
+        setSwitchValueForGmail(checked);
     };
 
 

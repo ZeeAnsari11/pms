@@ -1,6 +1,6 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
-import {NavLink, useLocation} from 'react-router-dom';
+import {NavLink, useLocation, useParams} from 'react-router-dom';
 import {ProjectCategoryCopy} from './constants/projects';
 import Icon from './components/Icon/index';
 import ProjectAvatar from './components/ProjectAvatar'
@@ -16,34 +16,84 @@ import {
     LinkText,
     NotImplemented,
 } from './Styles';
+import axios from "axios";
 
-const propTypes = {
-    project: PropTypes.object.isRequired,
-};
 
-const ProjectSidebar = ({project}) => {
+const ProjectSidebar = () => {
+    let authToken = localStorage.getItem('auth_token')
+
     const match = useLocation();
-    const location = useLocation();
-    const urlSegment = location.pathname;
-    const projectId = urlSegment.split('/')[2];
+    const {projectId} = useParams()
+    const [projectData, setProjectData] = useState({});
+    const [icon, setIcon] = useState(null);
+
+    const defaultIconPath = "Images/NoImage.jpeg"
+
+    let IconPath = projectData.icon
+    if (IconPath != null) {
+        IconPath = `${process.env.REACT_APP_HOST}/${icon}`
+    } else {
+        IconPath = 'http://localhost:3000/Images/NoImage.jpeg'
+    }
+    const [name, setName] = useState(''); // Set initial value from project object
+    const [key, setKey] = useState(''); // Set initial value from project object
+    const [projectCategory, setProjectCategory] = useState(''); // Set initial value from project object
+
+    useEffect(() => {
+        const fetchProjects = async () => {
+            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/projects/${projectId}`, {
+                headers: {
+                    Authorization: `Token ${authToken}`,
+                },
+            });
+            setProjectData(response.data);
+
+        };
+
+        fetchProjects();
+    }, []);
+
+    useEffect(() => {
+        if (projectData.icon != null) {
+            setIcon(projectData.icon)
+        }
+
+        if (projectData.icon == null) {
+            setIcon(defaultIconPath)
+        }
+    }, [projectData]);
+
+    useEffect(() => {
+        if (projectData.name) {
+            setName(projectData.name);
+            setKey(projectData.key);
+            setProjectCategory(projectData.project_category)
+        }
+    }, [projectData]);
+
+    const project = {
+        name: name,
+        category: projectCategory.project_category,
+        icon: IconPath
+    }
 
     return (
         <Sidebar>
             <ProjectInfo>
-                <ProjectAvatar/>
+                <ProjectAvatar iconImage={project.icon}/>
                 <ProjectTexts>
                     <ProjectName><strong>{project.name ? project.name : 'Project Name'}</strong></ProjectName>
                     <ProjectCategory>{ProjectCategoryCopy[project.category]} {project.category ? project.category : 'Category Name'}</ProjectCategory>
                 </ProjectTexts>
             </ProjectInfo>
-
-            {renderLinkItem(match, 'Summary', 'MdSummarize', `/project/${projectId}/setting/summary`)}
-            {renderLinkItem(match, 'Notification', 'MdNotifications', `/project/${projectId}/setting/notification`)}
-            {renderLinkItem(match, 'Integrations', 'GrSettingsOption', `/project/${projectId}/setting/integrations`)}
-            {renderLinkItem(match, 'Tag', 'FaTag', `/project/${projectId}/setting/tags`)}
-            {renderLinkItem(match, 'Columns', 'FaColumns', `/project/${projectId}/setting/columns`)}
-            {renderLinkItem(match, 'Permissions', 'FaUnlock', `/project/${projectId}/setting/permissions`)}
-            {renderLinkItem(match, 'Close Project', 'AiFillCloseCircle', `/project`)}
+            {renderLinkItem(match, 'Project Settings', 'Project Settings', `/project/${projectId}/project-setting`)}
+            {renderLinkItem(match, 'Summary', 'Summary', `/project/${projectId}/setting/summary`)}
+            {renderLinkItem(match, 'Notifications', 'Notifications', `/project/${projectId}/setting/notification`)}
+            {renderLinkItem(match, 'Integrations', 'Integrations', `/project/${projectId}/setting/integrations`)}
+            {renderLinkItem(match, 'Tags', 'Tags', `/project/${projectId}/setting/tags`)}
+            {renderLinkItem(match, 'Columns', 'Columns', `/project/${projectId}/setting/columns`)}
+            {renderLinkItem(match, 'Permissions', 'Permissions', `/project/${projectId}/setting/permissions`)}
+            {renderLinkItem(match, 'Close Project', 'Close Project', `/project/${projectId}/close-project`)}
 
             <Divider/>
             {/*{renderLinkItem(match, 'Roadmap', 'roadmap')}*/}
@@ -71,6 +121,5 @@ const renderLinkItem = (match, text, iconType, path) => {
     );
 };
 
-ProjectSidebar.propTypes = propTypes;
 
 export default ProjectSidebar;
