@@ -80,6 +80,8 @@ const EditableEdit = styled.form`
     outline: none;
     font-size: 1rem;
     padding: 10px;
+    margin-left: 20px;
+    //width: 120px;
   }
 `;
 
@@ -98,6 +100,7 @@ const EditableEditFooter = styled.div`
     border: none;
     transition: 100ms ease;
     padding: 10px;
+    z-index: 100;
 
     &:hover {
       background-color: #f5f5f5;
@@ -107,9 +110,11 @@ const EditableEditFooter = styled.div`
 
 const EditableDisplay = styled.p`
   background-color: transparent;
-  font-size: 22px;
+  //font-size: 22px;
+  font-size: ${props => props.fontSize || "22px"};
   font-weight: ${props => props.fontWeight || 'normal'};
-  //width: 120px;
+  padding: ${props => props.padding || '0 0 0 0'};
+  width: ${props => props.width};
   display: flex;
 
   &:hover {
@@ -163,18 +168,14 @@ const Editable = (props) => {
                     </EditableEditFooter>
                 </EditableEdit>
             ) : (
-                // <EditableDisplay
-                //     className={`${props.displayClass || ""}`}
-                //     onClick={() => setIsEditable(true)}
-                // >
-                //     {props.text || "Add Card"}
-                // </EditableDisplay>
-
                 <EditableDisplay
                     className={`${props.displayClass || ""}`}
                     onClick={() => setIsEditable(true)}
                     hoverBackgroundColor={`${props.hoverBackgroundColor}`}
                     fontWeight={`${props.fontWeight}`}
+                    fontSize={`${props.fontSize}`}
+                    padding={`${props.padding}`}
+                    width={`${props.width}`}
                 >
                     {props.icon && (
                         <span style={{marginRight: "5px"}}>
@@ -197,6 +198,9 @@ Editable.propTypes = {
     icon: PropTypes.element,
     displayClass: PropTypes.string,
     fontWeight: PropTypes.string,
+    fontSize: PropTypes.string,
+    padding: PropTypes.string,
+    width: PropTypes.string,
     hoverBackgroundColor: PropTypes.string,
     onSubmit: PropTypes.func.isRequired,
     style: PropTypes.string,
