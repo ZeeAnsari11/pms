@@ -7,7 +7,7 @@ class IssueFilter(FilterSet):
         model = Issue
         fields = {
             'name': ['iexact'],
-            'priority__issue_priority': ['iexact'],
+            'priority': ['iexact'],
             'assignee__username': ['iexact'],
             'reporter__username': ['iexact'],
             'project__name': ['iexact'],
