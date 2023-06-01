@@ -1,6 +1,6 @@
 from django.db import models, transaction
 from django.contrib.auth.models import User
-from django.core.validators import MinValueValidator
+from django.core.validators import URLValidator
 from .validators import validate_file_size
 from django.utils.text import slugify
 from django.db.models.signals import post_save
@@ -11,21 +11,23 @@ from django.dispatch import receiver
 
 
 class ProjectCategory(models.Model):
-    project_category = models.CharField(max_length=255)
+    project = models.ForeignKey(
+        'Project',
+        on_delete=models.CASCADE,
+        related_name='categories'
+    )
+    category = models.CharField(max_length=255)
 
     def __str__(self):
-        return self.project_category
-
-
-class IssuesPriority(models.Model):
-    issue_priority = models.CharField(max_length=255)
-
-    def __str__(self):
-        return self.issue_priority
+        return self.category
 
 
 class ProjectType(models.Model):
-    project = models.ForeignKey('Project', on_delete=models.CASCADE, related_name='types')
+    project = models.ForeignKey(
+        'Project',
+        on_delete=models.CASCADE,
+        related_name='types'
+    )
     type = models.CharField(max_length=255)
 
     def __str__(self):
@@ -33,15 +35,35 @@ class ProjectType(models.Model):
 
 
 class ProjectStatus(models.Model):
-    project = models.ForeignKey('Project', on_delete=models.CASCADE, related_name='statuses')
+    project = models.ForeignKey(
+        'Project',
+        on_delete=models.CASCADE,
+        related_name='statuses'
+    )
     status = models.CharField(max_length=255)
 
     def __str__(self):
         return self.status
 
 
+class ProjectSlackWebhookUrl(models.Model):
+    project = models.ForeignKey(
+        'Project',
+        on_delete=models.CASCADE,
+        related_name='slack_webhook_urls'
+    )
+    slack_webhook_url = models.URLField(validators=[URLValidator(schemes=['https'])])
+
+    def __str__(self):
+        return self.slack_webhook_url
+
+
 class ProjectLabels(models.Model):
-    project = models.ForeignKey('Project', on_delete=models.CASCADE, related_name='labels')
+    project = models.ForeignKey(
+        'Project',
+        on_delete=models.CASCADE,
+        related_name='labels'
+    )
     name = models.CharField(max_length=50)
     color = models.CharField(max_length=10)
 
@@ -49,58 +71,130 @@ class ProjectLabels(models.Model):
         return self.name
 
 
-# class Attachment(models.Model):
-#     issue = models.ForeignKey('Issue', on_delete=models.CASCADE, related_name='attachments')
-#     file = models.FileField(upload_to='attachments/issues/', validators=[validate_file_size])
-#
-#     def __str__(self):
-#         return self.file.name
-
-
 class Project(models.Model):
-    icon = models.ImageField(upload_to='attachments/projects/icons', blank=True, null=True,
-                             validators=[validate_file_size])
+    icon = models.ImageField(
+        upload_to='attachments/projects/icons',
+        blank=True,
+        null=True,
+        validators=[validate_file_size]
+    )
     name = models.CharField(max_length=255)
-    slug = models.SlugField('shortcut', blank=True)
-    key = models.CharField(max_length=100, blank=True)
-    assignee = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, related_name='projects_assigned')
-    type = models.ForeignKey(ProjectType, on_delete=models.CASCADE, blank=True, null=True,
-                             related_name='project_type')
-
-    status = models.ForeignKey(ProjectStatus, on_delete=models.CASCADE, blank=True, null=True,
-                               related_name='project_status')
-
-    label = models.ForeignKey(ProjectLabels, on_delete=models.CASCADE, blank=True, null=True,
-                              related_name='project_label')
-
-    project_lead = models.ForeignKey(User, on_delete=models.CASCADE, related_name='project_lead')
     description = models.TextField()
-    company = models.ForeignKey('register.Company', on_delete=models.CASCADE, default=1)
-    project_category = models.ForeignKey(ProjectCategory, on_delete=models.PROTECT, blank=True, null=True)
+    slug = models.SlugField(
+        'shortcut',
+        blank=True
+    )
+    key = models.CharField(
+        max_length=100,
+        blank=True
+    )
+    assignee = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        related_name='projects_assigned'
+    )
+    category = models.ForeignKey(
+        ProjectCategory,
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        related_name='project_category'
+    )
+    slack_webhook_url = models.ForeignKey(
+        ProjectSlackWebhookUrl,
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        related_name='project_slack_webhook_url'
+    )
+    project_lead = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='project_lead'
+    )
+    company = models.ForeignKey(
+        'register.Company',
+        on_delete=models.CASCADE
+    )
 
     def __str__(self):
-        return (self.name)
+        return self.name
 
     class Meta:
         ordering = ['name', 'company']
 
 
 class Issue(models.Model):
+    HIGH = "High"
+    MEDIUM = "Medium"
+    LOW = "Low"
+    ISSUES_PRIORITY = [
+        (HIGH, "High"),
+        (MEDIUM, "Medium"),
+        (LOW, "Low"),
+    ]
+
     name = models.CharField(max_length=255)
     summary = models.CharField(max_length=100)
     description = models.TextField()
-    # file = models.FileField(upload_to='attachments/issues/', blank=True, null=True, validators=[validate_file_size])
-
-    file = models.JSONField(blank=True, null=True,
-                            default=list)
-    slug = models.SlugField(max_length=255, unique=True, blank=True)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    assignee = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, related_name='issues_assigned')
-    reporter = models.ForeignKey(User, on_delete=models.CASCADE, related_name='issues_reported')
-
+    slug = models.SlugField(
+        max_length=255,
+        unique=True,
+        blank=True
+    )
+    file = models.JSONField(
+        blank=True,
+        null=True,
+        default=list
+    )
+    project = models.ForeignKey(
+        Project, on_delete=models.CASCADE
+    )
+    assignee = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        blank=True,
+        related_name='issues_assigned'
+    )
+    reporter = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='issues_reported'
+    )
     estimate = models.FloatField(default=0.0)
-
-    priority = models.ForeignKey(IssuesPriority, on_delete=models.PROTECT, blank=True, null=True)
+    priority = models.CharField(
+        max_length=6,
+        choices=ISSUES_PRIORITY,
+        default=HIGH,
+    )
+    type = models.ForeignKey(
+        ProjectType,
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        related_name='project_type'
+    )
+    status = models.ForeignKey(
+        ProjectStatus,
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        related_name='project_status'
+    )
+    label = models.ForeignKey(
+        ProjectLabels,
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        related_name='project_label'
+    )
+    created_by = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        null=True
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -129,8 +223,14 @@ class Meta:
 
 class Comment(models.Model):
     body = models.TextField()
-    issue = models.ForeignKey(Issue, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    issue = models.ForeignKey(
+        Issue,
+        on_delete=models.CASCADE
+    )
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -141,11 +241,21 @@ class Comment(models.Model):
 
 
 class WorkLog(models.Model):
-    time_spent = models.DecimalField(max_digits=6, decimal_places=2,
-                                     error_messages={'time_spent': "Duration Field Format is not correct"})
+    time_spent = models.DecimalField(
+        max_digits=6,
+        decimal_places=2,
+        error_messages={'time_spent': "Duration Field Format is not correct"}
+    )
     comment = models.TextField(blank=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    issue = models.ForeignKey(Issue, on_delete=models.CASCADE, related_name='worklogs')
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE
+    )
+    issue = models.ForeignKey(
+        Issue,
+        on_delete=models.CASCADE,
+        related_name='worklogs'
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -157,8 +267,16 @@ class WorkLog(models.Model):
 
 
 class Watcher(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='watched_issues')
-    issue = models.ForeignKey(Issue, on_delete=models.CASCADE, related_name='watchers')
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='watched_issues'
+    )
+    issue = models.ForeignKey(
+        Issue,
+        on_delete=models.CASCADE,
+        related_name='watchers'
+    )
 
     def __str__(self):
         return f"{self.user.username} watching {self.issue.summary}"

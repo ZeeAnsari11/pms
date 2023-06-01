@@ -9,9 +9,6 @@ from django.urls import reverse
 
 class IssueInline(admin.StackedInline):
     model = models.Issue
-
-    # readonly_fields = ['name', 'summary', 'description', 'file', 'project', 'assignee', 'reporter', 'type', 'status',
-    #                    'priority', 'created_at', 'updated_at']
     min_num = 1
     max_num = 5
     extra = 0
@@ -24,14 +21,11 @@ class ProjectLabelAdmin(admin.ModelAdmin):
 
 
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ['name', 'company', 'project_category', 'project_lead', 'assignee', 'issues', 'status', 'type',
-                    'label']
-    prepopulated_fields = {
-        'slug': ['name']
-    }
-    autocomplete_fields = ['company', 'project_category', 'assignee', 'project_lead', 'status', 'type', 'label']
+    list_display = ['name', 'company', 'category', 'project_lead', 'assignee', 'issues', 'slack_webhook_url']
+    prepopulated_fields = {'slug': ['name']}
+    autocomplete_fields = ['company', 'category', 'assignee', 'project_lead', 'slack_webhook_url']
     search_fields = ['name']
-    list_editable = ['project_category', 'project_lead', 'status', 'type', 'label', 'assignee']
+    list_editable = ['category', 'project_lead', 'assignee', 'slack_webhook_url']
 
     def issues(self, project):
         url = (
@@ -49,10 +43,11 @@ class ProjectAdmin(admin.ModelAdmin):
 
 
 class IssueAdmin(admin.ModelAdmin):
-    list_display = ['name', 'project', 'assignee', 'summary', 'reporter', 'priority']
+    list_display = ['name', 'project', 'assignee', 'summary', 'status', 'type', 'label', 'reporter', 'priority',
+                    'created_by']
     search_fields = ['name', 'project__name']
-    autocomplete_fields = ['project', 'assignee', 'reporter', 'priority']
-    list_editable = ['priority', 'assignee']
+    autocomplete_fields = ['project', 'assignee', 'reporter', 'created_by', 'status', 'type', 'label']
+    list_editable = ['priority', 'assignee', 'status', 'type', 'label']
 
 
 class CommentAdmin(admin.ModelAdmin):
@@ -64,13 +59,6 @@ class CommentAdmin(admin.ModelAdmin):
         if not change:  # only set the field if the object is new
             obj.user = request.user
         super().save_model(request, obj, form, change)
-
-    # readonly_fields = ['user']
-
-
-# class AttachmentAdmin(admin.ModelAdmin):
-#     list_display = ['file', 'uploaded_by']
-#     autocomplete_fields = ['issue', 'uploaded_by']
 
 
 class WorkLogAdmin(admin.ModelAdmin):
@@ -88,8 +76,8 @@ class WatcherAdmin(admin.ModelAdmin):
 
 
 class ProjectCategoryAdmin(admin.ModelAdmin):
-    list_display = ['project_category']
-    search_fields = ['project_category']
+    list_display = ['category']
+    search_fields = ['category']
 
 
 class ProjectTypeAdmin(admin.ModelAdmin):
@@ -97,25 +85,25 @@ class ProjectTypeAdmin(admin.ModelAdmin):
     search_fields = ['type']
 
 
+class ProjectSlackWebhookUrlAdmin(admin.ModelAdmin):
+    list_display = ['project', 'slack_webhook_url']
+    search_fields = ['slack_webhook_url']
+
+
 class ProjectStatusAdmin(admin.ModelAdmin):
     list_display = ['project', 'status']
     search_fields = ['status']
 
-
-class IssuesPriorityAdmin(admin.ModelAdmin):
-    list_display = ['issue_priority']
-    search_fields = ['priority']
-
-
 admin.site.register(models.Project, ProjectAdmin)
-admin.site.register(models.Issue, IssueAdmin)
-admin.site.register(models.Comment, CommentAdmin)
-# admin.site.register(models.Attachment, AttachmentAdmin)
-admin.site.register(models.WorkLog, WorkLogAdmin)
-admin.site.register(models.ProjectLabels, ProjectLabelAdmin)
 
-admin.site.register(models.Watcher, WatcherAdmin)
 admin.site.register(models.ProjectCategory, ProjectCategoryAdmin)
+admin.site.register(models.ProjectLabels, ProjectLabelAdmin)
 admin.site.register(models.ProjectType, ProjectTypeAdmin)
 admin.site.register(models.ProjectStatus, ProjectStatusAdmin)
-admin.site.register(models.IssuesPriority, IssuesPriorityAdmin)
+admin.site.register(models.ProjectSlackWebhookUrl, ProjectSlackWebhookUrlAdmin)
+
+admin.site.register(models.Issue, IssueAdmin)
+
+admin.site.register(models.Comment, CommentAdmin)
+admin.site.register(models.WorkLog, WorkLogAdmin)
+admin.site.register(models.Watcher, WatcherAdmin)
