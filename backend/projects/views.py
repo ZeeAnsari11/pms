@@ -83,10 +83,10 @@ class ProjectLabelsViewSet(ModelViewSet):
 
 
 class ProjectViewSet(ModelViewSet):
-    # parser_classes = (MultiPartParser, FormParser)
+    parser_classes = (MultiPartParser, FormParser)
     http_method_names = ['get', 'post', 'patch', 'delete']
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['name', 'key', 'assignee__username', 'project_lead__username', 'company__company_name',
+    filterset_fields = ['name', 'key', 'slug','assignee__username', 'project_lead__username', 'company__company_name',
                         'project_category__project_category', 'status']
 
     # queryset = Project.objects.prefetch_related('assignee').select_related('company').all()

@@ -1,7 +1,10 @@
-from django.db import models
+from django.db import models, transaction
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
 from .validators import validate_file_size
+from django.utils.text import slugify
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 # Create your models here.
@@ -90,6 +93,7 @@ class Issue(models.Model):
 
     file = models.JSONField(blank=True, null=True,
                             default=list)
+    slug = models.SlugField(max_length=255, unique=True, blank=True)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     assignee = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, related_name='issues_assigned')
     reporter = models.ForeignKey(User, on_delete=models.CASCADE, related_name='issues_reported')
@@ -103,8 +107,24 @@ class Issue(models.Model):
     def __str__(self):
         return self.name
 
-    class Meta:
-        ordering = ['project', 'name']
+    def save(self, *args, **kwargs):
+        if not self.slug or self.project.name not in self.slug:
+            self.slug = slugify(f"{self.project.name} - {self.pk}")
+        super().save(*args, **kwargs)
+
+
+@receiver(post_save, sender=Issue)
+def post_save_issue(sender, instance, created, **kwargs):
+    if created:
+        @transaction.on_commit
+        def update_slug():
+            if not instance.slug or instance.project.name not in instance.slug:
+                instance.slug = slugify(f"{instance.project.name} - {instance.pk}")
+                instance.save()
+
+
+class Meta:
+    ordering = ['project', 'name']
 
 
 class Comment(models.Model):
