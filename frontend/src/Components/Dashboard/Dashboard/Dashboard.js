@@ -104,51 +104,6 @@ function Dashboard(props) {
         bid: "",
     })
     const [boards, setboards] = useState([
-        // {
-        //     id: Date.now() + Math.random() * 2,
-        //     title: "Dashboard Frontend",
-        //     cards: [
-        //         {
-        //             id: Date.now() + Math.random(),
-        //             title: "I am testing this to check whether styling remains consistent or not.",
-        //             tasks: [],
-        //             labels: [
-        //                 {
-        //                     text: "critical",
-        //                     color: "red",
-        //                 },
-        //             ],
-        //             desc: "Frontend of Dashboard",
-        //             date: "",
-        //         },
-        //         {
-        //             id: Date.now() + Math.random(),
-        //             title: "Card 2",
-        //             tasks: [],
-        //             labels: [
-        //                 {
-        //                     text: "In queue",
-        //                     color: "Grey",
-        //                 },
-        //             ],
-        //             desc: "Second frontend of Dashboard",
-        //             date: "",
-        //         },
-        //         {
-        //             id: Date.now() + Math.random(),
-        //             title: "Card 3",
-        //             tasks: [],
-        //             labels: [
-        //                 {
-        //                     text: "In Progress",
-        //                     color: "Blue",
-        //                 },
-        //             ],
-        //             desc: "Backend of Dashboard",
-        //             date: "",
-        //         },
-        //     ],
-        // },
         {
             id: Date.now() + Math.random() * 2,
             title: "To Do",
@@ -291,10 +246,23 @@ function Dashboard(props) {
         setboards(tempBoards);
     }
 
+    let IconPath = projectData.icon
+    if (IconPath != null) {
+        IconPath = `${process.env.REACT_APP_HOST}/${projectIcon}`
+    } else {
+        IconPath = 'http://localhost:3000/Images/NoImage.jpeg'
+    }
+
+
+    const project = {
+        name: name,
+        category: projectCategory.project_category,
+        icon: IconPath,
+    }
 
     return (
         <DashboardContainer>
-            <Sidebar/>
+            <Sidebar project={project}/>
             <NavBar/>
             <DashboardOuter>
                 <DashboardBoards>

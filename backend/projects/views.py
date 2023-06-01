@@ -19,7 +19,7 @@ from . import serializers
 
 # Create your views here.
 class UserViewSet(ModelViewSet):
-    http_method_names = ['get']
+    http_method_names = ['get','post', 'patch' ]
     serializer_class = serializers.CustomUserSerializer
     permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend]
