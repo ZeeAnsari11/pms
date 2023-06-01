@@ -1,57 +1,30 @@
-from rest_framework.generics import RetrieveAPIView
+from rest_framework.generics import UpdateAPIView, RetrieveAPIView
+from rest_framework.viewsets import ModelViewSet, GenericViewSet
+from django_filters.rest_framework import DjangoFilterBackend
 from .serializers import UserProfileSerializer
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.exceptions import NotFound
 from .models import UserProfile
-from rest_framework import status
-from rest_framework.response import Response
-from rest_framework.views import APIView
+from . import serializers
+from register.serializers import CompanySerializer
+
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.viewsets import ModelViewSet
+from . import serializers
+from .models import UserProfile
 
 
-class AvatarView(RetrieveAPIView):
-    serializer_class = UserProfileSerializer
-    permission_classes = (IsAuthenticated,)
+class UserProfileViewSet(ModelViewSet):
+    http_method_names = ['get', 'post', 'patch', 'delete']
+    filterset_fields = "__all__"
+    permission_classes = [IsAuthenticated]
 
-    def get_object(self):
-        try:
-            return self.request.user.userprofile
-        except UserProfile.DoesNotExist:
-            raise NotFound('User Profile Not Found')
+    def get_serializer_class(self):
+        if self.request.method in ['POST', 'PATCH']:
+            return serializers.CreateUserProfileSerializer
+        return serializers.UserProfileSerializer
 
-    def get(self, request, *args, **kwargs):
-        user_profile = self.get_object()
-        serializer = self.get_serializer(user_profile)
-        return Response(serializer.data)
-
-    def put(self, request, *args, **kwargs):
-        user_profile = self.get_object()
-        serializer = self.get_serializer(user_profile, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def post(self, request, *args, **kwargs):
-        if hasattr(request.user, 'userprofile'):
-            return Response({'error': 'User profile already exists.'}, status=status.HTTP_400_BAD_REQUEST)
-        user_profile = UserProfile.objects.create(user=request.user)
-        serializer = self.get_serializer(user_profile, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        user_profile.delete()
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, *args, **kwargs):
-        user_profile = self.get_object()
-        user_profile.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-class AllAvatarView(APIView):
-    permission_classes = (IsAuthenticated,)
-
-    def get(self, request):
-        user_profiles = UserProfile.objects.all()
-        serializer = UserProfileSerializer(user_profiles, many=True)
-        return Response(serializer.data)
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_staff:
+            return UserProfile.objects.all()
+        return UserProfile.objects.filter(user=self.request.user)
