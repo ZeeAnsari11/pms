@@ -7,20 +7,22 @@ from register.serializers import CompanySerializer
 class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'last_login', 'is_superuser', 'email', 'is_staff', 'is_active', 'user_permissions']
+        fields = ['id', 'username', 'email']
 
-
-# class UserProfileSerializer(serializers.ModelSerializer):
-#     user = CustomUserSerializer(read_only=True)
-#
-#     class Meta:
-#         model = UserProfile
-#         fields = ('image', 'user')
 
 class UserProfileSerializer(serializers.ModelSerializer):
-    user = CustomUserSerializer(read_only=True)
+
+    user = CustomUserSerializer()
     company = CompanySerializer()  # Assuming you have defined the CompanySerializer in the 'register' app
 
     class Meta:
         model = UserProfile
-        fields = ('image', 'user', 'company', 'department', 'job_title', 'joining_date')
+        fields = ('id', 'image', 'user', 'company', 'department', 'job_title', 'joining_date', 'is_reporter', 'is_assignee', 'send_email', 'email_format')
+
+
+class CreateUserProfileSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = UserProfile
+        fields = ('id', 'image', 'user', 'company', 'department', 'job_title', 'joining_date', 'is_reporter', 'is_assignee',
+                  'send_email', 'email_format')

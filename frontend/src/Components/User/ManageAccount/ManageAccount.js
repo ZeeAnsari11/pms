@@ -3,19 +3,20 @@ import styled from 'styled-components';
 import {faCircleInfo, faEarthAfrica, faImage} from '@fortawesome/free-solid-svg-icons';
 import Editable from '../../Dashboard/Editable/Editable';
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {color, font, mixin} from "../../Dashboard/Sidebar/utils/styles";
-import Dropdown from "./ManageAccountDropDown";
 import axios from "axios";
+import GenericSelectField from "../../Dashboard/SelectFields/GenericSelectField";
+import {Link, useParams} from "react-router-dom";
+import NavBar from "../../Dashboard/Navbar";
+import Sidebar from "../../Dashboard/Sidebar";
+import ImageUploader from "../ImageUploader";
+import ProfilePhotouploader from "./ProfilePhotouploader";
 
 
 const Wrapper = styled.div`
   background-color: white;
-  padding: 20px;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  margin: 0 auto;
-  max-width: 585px;
+  margin-left: 15%;
 
   @media (max-width: 768px) {
     margin-left: 20px;
@@ -42,9 +43,10 @@ const Text = styled.p`
 `;
 
 const SubHeading = styled.h2`
-  font-size: 1em;
-  margin-top: 30px;
-  margin-bottom: 10px;
+  font-size: 1.5em;
+  //margin-top: 30px;
+  margin-bottom: 35px;
+  padding-left: 20px;
 
   @media (max-width: 768px) {
     font-size: 0.8em;
@@ -56,7 +58,7 @@ const ImageWrapper = styled.div`
   background-color: #FFFFFF;
   width: 100%;
   height: 212px;
-  border-radius: 3px;
+  //border-radius: 3px;
   box-shadow: var(--ds-shadow-raised, 0 1px 1px rgba(9, 30, 66, 0.25), 0 0 1px 1px rgba(9, 30, 66, 0.13));
 
   @media (max-width: 768px) {
@@ -68,12 +70,11 @@ const ImageWrapper = styled.div`
 
 const AboutWrapper = styled.div`
   padding-top: 20px;
-  margin-top: 10px;
+  padding-left: 20px;
+  margin-top: 35px;
   height: 605px;
-  width: 100%;
+  width: 55%;
   background-color: #FFFFFF;
-  border-radius: 3px;
-  box-shadow: var(--ds-shadow-raised, 0 1px 1px rgba(9, 30, 66, 0.25), 0 0 1px 1px rgba(9, 30, 66, 0.13));
 
   @media (max-width: 768px) {
     height: 400px;
@@ -85,17 +86,16 @@ const AboutWrapper = styled.div`
 `;
 
 const ContentWrapper = styled.div`
-  margin-top: 10px;
-  height: 99px;
-  width: 100%;
+  margin-top: 60px;
+  height: 100%;
+  width: 45%;
   background-color: #FFFFFF;
-  border-radius: 3px;
-  box-shadow: var(--ds-shadow-raised, 0 1px 1px rgba(9, 30, 66, 0.25), 0 0 1px 1px rgba(9, 30, 66, 0.13));
+  //border-radius: 3px;
+  //box-shadow: var(--ds-shadow-raised, 0 1px 1px rgba(9, 30, 66, 0.25), 0 0 1px 1px rgba(9, 30, 66, 0.13));
 `;
 
 const InsideContentWrapper = styled.div`
   margin: 25px;
-  height: 60px;
 `;
 
 const ContentEmailAddressWrapper = styled.div`
@@ -104,18 +104,10 @@ const ContentEmailAddressWrapper = styled.div`
 
 `;
 
-const ContentAccessWrapper = styled.div`
-  height: 100%;
-  float: right;
-  margin-top: -63px;
-  width: 49%;
-`;
-
-
 const CoverPictureWrapper = styled.div`
   position: relative;
   width: 100%;
-  height: 112px;
+  height: 212px;
   background-color: #80ffa1;
   background-image: url('/Images/CoverBackground.jpg');
   background-size: cover;
@@ -144,11 +136,11 @@ const CoverPictureWrapper = styled.div`
 const CircleImage = styled.div`
   position: absolute;
   border: #FFFFFF solid 2.5px;
-  bottom: -20%;
-  left: 20%;
-  transform: translateX(-50%);
-  width: 100px;
-  height: 100px;
+  bottom: -25%;
+  left: 10%;
+  transform: translateX(-10%);
+  width: 175px;
+  height: 175px;
   border-radius: 50%;
   background-size: cover;
   background-position: center;
@@ -157,7 +149,7 @@ const CircleImage = styled.div`
     transform: translateX(-50%) scale(1.1);
     transition: transform 0.4s ease-in-out;
   }
-  
+
   &:hover {
     &::before {
       content: "";
@@ -175,7 +167,7 @@ const CircleImage = styled.div`
     .update-cover {
       opacity: 1;
     }
-  
+
 `;
 
 const UpdateCover = styled.div`
@@ -218,41 +210,11 @@ const UpdateProfile = styled.div`
   }
 `;
 
-
-const EmptySide = styled.div`
-  width: 100%;
-  height: 100px;
-  background-color: #FFFFFF;
-  border-bottom-left-radius: 3px;
-  border-bottom-right-radius: 3px;
-
-`;
-
-const ViewAccess = styled.div`
-  font-size: 12px;
-  padding-left: 8px;
-  margin-bottom: -20px;
-  color: rgb(107, 119, 140);
-  line-height: 16px;
-  width: 200px;
-  float: right;
-  font-weight: revert;
-`;
-
-const ViewAccessForContent = styled.div`
-  font-size: 12px;
-  margin-bottom: -20px;
-  padding-left: 80px;
-  color: rgb(107, 119, 140);
-  line-height: 16px;
-  width: 200px;
-  float: right;
-  font-weight: revert;
-`;
-
 const ColumnsForAboutDetails = styled.div`
   display: flex;
   margin-left: 20px;
+  align-items: center;
+  height: 40px;
 `;
 
 const LeftColumns = styled.div`
@@ -285,6 +247,7 @@ const LabelHeadingWrapper = styled.label`
 const HeadingLabel = styled.span`
   font-weight: 600;
   padding: 0px;
+  font-size: 16px;
 `;
 
 const InputFieldWrapper = styled.div`
@@ -304,154 +267,8 @@ const AlignEdiableField = styled.div`
   height: 50px;
 `;
 
-const VisibilityOption = styled.div`
-  opacity: 0.5;
-`;
-
-
-const ButtonWrapper = styled.div`
-  margin-left: 1px;
-  display: inline-block;
-  box-sizing: border-box;
-  max-width: 100%;
-  border: 2px solid transparent;
-  border-radius: 3px;
-  transition: background 0.2s ease 0s;
-  width: 310px;
-  height: 40px;
-  background-color: transparent;
-
-  &:hover {
-    background-color: #EBECF0;
-  }
-`;
-
-const ButtonText = styled.span`
-  margin-right: 180px;
-  font-size: 15px;
-`;
-
-const HoverTextWrapper = styled.div`
-  padding-top: 5px;
-`;
-
-const LinkItem = styled.div`
-  position: relative;
-  display: flex;
-  padding: 8px 12px;
-  border-radius: 3px;
-
-
-  ${mixin.clickable}
-  ${props =>
-          !props.to ? `cursor: not-allowed;` : `&:hover { background: ${color.backgroundLight}; }`}
-  i {
-    margin-right: 15px;
-    font-size: 20px;
-  }
-
-  &.active {
-    color: ${color.primary};
-    background: ${color.backgroundLight};
-
-    i {
-      color: ${color.primary};
-    }
-  }
-`;
-
-const CircleInfoIcon = styled.span`
-  position: relative;
-  display: flex;
-  border-radius: 3px;
-  padding-left: 190px;
-  margin-top: -12px;
-
-
-  ${mixin.clickable}
-  ${props =>
-          !props.to ? `cursor: not-allowed;` : `&:hover { background: ${color.backgroundLight}; }`}
-  i {
-    margin-right: 15px;
-    font-size: 20px;
-  }
-
-  &.active {
-    color: ${color.primary};
-    background: ${color.backgroundLight};
-
-    i {
-      color: ${color.primary};
-    }
-  }
-`;
-
-const HoverMessage = styled.div`
-  margin-top: 35px;
-  margin-right: 290px;
-  margin-left: 130px;
-  display: inline-block;
-  position: absolute;
-  top: 7px;
-  left: -157px;
-  right: 68px;
-  width: 317px;
-  padding: 5px 0px 5px 8px;
-  border-radius: 5px;
-  text-transform: uppercase;
-  color: ${color.textDark};
-  background: ${color.backgroundMedium};
-  opacity: 0;
-  ${font.size(10)};
-
-  ${CircleInfoIcon}:hover & {
-    opacity: 1;
-  }
-`;
-
-const NotImplemented = styled.div`
-  margin-top: 35px;
-  margin-right: 190px;
-  display: inline-block;
-  position: absolute;
-  top: 7px;
-  left: -157px;
-  right: 68px;
-  width: 317px;
-  padding: 5px 0px 5px 8px;
-  border-radius: 5px;
-  text-transform: uppercase;
-  color: ${color.textDark};
-  background: ${color.backgroundMedium};
-  opacity: 0;
-  ${font.size(10)};
-
-  ${LinkItem}:hover & {
-    opacity: 1;
-  }
-`;
-
 const RightColumn = styled.div`
   width: 200px;
-`;
-
-const AccessOption = styled.div`
-  width: 100%;
-  margin-top: 33px;
-  margin-bottom: 29px;
-`;
-
-const TopPaddingForImageWhoCanSee = styled.div`
-  padding: 10px;
-  height: 60%;
-  width: 40%;
-  margin-left: 332px;
-`;
-
-const WrapperForDropDownButton = styled.div`
-  margin-top: 25px;
-  width: 85%;
-  margin-left: 40px;
 `;
 
 const EmailAddress = styled.p`
@@ -459,28 +276,127 @@ const EmailAddress = styled.p`
   font-weight: 400;
 `;
 
-const WhoCanSeeForContent = styled.p`
-  font-size: 12px;
-  padding-left: 30px;
-  margin-top: 0px;
+
+const SectionsWrapper = styled.div`
+  display: flex;
+  border-radius: 3px;
+  box-shadow: var(--ds-shadow-raised, 0 1px 1px rgba(9, 30, 66, 0.25), 0 0 1px 1px rgba(9, 30, 66, 0.13));
 `;
 
-const ContentDropDownWrapper = styled.div`
-  padding-top: 5px;
-  width: 74%;
-  float: right;
-  height: 66%;
-  margin-right: -24px;
+const Allignment = styled.div`
+  display: flex;
+  align-items: center;
 `;
+
+const Span = styled.div`
+  padding-left: 20px;
+  width: 250px;
+  margin-top: 38px;
+`;
+
+const CheckboxLabel = styled.label`
+  margin-bottom: 7px;
+`;
+
+const ConfigureMessage = styled.p`
+  margin-top: -5px;
+  font-size: 0.9rem;
+`;
+
+const CardInfoBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: 60%;
+  //padding-bottom: 5px;
+`;
+
+const CardInfoBoxTitle = styled.div`
+  font-weight: bold;
+  font-size: 1.3rem;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 10px;
+`;
+
+const TaskList = styled.div`
+  margin: 8px 0 15px;
+`;
+
+const CheckboxWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+  margin-top: -5px;
+`;
+
+const FormWrapper = styled.form`
+  display: flex;
+  flex-direction: column;
+  margin-top: 1rem;
+`;
+
+const SaveButton = styled.button`
+  background-color: #0077ff;
+  color: white;
+  font-size: 16px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  width: fit-content;
+
+  &:hover {
+    background-color: #0066cc;
+  }
+
+  &:focus {
+    outline: none;
+  }
+`;
+
+
+
+const email = [
+    {value: 'option1', label: 'Send me email notifications'},
+    {value: 'option2', label: 'Do not send me email notifications'},
+];
+
+const notificationFormat = [
+    {value: 'option1', label: 'HTML'},
+    {value: 'option2', label: 'Text'},
+];
 
 
 const ProfileVisibility = () => {
 
     const [isEditable, setIsEditable] = useState(false);
-    const options = ['Option 1', 'Option 2', 'Option 3'];
     const [userData, setUserData] = useState({});
+    const [projectData, setProjectData] = useState({});
+    const [projectIcon, setProjectIcon] = useState('');
+    const [image, setImage] = useState(null);
+    const handleImageChange = (image) => {
+        setImage(image);
+    }
+    const [name, setName] = useState(''); // Set initial value from project object
+    const [projectCategory, setProjectCategory] = useState(''); // Set initial value from project object
+    const {projectId} = useParams()
+
+    let IconPath = projectData.icon
+    if (IconPath != null) {
+        IconPath = `${process.env.REACT_APP_HOST}/${projectIcon}`
+    } else {
+        IconPath = 'http://localhost:3000/Images/NoImage.jpeg'
+    }
 
     let authToken = localStorage.getItem('auth_token')
+
+    const project = {
+        name: name,
+        category: projectCategory.project_category,
+        icon: IconPath,
+    }
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -494,292 +410,358 @@ const ProfileVisibility = () => {
                 console.error(error);
             }
         }
+        const fetchProjects = async () => {
+            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/projects/${projectId}`, {
+                headers: {
+                    Authorization: `Token ${authToken}`,
+                },
+            });
+            setProjectData(response.data);
+
+        };
+        fetchProjects();
         fetchUserData();
     }, []);
 
+    function handleSubmit(event) {
+        event.preventDefault();
+
+        const data = {
+            // "image": image,
+            "department": userData?.department,
+            "job_title": userData?.job_title,
+            "is_reporter": false,
+            "is_assignee": false,
+            "send_email": "yes",
+            "email_format": "html"
+        }
+        console.log(data, "DATA")
+        fetch('http://127.0.0.1:8000/api/userprofile/', {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Token ${authToken}`,
+            },
+            body: JSON.stringify(data) // Serialize the data object as JSON
+        })
+            .then(response => {
+                // handle the response
+                console.log(data)
+            })
+            .catch(error => {
+                // handle the error
+                console.log(error)
+            });
+    }
+    console.log("Logged in user", userData)
+
+
+
     return (
-        <Wrapper>
-            <Heading>Profile and visibility</Heading>
-            <Text>Manage your personal information, and control which information other people see and apps may
-                access.</Text>
-            <SubHeading>Profile photo and header image</SubHeading>
-            <ImageWrapper>
-                <CoverPictureWrapper>
-                    <CircleImage style={{ backgroundImage: `url(${userData?.image})` }}>
-                        <UpdateProfile className="update-cover">
-                            <FontAwesomeIcon icon={faImage} fontSize={"30px"} onClick={() => {
-                                console.log("Clicked")
-                            }}/>
-                        </UpdateProfile>
-                    </CircleImage>
-                    <UpdateCover className="update-cover">
-                        <FontAwesomeIcon icon={faImage} fontSize={"35px"} onClick={() => {
-                            console.log("Clicked")
-                        }}/>
-                        Update your cover photo
-                    </UpdateCover>
-                </CoverPictureWrapper>
-                <EmptySide>
-                    <TopPaddingForImageWhoCanSee>
-                        <ViewAccess>
-                            <span>Who can see your profile photo? </span> <CircleInfoIcon>
+        <div>
+            <NavBar/>
+            <Sidebar project={project}/>
+            <Wrapper>
+                <FormWrapper onSubmit={handleSubmit} encType="multipart/form-data" method="POST">
 
-                            <FontAwesomeIcon icon={faCircleInfo}/>
+                    <ImageWrapper>
+                        <CoverPictureWrapper>
+                            <CircleImage>
+                                <ProfilePhotouploader onImageChange={handleImageChange} id="image"
+                                                      imagePath={userData?.image}/>
+                                <UpdateProfile className="update-cover">
+                                    <FontAwesomeIcon icon={faImage} fontSize={"30px"} onClick={() => {
+                                        console.log("Clicked")
+                                    }}/>
+                                </UpdateProfile>
+                            </CircleImage>
+                            <UpdateCover className="update-cover">
+                                <FontAwesomeIcon icon={faImage} fontSize={"35px"} onClick={() => {
+                                    console.log("Clicked")
+                                }}/>
+                                Update your cover photo
+                            </UpdateCover>
+                        </CoverPictureWrapper>
+                    </ImageWrapper>
+                    <SectionsWrapper>
+                        <AboutWrapper>
+                            <SubHeading>About you</SubHeading>
+                            <ColumnsForAboutDetails>
+                                <LeftColumns>
+                                    <LeftColumnsInner>
+                                        <LeftColumnsInnerSecond>
+                                            <Allignment>
+                                                <LabelHeadingWrapper>
+                                                    <HeadingLabel>Full name:</HeadingLabel>
+                                                </LabelHeadingWrapper>
 
-                            <HoverTextWrapper><HoverMessage>The full name you provide is visible to anyone who can
-                                view your
-                                content, including people outside of your organisation. Accessible by
-                                installed apps.
-                            </HoverMessage></HoverTextWrapper>
-                        </CircleInfoIcon>
-                        </ViewAccess>
-                        <WrapperForDropDownButton>
-                            <Dropdown options={options}></Dropdown>
-                        </WrapperForDropDownButton>
-                    </TopPaddingForImageWhoCanSee>
-                </EmptySide>
-            </ImageWrapper>
-            <SubHeading>About you</SubHeading>
-            <AboutWrapper>
-                <ViewAccess>
-                    <span>Who can see this?</span>
-                </ViewAccess>
+                                                <InputFieldWrapper>
+                                                    <InputFieldInner>
+                                                        <InputFieldSecondInner>
+                                                            <AlignEdiableField>
 
-                <ColumnsForAboutDetails>
-                    <LeftColumns>
-                        <LeftColumnsInner>
-                            <LeftColumnsInnerSecond>
+                                                                <Editable text={userData?.user?.username}
+                                                                          placeholder={userData?.user?.username}
+                                                                          fontSize="16px"
+                                                                          padding='6px 0px 0px 30px'
+                                                                          width="270px"
+                                                                />
+                                                            </AlignEdiableField>
+                                                        </InputFieldSecondInner>
+                                                    </InputFieldInner>
+                                                </InputFieldWrapper>
+                                            </Allignment>
+                                        </LeftColumnsInnerSecond>
+                                    </LeftColumnsInner>
+                                </LeftColumns>
+                            </ColumnsForAboutDetails>
+                            <ColumnsForAboutDetails>
+                                <LeftColumns>
+                                    <LeftColumnsInner>
+                                        <LeftColumnsInnerSecond>
+                                            <Allignment>
+                                                <LabelHeadingWrapper>
+                                                    <HeadingLabel>Public name:</HeadingLabel>
+                                                </LabelHeadingWrapper>
+
+                                                <InputFieldWrapper>
+                                                    <InputFieldInner>
+                                                        <InputFieldSecondInner>
+                                                            <AlignEdiableField>
+
+                                                                <Editable text={userData?.user?.username}
+                                                                          placeholder={userData?.user?.username}
+                                                                          fontSize="16px"
+                                                                          padding='6px 0px 0px 30px'
+                                                                          width="270px"
+                                                                />
+                                                            </AlignEdiableField>
+                                                        </InputFieldSecondInner>
+                                                    </InputFieldInner>
+                                                </InputFieldWrapper>
+                                            </Allignment>
+                                        </LeftColumnsInnerSecond>
+                                    </LeftColumnsInner>
+                                </LeftColumns>
+                            </ColumnsForAboutDetails>
+                            <ColumnsForAboutDetails>
+                                <LeftColumns>
+                                    <LeftColumnsInner>
+                                        <LeftColumnsInnerSecond>
+                                            <Allignment>
+                                                <LabelHeadingWrapper>
+                                                    <HeadingLabel>Email:</HeadingLabel>
+                                                </LabelHeadingWrapper>
+
+                                                <InputFieldWrapper>
+                                                    <InputFieldInner>
+                                                        <InputFieldSecondInner>
+                                                            <AlignEdiableField>
+                                                                <Span>{userData?.user?.email}</Span>
+                                                            </AlignEdiableField>
+                                                        </InputFieldSecondInner>
+                                                    </InputFieldInner>
+                                                </InputFieldWrapper>
+                                            </Allignment>
+                                        </LeftColumnsInnerSecond>
+                                    </LeftColumnsInner>
+                                </LeftColumns>
+                            </ColumnsForAboutDetails>
+                            <ColumnsForAboutDetails>
+                                <LeftColumns>
+                                    <LeftColumnsInner>
+                                        <LeftColumnsInnerSecond>
+                                            <Allignment>
+                                                <LabelHeadingWrapper>
+                                                    <HeadingLabel>Job title:</HeadingLabel>
+                                                </LabelHeadingWrapper>
+
+                                                <InputFieldWrapper>
+                                                    <InputFieldInner>
+                                                        <InputFieldSecondInner>
+                                                            <AlignEdiableField>
+
+                                                                <Editable text={userData?.job_title}
+                                                                          placeholder={userData?.job_title}
+                                                                          fontSize="16px"
+                                                                          padding='6px 0px 0px 30px'
+                                                                          width="227px"
+
+                                                                />
+                                                            </AlignEdiableField>
+                                                        </InputFieldSecondInner>
+                                                    </InputFieldInner>
+                                                </InputFieldWrapper>
+                                            </Allignment>
+                                        </LeftColumnsInnerSecond>
+                                    </LeftColumnsInner>
+                                </LeftColumns>
+                                <RightColumn>
+                                </RightColumn>
+                            </ColumnsForAboutDetails>
+                            <ColumnsForAboutDetails>
+                                <LeftColumns>
+                                    <LeftColumnsInner>
+                                        <LeftColumnsInnerSecond>
+                                            <Allignment>
+                                                <LabelHeadingWrapper>
+                                                    <HeadingLabel>Department:</HeadingLabel>
+                                                </LabelHeadingWrapper>
+
+                                                <InputFieldWrapper>
+                                                    <InputFieldInner>
+                                                        <InputFieldSecondInner>
+                                                            <AlignEdiableField>
+
+                                                                <Editable text={userData?.department}
+                                                                          placeholder={userData?.department}
+                                                                          fontSize="16px"
+                                                                          padding='6px 0px 0px 30px'
+                                                                          width="270px"
+                                                                />
+                                                            </AlignEdiableField>
+                                                        </InputFieldSecondInner>
+                                                    </InputFieldInner>
+                                                </InputFieldWrapper>
+                                            </Allignment>
+                                        </LeftColumnsInnerSecond>
+                                    </LeftColumnsInner>
+                                </LeftColumns>
+                            </ColumnsForAboutDetails>
+                            <ColumnsForAboutDetails>
+                                <LeftColumns>
+                                    <LeftColumnsInner>
+                                        <LeftColumnsInnerSecond>
+                                            <Allignment>
+                                                <LabelHeadingWrapper>
+                                                    <HeadingLabel>Organization:</HeadingLabel>
+                                                </LabelHeadingWrapper>
+
+                                                <InputFieldWrapper>
+                                                    <InputFieldInner>
+                                                        <InputFieldSecondInner>
+                                                            <AlignEdiableField>
+
+                                                                <Editable text={userData?.company?.company_name}
+                                                                          placeholder={userData?.company?.company_name}
+                                                                          fontSize="16px"
+                                                                          padding='6px 0px 0px 30px'
+                                                                          width="270px"
+                                                                />
+                                                            </AlignEdiableField>
+                                                        </InputFieldSecondInner>
+                                                    </InputFieldInner>
+                                                </InputFieldWrapper>
+                                            </Allignment>
+                                        </LeftColumnsInnerSecond>
+                                    </LeftColumnsInner>
+                                </LeftColumns>
+                            </ColumnsForAboutDetails>
+                            <ColumnsForAboutDetails>
+                                <LeftColumns>
+                                    <LeftColumnsInner>
+                                        <LeftColumnsInnerSecond>
+                                            <Allignment>
+                                                <LabelHeadingWrapper>
+                                                    <HeadingLabel>Based in:</HeadingLabel>
+                                                </LabelHeadingWrapper>
+
+                                                <InputFieldWrapper>
+                                                    <InputFieldInner>
+                                                        <InputFieldSecondInner>
+                                                            <AlignEdiableField>
+
+                                                                <Editable text={userData?.company?.city}
+                                                                          placeholder={userData?.company?.city}
+                                                                          fontSize="16px"
+                                                                          padding='6px 0px 0px 30px'
+                                                                          width="270px"
+
+                                                                />
+                                                            </AlignEdiableField>
+                                                        </InputFieldSecondInner>
+                                                    </InputFieldInner>
+                                                </InputFieldWrapper>
+                                            </Allignment>
+                                        </LeftColumnsInnerSecond>
+                                    </LeftColumnsInner>
+                                </LeftColumns>
+                            </ColumnsForAboutDetails>
+                            <ColumnsForAboutDetails>
+                                <LeftColumns>
+                                    <LeftColumnsInner>
+                                        <LeftColumnsInnerSecond>
+                                            <Allignment>
+                                                <LabelHeadingWrapper>
+                                                    <HeadingLabel>Joining Date:</HeadingLabel>
+                                                </LabelHeadingWrapper>
+
+                                                <InputFieldWrapper>
+                                                    <InputFieldInner>
+                                                        <InputFieldSecondInner>
+                                                            <AlignEdiableField>
+                                                                <Span>{userData?.joining_date}</Span>
+                                                            </AlignEdiableField>
+                                                        </InputFieldSecondInner>
+                                                    </InputFieldInner>
+                                                </InputFieldWrapper>
+                                            </Allignment>
+                                        </LeftColumnsInnerSecond>
+                                    </LeftColumnsInner>
+                                </LeftColumns>
+                            </ColumnsForAboutDetails>
+                        </AboutWrapper>
+                        <ContentWrapper>
+                            <SubHeading>Platform Setting</SubHeading>
+                            <InsideContentWrapper>
                                 <LabelHeadingWrapper>
-                                    <HeadingLabel>Full name</HeadingLabel>
+                                    <HeadingLabel>Email notification for issue activity</HeadingLabel>
                                 </LabelHeadingWrapper>
+                                <TaskList>
+                                    <GenericSelectField
+                                        options={email}
+                                        isMultiple={false}
+                                        placeholder={"Unassigned"}
+                                        defaultValue={"Send me email notifications"}/>
+                                </TaskList>
+                                <ConfigureMessage>Get email updates for issue activity when:</ConfigureMessage>
+                                <CheckboxWrapper>
+                                    <CheckboxLabel htmlFor="reporter">
+                                        <input type="checkbox" defaultChecked={true} id="reporter"/>
+                                        You're the <strong>reporter</strong>
+                                    </CheckboxLabel>
 
-                                <InputFieldWrapper>
-                                    <InputFieldInner>
-                                        <InputFieldSecondInner>
-                                            <AlignEdiableField>
+                                    <CheckboxLabel htmlFor="assignee">
+                                        <input type="checkbox" defaultChecked={true} id="assignee"/>
+                                        You're the <strong>assignee</strong> for the issue
+                                    </CheckboxLabel>
+                                </CheckboxWrapper>
+                                <ConfigureMessage>You may also receive other email notifications like those configured
+                                    by
+                                    your
+                                    Jira
+                                    admin and updates for filter subscriptions.</ConfigureMessage>
+                                <ConfigureMessage><Link to="/profile">Learn more about email
+                                    notifications</Link></ConfigureMessage>
+                            </InsideContentWrapper>
 
-                                                <Editable text={userData?.user?.username}
-                                                          placeholder={userData?.user?.username}
-                                                />
-                                            </AlignEdiableField>
-                                        </InputFieldSecondInner>
-                                    </InputFieldInner>
-                                </InputFieldWrapper>
-                            </LeftColumnsInnerSecond>
-                        </LeftColumnsInner>
-                    </LeftColumns>
-                    <RightColumn>
-                        <AccessOption>
-                            <LinkItem>
-                                <VisibilityOption><FontAwesomeIcon icon={faEarthAfrica}/> Anyone </VisibilityOption>
-                                <HoverTextWrapper><NotImplemented>The full name you provide is visible to anyone who can
-                                    view your
-                                    content, including people outside of your organisation. Accessible by
-                                    installed apps.
-                                </NotImplemented></HoverTextWrapper>
-                            </LinkItem>
-                        </AccessOption>
-                    </RightColumn>
-                </ColumnsForAboutDetails>
-                <ColumnsForAboutDetails>
-                    <LeftColumns>
-                        <LeftColumnsInner>
-                            <LeftColumnsInnerSecond>
+                            <InsideContentWrapper>
                                 <LabelHeadingWrapper>
-                                    <HeadingLabel>Public name</HeadingLabel>
+                                    <HeadingLabel>Email notifications format</HeadingLabel>
                                 </LabelHeadingWrapper>
-
-                                <InputFieldWrapper>
-                                    <InputFieldInner>
-                                        <InputFieldSecondInner>
-                                            <AlignEdiableField>
-
-                                                <Editable text={userData?.user?.username}
-                                                          placeholder={userData?.user?.username}
-                                                />
-                                            </AlignEdiableField>
-                                        </InputFieldSecondInner>
-                                    </InputFieldInner>
-                                </InputFieldWrapper>
-                            </LeftColumnsInnerSecond>
-                        </LeftColumnsInner>
-                    </LeftColumns>
-                    <RightColumn>
-                        <AccessOption>
-                            <LinkItem>
-                                <VisibilityOption><FontAwesomeIcon icon={faEarthAfrica}/> Anyone </VisibilityOption>
-                                <HoverTextWrapper><NotImplemented>The full name you provide is visible to anyone who can
-                                    view your
-                                    content, including people outside of your organisation. Accessible by
-                                    installed apps.
-                                </NotImplemented></HoverTextWrapper>
-                            </LinkItem>
-                        </AccessOption>
-                    </RightColumn>
-                </ColumnsForAboutDetails>
-                <ColumnsForAboutDetails>
-                    <LeftColumns>
-                        <LeftColumnsInner>
-                            <LeftColumnsInnerSecond>
-                                <LabelHeadingWrapper>
-                                    <HeadingLabel>Job title</HeadingLabel>
-                                </LabelHeadingWrapper>
-
-                                <InputFieldWrapper>
-                                    <InputFieldInner>
-                                        <InputFieldSecondInner>
-                                            <AlignEdiableField>
-
-                                                <Editable text={userData?.job_title}
-                                                          placeholder={userData?.job_title}
-                                                />
-                                            </AlignEdiableField>
-                                        </InputFieldSecondInner>
-                                    </InputFieldInner>
-                                </InputFieldWrapper>
-                            </LeftColumnsInnerSecond>
-                        </LeftColumnsInner>
-                    </LeftColumns>
-                    <RightColumn>
-                        <AccessOption>
-                            <LinkItem>
-                                <VisibilityOption><FontAwesomeIcon icon={faEarthAfrica}/> Anyone </VisibilityOption>
-                                <HoverTextWrapper><NotImplemented>The full name you provide is visible to anyone who can
-                                    view your
-                                    content, including people outside of your organisation. Accessible by
-                                    installed apps.
-                                </NotImplemented></HoverTextWrapper>
-                            </LinkItem>
-                        </AccessOption>
-                    </RightColumn>
-                </ColumnsForAboutDetails>
-                <ColumnsForAboutDetails>
-                    <LeftColumns>
-                        <LeftColumnsInner>
-                            <LeftColumnsInnerSecond>
-                                <LabelHeadingWrapper>
-                                    <HeadingLabel>Department</HeadingLabel>
-                                </LabelHeadingWrapper>
-
-                                <InputFieldWrapper>
-                                    <InputFieldInner>
-                                        <InputFieldSecondInner>
-                                            <AlignEdiableField>
-
-                                                <Editable text={userData?.department}
-                                                          placeholder={userData?.department}
-                                                />
-                                            </AlignEdiableField>
-                                        </InputFieldSecondInner>
-                                    </InputFieldInner>
-                                </InputFieldWrapper>
-                            </LeftColumnsInnerSecond>
-                        </LeftColumnsInner>
-                    </LeftColumns>
-                    <RightColumn>
-                        <AccessOption>
-                            <LinkItem>
-                                <VisibilityOption><FontAwesomeIcon icon={faEarthAfrica}/> Anyone </VisibilityOption>
-                                <HoverTextWrapper><NotImplemented>The full name you provide is visible to anyone who can
-                                    view your
-                                    content, including people outside of your organisation. Accessible by
-                                    installed apps.
-                                </NotImplemented></HoverTextWrapper>
-                            </LinkItem>
-                        </AccessOption>
-                    </RightColumn>
-                </ColumnsForAboutDetails>
-                <ColumnsForAboutDetails>
-                    <LeftColumns>
-                        <LeftColumnsInner>
-                            <LeftColumnsInnerSecond>
-                                <LabelHeadingWrapper>
-                                    <HeadingLabel>Organisation</HeadingLabel>
-                                </LabelHeadingWrapper>
-
-                                <InputFieldWrapper>
-                                    <InputFieldInner>
-                                        <InputFieldSecondInner>
-                                            <AlignEdiableField>
-
-                                                <Editable text={userData?.company?.company_name}
-                                                          placeholder={userData?.company?.company_name}
-                                                />
-                                            </AlignEdiableField>
-                                        </InputFieldSecondInner>
-                                    </InputFieldInner>
-                                </InputFieldWrapper>
-                            </LeftColumnsInnerSecond>
-                        </LeftColumnsInner>
-                    </LeftColumns>
-                    <RightColumn>
-                        <AccessOption>
-                            <LinkItem>
-                                <VisibilityOption><FontAwesomeIcon icon={faEarthAfrica}/> Anyone </VisibilityOption>
-                                <HoverTextWrapper><NotImplemented>The full name you provide is visible to anyone who can
-                                    view your
-                                    content, including people outside of your organisation. Accessible by
-                                    installed apps.
-                                </NotImplemented></HoverTextWrapper>
-                            </LinkItem>
-                        </AccessOption>
-                    </RightColumn>
-                </ColumnsForAboutDetails>
-                <ColumnsForAboutDetails>
-                    <LeftColumns>
-                        <LeftColumnsInner>
-                            <LeftColumnsInnerSecond>
-                                <LabelHeadingWrapper>
-                                    <HeadingLabel>Based in</HeadingLabel>
-                                </LabelHeadingWrapper>
-
-                                <InputFieldWrapper>
-                                    <InputFieldInner>
-                                        <InputFieldSecondInner>
-                                            <AlignEdiableField>
-
-                                                <Editable text={userData?.company?.city}
-                                                          placeholder={userData?.company?.city}
-                                                />
-                                            </AlignEdiableField>
-                                        </InputFieldSecondInner>
-                                    </InputFieldInner>
-                                </InputFieldWrapper>
-                            </LeftColumnsInnerSecond>
-                        </LeftColumnsInner>
-                    </LeftColumns>
-                    <RightColumn>
-                        <AccessOption>
-                            <LinkItem>
-                                <Dropdown options={options}></Dropdown>
-                            </LinkItem>
-                        </AccessOption>
-                    </RightColumn>
-                </ColumnsForAboutDetails>
-
-
-            </AboutWrapper>
-            <SubHeading>Contact</SubHeading>
-            <ContentWrapper>
-                <InsideContentWrapper>
-                    <ContentEmailAddressWrapper>
-                        <LabelHeadingWrapper>
-                            <HeadingLabel>Email address</HeadingLabel>
-                        </LabelHeadingWrapper>
-                        <EmailAddress>{userData?.user?.email}</EmailAddress>
-                    </ContentEmailAddressWrapper>
-
-                    <ContentAccessWrapper>
-                        <ViewAccessForContent>
-                            <WhoCanSeeForContent>Who can see this?</WhoCanSeeForContent>
-                        </ViewAccessForContent>
-                        <ContentDropDownWrapper>
-                            <Dropdown options={options}></Dropdown>
-                        </ContentDropDownWrapper>
-                    </ContentAccessWrapper>
-                </InsideContentWrapper>
-            </ContentWrapper>
-        </Wrapper>
+                                <TaskList>
+                                    <GenericSelectField
+                                        options={notificationFormat}
+                                        isMultiple={false}
+                                        defaultValue={"HTML"}/>
+                                </TaskList>
+                            </InsideContentWrapper>
+                        </ContentWrapper>
+                    </SectionsWrapper>
+                    <SaveButton>Save</SaveButton>
+                </FormWrapper>
+            </Wrapper>
+        </div>
     );
 };
 
