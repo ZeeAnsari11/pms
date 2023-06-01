@@ -26,15 +26,15 @@ class ProjectStatusSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class IssuesPrioritySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.IssuesPriority
-        fields = "__all__"
-
-
 class ProjectLabelsSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.ProjectLabels
+        fields = "__all__"
+
+
+class ProjectSlackWebhookUrlSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.ProjectSlackWebhookUrl
         fields = "__all__"
 
 
@@ -44,19 +44,33 @@ class CustomUserSerializer(serializers.ModelSerializer):
         fields = ['id', 'username', 'last_login', 'is_superuser', 'email', 'is_staff', 'is_active', 'user_permissions']
 
 
+class ProjectSerializer(serializers.ModelSerializer):
+    assignee = CustomUserSerializer(read_only=True)
+    project_lead = CustomUserSerializer(read_only=True)
+    created_by = CustomUserSerializer(read_only=True)
+    type = ProjectTypeSerialzer(read_only=True)
+    status = ProjectStatusSerializer(read_only=True)
+    category = ProjectCategorySerializer(read_only=True)
+    label = ProjectLabelsSerializer(read_only=True)
+    company = CompanySerializer(read_only=True)
+
+    class Meta:
+        model = models.Project
+        fields = ["id", 'icon', 'name', 'slug', 'key', 'assignee', 'project_lead', 'description', 'company', 'status',
+            'type', 'label', 'category']
+
+
 class ProjectIssuesSerializer(serializers.ModelSerializer):
-    priority = IssuesPrioritySerializer(read_only=True)
     assignee = CustomUserSerializer(read_only=True)
     reporter = CustomUserSerializer(read_only=True)
+    created_by = CustomUserSerializer(read_only=True)
+    label = ProjectLabelsSerializer(read_only=True)
+    type = ProjectTypeSerialzer(read_only=True)
+    status = ProjectStatusSerializer(read_only=True)
 
     class Meta:
         model = models.Issue
-        fields = ["id", 'name', 'summary', 'description', 'assignee', 'file', 'priority',
-                  'created_at', 'updated_at', 'reporter']
-
-    # def create(self, validated_data):
-    #     project_id = self.context['issue_id']
-    #     return models.Project.objects.create(project_id=project_id, **validated_data)
+        fields = "__all__"
 
 
 class FileSerializer(serializers.Serializer):
@@ -66,23 +80,7 @@ class FileSerializer(serializers.Serializer):
 class CreateProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Project
-        fields = ["id", 'icon', 'name', 'slug', 'key', 'assignee', 'project_lead', 'description', 'company', 'status',
-                  'type', 'label', 'project_category']
-
-
-class ProjectSerializer(serializers.ModelSerializer):
-    type = ProjectTypeSerialzer(read_only=True)
-    status = ProjectStatusSerializer(read_only=True)
-    project_category = ProjectCategorySerializer(read_only=True)
-    assignee = CustomUserSerializer(read_only=True)
-    label = ProjectLabelsSerializer(read_only=True)
-    company = CompanySerializer(read_only=True)
-    project_lead = CustomUserSerializer(read_only=True)
-
-    class Meta:
-        model = models.Project
-        fields = ["id", 'icon', 'name', 'slug', 'key', 'assignee', 'project_lead', 'description', 'company', 'status',
-                  'type', 'label', 'project_category']
+        fields = ["id", 'icon', 'name', 'slug', 'key', 'assignee', 'project_lead', 'description', 'company', 'category']
 
 
 class CreateIssueSerializer(serializers.ModelSerializer):
@@ -92,10 +90,11 @@ class CreateIssueSerializer(serializers.ModelSerializer):
 
 
 class IssueSerializer(serializers.ModelSerializer):
-    priority = IssuesPrioritySerializer(read_only=True)
     assignee = CustomUserSerializer(read_only=True)
     reporter = CustomUserSerializer(read_only=True)
-    project = ProjectSerializer(read_only=True)
+    label = ProjectLabelsSerializer(read_only=True)
+    type = ProjectTypeSerialzer(read_only=True)
+    status = ProjectStatusSerializer(read_only=True)
 
     class Meta:
         model = models.Issue
@@ -126,7 +125,7 @@ class CreateWorkLogSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.WorkLog
-        fields = ('time_spent', 'comment', 'issue_id')
+        fields = ['time_spent', 'comment', 'issue_id']
 
 
 class WorkLogSerializer(serializers.ModelSerializer):
