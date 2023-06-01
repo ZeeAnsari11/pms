@@ -34,17 +34,41 @@ def validate_date_format(value):
 
 
 class UserProfile(models.Model):
-    id = models.AutoField(primary_key=True, editable=False)
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='users_avatars', default=get_default_avatar)
-    company = models.ForeignKey('register.Company', on_delete=models.CASCADE, blank=True, null=True)
-    department = models.CharField(max_length=100, default='')
-    job_title = models.CharField(max_length=100, default='')
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE
+    )
+    image = models.ImageField(
+        upload_to='users_avatars',
+        default=get_default_avatar
+    )
+    company = models.ForeignKey(
+        'register.Company',
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True
+    )
+    department = models.CharField(
+        max_length=100,
+        default=''
+    )
+    job_title = models.CharField(
+        max_length=100,
+        default=''
+    )
     joining_date = models.DateField(auto_now_add=True)
     is_reporter = models.BooleanField(default=False)
     is_assignee = models.BooleanField(default=False)
-    send_email = models.CharField(max_length=10, choices=[('yes', 'Yes'), ('no', 'No')], default='yes')
-    email_format = models.CharField(max_length=10, choices=[('html', 'HTML'), ('text', 'Text')], default='html')
+    send_email = models.CharField(
+        max_length=10,
+        choices=[('yes', 'Yes'), ('no', 'No')],
+        default='no'
+    )
+    email_format = models.CharField(
+        max_length=10,
+        choices=[('html', 'HTML'), ('text', 'Text')],
+        default='html'
+    )
 
     def image_tag(self):
         return format_html('<img src="{}" style="width: 100px; height: 100px;" />'.format(self.image.url))

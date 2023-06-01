@@ -1,8 +1,5 @@
 from django.shortcuts import render
-from rest_framework.viewsets import ModelViewSet, GenericViewSet
-from rest_framework.decorators import api_view, action
-from rest_framework.mixins import RetrieveModelMixin
-from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.viewsets import ModelViewSet
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
 from .filters import IssueFilter
@@ -10,10 +7,9 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.db.models import Q
 from django.contrib.auth.models import User
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import MultiPartParser, FormParser
-from .models import Project, Issue, Comment, WorkLog, Watcher, ProjectCategory, ProjectType, IssuesPriority, \
-    ProjectStatus, ProjectLabels
+from .models import *
 from . import serializers
 
 
@@ -60,17 +56,6 @@ class ProjectStatusViewSet(ModelViewSet):
     queryset = ProjectStatus.objects.all()
 
 
-class IssuesPriorityViewSet(ModelViewSet):
-    http_method_names = ['get', 'post', 'patch', 'delete']
-    filter_backends = [DjangoFilterBackend]
-    filterset_fields = "__all__"
-
-    serializer_class = serializers.IssuesPrioritySerializer
-    permission_classes = [IsAuthenticated]
-
-    queryset = IssuesPriority.objects.all()
-
-
 class ProjectLabelsViewSet(ModelViewSet):
     http_method_names = ['get', 'post', 'patch', 'delete']
     filter_backends = [DjangoFilterBackend]
@@ -82,14 +67,23 @@ class ProjectLabelsViewSet(ModelViewSet):
     queryset = ProjectLabels.objects.all()
 
 
+class ProjectSlackWebhookUrlViewSet(ModelViewSet):
+    http_method_names = ['get', 'post', 'patch', 'delete']
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = "__all__"
+
+    serializer_class = serializers.ProjectSlackWebhookUrlSerializer
+    permission_classes = [IsAuthenticated]
+
+    queryset = ProjectSlackWebhookUrl.objects.all()
+
+
 class ProjectViewSet(ModelViewSet):
     parser_classes = (MultiPartParser, FormParser)
     http_method_names = ['get', 'post', 'patch', 'delete']
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['name', 'key', 'slug','assignee__username', 'project_lead__username', 'company__company_name',
-                        'project_category__project_category', 'status']
-
-    # queryset = Project.objects.prefetch_related('assignee').select_related('company').all()
+    filterset_fields = ['name', 'key','slug', 'assignee__username', 'project_lead__username', 'company__company_name',
+                        'category__category']
 
     def get_serializer_class(self):
         if self.request.method in ['POST', 'PATCH']:
@@ -110,16 +104,9 @@ class ProjectViewSet(ModelViewSet):
         user = self.request.user
         if user.is_staff:
             return Project.objects.prefetch_related('assignee').prefetch_related('project_lead').select_related(
-                'status').select_related(
-                'type').select_related(
-                'label').select_related(
-                'company').select_related('project_category').all()
+                'slack_webhook_url').select_related(
+                'company').select_related('category').all()
         return Project.objects.filter(Q(project_lead=self.request.user) | Q(assignee=self.request.user))
-
-    # serializer_class = serializers.ProjectSerializer
-
-    # def get_serializer_context(self):
-    #     return {'request': self.request}
 
 
 class IssueViewSet(ModelViewSet):
@@ -127,12 +114,6 @@ class IssueViewSet(ModelViewSet):
     parser_classes = (MultiPartParser, FormParser)
     filter_backends = [DjangoFilterBackend]
     filterset_class = IssueFilter
-
-    # parser_classes = (MultiPartParser, FormParser)
-
-    # queryset = Issue.objects.prefetch_related('assignee').select_related('reporter').select_related('project').all()
-
-    # serializer_class = serializers.IssueSerializer
 
     def get_serializer_class(self):
         if self.request.method == 'POST':
@@ -152,8 +133,9 @@ class IssueViewSet(ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         if user.is_staff:
-            return Issue.objects.prefetch_related('assignee').select_related('reporter').select_related(
-                'project').select_related('priority').all()
+            return Issue.objects.prefetch_related('assignee').select_related('reporter')\
+                .select_related('project')\
+                .all()
         return Issue.objects.filter(Q(reporter_id=self.request.user) | Q(assignee=self.request.user))
 
 
@@ -161,10 +143,6 @@ class CommentViewSet(ModelViewSet):
     http_method_names = ['get', 'post', 'put', 'patch', 'delete']
     filter_backends = [DjangoFilterBackend]
     filterset_fields = "__all__"
-
-    # queryset = Comment.objects.select_related('issue').select_related('user').all()
-
-    # serializer_class = serializers.CommentSerializer
 
     def get_serializer_class(self):
         if self.request.method == 'POST':
@@ -229,7 +207,6 @@ class WatcherViewSet(ModelViewSet):
 
     queryset = Watcher.objects.select_related('user').select_related('issue').all()
 
-    # serializer_class = serializers.WatcherSerializer
     def get_serializer_class(self):
         if self.request.method == 'POST':
             return serializers.CreateWatcherSerializer
@@ -253,8 +230,6 @@ class ProjectIssuesViewSet(ModelViewSet):
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_class = IssueFilter
     permission_classes = [IsAuthenticated]
-
-    # queryset = Issue.objects.all()
 
     def get_serializer_context(self):
         return {'project_id': self.kwargs['project_pk']}

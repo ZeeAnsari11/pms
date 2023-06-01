@@ -16,4 +16,6 @@ django-cors-headers==3.14.0
 djoser==2.1.0
 djangorestframework-simplejwt==4.8.0
 django-filter==23.2
-
+httpx==0.24.1
+model_bakery==1.11.0
+Faker==18.9.0
