@@ -373,7 +373,7 @@ function ProjectSettingPage() {
                                onChange={handleNameChange}/>
                     <LabelForKey htmlFor="key">Key:</LabelForKey>
                     <Input style={{width: "50%", height: "35px"}} id="key" name="key" placeholder="Project key"
-                           value={key} disabled
+                           value={key} disabled bordered
                            onChange={handleKeyChange}/>
                     <Labelforlead htmlFor="category">Project lead:</Labelforlead>
                     <UserSelectField users={useroptions}
