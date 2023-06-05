@@ -297,7 +297,7 @@ function ProjectSettingPage() {
 
     const handleImageChange = (image) => {
         setImage(image);
-        setIcon(image)
+        setIcon(image);
     }
 
     const project = {
