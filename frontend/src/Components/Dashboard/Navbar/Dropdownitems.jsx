@@ -88,21 +88,21 @@ export const accountitems = [
       },
     ],
   },
-  {
-    key: "2",
-    type: "group",
-    label: <strong>JIRA</strong>,
-    children: [
-      {
-        key: "2-1",
-        label: <Link to="/profile">Profile</Link>,
-      },
-      {
-        key: "2-2",
-        label: <Link to="/personal-settings">Personal Settings</Link>,
-      },
-    ],
-  },
+  // {
+  //   key: "2",
+  //   type: "group",
+  //   label: <strong>JIRA</strong>,
+  //   children: [
+  //     {
+  //       key: "2-1",
+  //       label: <Link to="/profile">Profile</Link>,
+  //     },
+  //     {
+  //       key: "2-2",
+  //       label: <Link to="/personal-settings">Personal Settings</Link>,
+  //     },
+  //   ],
+  // },
   {
     type: "divider",
   },
