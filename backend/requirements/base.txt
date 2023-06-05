@@ -19,3 +19,5 @@ django-filter==23.2
 httpx==0.24.1
 model_bakery==1.11.0
 Faker==18.9.0
+celery==5.2.7
+redis==4.5.5
