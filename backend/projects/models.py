@@ -11,11 +11,6 @@ from django.dispatch import receiver
 
 
 class ProjectCategory(models.Model):
-    project = models.ForeignKey(
-        'Project',
-        on_delete=models.CASCADE,
-        related_name='categories'
-    )
     category = models.CharField(max_length=255)
 
     def __str__(self):
@@ -193,7 +188,14 @@ class Issue(models.Model):
     created_by = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        null=True
+        null=True,
+        related_name='user2create'
+    )
+    updated_by = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        null=True,
+        related_name='user2update'
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
