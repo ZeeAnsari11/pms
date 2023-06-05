@@ -9,20 +9,26 @@ import {Link, useParams} from "react-router-dom";
 import NavBar from "../../Dashboard/Navbar";
 import Sidebar from "../../Dashboard/Sidebar";
 import ImageUploader from "../ImageUploader";
-import ProfilePhotouploader from "./ProfilePhotouploader";
+import ProfilePhotouploader from "../ManageAccount/ProfilePhotouploader";
 
+import {Input} from 'antd'
+import {toast} from "react-toastify";
 
 const Wrapper = styled.div`
   background-color: white;
   display: flex;
   flex-direction: column;
-  margin-left: 15%;
+  margin-left: 0;
+  width: 100%;
+  position: relative;
+
 
   @media (max-width: 768px) {
     margin-left: 20px;
     margin-right: 20px;
   }
 `;
+
 
 const Heading = styled.h1`
   font-size: 1.5em;
@@ -73,7 +79,7 @@ const AboutWrapper = styled.div`
   padding-left: 20px;
   margin-top: 35px;
   height: 605px;
-  width: 55%;
+  width: 100%;
   background-color: #FFFFFF;
 
   @media (max-width: 768px) {
@@ -88,7 +94,7 @@ const AboutWrapper = styled.div`
 const ContentWrapper = styled.div`
   margin-top: 60px;
   height: 100%;
-  width: 45%;
+  width: 100%;
   background-color: #FFFFFF;
   //border-radius: 3px;
   //box-shadow: var(--ds-shadow-raised, 0 1px 1px rgba(9, 30, 66, 0.25), 0 0 1px 1px rgba(9, 30, 66, 0.13));
@@ -146,7 +152,7 @@ const CircleImage = styled.div`
   background-position: center;
 
   &:hover {
-    transform: translateX(-50%) scale(1.1);
+    transform: translateX(-30%) scale(1.1);
     transition: transform 0.4s ease-in-out;
   }
 
@@ -346,6 +352,9 @@ const SaveButton = styled.button`
   border-radius: 4px;
   cursor: pointer;
   width: fit-content;
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
 
   &:hover {
     background-color: #0066cc;
@@ -356,47 +365,83 @@ const SaveButton = styled.button`
   }
 `;
 
+const NameInput = styled.input`
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  padding: 0.5rem;
+  font-size: 1rem;
+  margin-bottom: 2%;
+  background-color: #FAFBFC;
+  width: 359px;
+
+  :hover {
+    background-color: #EBECF0;
+  }
+`;
+
+const Label = styled.label`
+  font-weight: bold;
+  margin-bottom: 0.1rem;
+  margin-right: 10px;
+  width: 120px;
+
+`;
+
+const StyledInput = styled(Input)`
+  width: 50%;
+  height: 32px;
+`;
 
 
 const email = [
-    {value: 'option1', label: 'Send me email notifications'},
-    {value: 'option2', label: 'Do not send me email notifications'},
+    {value: 'yes', label: 'Send me email notifications'},
+    {value: 'no', label: 'Do not send me email notifications'},
 ];
 
 const notificationFormat = [
-    {value: 'option1', label: 'HTML'},
-    {value: 'option2', label: 'Text'},
+    {value: 'html', label: 'HTML'},
+    {value: 'text', label: 'Text'},
 ];
 
 
 const ProfileVisibility = () => {
+    const [isImageChanged, setIsImageChanged] = useState(false);
 
     const [isEditable, setIsEditable] = useState(false);
     const [userData, setUserData] = useState({});
+    const [userId, setUserId] = useState({});
+    const [userName, setUserName] = useState('');
+    const [userjobTitle, setUserJobTitle] = useState('');
+    const [userEmail, setUserEmail] = useState('');
+    const [userDepartment, setUserDepartment] = useState('');
+    const [userOrganization, setUserOrganization] = useState('');
+    const [userLocation, setUserLocation] = useState('');
+    const [userJoiningDate, setUserJoiningDate] = useState('');
+
+    const [emailIssueNotification, setEmailIssueNotification] = useState('');
+    const [emailNotificationFormat, setEmailNotificationFormat] = useState('');
+
+
+    const [IsreporterData, setIsreporterData] = useState('');
+    const [IsassigneeData, setIsassigneeData] = useState('');
+
     const [projectData, setProjectData] = useState({});
     const [projectIcon, setProjectIcon] = useState('');
-    const [image, setImage] = useState(null);
-    const handleImageChange = (image) => {
-        setImage(image);
-    }
-    const [name, setName] = useState(''); // Set initial value from project object
-    const [projectCategory, setProjectCategory] = useState(''); // Set initial value from project object
-    const {projectId} = useParams()
 
-    let IconPath = projectData.icon
-    if (IconPath != null) {
-        IconPath = `${process.env.REACT_APP_HOST}/${projectIcon}`
-    } else {
-        IconPath = 'http://localhost:3000/Images/NoImage.jpeg'
+    const [userImage, setUserImage] = useState(null);
+
+    const handleImageChange = (image) => {
+        setUserImage(image);
+        setIsImageChanged(true);
+        console.log("User Image:", userImage)
     }
+
+    let IconPath = userData?.image
+    console.log("Icon Path:", IconPath)
 
     let authToken = localStorage.getItem('auth_token')
 
-    const project = {
-        name: name,
-        category: projectCategory.project_category,
-        icon: IconPath,
-    }
+    const titleMessageWhenDisable = "This field is disabled. Enabled for Admin User Only";
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -404,63 +449,119 @@ const ProfileVisibility = () => {
                 const response = await axios.get(`${process.env.REACT_APP_HOST}/api/userprofile/`, {
                     headers: {"Authorization": `Token ${authToken}`}
                 });
-                setUserData(response.data);
+                setUserData(response.data[0]);
+                setUserId(response.data[0].id)
 
             } catch (error) {
                 console.error(error);
             }
         }
-        const fetchProjects = async () => {
-            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/projects/${projectId}`, {
-                headers: {
-                    Authorization: `Token ${authToken}`,
-                },
-            });
-            setProjectData(response.data);
-
-        };
-        fetchProjects();
         fetchUserData();
     }, []);
 
+    useEffect(() => {
+        if (userData != null) {
+            setUserImage(userData?.image)
+            setUserName(userData?.user?.username)
+            setUserEmail(userData?.user?.email)
+            setUserJobTitle(userData?.job_title)
+            setUserDepartment(userData?.department)
+            setUserOrganization(userData?.company?.company_name)
+            setUserLocation(userData?.company?.city)
+            setUserJoiningDate(userData?.joining_date)
+            setIsreporterData(userData?.is_reporter)
+            setIsassigneeData(userData?.is_assignee)
+            setEmailIssueNotification(userData?.send_email)
+            setEmailNotificationFormat(userData?.email_format)
+        }
+    }, [userData]);
+
+    console.log("User Image:", userImage)
+
+    console.log('Reporter Data:', IsreporterData)
+    console.log('Assignee Data:', IsassigneeData)
+    const handleUserNameChange = (event) => {
+        setUserName(event.target.value);
+    };
+    const handleUserEmailChange = (event) => {
+        setUserEmail(event.target.value);
+    };
+    const handleUserJobTitleChange = (event) => {
+        setUserJobTitle(event.target.value);
+    };
+    const handleUserDepartmentChange = (event) => {
+        setUserDepartment(event.target.value);
+    };
+    const handleUserOrganizationChange = (event) => {
+        setUserOrganization(event.target.value);
+    };
+    const handleUserLocationChange = (event) => {
+        setUserLocation(event.target.value);
+    };
+    const handleUserJoiningDateChange = (event) => {
+        setUserJoiningDate(event.target.value);
+    };
+
+    const handleIsReporterChange = () => {
+        setIsreporterData(!userData.is_reporter);
+    };
+
+    const handleIsassigneeChange = () => {
+        setIsassigneeData(!userData.is_assignee);
+    };
+
+    const handleEmailIssueNotification = (value) => {
+        setEmailIssueNotification(value);
+    };
+
+    const handleEmailNotificationFormat = (value) => {
+        setEmailNotificationFormat(value);
+    };
+
+    console.log("User Image:", userImage)
+
     function handleSubmit(event) {
         event.preventDefault();
+        const form = event.target;
 
-        const data = {
-            // "image": image,
-            "department": userData?.department,
-            "job_title": userData?.job_title,
-            "is_reporter": false,
-            "is_assignee": false,
-            "send_email": "yes",
-            "email_format": "html"
+        const manageAccountData = {
+            "is_reporter": IsreporterData,
+            "is_assignee": IsassigneeData,
+            "send_email": emailIssueNotification,
+            "email_format": emailNotificationFormat
         }
-        console.log(data, "DATA")
-        fetch('http://127.0.0.1:8000/api/userprofile/', {
-            method: 'PATCH',
+        if (isImageChanged) {
+            // Include the image in the manageAccountData
+            manageAccountData.image = userImage;
+        }
+
+        console.log("ManageAccountData:", manageAccountData)
+        axios({
+            method: 'patch',
+            url: `${process.env.REACT_APP_HOST}/api/userprofile/${userId}/`,
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'multipart/form-data',
                 'Authorization': `Token ${authToken}`,
             },
-            body: JSON.stringify(data) // Serialize the data object as JSON
+            data: manageAccountData
         })
             .then(response => {
                 // handle the response
-                console.log(data)
+                console.log(response.data);
+                window.location.href = window.location.href;
             })
             .catch(error => {
                 // handle the error
-                console.log(error)
+                console.log(error);
             });
     }
+
     console.log("Logged in user", userData)
 
-
-
+    console.log('userId:', userId)
     return (
         <div>
             <NavBar/>
-            <Sidebar project={project}/>
             <Wrapper>
                 <FormWrapper onSubmit={handleSubmit} encType="multipart/form-data" method="POST">
 
@@ -468,7 +569,7 @@ const ProfileVisibility = () => {
                         <CoverPictureWrapper>
                             <CircleImage>
                                 <ProfilePhotouploader onImageChange={handleImageChange} id="image"
-                                                      imagePath={userData?.image}/>
+                                                      imagePath={IconPath}/>
                                 <UpdateProfile className="update-cover">
                                     <FontAwesomeIcon icon={faImage} fontSize={"30px"} onClick={() => {
                                         console.log("Clicked")
@@ -487,228 +588,55 @@ const ProfileVisibility = () => {
                         <AboutWrapper>
                             <SubHeading>About you</SubHeading>
                             <ColumnsForAboutDetails>
-                                <LeftColumns>
-                                    <LeftColumnsInner>
-                                        <LeftColumnsInnerSecond>
-                                            <Allignment>
-                                                <LabelHeadingWrapper>
-                                                    <HeadingLabel>Full name:</HeadingLabel>
-                                                </LabelHeadingWrapper>
-
-                                                <InputFieldWrapper>
-                                                    <InputFieldInner>
-                                                        <InputFieldSecondInner>
-                                                            <AlignEdiableField>
-
-                                                                <Editable text={userData?.user?.username}
-                                                                          placeholder={userData?.user?.username}
-                                                                          fontSize="16px"
-                                                                          padding='6px 0px 0px 30px'
-                                                                          width="270px"
-                                                                />
-                                                            </AlignEdiableField>
-                                                        </InputFieldSecondInner>
-                                                    </InputFieldInner>
-                                                </InputFieldWrapper>
-                                            </Allignment>
-                                        </LeftColumnsInnerSecond>
-                                    </LeftColumnsInner>
-                                </LeftColumns>
+                                <Label htmlFor="name">Name:</Label>
+                                <StyledInput value={userName}
+                                             disabled
+                                             title={titleMessageWhenDisable}
+                                             onChange={handleUserNameChange}/>
                             </ColumnsForAboutDetails>
                             <ColumnsForAboutDetails>
-                                <LeftColumns>
-                                    <LeftColumnsInner>
-                                        <LeftColumnsInnerSecond>
-                                            <Allignment>
-                                                <LabelHeadingWrapper>
-                                                    <HeadingLabel>Public name:</HeadingLabel>
-                                                </LabelHeadingWrapper>
-
-                                                <InputFieldWrapper>
-                                                    <InputFieldInner>
-                                                        <InputFieldSecondInner>
-                                                            <AlignEdiableField>
-
-                                                                <Editable text={userData?.user?.username}
-                                                                          placeholder={userData?.user?.username}
-                                                                          fontSize="16px"
-                                                                          padding='6px 0px 0px 30px'
-                                                                          width="270px"
-                                                                />
-                                                            </AlignEdiableField>
-                                                        </InputFieldSecondInner>
-                                                    </InputFieldInner>
-                                                </InputFieldWrapper>
-                                            </Allignment>
-                                        </LeftColumnsInnerSecond>
-                                    </LeftColumnsInner>
-                                </LeftColumns>
+                                <Label htmlFor="email">Email:</Label>
+                                <StyledInput value={userEmail}
+                                             disabled
+                                             title={titleMessageWhenDisable}
+                                             onChange={handleUserEmailChange}/>
                             </ColumnsForAboutDetails>
                             <ColumnsForAboutDetails>
-                                <LeftColumns>
-                                    <LeftColumnsInner>
-                                        <LeftColumnsInnerSecond>
-                                            <Allignment>
-                                                <LabelHeadingWrapper>
-                                                    <HeadingLabel>Email:</HeadingLabel>
-                                                </LabelHeadingWrapper>
-
-                                                <InputFieldWrapper>
-                                                    <InputFieldInner>
-                                                        <InputFieldSecondInner>
-                                                            <AlignEdiableField>
-                                                                <Span>{userData?.user?.email}</Span>
-                                                            </AlignEdiableField>
-                                                        </InputFieldSecondInner>
-                                                    </InputFieldInner>
-                                                </InputFieldWrapper>
-                                            </Allignment>
-                                        </LeftColumnsInnerSecond>
-                                    </LeftColumnsInner>
-                                </LeftColumns>
+                                <Label htmlFor="name">Job title:</Label>
+                                <StyledInput value={userjobTitle}
+                                             disabled
+                                             title={titleMessageWhenDisable}
+                                             bordered
+                                             size={"large"}
+                                             onChange={handleUserJobTitleChange}/>
                             </ColumnsForAboutDetails>
                             <ColumnsForAboutDetails>
-                                <LeftColumns>
-                                    <LeftColumnsInner>
-                                        <LeftColumnsInnerSecond>
-                                            <Allignment>
-                                                <LabelHeadingWrapper>
-                                                    <HeadingLabel>Job title:</HeadingLabel>
-                                                </LabelHeadingWrapper>
-
-                                                <InputFieldWrapper>
-                                                    <InputFieldInner>
-                                                        <InputFieldSecondInner>
-                                                            <AlignEdiableField>
-
-                                                                <Editable text={userData?.job_title}
-                                                                          placeholder={userData?.job_title}
-                                                                          fontSize="16px"
-                                                                          padding='6px 0px 0px 30px'
-                                                                          width="227px"
-
-                                                                />
-                                                            </AlignEdiableField>
-                                                        </InputFieldSecondInner>
-                                                    </InputFieldInner>
-                                                </InputFieldWrapper>
-                                            </Allignment>
-                                        </LeftColumnsInnerSecond>
-                                    </LeftColumnsInner>
-                                </LeftColumns>
-                                <RightColumn>
-                                </RightColumn>
+                                <Label htmlFor="name">Department:</Label>
+                                <StyledInput value={userDepartment}
+                                             disabled
+                                             title={titleMessageWhenDisable}
+                                             onChange={handleUserDepartmentChange}/>
                             </ColumnsForAboutDetails>
                             <ColumnsForAboutDetails>
-                                <LeftColumns>
-                                    <LeftColumnsInner>
-                                        <LeftColumnsInnerSecond>
-                                            <Allignment>
-                                                <LabelHeadingWrapper>
-                                                    <HeadingLabel>Department:</HeadingLabel>
-                                                </LabelHeadingWrapper>
-
-                                                <InputFieldWrapper>
-                                                    <InputFieldInner>
-                                                        <InputFieldSecondInner>
-                                                            <AlignEdiableField>
-
-                                                                <Editable text={userData?.department}
-                                                                          placeholder={userData?.department}
-                                                                          fontSize="16px"
-                                                                          padding='6px 0px 0px 30px'
-                                                                          width="270px"
-                                                                />
-                                                            </AlignEdiableField>
-                                                        </InputFieldSecondInner>
-                                                    </InputFieldInner>
-                                                </InputFieldWrapper>
-                                            </Allignment>
-                                        </LeftColumnsInnerSecond>
-                                    </LeftColumnsInner>
-                                </LeftColumns>
+                                <Label htmlFor="name">Organization:</Label>
+                                <StyledInput value={userOrganization}
+                                             disabled
+                                             title={titleMessageWhenDisable}
+                                             onChange={handleUserOrganizationChange}/>
                             </ColumnsForAboutDetails>
                             <ColumnsForAboutDetails>
-                                <LeftColumns>
-                                    <LeftColumnsInner>
-                                        <LeftColumnsInnerSecond>
-                                            <Allignment>
-                                                <LabelHeadingWrapper>
-                                                    <HeadingLabel>Organization:</HeadingLabel>
-                                                </LabelHeadingWrapper>
-
-                                                <InputFieldWrapper>
-                                                    <InputFieldInner>
-                                                        <InputFieldSecondInner>
-                                                            <AlignEdiableField>
-
-                                                                <Editable text={userData?.company?.company_name}
-                                                                          placeholder={userData?.company?.company_name}
-                                                                          fontSize="16px"
-                                                                          padding='6px 0px 0px 30px'
-                                                                          width="270px"
-                                                                />
-                                                            </AlignEdiableField>
-                                                        </InputFieldSecondInner>
-                                                    </InputFieldInner>
-                                                </InputFieldWrapper>
-                                            </Allignment>
-                                        </LeftColumnsInnerSecond>
-                                    </LeftColumnsInner>
-                                </LeftColumns>
+                                <Label htmlFor="name">Based in:</Label>
+                                <StyledInput value={userLocation}
+                                             disabled
+                                             title={titleMessageWhenDisable}
+                                             onChange={handleUserLocationChange}/>
                             </ColumnsForAboutDetails>
                             <ColumnsForAboutDetails>
-                                <LeftColumns>
-                                    <LeftColumnsInner>
-                                        <LeftColumnsInnerSecond>
-                                            <Allignment>
-                                                <LabelHeadingWrapper>
-                                                    <HeadingLabel>Based in:</HeadingLabel>
-                                                </LabelHeadingWrapper>
-
-                                                <InputFieldWrapper>
-                                                    <InputFieldInner>
-                                                        <InputFieldSecondInner>
-                                                            <AlignEdiableField>
-
-                                                                <Editable text={userData?.company?.city}
-                                                                          placeholder={userData?.company?.city}
-                                                                          fontSize="16px"
-                                                                          padding='6px 0px 0px 30px'
-                                                                          width="270px"
-
-                                                                />
-                                                            </AlignEdiableField>
-                                                        </InputFieldSecondInner>
-                                                    </InputFieldInner>
-                                                </InputFieldWrapper>
-                                            </Allignment>
-                                        </LeftColumnsInnerSecond>
-                                    </LeftColumnsInner>
-                                </LeftColumns>
-                            </ColumnsForAboutDetails>
-                            <ColumnsForAboutDetails>
-                                <LeftColumns>
-                                    <LeftColumnsInner>
-                                        <LeftColumnsInnerSecond>
-                                            <Allignment>
-                                                <LabelHeadingWrapper>
-                                                    <HeadingLabel>Joining Date:</HeadingLabel>
-                                                </LabelHeadingWrapper>
-
-                                                <InputFieldWrapper>
-                                                    <InputFieldInner>
-                                                        <InputFieldSecondInner>
-                                                            <AlignEdiableField>
-                                                                <Span>{userData?.joining_date}</Span>
-                                                            </AlignEdiableField>
-                                                        </InputFieldSecondInner>
-                                                    </InputFieldInner>
-                                                </InputFieldWrapper>
-                                            </Allignment>
-                                        </LeftColumnsInnerSecond>
-                                    </LeftColumnsInner>
-                                </LeftColumns>
+                                <Label htmlFor="name">Joining Date:</Label>
+                                <StyledInput value={userJoiningDate}
+                                             disabled
+                                             title={titleMessageWhenDisable}
+                                             onChange={handleUserJoiningDateChange}/>
                             </ColumnsForAboutDetails>
                         </AboutWrapper>
                         <ContentWrapper>
@@ -722,17 +650,21 @@ const ProfileVisibility = () => {
                                         options={email}
                                         isMultiple={false}
                                         placeholder={"Unassigned"}
-                                        defaultValue={"Send me email notifications"}/>
+                                        defaultValue={`${emailIssueNotification}`}
+                                        onSelectChange={handleEmailIssueNotification}
+                                    />
                                 </TaskList>
                                 <ConfigureMessage>Get email updates for issue activity when:</ConfigureMessage>
                                 <CheckboxWrapper>
                                     <CheckboxLabel htmlFor="reporter">
-                                        <input type="checkbox" defaultChecked={true} id="reporter"/>
+                                        <input type="checkbox" defaultChecked={userData?.is_reporter} id="reporter"
+                                               onClick={handleIsReporterChange}/>
                                         You're the <strong>reporter</strong>
                                     </CheckboxLabel>
 
                                     <CheckboxLabel htmlFor="assignee">
-                                        <input type="checkbox" defaultChecked={true} id="assignee"/>
+                                        <input type="checkbox" defaultChecked={userData?.is_assignee} id="assignee"
+                                               onClick={handleIsassigneeChange}/>
                                         You're the <strong>assignee</strong> for the issue
                                     </CheckboxLabel>
                                 </CheckboxWrapper>
@@ -752,8 +684,11 @@ const ProfileVisibility = () => {
                                 <TaskList>
                                     <GenericSelectField
                                         options={notificationFormat}
+                                        placeholder={"Unassigned"}
                                         isMultiple={false}
-                                        defaultValue={"HTML"}/>
+                                        defaultValue={`${emailNotificationFormat}`}
+                                        onSelectChange={handleEmailNotificationFormat}
+                                    />
                                 </TaskList>
                             </InsideContentWrapper>
                         </ContentWrapper>
