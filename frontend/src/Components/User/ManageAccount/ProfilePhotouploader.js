@@ -1,9 +1,9 @@
-import React, { useState, useRef } from "react";
+import React, {useState, useRef} from "react";
 import styled from "styled-components";
 
-import { Card, Button } from "antd";
+import {Card, Button} from "antd";
 
-const { Meta } = Card;
+const {Meta} = Card;
 
 const Container = styled.div`
   display: flex;
@@ -31,49 +31,49 @@ const Image = styled.img`
   border-radius: 50%;
 `;
 
-const ProfilePhotouploader = ({ imagePath, onImageChange }) => {
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [imageName, setImageName] = useState("");
-  const fileInputRef = useRef(null);
+const ProfilePhotouploader = ({imagePath, onImageChange}) => {
+    const [selectedImage, setSelectedImage] = useState(null);
+    const [imageName, setImageName] = useState("");
+    const fileInputRef = useRef(null);
 
-  const handleImageChange = (event) => {
-    const file = event.target.files[0];
-    if (file && file.type.startsWith("image/")) {
-      const fileUrl = URL.createObjectURL(file);
-      setSelectedImage(fileUrl);
-      setImageName(file.name);
-      onImageChange(file);
-    }
-  };
+    const handleImageChange = (event) => {
+        const file = event.target.files[0];
+        if (file && file.type.startsWith('image/')) {
+            const fileUrl = URL.createObjectURL(file);
+            setSelectedImage(fileUrl);
+            setImageName(file.name);
+            onImageChange(file);
+        }
+    };
 
-  const handleImageClick = () => {
-    fileInputRef.current.click();
-  };
+    const handleImageClick = () => {
+        fileInputRef.current.click();
+    };
 
-  return (
-    <Container>
-      <ImageContainer onClick={handleImageClick}>
-        {selectedImage || imagePath ? (
-          <Image
-            src={selectedImage || imagePath}
-            alt="Selected Image"
-          />
-        ) : (
-          <Image
-            src="http://localhost:3000/Images/NoImage.jpeg"
-            alt="Default Image"
-          />
-        )}
-      </ImageContainer>
-      <Input
-        type="file"
-        accept="image/*"
-        id="file-input"
-        ref={fileInputRef}
-        onChange={handleImageChange}
-      />
-    </Container>
-  );
+    return (
+        <Container>
+            <ImageContainer onClick={handleImageClick}>
+                {selectedImage || imagePath ? (
+                    <Image
+                        src={selectedImage || imagePath}
+                        alt="Selected Image"
+                    />
+                ) : (
+                    <Image
+                        src="http://localhost:3000/Images/NoImage.jpeg"
+                        alt="Default Image"
+                    />
+                )}
+            </ImageContainer>
+            <Input
+                type="file"
+                accept="image/*"
+                id="file-input"
+                ref={fileInputRef}
+                onChange={handleImageChange}
+            />
+        </Container>
+    );
 };
 
 export default ProfilePhotouploader;
