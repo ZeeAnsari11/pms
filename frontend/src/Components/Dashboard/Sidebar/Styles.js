@@ -7,7 +7,7 @@ export const Sidebar = styled.div`
   z-index: ${zIndexValues.navLeft - 1};
   top: 47px;
   left: ${sizes.appNavBarLeftWidth}px;
-  height: 100vh;
+  height: 90vh;
   width: ${sizes.secondarySideBarWidth}px;
   padding: 0 16px 24px;
   background: ${color.backgroundLightest};

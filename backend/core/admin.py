@@ -5,7 +5,8 @@ from .models import UserProfile
 # Register your models here.
 
 class UserProfileAdmin(admin.ModelAdmin):
-    list_display = ['user', 'image', 'image_tag']
+    list_display = ['user', 'company', 'image', 'image_tag']
+    autocomplete_fields = ['company']
 
 
 admin.site.register(UserProfile, UserProfileAdmin)

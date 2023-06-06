@@ -1,10 +1,7 @@
 from rest_framework.generics import UpdateAPIView, RetrieveAPIView
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
+from rest_framework.parsers import MultiPartParser, FormParser
 from django_filters.rest_framework import DjangoFilterBackend
-from .serializers import UserProfileSerializer
-from rest_framework.permissions import IsAuthenticated
-from .models import UserProfile
-from . import serializers
 from register.serializers import CompanySerializer
 
 from rest_framework.permissions import IsAuthenticated
@@ -14,6 +11,7 @@ from .models import UserProfile
 
 
 class UserProfileViewSet(ModelViewSet):
+    parser_classes = (MultiPartParser, FormParser)
     http_method_names = ['get', 'post', 'patch', 'delete']
     filterset_fields = "__all__"
     permission_classes = [IsAuthenticated]
