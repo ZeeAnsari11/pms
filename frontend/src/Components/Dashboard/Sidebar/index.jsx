@@ -67,13 +67,13 @@ const ProjectSidebar = () => {
         if (projectData.name) {
             setName(projectData.name);
             setKey(projectData.key);
-            setProjectCategory(projectData.project_category)
+            setProjectCategory(projectData.category)
         }
     }, [projectData]);
 
     const project = {
         name: name,
-        category: projectCategory.project_category,
+        category: projectCategory?.category,
         icon: IconPath
     }
 
