@@ -16,8 +16,9 @@ class IssueInline(admin.StackedInline):
 
 
 class ProjectLabelAdmin(admin.ModelAdmin):
-    list_display = ['name', 'color']
+    list_display = ['project', 'name', 'color']
     search_fields = ['name']
+    autocomplete_fields = ['project']
 
 
 class ProjectAdmin(admin.ModelAdmin):
@@ -83,6 +84,7 @@ class ProjectCategoryAdmin(admin.ModelAdmin):
 class ProjectTypeAdmin(admin.ModelAdmin):
     list_display = ['project', 'type']
     search_fields = ['type']
+    autocomplete_fields = ['project']
 
 
 class ProjectSlackWebhookUrlAdmin(admin.ModelAdmin):
@@ -93,6 +95,8 @@ class ProjectSlackWebhookUrlAdmin(admin.ModelAdmin):
 class ProjectStatusAdmin(admin.ModelAdmin):
     list_display = ['project', 'status']
     search_fields = ['status']
+    autocomplete_fields = ['project']
+
 
 admin.site.register(models.Project, ProjectAdmin)
 
