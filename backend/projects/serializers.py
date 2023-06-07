@@ -63,6 +63,7 @@ class ProjectIssuesSerializer(serializers.ModelSerializer):
     assignee = CustomUserSerializer(read_only=True)
     reporter = CustomUserSerializer(read_only=True)
     created_by = CustomUserSerializer(read_only=True)
+    updated_by = CustomUserSerializer(read_only=True)
     label = ProjectLabelsSerializer(read_only=True)
     type = ProjectTypeSerialzer(read_only=True)
     status = ProjectStatusSerializer(read_only=True)

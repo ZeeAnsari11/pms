@@ -24,4 +24,4 @@ def update_issues_notifications_handler(sender, instance, **kwargs):
             new_assignee = instance.assignee or 'Unassigned'
             send_task_assignee_notification(instance, old_assignee, new_assignee)
     except Issue.DoesNotExist:
-        pass
+        return
