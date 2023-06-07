@@ -373,7 +373,7 @@ const ProjectListing = () => {
                         </td>
                         <td>{project.key.toUpperCase()}</td>
                         {/*<td>{project.type}Team-managed software</td>*/}
-                        <td>{project.project_category.project_category}</td>
+                        <td>{project.project_category?.category}</td>
                         <LeadColumn>
                             {/*<img src={userimage.image ? userimage.image : 'http://localhost:3000/Images/NoImage.jpeg'}*/}
                             {/*     alt='Lead Avatar'/>*/}

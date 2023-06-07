@@ -302,7 +302,7 @@ function ProjectSettingPage() {
 
     const project = {
         name: name,
-        category: projectCategory.project_category,
+        category: projectCategory?.category,
         icon: IconPath
     }
 
