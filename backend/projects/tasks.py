@@ -8,7 +8,7 @@ import os
 def send_new_task_notification(instance):
     url = fetch_slack_webhook_url(instance.project_id)
     if not url:
-        pass
+        return
     issue_priority = instance.priority or 'High'
     issue_status = instance.status or 'In Progress'
     issue_type = instance.type or 'Bug'
@@ -51,7 +51,7 @@ def send_new_task_notification(instance):
 def send_task_status_notification(instance, old_status, new_status):
     url = fetch_slack_webhook_url(instance.project_id)
     if not url:
-        pass
+        return
     issue_type = instance.type or 'Bug'
     message = {
         "blocks": [
@@ -77,7 +77,7 @@ def send_task_status_notification(instance, old_status, new_status):
 def send_task_assignee_notification(instance, old_assignee, new_assignee):
     url = fetch_slack_webhook_url(instance.project_id)
     if not url:
-        pass
+        return
     issue_type = instance.type or 'Bug'
     message = {
         "blocks": [
@@ -104,7 +104,7 @@ def fetch_slack_webhook_url(product_id):
     try:
         webhook_url = ProjectSlackWebhookUrl.objects.get(project=product_id)
     except ProjectSlackWebhookUrl.DoesNotExist:
-        return ''
+        return
     return webhook_url.slack_webhook_url or ''
 
 
@@ -112,6 +112,6 @@ def send_slack_notification(url, data):
     s = requests.Session()
     response = s.post(url, json=data)
     if response.status_code == 200:
-        pass
+        return
     else:
-        pass
+        return
