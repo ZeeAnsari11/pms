@@ -330,7 +330,7 @@ function CreateProject() {
 
     const categoriesoptions = categoryData
         ? categoryData.map((category) => ({
-            label: category.project_category,
+            label: category.category,
             value: category.id,
         }))
         : [];
@@ -372,7 +372,7 @@ function CreateProject() {
             "project_lead": selectedProjectLead,
             "description": text,
             "company": selectedCompany,
-            "project_category": selectedCategory
+            "category": selectedCategory
         };
         console.log(selectedCompany, selectedCategory)
 

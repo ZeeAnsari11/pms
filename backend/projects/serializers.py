@@ -47,8 +47,6 @@ class CustomUserSerializer(serializers.ModelSerializer):
 class ProjectSerializer(serializers.ModelSerializer):
     assignee = CustomUserSerializer(read_only=True)
     project_lead = CustomUserSerializer(read_only=True)
-    created_by = CustomUserSerializer(read_only=True)
-    updated_by = CustomUserSerializer(read_only=True)
     type = ProjectTypeSerialzer(read_only=True)
     status = ProjectStatusSerializer(read_only=True)
     category = ProjectCategorySerializer(read_only=True)

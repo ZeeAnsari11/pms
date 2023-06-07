@@ -88,7 +88,7 @@ function Dashboard(props) {
         if (projectData.name) {
             setName(projectData.name);
             setProjectIcon(projectData.icon);
-            setProjectCategory(projectData.project_category)
+            setProjectCategory(projectData.category)
         }
     }, [projectData]);
     console.log("Project Issues:", issuesData)
@@ -256,7 +256,7 @@ function Dashboard(props) {
 
     const project = {
         name: name,
-        category: projectCategory.project_category,
+        category: projectCategory?.category,
         icon: IconPath,
     }
 
