@@ -99,10 +99,10 @@ const SummaryInput = styled.input`
   font-size: 16px;
   padding: 8px;
   border-radius: 4px;
-  border: 2px solid #ccc;
+  border: 1px solid #D9D9D9;
   margin-bottom: 16px;
   width: 96%;
-  background: rgb(242 242 242);
+  background: #FFFFFF;
 `;
 
 const Task = styled.div`
@@ -126,6 +126,7 @@ const FormWrapper = styled.form`
 `;
 
 const SaveButton = styled.button`
+  margin-top: 10px;
   background-color: #0077ff;
   color: white;
   font-size: 16px;
@@ -150,18 +151,27 @@ const MyModalComponent = ({onClose}) => {
     const [name, setName] = useState("");
     const [description, setDescription] = useState('');
     const [values, setValues] = useState("");
+
     const [IssueType, setIssueType] = useState('');
     const [Status, setStatus] = useState('');
     const [Labels, setLabels] = useState('');
+    const [Priority, setPriority] = useState('');
+
     const [Users, setUsers] = useState('');
     const [Reporter, setReporter] = useState('');
-    const [hours, setHours] = useState("");
+    const [currentUserData, setCurrentUserData] = useState({});
+    const [currentUserId, setCurrentUserId] = useState({});
+
+    const [EstimateHours, setEstimateHours] = useState("");
+
     const [selectedProject, setSelectedProject] = useState('');
     const [selectedIssueType, setSelectedIssueType] = useState('');
     const [selectedStatus, setSelectedStatus] = useState('');
     const [selectedLabels, setSelectedLabels] = useState('');
+    const [selectedPriority, setSelectedPriority] = useState('');
     const [selectedUsers, setSelectedUsers] = useState('');
     const [selectedReporter, setSelectedReporter] = useState('');
+
     const [files, setFiles] = useState([]);
     const [project, setProject] = useState('');
 
@@ -182,12 +192,51 @@ const MyModalComponent = ({onClose}) => {
         setDescription(value);
     }
 
-    const handleProjectChange = (value) => {
+    const handleProjectChange = async (value) => {
         setSelectedProject(parseInt(value));
     }
 
+
+    useEffect(() => {
+        const fetchDependentProjectTypes = async () => {
+            const response = await axios.get(`http://127.0.0.1:8000/api/project_type/?project=${selectedProject}`, {
+                headers: {
+                    Authorization: `Token ${authToken}`,
+                },
+            });
+            setIssueType(response.data);
+        };
+
+
+        const fetchDependentProjectStatuses = async () => {
+            const response = await axios.get(`http://127.0.0.1:8000/api/project_status/?project=${selectedProject}`, {
+                headers: {
+                    Authorization: `Token ${authToken}`,
+                },
+            });
+            setStatus(response.data);
+        };
+
+        const fetchDependentProjectLabels = async () => {
+            const response = await axios.get(`http://127.0.0.1:8000/api/project_labels/?project=${selectedProject}`, {
+                headers: {
+                    Authorization: `Token ${authToken}`,
+                },
+            });
+            setLabels(response.data);
+        };
+        fetchDependentProjectStatuses();
+        fetchDependentProjectTypes();
+        fetchDependentProjectLabels();
+    }, [selectedProject]);
+    console.log("DependentProjectTypes:", IssueType)
+
     const handleStatusChange = (value) => {
         setSelectedStatus(parseInt(value));
+    }
+
+    const handlePriorityChange = (value) => {
+        setSelectedPriority(value);
     }
 
     const handleIssueChange = (value) => {
@@ -200,7 +249,7 @@ const MyModalComponent = ({onClose}) => {
     };
 
     const handleUserChange = (value) => {
-        setSelectedUsers([parseInt(value)]);
+        setSelectedUsers(parseInt(value));
         console.log("Users", selectedUsers)
     };
 
@@ -220,33 +269,6 @@ const MyModalComponent = ({onClose}) => {
             setProject(response.data);
         };
 
-        const fetchIssueType = async () => {
-            const response = await axios.get('http://127.0.0.1:8000/api/issues_type/', {
-                headers: {
-                    Authorization: `Token ${authToken}`,
-                },
-            });
-            setIssueType(response.data);
-        };
-
-        const fetchStatusOptions = async () => {
-            const response = await axios.get('http://127.0.0.1:8000/api/issues_status/', {
-                headers: {
-                    Authorization: `Token ${authToken}`,
-                },
-            });
-            setStatus(response.data);
-        }
-
-        const fetchLabelOptions = async () => {
-            const response = await axios.get('http://127.0.0.1:8000/api/labels/', {
-                headers: {
-                    Authorization: `Token ${authToken}`,
-                },
-            });
-            setLabels(response.data);
-        };
-
         const fetchUserOptions = async () => {
             const response = await axios.get('http://127.0.0.1:8000/api/users_list/', {
                 headers: {
@@ -256,12 +278,23 @@ const MyModalComponent = ({onClose}) => {
             setUsers(response.data);
         };
 
-        fetchIssueType()
-        fetchProject()
-        fetchStatusOptions()
-        fetchLabelOptions()
-        fetchUserOptions()
-    }, [authToken]);
+        const fetchCurrentUserData = async () => {
+            try {
+                const response = await axios.get(`${process.env.REACT_APP_HOST}/api/userprofile/`, {
+                    headers: {"Authorization": `Token ${authToken}`}
+                });
+                setCurrentUserData(response.data[0]);
+                setCurrentUserId(response.data[0].id)
+
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        fetchProject();
+        fetchUserOptions();
+        fetchCurrentUserData();
+    }, []);
     console.log("Projects:", project)
 
 
@@ -274,21 +307,28 @@ const MyModalComponent = ({onClose}) => {
 
     const IssueTypeoptions = IssueType
         ? IssueType.map((IssueType) => ({
-            label: IssueType.issue_type,
+            label: IssueType.type,
             value: IssueType.id,
         }))
         : [];
 
     const Statusoptions = Status
         ? Status.map((Status) => ({
-            label: Status.issue_status,
+            label: Status.status,
             value: Status.id,
         }))
         : [];
 
+
+    const Priorityoptions = [
+        {label: "Low", value: "Low"},
+        {label: "Medium", value: "Medium"},
+        {label: "High", value: "High"},
+    ]
+
     const Labeloptions = Labels
         ? Labels.map((Labels) => ({
-            label: Labels.label,
+            label: Labels.name,
             value: Labels.id,
         }))
         : [];
@@ -312,47 +352,49 @@ const MyModalComponent = ({onClose}) => {
     console.log("Reporter Options:", Reporteroptions)
 
     const handleHoursChange = (totalHours) => {
-        setHours(totalHours);
+        setEstimateHours(totalHours);
     };
 
 
     function handleSubmit(event) {
         event.preventDefault();
 
-        const data = {
-            "name": name,
-            "summary": summary,
-            "description": description,
-            "file": files,
-            "project": selectedProject,
-            "reporter": selectedReporter,
-            "type": selectedIssueType,
-            "label": selectedLabels,
-            "estimate": hours,
-            "status": selectedStatus,
-            "assignee": selectedUsers,
-            // "priority": setPriority,
+        const formData = new FormData();
+        formData.append("name", name);
+        formData.append("summary", summary);
+        formData.append("description", description);
+        files.forEach((file) => {
+            formData.append("file", file);
+        });
+        formData.append("project", selectedProject);
+        formData.append("reporter", selectedReporter);
+        formData.append("type", selectedIssueType);
+        formData.append("label", selectedLabels);
+        formData.append("estimate", EstimateHours);
+        formData.append("status", selectedStatus);
+        formData.append("assignee", selectedUsers);
+        formData.append("priority", selectedPriority);
+        formData.append("created_by", currentUserId);
+        formData.append("updated_by", currentUserId);
 
-        };
-
-        console.log(data, "DATA")
-        fetch('http://127.0.0.1:8000/api/issues/', {
-            method: 'POST',
+        fetch("http://127.0.0.1:8000/api/issues/", {
+            method: "POST",
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Token ${authToken}`,
+                Authorization: `Token ${authToken}`,
             },
-            body: JSON.stringify(data) // Serialize the data object as JSON
+            body: formData,
         })
-            .then(response => {
+            .then((response) => {
                 // handle the response
-                console.log(data)
+                console.log(response);
+                console.log(formData);
             })
-            .catch(error => {
+            .catch((error) => {
                 // handle the error
-                console.log(error)
+                console.log(error);
             });
     }
+
 
     return (
 
@@ -398,7 +440,7 @@ const MyModalComponent = ({onClose}) => {
                         <CardInfoBox>
                             <CardInfoBoxTitle>
                                 <TbStatusChange/>
-                                Issue Type
+                                Type
                             </CardInfoBoxTitle>
                             <TaskList>
                                 <GenericSelectField
@@ -421,6 +463,21 @@ const MyModalComponent = ({onClose}) => {
                                     isMultiple={false}
                                     placeholder={"Unassigned"}
                                     onSelectChange={handleStatusChange}/>
+                            </TaskList>
+                        </CardInfoBox>
+
+
+                        <CardInfoBox>
+                            <CardInfoBoxTitle>
+                                <TbStatusChange/>
+                                Priority
+                            </CardInfoBoxTitle>
+                            <TaskList>
+                                <GenericSelectField
+                                    options={Priorityoptions}
+                                    isMultiple={false}
+                                    placeholder={"Unassigned"}
+                                    onSelectChange={handlePriorityChange}/>
                             </TaskList>
                         </CardInfoBox>
 
@@ -467,7 +524,7 @@ const MyModalComponent = ({onClose}) => {
                                 Assignees
                             </CardInfoBoxTitle>
                             <TaskList>
-                                <UserSelectField users={Useroptions} isMultiple={true} placeholder={"Unassigned"}
+                                <UserSelectField users={Useroptions} isMultiple={false} placeholder={"Unassigned"}
                                                  onChange={handleUserChange}/>
                             </TaskList>
                         </CardInfoBox>
@@ -480,7 +537,7 @@ const MyModalComponent = ({onClose}) => {
                             <TaskList>
                                 <GenericSelectField
                                     options={Labeloptions}
-                                    isMultiple={true}
+                                    isMultiple={false}
                                     placeholder={" "}
                                     onSelectChange={handleLabelChange}/>
                             </TaskList>
@@ -526,7 +583,7 @@ const MyModalComponent = ({onClose}) => {
                             <TaskList>
                                 <GenericSelectField
                                     options={LinkedIssue2}
-                                    isMultiple={true}
+                                    isMultiple={false}
                                     placeholder={"Select Issue"}/>
                             </TaskList>
                         </CardInfoBox>
