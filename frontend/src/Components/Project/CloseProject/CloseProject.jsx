@@ -1,8 +1,13 @@
 import React, {useState} from 'react';
-import {Modal, Button} from 'antd';
+import {useParams, useNavigate} from "react-router-dom";
+import {Modal} from 'antd';
 import styled from "styled-components";
 import NavBar from "../../Dashboard/Navbar";
 import Sidebar from "../../Dashboard/Sidebar";
+import {ToastContainer, toast} from 'react-toastify';
+import axios from 'axios'
+
+
 
 const PermissionsContainer = styled.div`
   margin-left: 16%;
@@ -33,28 +38,56 @@ const AddTagButton = styled.button`
 
 const CloseProject = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
+    const navigate = useNavigate();
+    const {projectId} = useParams();
+
+
+    const deleteProject = () => {
+        if (projectId !== undefined) {
+            axios
+            .delete(`${process.env.REACT_APP_HOST}/api/projects/${projectId}`)
+            .then(response => {
+                console.log('Project deleted successfully');
+                setIsModalVisible(false);
+                setTimeout(() => {
+                    navigate('/project');
+                    }, 2000);
+            })
+            .catch(error => {
+                console.error('Error deleting data', error);
+            });
+        }
+    }
+
+    const showInfoOnConfirmations = () => {
+        toast.info('The project has been deleted. \n  You will be redirected to the project within 2 seconds', {
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        });
+    }
 
     const handleButtonClick = () => {
         setIsModalVisible(true);
     };
 
     const handleModalConfirm = () => {
-        // Logic for closing the project goes here
-        setIsModalVisible(false);
+        deleteProject()
     };
 
     const handleModalCancel = () => {
         setIsModalVisible(false);
     };
 
-    const project = {
-        name: 'Project Name',
-        category: 'Project Setting',
-    };
 
     return (
         <>
-            <Sidebar project={project}/>
+            <Sidebar/>
             <NavBar/>
             <PermissionsContainer>
                 <AddTagButton onClick={handleButtonClick}>Close project</AddTagButton>
@@ -67,6 +100,7 @@ const CloseProject = () => {
                     <p>Are you sure you want to close the project?</p>
                 </Modal>
             </PermissionsContainer>
+
         </>
     )
         ;

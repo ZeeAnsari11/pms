@@ -32,9 +32,15 @@ class ProjectLabelsSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class ProjectSlackWebhookUrlSerializer(serializers.ModelSerializer):
+class ProjectSlackWebhookSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.ProjectSlackWebhookUrl
+        model = models.ProjectSlackWebhook
+        fields = "__all__"
+
+
+class ProjectSMTPWebhookSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.ProjectSMTPWebhook
         fields = "__all__"
 
 

@@ -1,13 +1,14 @@
-import React, {useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import NavBar from "../../Dashboard/Navbar/index";
 import Sidebar from "../../Dashboard/Sidebar";
-import GenericSelectField from '../../Dashboard/SelectFields/GenericSelectField';
-import {AiFillSlackCircle} from 'react-icons/ai';
-import {FcGoogle} from 'react-icons/fc';
-import {color} from "../../Dashboard/Sidebar/utils/styles";
-import {ToastContainer, toast} from 'react-toastify';
-import {Input, Button, Form} from 'antd';
+import { AiFillSlackCircle } from 'react-icons/ai';
+import { FcGoogle } from 'react-icons/fc';
+import { color } from "../../Dashboard/Sidebar/utils/styles";
+import { ToastContainer, toast } from 'react-toastify';
+import { Input, Button, Form, Switch } from 'antd';
+import { useParams } from "react-router-dom";
+import axios from "axios";
 
 
 const PageContainer = styled.div`
@@ -29,18 +30,6 @@ const SummaryHeading = styled.p`
   }
 `;
 
-const SubHeading = styled.p`
-  margin-left: 40px;
-  font-size: 16px;
-  color: black;
-  font-weight: bolder;
-  width: 250px;
-
-  @media (max-width: 768px) {
-    margin: 5px 0;
-  }
-`;
-
 const SubHeadingForNotificationMethods = styled.p`
   margin-left: 10px;
   font-size: 16px;
@@ -51,12 +40,6 @@ const SubHeadingForNotificationMethods = styled.p`
   @media (max-width: 768px) {
     margin: 5px 0;
   }
-`;
-
-const OptionWrapper = styled.div`
-  width: 217px;
-  margin-left: 281px;
-  margin-top: -44px;
 `;
 
 const ContentWrapper = styled.div`
@@ -92,7 +75,7 @@ const NotificationContainerForSlack = styled.div`
   margin-top: 25px;
   background-color: #EBEBEB;
   border-radius: 5px;
-  height: 305px;
+  height: 335px;
   width: 100%;
   box-shadow: var(--ds-shadow-raised, 0 1px 1px rgba(9, 30, 66, 0.25), 0 0 1px 1px rgba(9, 30, 66, 0.13));
 
@@ -122,6 +105,12 @@ const NotificationWrapper = styled.div`
   padding: 10px;
 `;
 
+const StyledFormItem = styled( Form.Item )`
+  float: right;
+  margin-top: -56px;
+  margin-right: 230px;
+`;
+
 const Divider = styled.div`
   margin-top: 17px;
   border-top: 1px solid ${color.borderLight};
@@ -140,45 +129,102 @@ const FormWrapper = styled.div`
 `;
 
 const ParagraphNote = styled.p`
-    font-size: 10px;
-    margin-top: -25px;
-    margin-left: 140px
+  font-size: 10px;
+  margin-top: -25px;
+  margin-left: 140px
 `;
 
 function Integrations() {
 
-    const [selectedValues, setSelectedValues] = useState([]);
-    const [webhookUrl, setWebhookUrl] = useState('');
-    const [channel, setChannel] = useState('');
+    const [ slackForm ] = Form.useForm();
+    const { projectId } = useParams();
+    const [ isSlackUpdating, setSlackIsUpdating ] = useState( false );
+    const [ isSMTPUpdating, setSMTPIsUpdating ] = useState( false );
+    const [ initialSlackValues, setInitialSlackValues ] = useState( { id: undefined, project: projectId } );
 
-    const handleSelect = (values) => {
-        setSelectedValues(values);
-    };
+    const updateSlackIntegrationForm = ( response ) => {
+        if ( response.status === 200 ) {
+            displaySuccessMessage();
+            let responseData;
+            responseData = response.data;
+            if ( typeof responseData === 'object' ) {
+                responseData = response.data;
+            }
+            if ( Array.isArray( response.data ) ) {
+                responseData = response.data[ 0 ];
+            }
+            const { id, project, slack_notification_status, slack_webhook_url, slack_webhook_channel } = responseData;
+            setInitialSlackValues( {
+                id: id,
+                project: project,
+            } );
+            slackForm.setFieldsValue( {
+                slackChannelGroupUser: slack_webhook_channel,
+                slackNotificationStatus: slack_notification_status,
+                slackWebhookUrl: slack_webhook_url,
+            } );
+        }
+    }
 
-    const items = [
-        {icon: <><AiFillSlackCircle style={{fontSize: '15px'}}/> </>, label: 'Slack', value: 'Slack'},
-        {icon: <><FcGoogle/></>, label: 'Gmail', value: 'Gmail'},
-    ];
 
-    const project = {
-        name: 'Project Name',
-        category: 'Project Setting'
-    };
+    const fetchSlackIntegrationsData = () => {
+        axios
+            .get( `${process.env.REACT_APP_HOST}/api/project_slack_webhook/`, {
+                params: {
+                    project: projectId,
+                }
+            } )
+            .then( response => {
+                updateSlackIntegrationForm( response );
+            } )
+            .catch( error => {
+                console.error( error )
+            } );
+    }
 
-    const handleWebhookUrlChange = (event) => {
-        setWebhookUrl(event.target.value);
-    };
+    const createSlackIntegrationsData = ( values ) => {
+        const { slackNotificationStatus, slackChannelGroupUser, slackWebhookUrl } = values
+        axios
+            .post( `${process.env.REACT_APP_HOST}/api/project_slack_webhook/`, {
+                project: projectId,
+                slack_notification_status: slackNotificationStatus,
+                slack_webhook_channel: slackChannelGroupUser,
+                slack_webhook_url: slackWebhookUrl,
+            } )
+            .then( response => {
+                updateSlackIntegrationForm( response );
+            } )
+            .catch( error => {
+                console.error( error )
+            } );
+    }
 
-    const handleChannelChange = (event) => {
-        setChannel(event.target.value);
-    };
 
-    const handleSave = () => {
-        console.log(`Webhook URL: ${webhookUrl}, Channel: ${channel}`);
-    };
+    const patchSlackIntegrationsData = ( values ) => {
+        const { id } = initialSlackValues
+        if ( id === undefined ) {
+            displayInfoMessage();
+            return;
+        }
+        const { slackNotificationStatus, slackChannelGroupUser, slackWebhookUrl } = values
+        axios
+            .patch( `${process.env.REACT_APP_HOST}/api/project_slack_webhook/${id}/`, {
+                project: projectId,
+                slack_notification_status: slackNotificationStatus,
+                slack_webhook_channel: slackChannelGroupUser,
+                slack_webhook_url: slackWebhookUrl,
+            } )
+            .then( response => {
+                console.info( 'response is here', response );
+                updateSlackIntegrationForm( response );
+            } )
+            .catch( error => {
+                console.error( error )
+            } );
+    }
 
-    const onFinish = () => {
-        toast.success(<><FcGoogle/> Gmail is Integrated</>, {
+    const displayInfoMessage = () => {
+        toast.info( 'Please save the configuration first!', {
             position: "bottom-left",
             autoClose: 5000,
             hideProgressBar: false,
@@ -187,7 +233,60 @@ function Integrations() {
             draggable: true,
             progress: undefined,
             theme: "colored",
-        });
+        } );
+    }
+
+    const displaySuccessMessage = () => {
+        toast.success( <><AiFillSlackCircle/> Slack Webhook is Integrated</>, {
+            position: "bottom-left",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+        } );
+    }
+
+
+    useEffect( () => {
+        if ( projectId !== undefined ) {
+            fetchSlackIntegrationsData();
+        }
+    }, [] );
+
+    const items = [
+        { icon: <><AiFillSlackCircle style={{ fontSize: '15px' }}/> </>, label: 'Slack', value: 'Slack' },
+        { icon: <><FcGoogle/></>, label: 'Gmail', value: 'Gmail' },
+    ];
+
+    const project = {
+        name: 'Project Name',
+        category: 'Project Setting'
+    };
+
+    const handleSlackSaveOrUpdateForm = ( values ) => {
+        const { id } = initialSlackValues;
+        if ( isSlackUpdating ) {
+            patchSlackIntegrationsData( values )
+        } else {
+            createSlackIntegrationsData( values );
+        }
+
+    };
+
+    const handleGmailSaveOrUpdateForm = () => {
+        toast.success( <><FcGoogle/> Gmail is Integrated</>, {
+            position: "bottom-left",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+        } );
     };
 
 
@@ -200,132 +299,132 @@ function Integrations() {
                     <HeadingWrapper>
                         <SummaryHeading>Integrations</SummaryHeading>
                     </HeadingWrapper>
-
-                    <HeadingWrapper>
-                        <SubHeading>Integration methods option</SubHeading>
-                        <OptionWrapper>
-                            <GenericSelectField placeholder={<strong>Integration</strong>}
-                                                isMultiple={true}
-                                                options={items}
-                                                width={"250px"}
-                                                onSelectChange={handleSelect}
-                            />
-                        </OptionWrapper>
-                    </HeadingWrapper>
-
                     <Divider/>
+                    <NotificationContainerForSlack>
+                        <NotificationWrapper>
+                            <InnerNotificationWrapper>
+                                <HeadingWrapper>
+                                    <SubHeadingForNotificationMethods>Integration
+                                        Method</SubHeadingForNotificationMethods>
+                                </HeadingWrapper>
 
-                    {selectedValues.map((selectedValue, index) => {
-                        if (selectedValue === 'Slack') {
-                            return (
-                                <NotificationContainerForSlack key={index}>
-                                    <NotificationWrapper>
-                                        <InnerNotificationWrapper>
-                                            <HeadingWrapper>
-                                                <SubHeadingForNotificationMethods>Integration
-                                                    Method</SubHeadingForNotificationMethods>
-                                            </HeadingWrapper>
+                                <HeadingWrapper>
+                                    <IconWrapperDiv>
+                                        <AiFillSlackCircle fontSize={"28px"}/>
+                                    </IconWrapperDiv>
+                                    <IconName>Slack Configuration</IconName>
+                                    <FormWrapper>
+                                        <Form form={slackForm} onFinish={handleSlackSaveOrUpdateForm}>
+                                            <Form.Item
+                                                name="slackWebhookUrl"
+                                                label="Webhook URL"
+                                                rules={[ { required: true, message: 'Please enter the webhook URL' } ]}
+                                            ><Input/>
+                                            </Form.Item>
+                                            <Form.Item
+                                                name="slackChannelGroupUser"
+                                                label="Channel/Group/User"
+                                                rules={[ {
+                                                    required: false,
+                                                    message: 'Please enter the Channel/Group/User'
+                                                } ]}
+                                            >
+                                                <Input/>
+                                            </Form.Item>
+                                            <Form.Item
+                                                name="slackNotificationStatus"
+                                                label="Enable"
+                                                valuePropName="checked"
+                                            >
+                                                <Switch checkedChildren="Yes" unCheckedChildren="No"/>
+                                            </Form.Item>
+                                            <Form.Item>
+                                                <Button type="primary" htmlType="submit"
+                                                        onClick={() => setSlackIsUpdating( false )}>Save</Button>
+                                            </Form.Item>
+                                            <StyledFormItem>
+                                                <Button type="primary" htmlType="update"
+                                                        onClick={() => setSlackIsUpdating( true )}>Update</Button>
+                                            </StyledFormItem>
+                                        </Form>
+                                    </FormWrapper>
+                                </HeadingWrapper>
+                            </InnerNotificationWrapper>
+                        </NotificationWrapper>
+                    </NotificationContainerForSlack>
+                    <NotificationContainerForGmail>
+                        <NotificationWrapper>
+                            <InnerNotificationWrapper>
+                                <HeadingWrapper>
+                                    <SubHeadingForNotificationMethods>Integration
+                                        Method</SubHeadingForNotificationMethods>
+                                </HeadingWrapper>
 
-                                            <HeadingWrapper>
-                                                <IconWrapperDiv>
-                                                    <AiFillSlackCircle fontSize={"28px"}/>
-                                                </IconWrapperDiv>
-                                                <IconName>Slack Configuration</IconName>
-                                                <FormWrapper>
-                                                    <label style={{marginLeft: '10px'}}>Webhook URL:</label>
-                                                    <Input style={{
-                                                        marginTop: '10px',
-                                                        marginBottom: '10px',
-                                                        marginLeft: '5px'
-                                                    }} value={webhookUrl} onChange={handleWebhookUrlChange}/>
-
-                                                    <label style={{marginLeft: '10px'}}>Channel/Group/User
-                                                        (optional):</label>
-                                                    <Input style={{marginTop: '10px', marginLeft: '5px'}}
-                                                           value={channel} onChange={handleChannelChange}/>
-
-                                                    <Button style={{marginTop: '10px', marginLeft: '5px'}}
-                                                            type="primary" onClick={handleSave}>Save</Button>
-
-                                                </FormWrapper>
-                                            </HeadingWrapper>
-                                        </InnerNotificationWrapper>
-                                    </NotificationWrapper>
-                                </NotificationContainerForSlack>
-                            );
-                        } else if (selectedValue === 'Gmail') {
-                            return (
-                                <NotificationContainerForGmail key={index}>
-                                    <NotificationWrapper>
-                                        <InnerNotificationWrapper>
-                                            <HeadingWrapper>
-                                                <SubHeadingForNotificationMethods>Integration
-                                                    Method</SubHeadingForNotificationMethods>
-                                            </HeadingWrapper>
-
-                                            <HeadingWrapper>
-                                                <IconWrapperDiv>
-                                                    <FcGoogle fontSize={"28px"}/>
-                                                </IconWrapperDiv>
-                                                <IconName>Gmail Configuration</IconName>
-                                                <FormWrapper>
-                                                    <Form onFinish={onFinish}>
-                                                        <Form.Item label="Hostname" name="hostname" rules={[{
-                                                            required: true,
-                                                            message: 'Please input a hostname!'
-                                                        }]}>
-                                                            <Input/>
-                                                        </Form.Item>
-                                                        <Form.Item label="Port" name="port" rules={[{
-                                                            required: true,
-                                                            message: 'Please input a port!'
-                                                        }]}>
-                                                            <Input/>
-                                                        </Form.Item>
-                                                        <Form.Item label="Username" name="username" rules={[{
-                                                            required: true,
-                                                            message: 'Please input a username!'
-                                                        }]}>
-                                                            <Input/>
-                                                        </Form.Item>
-                                                        <Form.Item label="Password" name="password" rules={[{
-                                                            required: true,
-                                                            message: 'Please input a password!'
-                                                        }]}>
-                                                            <Input.Password/>
-                                                        </Form.Item>
-                                                        <Form.Item label="Security protocol" name="securityProtocol"
-                                                                   rules={[
-                                                                       {
-                                                                           required: true,
-                                                                           message: 'Please select a security protocol!',
-                                                                           validator: (rule, value) => {
-                                                                               const pattern = /^(SSL|TLS)$/i;
-                                                                               if (!value || pattern.test(value)) {
-                                                                                   return Promise.resolve();
-                                                                               }
-                                                                               return Promise.reject('Please enter a valid security protocol (SSL or TLS)');
-                                                                           },
-                                                                       },
-                                                                   ]}
-                                                        >
-                                                            <Input/>
-                                                        </Form.Item>
-                                                        <ParagraphNote>Please enter security protocol SSL or
-                                                            TLS </ParagraphNote>
-
-                                                        <Form.Item>
-                                                            <Button type="primary" htmlType="submit">Save</Button>
-                                                        </Form.Item>
-                                                    </Form>
-                                                </FormWrapper>
-                                            </HeadingWrapper>
-                                        </InnerNotificationWrapper>
-                                    </NotificationWrapper>
-                                </NotificationContainerForGmail>
-                            );
-                        }
-                    })}
+                                <HeadingWrapper>
+                                    <IconWrapperDiv>
+                                        <FcGoogle fontSize={"28px"}/>
+                                    </IconWrapperDiv>
+                                    <IconName>Gmail Configuration</IconName>
+                                    <FormWrapper>
+                                        <Form onFinish={handleGmailSaveOrUpdateForm}>
+                                            <Form.Item
+                                                name="hostName"
+                                                label="Hostname"
+                                                rules={[ { required: true, message: 'Please input a hostname!' } ]}
+                                            ><Input/>
+                                            </Form.Item>
+                                            <Form.Item
+                                                name="port"
+                                                label="Port"
+                                                rules={[ { required: true, message: 'Please input a port!' } ]}
+                                            ><Input/>
+                                            </Form.Item>
+                                            <Form.Item
+                                                name="userName"
+                                                label="Username"
+                                                rules={[ { required: true, message: 'Please input a username!' } ]}
+                                            ><Input/>
+                                            </Form.Item>
+                                            <Form.Item
+                                                label="Password"
+                                                name="password"
+                                                rules={[ { required: true, message: 'Please input a password!' } ]}
+                                            ><Input.Password/>
+                                            </Form.Item>
+                                            <Form.Item
+                                                name="securityProtocol"
+                                                label="Security protocol"
+                                                rules={[
+                                                    {
+                                                        required: true,
+                                                        message: 'Please select a security protocol!',
+                                                        validator: ( rule, value ) => {
+                                                            const pattern = /^(SSL|TLS)$/i;
+                                                            if ( !value || pattern.test( value ) ) {
+                                                                return Promise.resolve();
+                                                            }
+                                                            return Promise.reject( 'Please enter a valid security protocol (SSL or TLS)' );
+                                                        },
+                                                    },
+                                                ]}
+                                            >
+                                                <Input/>
+                                            </Form.Item>
+                                            <ParagraphNote>Please enter security protocol SSL or TLS </ParagraphNote>
+                                            <Form.Item>
+                                                <Button type="primary" htmlType="submit"
+                                                        onClick={() => setSMTPIsUpdating( false )}>Save</Button>
+                                            </Form.Item>
+                                            <StyledFormItem>
+                                                <Button type="primary" htmlType="update"
+                                                        onClick={() => setSMTPIsUpdating( true )}>Update</Button>
+                                            </StyledFormItem>
+                                        </Form>
+                                    </FormWrapper>
+                                </HeadingWrapper>
+                            </InnerNotificationWrapper>
+                        </NotificationWrapper>
+                    </NotificationContainerForGmail>
                 </ContentWrapper>
             </PageContainer>
             <ToastContainer

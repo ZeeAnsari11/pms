@@ -8,10 +8,9 @@ import {DownOutlined} from '@ant-design/icons';
 import {Modal as Modal1, Input} from 'antd';
 import {Modal as Modal2} from 'antd';
 import {Modal as Modal3} from 'antd';
-import {ChromePicker} from "react-color";
 import {Dropdown, Space} from 'antd';
 import {Pagination} from 'antd';
-import axios from 'axios';
+import axios from 'axios'
 
 
 const PageContainer = styled.div`
@@ -96,7 +95,7 @@ const TableHeader = styled.div`
 
 const TableHeaderCell = styled.div`
   display: table-cell;
-  padding: 10px;
+  padding: 10px 544px 10px 10px;
   border: none;
   text-align: center;
 
@@ -120,19 +119,6 @@ const TableRow = styled.div`
   }
 `;
 
-const TableCell = styled.div`
-  display: table-cell;
-  padding: 10px;
-  border: none;
-  text-align: center;
-
-  @media (max-width: 768px) {
-    display: block;
-    width: 50%;
-    float: left;
-  }
-`;
-
 const TableCellForTag = styled.div`
   display: table-cell;
   padding: 10px;
@@ -143,19 +129,14 @@ const TableCellForTag = styled.div`
 
 `;
 
-const Tag = styled.span`
-  padding: 5px;
-  border-radius: 5px;
-  color: black;
-`;
 
 const NameTag = styled.span`
-  padding: 5px;
-  margin-left: 30px;
-  margin-right: 30px;
+  margin: 0 30px;
   border-radius: 5px;
   color: black;
+  padding: 5px 544px 5px 5px;
 `;
+
 
 const IconWrapper = styled.div`
   width: 30px;
@@ -171,68 +152,21 @@ const PaginationWrapper = styled.div`
   margin-top: 15px;
 `;
 
-function ProjectTags() {
+function Types() {
 
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [inputValue, setInputValue] = useState('');
-    const [color, setColor] = useState('#FFFFFF');
-    const [isChecked, setIsChecked] = useState(false);
     const [newArray, setNewArray] = useState([]);
     const [isEmpty, setIsEmpty] = useState(false);
     const [isModalVisible2, setIsModalVisible2] = useState(false);
     const [inputValue2, setInputValue2] = useState('');
-    const [isChecked2, setIsChecked2] = useState(false);
     const [isEmpty2, setIsEmpty2] = useState(false);
-    const [color2, setColor2] = useState('#FFFFFF');
     const [id, setId] = useState(null);
-    const [editTagName, setEditTagName] = useState('');
-    const [editTagColor, setEditTagColor] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [isDelete, setIsDelete] = useState(false);
+    const [editStatusName, setEditStatusName] = useState('');
     const { projectId } = useParams();
 
-    const fetchLabels = () => {
-        axios
-            .get(`${process.env.REACT_APP_HOST}/api/project_labels`, {
-            params: {
-            project: projectId,
-            }
-        })
-            .then(response => {
-                console.log(response.data);
-                const newDataArray = response.data.map((item, index) => {
-                    const {id, name, color} = item;
-                    return {id, name, color};
-                });
-                setNewArray(newDataArray);
-            })
-            .catch(error => {
-                // Handle the error
-                console.error(error);
-            });
-    };
-
-// Function to delete a label
-    const deleteLabel = (id) => {
-        axios
-            .delete(`${process.env.REACT_APP_HOST}/api/project_labels/${id}`)
-            .then(response => {
-                // Handle success if needed
-                console.log('Data deleted successfully');
-                setIsDelete(true);
-            })
-            .catch(error => {
-                // Handle error if needed
-                console.error('Error deleting data', error);
-            });
-    };
-
-    useEffect(() => {
-        if (isDelete === true) {
-            setIsDelete(false);
-        }
-        fetchLabels();
-    }, [isDelete]);
 
     const showModal = () => {
         setIsModalVisible(true);
@@ -253,25 +187,8 @@ function ProjectTags() {
 
     const handleInputChange2 = (e) => {
         setInputValue2(e.target.value);
-        setEditTagName(e.target.value);
+        setEditStatusName(e.target.value);
     };
-
-    function handleChange(newColor) {
-        setColor(newColor.hex);
-    }
-
-    function handleChange2(newColor) {
-        setColor2(newColor.hex);
-        setEditTagColor(newColor.hex);
-    }
-
-    function handleCheckboxChange(event) {
-        setIsChecked(event.target.checked);
-    }
-
-    function handleCheckboxChange2(event) {
-        setIsChecked2(event.target.checked);
-    }
 
     const project = {
         name: 'Project Name',
@@ -287,60 +204,53 @@ function ProjectTags() {
     `;
 
     const handleOk = () => {
-
         const newTag = {
-            "name": inputValue,
-            "color": color,
+            "type": inputValue,
             "project": projectId,
         };
 
-        if (inputValue === '' || color === '') {
+        if (inputValue === '' || projectId == undefined) {
             setIsEmpty(true);
         }
 
-        if (inputValue && color) {
-            const response =
-                axios
-                    .post(`${process.env.REACT_APP_HOST}/api/project_labels/`, newTag)
-                    .then(response => {
-                        const data = response.data;
-                        console.log(data);
-                        const result = {
-                            "id": response.data.id,
-                            "name": response.data.name,
-                            "color": response.data.color
-                        };
-                        setNewArray([...newArray, result]);
-                        setIsModalVisible(false);
-                        setIsEmpty(false);
+        if (inputValue) {
+            const response = axios
+                .post(`${process.env.REACT_APP_HOST}/api/project_type/`, newTag)
+                .then(response => {
+                    const data = response.data;
+                    console.log(data);
+                    const result = {
+                        "id": response.data.id,
+                        "type": response.data.type,
+                    };
+                    setNewArray([...newArray, result]);
+                    setIsModalVisible(false);
+                    setIsEmpty(false);
                 })
                 .catch(error => {
                     console.error('Error fetching data:', error);
                 });
-
         }
         setInputValue('');
-        setColor("#ffffff");
     };
 
     const handleOk2 = () => {
         const newTag = {
             id: id,
-            color: color2,
-            name: inputValue2,
+            type: inputValue2,
         };
 
-        if (inputValue2 === '' || color2 === '') {
+        if (inputValue2 === '') {
             setIsEmpty2(true);
             return;
         }
 
-        axios.patch(`${process.env.REACT_APP_HOST}/api/project_labels/${id}/`, {
+        axios
+            .patch(`${process.env.REACT_APP_HOST}/api/project_type/${id}/`, {
             id: id,
-            color: color2,
-            name: inputValue2,
+            type: inputValue2,
             project: projectId,
-        })
+            })
             .then(response => {
                 console.log('Data updated successfully:', response.data);
             })
@@ -363,33 +273,72 @@ function ProjectTags() {
         setIsModalVisible2(false);
         setIsEmpty2(false);
         setInputValue2('');
-        setColor2("#ffffff");
         setId(0);
     };
 
-    const handleEditTag = (id, name, color) => {
+    const handleEditTag = (id) => {
         setIsModalVisible2(true);
         setId(id);
-        setEditTagName(name);
-        setEditTagColor(color);
+
         const tag = newArray.find((item) => item.id === id);
+
         if (tag) {
-            setEditTagName(tag.name);
-            setIsModalVisible2(true);
             setId(id);
+            setEditStatusName(tag.type);
+            setIsModalVisible2(true);
         }
+    };
+
+    const deleteIssueStatus = (id) => {
+        axios
+            .delete(`${process.env.REACT_APP_HOST}/api/project_type/${id}`)
+            .then(response => {
+                console.log('Data deleted successfully');
+                setIsDelete(true);
+            })
+            .catch(error => {
+                console.error('Error deleting data', error);
+            });
     };
 
     const handleDeleteTag = (id, name) => {
         Modal3.confirm({
             title: 'Confirm',
-            content: 'Are you sure you want to delete this tag ?',
+            content: 'Are you sure you want to delete this issue type: ' + name + ' ?',
             onOk() {
-                deleteLabel(id)
+                deleteIssueStatus(id);
             },
         });
     };
 
+
+    useEffect(() => {
+        if (isDelete) {
+            setIsDelete(false);
+        }
+
+        const queryParams = {
+            project: projectId,
+        };
+
+        axios.get(`${process.env.REACT_APP_HOST}/api/project_type/`, {
+            params: {
+            project: projectId,
+            }
+        })
+            .then(response => {
+                console.log(response.data);
+                const newDataArray = response.data.map((item) => {
+                        const {id, type} = item;
+                        return {id, type};
+                    }
+                );
+                setNewArray(newDataArray);
+            })
+            .catch(error => {
+                console.log(error)
+            });
+    }, [isDelete]);
 
     const ITEMS_PER_PAGE = 10;
 
@@ -408,11 +357,11 @@ function ProjectTags() {
                 <NavBar/>
                 <ContentWrapper>
                     <HeadingWrapper>
-                        <SummaryHeading>Project Issues Tags</SummaryHeading>
+                        <SummaryHeading>Project Issues Types</SummaryHeading>
                     </HeadingWrapper>
                     <BodyWrapper>
                         <ButtonWrapper>
-                            <AddTagButton label="Click me!" onClick={showModal}>Add Tag </AddTagButton>
+                            <AddTagButton label="Click me!" onClick={showModal}>Add Types </AddTagButton>
                             <PaginationWrapper>
                                 <Pagination
                                     current={currentPage}
@@ -426,8 +375,8 @@ function ProjectTags() {
                         </ButtonWrapper>
                         <TableContainer>
                             <TableHeader>
-                                <TableHeaderCell>Tags</TableHeaderCell>
-                                <TableHeaderCell>Color</TableHeaderCell>
+                                <TableHeaderCell>Types</TableHeaderCell>
+
                             </TableHeader>
                             {currentItems.map(tag => (
                                 <TableRow key={tag.id}>
@@ -439,12 +388,12 @@ function ProjectTags() {
                                                         {
                                                             key: 'edit',
                                                             label: 'Edit',
-                                                            onClick: () => handleEditTag(tag.id, tag.name, tag.color)
+                                                            onClick: () => handleEditTag(tag.id)
                                                         },
                                                         {
                                                             key: 'delete',
                                                             label: 'Delete',
-                                                            onClick: () => handleDeleteTag(tag.id, tag.name)
+                                                            onClick: () => handleDeleteTag(tag.id, tag.type)
                                                         }
                                                     ]
                                                 }}
@@ -457,11 +406,8 @@ function ProjectTags() {
                                                 </a>
                                             </Dropdown>
                                         </IconWrapper>
-                                        <NameTag color={tag.color}>{tag.name}</NameTag>
+                                        <NameTag>{tag.type}</NameTag>
                                     </TableCellForTag>
-                                    <TableCell>
-                                        <Tag color={tag.color}>{tag.color}</Tag>
-                                    </TableCell>
                                 </TableRow>
                             ))}
                         </TableContainer>
@@ -470,28 +416,17 @@ function ProjectTags() {
             </PageContainer>
 
             <Modal1
-                title="Add New Tag"
+                title="Add New Column"
                 open={isModalVisible}
                 onOk={handleOk}
                 onCancel={handleCancel}
             >
                 <label>Name</label>
                 <Input style={{marginBottom: `10px`}} value={inputValue} onChange={handleInputChange}/>
-                <label style={{marginTop: '10px', marginBottom: '10px'}}>
-                    <input type="checkbox" checked={isChecked} onChange={handleCheckboxChange}/>
-                    Show color picker
-                </label>
-
-                {isChecked && (
-                    <div>
-                        <ChromePicker color={color} onChange={handleChange}/>
-                    </div>
-                )}
 
                 {isEmpty && (
-                    <WarningDiv>Oops! The name field is empty. Please enter tag name.</WarningDiv>
+                    <WarningDiv>Oops! The name field is empty. Please enter Issue Type name.</WarningDiv>
                 )}
-
             </Modal1>
 
             <Modal2
@@ -500,29 +435,18 @@ function ProjectTags() {
                 onOk={handleOk2}
                 onCancel={handleCancel2}
             >
-
                 <label>Name</label>
-                <Input style={{marginBottom: `10px`}} value={editTagName} onChange={handleInputChange2}/>
-                <label style={{marginTop: '10px', marginBottom: '10px'}}>
-                    <input type="checkbox" checked={isChecked2} onChange={handleCheckboxChange2}/>
-                    Show color picker
-                </label>
-
-                {isChecked2 && (
-                    <div>
-                        <ChromePicker color={editTagColor} onChange={handleChange2}/>
-                    </div>
-                )}
+                <Input style={{marginBottom: `10px`}} value={editStatusName} onChange={handleInputChange2}/>
 
                 {isEmpty2 && (
-                    <WarningDiv>Oops! The name field is empty. Please enter tag name.</WarningDiv>
+                    <WarningDiv>Oops! The name field is empty. Please enter Column name.</WarningDiv>
                 )}
             </Modal2>
         </div>
     );
 }
 
-export default ProjectTags;
+export default Types;
 
 
 
