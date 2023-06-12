@@ -91,6 +91,7 @@ const ProjectSidebar = () => {
             {renderLinkItem(match, 'Notifications', 'Notifications', `/project/${projectId}/setting/notification`)}
             {renderLinkItem(match, 'Integrations', 'Integrations', `/project/${projectId}/setting/integrations`)}
             {renderLinkItem(match, 'Tags', 'Tags', `/project/${projectId}/setting/tags`)}
+            {renderLinkItem(match, 'Types', 'Types', `/project/${projectId}/setting/types`)}
             {renderLinkItem(match, 'Columns', 'Columns', `/project/${projectId}/setting/columns`)}
             {renderLinkItem(match, 'Permissions', 'Permissions', `/project/${projectId}/setting/permissions`)}
             {renderLinkItem(match, 'Close Project', 'Close Project', `/project/${projectId}/close-project`)}

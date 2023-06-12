@@ -14,7 +14,8 @@ import ProjectSummary from "../Components/Project/ProjectSummaryPage/ProjectSumm
 import Notification from "../Components/Project/Notification/Notification";
 import Integrations from "../Components/Project/Integrations/Integrations";
 import ProjectTag from "../Components/Project/ProjectTag/ProjectTag";
-import Columns from "../Components/Project/Columns/columns";
+import Columns from "../Components/Project/Columns/Columns";
+import Types from "../Components/Project/Types/Types";
 import Permissions from "../Components/Project/Permissions/Permissions";
 import CloseProject from "../Components/Project/CloseProject/CloseProject";
 import AccountActivation from "../Components/User/AccountActivate/AccountActivation";
@@ -60,6 +61,7 @@ function Url() {
                 <Route path="/project/:projectId/setting/notification" element={<Notification/>}/>
                 <Route path="/project/:projectId/setting/integrations" element={<Integrations/>}/>
                 <Route path="/project/:projectId/setting/tags" element={<ProjectTag/>}/>
+                <Route path="/project/:projectId/setting/types" element={<Types/>}/>
                 <Route path="/project/:projectId/setting/columns" element={<Columns/>}/>
                 <Route path="/project/:projectId/setting/permissions" element={<Permissions/>}/>
                 <Route path="/project/:projectId/close-project" element={<CloseProject/>}/>

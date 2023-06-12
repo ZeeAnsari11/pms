@@ -67,15 +67,26 @@ class ProjectLabelsViewSet(ModelViewSet):
     queryset = ProjectLabels.objects.all()
 
 
-class ProjectSlackWebhookUrlViewSet(ModelViewSet):
+class ProjectSlackWebhookViewSet(ModelViewSet):
     http_method_names = ['get', 'post', 'patch', 'delete']
     filter_backends = [DjangoFilterBackend]
     filterset_fields = "__all__"
 
-    serializer_class = serializers.ProjectSlackWebhookUrlSerializer
+    serializer_class = serializers.ProjectSlackWebhookSerializer
     permission_classes = [IsAuthenticated]
 
-    queryset = ProjectSlackWebhookUrl.objects.all()
+    queryset = ProjectSlackWebhook.objects.all()
+
+
+class ProjectSMTPWebhookViewSet(ModelViewSet):
+    http_method_names = ['get', 'post', 'patch', 'delete']
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = "__all__"
+
+    serializer_class = serializers.ProjectSMTPWebhookSerializer
+    permission_classes = [IsAuthenticated]
+
+    queryset = ProjectSMTPWebhook.objects.all()
 
 
 class ProjectViewSet(ModelViewSet):

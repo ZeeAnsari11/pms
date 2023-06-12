@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from 'react';
+import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import NavBar from "../../Dashboard/Navbar/index";
 import Sidebar from "../../Dashboard/Sidebar";
@@ -164,6 +165,7 @@ function Columns() {
     const [currentPage, setCurrentPage] = useState(1);
     const [isDelete, setIsDelete] = useState(false);
     const [editStatusName, setEditStatusName] = useState('');
+    const { projectId } = useParams();
 
 
     const showModal = () => {
@@ -185,6 +187,7 @@ function Columns() {
 
     const handleInputChange2 = (e) => {
         setInputValue2(e.target.value);
+        setEditStatusName(e.target.value);
     };
 
     const project = {
@@ -202,22 +205,23 @@ function Columns() {
 
     const handleOk = () => {
         const newTag = {
-            "issue_status": inputValue,
+            "status": inputValue,
+            "project": projectId,
         };
 
-        if (inputValue === '') {
+        if (inputValue === '' || projectId == undefined) {
             setIsEmpty(true);
         }
 
         if (inputValue) {
             const response = axios
-                .post(`${process.env.REACT_APP_HOST}/api/issues_status/`, newTag)
+                .post(`${process.env.REACT_APP_HOST}/api/project_status/`, newTag)
                 .then(response => {
                     const data = response.data;
                     console.log(data);
                     const result = {
                         "id": response.data.id,
-                        "issue_status": response.data.issue_status,
+                        "status": response.data.status,
                     };
                     setNewArray([...newArray, result]);
                     setIsModalVisible(false);
@@ -233,13 +237,26 @@ function Columns() {
     const handleOk2 = () => {
         const newTag = {
             id: id,
-            issue_status: inputValue2,
+            status: inputValue2,
         };
 
         if (inputValue2 === '') {
             setIsEmpty2(true);
             return;
         }
+
+        axios
+            .patch(`${process.env.REACT_APP_HOST}/api/project_status/${id}/`, {
+            id: id,
+            status: inputValue2,
+            project: projectId,
+            })
+            .then(response => {
+                console.log('Data updated successfully:', response.data);
+            })
+            .catch(error => {
+                console.error('Error updating data:', error);
+            });
 
         const updatedArray = newArray.filter((item) => item.id !== id);
         let insertIndex = 0;
@@ -266,15 +283,15 @@ function Columns() {
         const tag = newArray.find((item) => item.id === id);
 
         if (tag) {
-            setEditStatusName(tag.issue_status);
-            setIsModalVisible2(true);
             setId(id);
+            setEditStatusName(tag.status);
+            setIsModalVisible2(true);
         }
     };
 
     const deleteIssueStatus = (id) => {
         axios
-            .delete(`${process.env.REACT_APP_HOST}/api/issues_status/${id}`)
+            .delete(`${process.env.REACT_APP_HOST}/api/project_status/${id}`)
             .then(response => {
                 console.log('Data deleted successfully');
                 setIsDelete(true);
@@ -300,12 +317,20 @@ function Columns() {
             setIsDelete(false);
         }
 
-        axios.get(`${process.env.REACT_APP_HOST}/api/issues_status/`)
+        const queryParams = {
+            project: projectId,
+        };
+
+        axios.get(`${process.env.REACT_APP_HOST}/api/project_status/`, {
+            params: {
+            project: projectId,
+            }
+        })
             .then(response => {
                 console.log(response.data);
                 const newDataArray = response.data.map((item) => {
-                        const {id, issue_status} = item;
-                        return {id, issue_status};
+                        const {id, status} = item;
+                        return {id, status};
                     }
                 );
                 setNewArray(newDataArray);
@@ -332,11 +357,11 @@ function Columns() {
                 <NavBar/>
                 <ContentWrapper>
                     <HeadingWrapper>
-                        <SummaryHeading>Project Columns</SummaryHeading>
+                        <SummaryHeading>Project Issues Statues</SummaryHeading>
                     </HeadingWrapper>
                     <BodyWrapper>
                         <ButtonWrapper>
-                            <AddTagButton label="Click me!" onClick={showModal}>Add Columns </AddTagButton>
+                            <AddTagButton label="Click me!" onClick={showModal}>Add Status </AddTagButton>
                             <PaginationWrapper>
                                 <Pagination
                                     current={currentPage}
@@ -350,7 +375,7 @@ function Columns() {
                         </ButtonWrapper>
                         <TableContainer>
                             <TableHeader>
-                                <TableHeaderCell>Columns</TableHeaderCell>
+                                <TableHeaderCell>Statues</TableHeaderCell>
 
                             </TableHeader>
                             {currentItems.map(tag => (
@@ -368,7 +393,7 @@ function Columns() {
                                                         {
                                                             key: 'delete',
                                                             label: 'Delete',
-                                                            onClick: () => handleDeleteTag(tag.id, tag.issue_status)
+                                                            onClick: () => handleDeleteTag(tag.id, tag.status)
                                                         }
                                                     ]
                                                 }}
@@ -381,7 +406,7 @@ function Columns() {
                                                 </a>
                                             </Dropdown>
                                         </IconWrapper>
-                                        <NameTag>{tag.issue_status}</NameTag>
+                                        <NameTag>{tag.status}</NameTag>
                                     </TableCellForTag>
                                 </TableRow>
                             ))}
