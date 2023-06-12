@@ -1,11 +1,13 @@
 from datetime import datetime
-from .models import ProjectSlackWebhookUrl
+from .models import ProjectSlackWebhook
 from celery import shared_task
 import requests
 import os
 
 
 def send_new_task_notification(instance):
+    if not instance.slack_webhook_status:
+        return
     url = fetch_slack_webhook_url(instance.project_id)
     if not url:
         return
@@ -49,6 +51,8 @@ def send_new_task_notification(instance):
 
 
 def send_task_status_notification(instance, old_status, new_status):
+    if not instance.slack_webhook_status:
+        return
     url = fetch_slack_webhook_url(instance.project_id)
     if not url:
         return
@@ -102,8 +106,8 @@ def send_task_assignee_notification(instance, old_assignee, new_assignee):
 
 def fetch_slack_webhook_url(product_id):
     try:
-        webhook_url = ProjectSlackWebhookUrl.objects.get(project=product_id)
-    except ProjectSlackWebhookUrl.DoesNotExist:
+        webhook_url = ProjectSlackWebhook.objects.get(project=product_id)
+    except ProjectSlackWebhook.DoesNotExist:
         return
     return webhook_url.slack_webhook_url or ''
 
