@@ -1,5 +1,5 @@
 import React from 'react';
-import {MdNotificationsNone, MdOutlineSummarize} from 'react-icons/md';
+import {MdNotificationsNone, MdOutlineSummarize, MdOutlineTypeSpecimen} from 'react-icons/md';
 import {GrSettingsOption} from 'react-icons/gr';
 import {TiTags} from 'react-icons/ti';
 import {TbLayoutColumns} from 'react-icons/tb';
@@ -19,6 +19,8 @@ const Icon = ({type, size}) => {
             return <GrSettingsOption size={size}/>;
         case 'Tags':
             return <TiTags color={'Black'} size={size}/>;
+        case 'Types':
+            return <MdOutlineTypeSpecimen color={'Black'} size={size}/>;
         case 'Columns':
             return <TbLayoutColumns color={'Black'} size={size}/>;
         case 'Permissions':

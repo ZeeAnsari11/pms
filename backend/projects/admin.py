@@ -87,9 +87,14 @@ class ProjectTypeAdmin(admin.ModelAdmin):
     autocomplete_fields = ['project']
 
 
-class ProjectSlackWebhookUrlAdmin(admin.ModelAdmin):
-    list_display = ['project', 'slack_webhook_url']
-    search_fields = ['slack_webhook_url']
+class ProjectSlackWebhookAdmin(admin.ModelAdmin):
+    list_display = ['project', 'slack_webhook_url', 'slack_webhook_channel', 'slack_notification_status']
+    search_fields = ['slack_webhook_url', 'slack_webhook_channel', 'slack_notification_status']
+
+
+class ProjectSMTPWebhookAdmin(admin.ModelAdmin):
+    list_display = ['project', 'hostname', 'port', 'username', 'password', 'security_protocol']
+    search_fields = ['project', 'hostname', 'port', 'username', 'password', 'security_protocol']
 
 
 class ProjectStatusAdmin(admin.ModelAdmin):
@@ -98,13 +103,15 @@ class ProjectStatusAdmin(admin.ModelAdmin):
     autocomplete_fields = ['project']
 
 
+
 admin.site.register(models.Project, ProjectAdmin)
 
 admin.site.register(models.ProjectCategory, ProjectCategoryAdmin)
 admin.site.register(models.ProjectLabels, ProjectLabelAdmin)
 admin.site.register(models.ProjectType, ProjectTypeAdmin)
 admin.site.register(models.ProjectStatus, ProjectStatusAdmin)
-admin.site.register(models.ProjectSlackWebhookUrl, ProjectSlackWebhookUrlAdmin)
+admin.site.register(models.ProjectSlackWebhook, ProjectSlackWebhookAdmin)
+admin.site.register(models.ProjectSMTPWebhook, ProjectSMTPWebhookAdmin)
 
 admin.site.register(models.Issue, IssueAdmin)
 
