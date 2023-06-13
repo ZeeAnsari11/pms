@@ -23,7 +23,7 @@ class ProjectType(models.Model):
         on_delete=models.CASCADE,
         related_name='types'
     )
-    type = models.CharField(max_length=255)
+    type = models.CharField(max_length=255, default='Bug')
 
     def __str__(self):
         return self.type
@@ -35,7 +35,7 @@ class ProjectStatus(models.Model):
         on_delete=models.CASCADE,
         related_name='statuses'
     )
-    status = models.CharField(max_length=255)
+    status = models.CharField(max_length=255, default='In Progress')
 
     def __str__(self):
         return self.status
