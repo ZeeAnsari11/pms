@@ -41,16 +41,52 @@ class ProjectStatus(models.Model):
         return self.status
 
 
-class ProjectSlackWebhookUrl(models.Model):
-    project = models.ForeignKey(
+class ProjectSlackWebhook(models.Model):
+    project = models.OneToOneField(
         'Project',
         on_delete=models.CASCADE,
-        related_name='slack_webhook_urls'
+        related_name='slack_webhook'
     )
     slack_webhook_url = models.URLField(validators=[URLValidator(schemes=['https'])])
+    slack_webhook_channel = models.CharField(max_length=50)
+    slack_notification_status = models.BooleanField()
 
     def __str__(self):
         return self.slack_webhook_url
+
+    class Meta:
+        ordering = ['slack_notification_status']
+
+
+class ProjectSMTPWebhook(models.Model):
+    SSL = "SSL"
+    TLS = "TLS"
+    SMTP_TYPE = [
+        (SSL, "SSL"),
+        (TLS, "TLS"),
+    ]
+
+    project = models.OneToOneField(
+        'Project',
+        on_delete=models.CASCADE,
+        related_name='smtp_webhook'
+    )
+    hostname = models.CharField(max_length=255)
+    port = models.IntegerField()
+    username = models.CharField(max_length=255)
+    password = models.CharField(max_length=255)
+    security_protocol = models.CharField(
+        max_length=3,
+        choices=SMTP_TYPE,
+        default=SSL,
+    )
+
+    def __str__(self):
+        return self.hostname
+
+    class Meta:
+        ordering = ['hostname']
+
 
 
 class ProjectLabels(models.Model):
@@ -97,12 +133,19 @@ class Project(models.Model):
         null=True,
         related_name='project_category'
     )
-    slack_webhook_url = models.ForeignKey(
-        ProjectSlackWebhookUrl,
+    slack_webhook_url = models.OneToOneField(
+        ProjectSlackWebhook,
         on_delete=models.CASCADE,
         blank=True,
         null=True,
         related_name='project_slack_webhook_url'
+    )
+    smtp_webhook_url = models.OneToOneField(
+        ProjectSMTPWebhook,
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        related_name='project_smtp_webhook_url'
     )
     project_lead = models.ForeignKey(
         User,

@@ -1,5 +1,5 @@
 import React from 'react';
-import {MdNotificationsNone, MdOutlineSummarize, MdOutlineViewKanban} from 'react-icons/md';
+import {MdNotificationsNone, MdOutlineSummarize, MdOutlineViewKanban, MdOutlineTypeSpecimen} from 'react-icons/md';
 import {FiSettings} from 'react-icons/fi';
 import {CiDeliveryTruck} from 'react-icons/ci';
 import {RiRoadMapLine, RiPagesLine} from 'react-icons/ri'
@@ -36,6 +36,8 @@ const Icon = ({type, size}) => {
             return <GrSettingsOption size={size}/>;
         case 'Tags':
             return <TiTags color={'Black'} size={size}/>;
+        case 'Types':
+            return <MdOutlineTypeSpecimen color={'Black'} size={size}/>;
         case 'Columns':
             return <TbLayoutColumns color={'Black'} size={size}/>;
         case 'Permissions':
