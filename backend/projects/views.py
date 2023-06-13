@@ -90,10 +90,10 @@ class ProjectSMTPWebhookViewSet(ModelViewSet):
 
 
 class ProjectViewSet(ModelViewSet):
-    parser_classes = (MultiPartParser, FormParser)
+    # parser_classes = (MultiPartParser, FormParser)
     http_method_names = ['get', 'post', 'patch', 'delete']
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['name', 'key', 'slug', 'assignee__username', 'project_lead__username', 'company__company_name',
+    filterset_fields = ['name', 'key', 'slug', 'assignees__id', 'project_lead__username', 'company__company_name',
                         'category__category']
 
     def get_serializer_class(self):
@@ -109,15 +109,15 @@ class ProjectViewSet(ModelViewSet):
         return [IsAuthenticated()]
 
     def get_serializer_context(self):
-        return {'assignee': self.request.user.id}
+        return {'assignees': self.request.user.id}
 
     def get_queryset(self):
         user = self.request.user
         if user.is_staff:
-            return Project.objects.prefetch_related('assignee').prefetch_related('project_lead').select_related(
+            return Project.objects.prefetch_related('assignees').prefetch_related('project_lead').select_related(
                 'slack_webhook_url').select_related(
                 'company').select_related('category').all()
-        return Project.objects.filter(Q(project_lead=self.request.user) | Q(assignee=self.request.user))
+        return Project.objects.filter(Q(project_lead=self.request.user) | Q(assignees in self.request.user))
 
 
 class IssueViewSet(ModelViewSet):
