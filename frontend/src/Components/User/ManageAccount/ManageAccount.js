@@ -662,7 +662,7 @@ const ProfileVisibility = () => {
                                         You're the <strong>reporter</strong>
                                     </CheckboxLabel>
 
-                                    <CheckboxLabel htmlFor="assignee">
+                                    <CheckboxLabel htmlFor="assignees">
                                         <input type="checkbox" defaultChecked={userData?.is_assignee} id="assignee"
                                                onClick={handleIsassigneeChange}/>
                                         You're the <strong>assignee</strong> for the issue

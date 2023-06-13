@@ -53,7 +53,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
 
 class ProjectSerializer(serializers.ModelSerializer):
-    assignee = CustomUserSerializer(read_only=True)
+    assignees = CustomUserSerializer(many=True)
     project_lead = CustomUserSerializer(read_only=True)
     type = ProjectTypeSerialzer(read_only=True)
     status = ProjectStatusSerializer(read_only=True)
@@ -63,7 +63,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Project
-        fields = ["id", 'icon', 'name', 'slug', 'key', 'assignee', 'project_lead', 'description', 'company', 'status',
+        fields = ["id", 'icon', 'name', 'slug', 'key', 'assignees', 'project_lead', 'description', 'company', 'status',
                   'type', 'label', 'category']
 
 
@@ -84,7 +84,7 @@ class ProjectIssuesSerializer(serializers.ModelSerializer):
 class CreateProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Project
-        fields = ["id", 'icon', 'name', 'slug', 'key', 'assignee', 'project_lead', 'description', 'company', 'category']
+        fields = ["id", 'icon', 'name', 'slug', 'key', 'assignees', 'project_lead', 'description', 'company', 'category']
 
 
 def save_file_to_storage(file):
