@@ -6,8 +6,6 @@ import os
 
 
 def send_new_task_notification(instance):
-    if not instance.slack_notification_status:
-        return
     url = fetch_slack_webhook_url(instance.project_id)
     if not url:
         return
@@ -51,8 +49,6 @@ def send_new_task_notification(instance):
 
 
 def send_task_status_notification(instance, old_status, new_status):
-    if not instance.slack_notification_status:
-        return
     url = fetch_slack_webhook_url(instance.project_id)
     if not url:
         return
@@ -109,7 +105,11 @@ def fetch_slack_webhook_url(product_id):
         webhook_url = ProjectSlackWebhook.objects.get(project=product_id)
     except ProjectSlackWebhook.DoesNotExist:
         return
-    return webhook_url.slack_webhook_url or ''
+    if not webhook_url.slack_notification_status:
+        return
+    if not webhook_url.slack_webhook_url:
+        return
+    return webhook_url.slack_webhook_url
 
 
 def send_slack_notification(url, data):
