@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import styled from 'styled-components';
 import NavBar from "../../Dashboard/Navbar/index";
 import Sidebar from "../../Dashboard/Sidebar";
@@ -9,6 +9,8 @@ import {IoNotificationsSharp, IoNotificationsOff} from 'react-icons/io5';
 import {color} from "../../Dashboard/Sidebar/utils/styles";
 import {ToastContainer, toast} from 'react-toastify';
 import {Switch} from 'antd';
+import {useParams} from "react-router-dom";
+import axios from "axios";
 
 
 const PageContainer = styled.div`
@@ -138,13 +140,44 @@ const Paragraph = styled.p`
 
 function Notification() {
 
-    const [selectedValues, setSelectedValues] = useState([]);
-    const [switchValue, setSwitchValue] = useState(false);
+    const [slackAPIResponse, setSlackAPIResponse] = useState([]);
+    const [gmailAPIResponse, setGmailAPIResponse] = useState([]);
+    const [switchValueForSlack, setSwitchValueForSlack] = useState(false);
     const [switchValueForGmail, setSwitchValueForGmail] = useState(false);
+    const { projectId } = useParams();
 
-    const handleSelect = (values) => {
-        setSelectedValues(values);
-    };
+
+    const handleAPIResponseData = (response) => {
+        console.log(response.data);
+        const responseData = response.data.map((item) => {
+                    const {id, project, slack_notification_status, slack_webhook_url} = item;
+                    return {id, project, slack_notification_status, slack_webhook_url};
+                }
+            );
+        if (responseData.length > 0) {
+            const { slack_notification_status } = responseData[0];
+            setSwitchValueForSlack(slack_notification_status);
+        }
+        setSlackAPIResponse(responseData);
+    }
+
+    useEffect(() => {
+    axios
+        .get(`${process.env.REACT_APP_HOST}/api/project_slack_webhook/`, {
+            params: {
+            project: projectId,
+            }
+        })
+        .then(response => {
+            if(response.status === 200) {
+                handleAPIResponseData(response);
+            }
+
+        })
+        .catch(error => {
+            console.log(error)
+        });
+    }, [switchValueForSlack, switchValueForGmail]);
 
 
     const items = [
@@ -152,13 +185,7 @@ function Notification() {
         {icon: <FcGoogle/>, label: 'Gmail', value: 'Gmail'},
     ];
 
-
-    const project = {
-        name: 'Project Name',
-        category: 'Project Setting'
-    }
-
-    const handleSwitchChange = (checked) => {
+    const handleSwitchChangeForSlack = (checked) => {
         if (checked === true) {
             toast.success(<><IoNotificationsSharp/> Slack Notification is enabled</>, {
                 position: "bottom-left",
@@ -182,8 +209,29 @@ function Notification() {
                 theme: "colored",
             });
         }
+        if (slackAPIResponse.length > 0) {
+            const { id, slack_notification_status, slack_webhook_url, project } = slackAPIResponse[0];
+            const updatedData = {
+                id: id,
+                slack_notification_status: switchValueForSlack,
+                slack_webhook_url: slack_webhook_url,
+                project: project,
+            };
+            axios
+            .put(`${process.env.REACT_APP_HOST}/api/project_slack_webhook/`, {
+                updatedData
+            })
+            .then(response => {
+            if(response.status === 200) {
+                handleAPIResponseData(response);
+            }
+            })
+            .catch(error => {
+                console.log(error)
+            });
+        }
 
-        setSwitchValue(checked);
+        setSwitchValueForSlack(checked);
     };
 
     const handleSwitchChangeForGmail = (checked) => {
@@ -217,31 +265,16 @@ function Notification() {
     return (
         <div>
             <PageContainer>
-                <Sidebar project={project}/>
+                <Sidebar/>
                 <NavBar/>
                 <ContentWrapper>
                     <HeadingWrapper>
                         <SummaryHeading>Notification</SummaryHeading>
                     </HeadingWrapper>
 
-                    <HeadingWrapper>
-                        <SubHeading>Notification methods option</SubHeading>
-                        <OptionWrapper>
-                            <GenericSelectField placeholder={<strong>Notification</strong>}
-                                                isMultiple={true}
-                                                options={items}
-                                                width={"250px"}
-                                                onSelectChange={handleSelect}
-                            />
-                        </OptionWrapper>
-                    </HeadingWrapper>
-
                     <Divider/>
 
-                    {selectedValues.map((selectedValue, index) => {
-                        if (selectedValue === 'Slack') {
-                            return (
-                                <NotificationContainerForSlack key={index}>
+                   <NotificationContainerForSlack>
                                     <NotificationWrapper>
                                         <InnerNotificationWrapper>
                                             <HeadingWrapper>
@@ -254,25 +287,9 @@ function Notification() {
                                                     <AiFillSlackCircle fontSize={"28px"}/>
                                                 </IconWrapperDiv>
                                                 <IconName>Slack</IconName>
-                                                <SwitchButtonWrapper><Switch checked={switchValue}
-                                                                             onChange={handleSwitchChange}/></SwitchButtonWrapper>
+                                                <SwitchButtonWrapper><Switch checked={switchValueForSlack}
+                                                                             onChange={handleSwitchChangeForSlack}/></SwitchButtonWrapper>
                                             </HeadingWrapper>
-                                            <Paragraph></Paragraph>
-                                        </InnerNotificationWrapper>
-                                    </NotificationWrapper>
-                                </NotificationContainerForSlack>
-                            );
-                        } else if (selectedValue === 'Gmail') {
-                            return (
-                                <NotificationContainerForSlack key={index}>
-                                    <NotificationWrapper>
-                                        <InnerNotificationWrapper>
-                                            <HeadingWrapper>
-                                                <SubHeadingForNotificationMethods>Notification
-                                                    Method</SubHeadingForNotificationMethods>
-                                            </HeadingWrapper>
-
-
                                             <HeadingWrapper>
                                                 <IconWrapperDiv>
                                                     <FcGoogle fontSize={"28px"}/>
@@ -281,12 +298,10 @@ function Notification() {
                                                 <SwitchButtonWrapper><Switch checked={switchValueForGmail}
                                                                              onChange={handleSwitchChangeForGmail}/></SwitchButtonWrapper>
                                             </HeadingWrapper>
+                                            <Paragraph></Paragraph>
                                         </InnerNotificationWrapper>
                                     </NotificationWrapper>
                                 </NotificationContainerForSlack>
-                            );
-                        }
-                    })}
 
 
                 </ContentWrapper>
