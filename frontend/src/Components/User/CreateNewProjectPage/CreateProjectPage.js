@@ -248,7 +248,7 @@ function CreateProject() {
     };
 
     const handleSelectedProjectAssigneesChange = (value) => {
-        setSelectedProjectAssignees(parseInt(value));
+        setSelectedProjectAssignees(value.map((value) => parseInt(value, 10)));
     };
 
 
@@ -363,28 +363,28 @@ function CreateProject() {
     function handleSubmit(event) {
         event.preventDefault();
         const form = event.target;
-        const projectdata = {
-            "icon": image,
-            "name": form.elements.project.value,
-            "slug": generateSlug(form.elements.project.value),
-            "key": uniqueProjectKey,
-            "assignee": selectedProjectAssignees,
-            "project_lead": selectedProjectLead,
-            "description": text,
-            "company": selectedCompany,
-            "category": selectedCategory
-        };
-        console.log(selectedCompany, selectedCategory)
 
-        axios({
-            method: 'post',
-            url: 'http://127.0.0.1:8000/api/projects/',
-            headers: {
-                'Content-Type': 'multipart/form-data',
+        const formData = new FormData();
+        formData.append("icon", image);
+        formData.append("name", form.elements.project.value);
+        formData.append("slug", generateSlug(form.elements.project.value));
+        formData.append("key", uniqueProjectKey);
+        selectedProjectAssignees.forEach((assignee, index) => {
+            formData.append('assignees', assignee);
+        });
+        formData.append("project_lead", selectedProjectLead);
+        formData.append("description", text);
+        formData.append("company", selectedCompany);
+        formData.append("category", selectedCategory);
+        console.log(selectedCompany, selectedCategory)
+        console.log("------selectedProjectAssignees-----", selectedProjectAssignees)
+        console.log("--------projectdata-------",formData)
+
+        axios.post('http://127.0.0.1:8000/api/projects/',
+            formData, {
                 'Authorization': `Token ${authToken}`,
-            },
-            data: projectdata
-        })
+            }
+        )
             .then(response => {
                 // handle the response
                 console.log(response.data);
@@ -403,7 +403,7 @@ function CreateProject() {
                 <Header>
                     <Details>Details</Details>
                 </Header>
-                <FormWrapper onSubmit={handleSubmit} encType="multipart/form-data" method="POST">
+                <FormWrapper onSubmit={handleSubmit}  method="POST">
                     <ImageUploader onImageChange={handleImageChange}/>
                     <LabelForProject htmlFor="project">Project:</LabelForProject>
                     <Input type="text" id="project" name="project" placeholder="Enter project name"/>
@@ -426,11 +426,11 @@ function CreateProject() {
                         isMultiple={false}
                         placeholder={"Unassigned"}
                         width="50%"/>
-                    <LabelforAssignees htmlFor="assignee">Assignee:</LabelforAssignees>
+                    <LabelforAssignees htmlFor="assignees">Assignee:</LabelforAssignees>
                     <GenericSelectField
                         onSelectChange={handleSelectedProjectAssigneesChange}
                         options={useroptions}
-                        isMultiple={false}
+                        isMultiple={true}
                         placeholder={"Unassigned"}
                         width="50%"/>
                     <LabelforLead htmlFor="category">Project Lead:</LabelforLead>
