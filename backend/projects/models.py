@@ -88,7 +88,6 @@ class ProjectSMTPWebhook(models.Model):
         ordering = ['hostname']
 
 
-
 class ProjectLabels(models.Model):
     project = models.ForeignKey(
         'Project',
