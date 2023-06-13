@@ -1,13 +1,8 @@
-from django.db import models, transaction
+from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import URLValidator
 from .validators import validate_file_size
 from django.utils.text import slugify
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-
-
-# Create your models here.
 
 
 class ProjectCategory(models.Model):
@@ -118,12 +113,9 @@ class Project(models.Model):
         max_length=100,
         blank=True
     )
-    assignee = models.ForeignKey(
+    assignees = models.ManyToManyField(
         User,
-        on_delete=models.CASCADE,
-        blank=True,
-        null=True,
-        related_name='projects_assigned'
+        related_name='projects_assignees'
     )
     category = models.ForeignKey(
         ProjectCategory,
@@ -249,16 +241,6 @@ class Issue(models.Model):
         if not self.slug or self.project.name not in self.slug:
             self.slug = slugify(f"{self.project.name} - {self.pk}")
         super().save(*args, **kwargs)
-
-
-@receiver(post_save, sender=Issue)
-def post_save_issue(sender, instance, created, **kwargs):
-    if created:
-        @transaction.on_commit
-        def update_slug():
-            if not instance.slug or instance.project.name not in instance.slug:
-                instance.slug = slugify(f"{instance.project.name} - {instance.pk}")
-                instance.save()
 
 
 class Meta:
