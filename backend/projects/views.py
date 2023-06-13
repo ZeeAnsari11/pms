@@ -15,7 +15,7 @@ from . import serializers
 
 # Create your views here.
 class UserViewSet(ModelViewSet):
-    http_method_names = ['get','post', 'patch' ]
+    http_method_names = ['get', 'post', 'patch']
     serializer_class = serializers.CustomUserSerializer
     permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend]
@@ -111,7 +111,7 @@ class ProjectViewSet(ModelViewSet):
 
 class IssueViewSet(ModelViewSet):
     http_method_names = ['get', 'post', 'put', 'patch', 'delete']
-    parser_classes = (MultiPartParser, FormParser)
+    # parser_classes = (MultiPartParser, FormParser)
     filter_backends = [DjangoFilterBackend]
     filterset_class = IssueFilter
 
@@ -133,9 +133,7 @@ class IssueViewSet(ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         if user.is_staff:
-            return Issue.objects.prefetch_related('assignee').select_related('reporter')\
-                .select_related('project')\
-                .all()
+            return Issue.objects.prefetch_related('assignee').select_related('reporter').select_related('project').all()
         return Issue.objects.filter(Q(reporter_id=self.request.user) | Q(assignee=self.request.user))
 
 

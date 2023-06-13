@@ -246,24 +246,24 @@ const ProjectListing = () => {
     console.log("Projects Data:", projects)
 
 
-    useEffect(() => {
-        const fetchuserImage = async () => {
-            const userResponse = await axios.get(`${process.env.REACT_APP_HOST}/api/auth/users/me/`, {
-                headers: {
-                    Authorization: `Token ${authToken}`,
-                },
-            });
-            const avatarResponse = await axios.get(`${process.env.REACT_APP_HOST}/api/avatar/all/`, {
-                headers: {
-                    Authorization: `Token ${authToken}`,
-                },
-            });
-            if (avatarResponse.data.user.username === userResponse.data.username) {
-                setuserimage(avatarResponse.data);
-            }
-        };
-        fetchuserImage();
-    }, []);
+    // useEffect(() => {
+    //     const fetchuserImage = async () => {
+    //         const userResponse = await axios.get(`${process.env.REACT_APP_HOST}/api/auth/users/me/`, {
+    //             headers: {
+    //                 Authorization: `Token ${authToken}`,
+    //             },
+    //         });
+    //         const avatarResponse = await axios.get(`${process.env.REACT_APP_HOST}/api/avatar/all/`, {
+    //             headers: {
+    //                 Authorization: `Token ${authToken}`,
+    //             },
+    //         });
+    //         if (avatarResponse.data.user.username === userResponse.data.username) {
+    //             setuserimage(avatarResponse.data);
+    //         }
+    //     };
+    //     fetchuserImage();
+    // }, []);
 
     const showModal = () => {
         setVisible(true);
@@ -373,7 +373,7 @@ const ProjectListing = () => {
                         </td>
                         <td>{project.key.toUpperCase()}</td>
                         {/*<td>{project.type}Team-managed software</td>*/}
-                        <td>{project.project_category?.category}</td>
+                        <td>{project.category?.category}</td>
                         <LeadColumn>
                             {/*<img src={userimage.image ? userimage.image : 'http://localhost:3000/Images/NoImage.jpeg'}*/}
                             {/*     alt='Lead Avatar'/>*/}
