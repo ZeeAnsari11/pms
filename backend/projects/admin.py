@@ -22,11 +22,11 @@ class ProjectLabelAdmin(admin.ModelAdmin):
 
 
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ['name', 'company', 'category', 'project_lead', 'assignee', 'issues', 'slack_webhook_url']
+    list_display = ['name', 'company', 'category', 'project_lead', 'issues', 'slack_webhook_url']
     prepopulated_fields = {'slug': ['name']}
-    autocomplete_fields = ['company', 'category', 'assignee', 'project_lead', 'slack_webhook_url']
+    autocomplete_fields = ['company', 'category', 'assignees', 'project_lead', 'slack_webhook_url']
     search_fields = ['name']
-    list_editable = ['category', 'project_lead', 'assignee', 'slack_webhook_url']
+    list_editable = ['category', 'project_lead', 'slack_webhook_url']
 
     def issues(self, project):
         url = (
