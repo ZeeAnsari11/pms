@@ -117,7 +117,7 @@ class ProjectViewSet(ModelViewSet):
             return Project.objects.prefetch_related('assignees').prefetch_related('project_lead').select_related(
                 'slack_webhook_url').select_related(
                 'company').select_related('category').all()
-        return Project.objects.filter(Q(project_lead=self.request.user) | Q(assignees in self.request.user))
+        return Project.objects.filter(Q(project_lead=self.request.user) | Q(assignees__in=[self.request.user])).distinct()
 
 
 class IssueViewSet(ModelViewSet):
