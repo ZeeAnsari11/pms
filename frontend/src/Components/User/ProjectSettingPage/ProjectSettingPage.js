@@ -117,10 +117,8 @@ function ProjectSettingPage() {
     const [usersData, setUsersData] = useState([]);
     const [projectData, setProjectData] = useState({});
     const [projectLeadData, setProjectLeadData] = useState([]);
-    const [projectAssigneesData, setProjectAssigneesData] = useState([]);
     const [icon, setIcon] = useState(null);
     const [selectedProjectLead, setSelectedProjectLead] = useState([]);
-    const [selectedProjectAssignees, setSelectedProjectAssignees] = useState([]);
 
     const defaultIconPath = "Images/NoImage.jpeg"
     useEffect(() => {
@@ -150,9 +148,6 @@ function ProjectSettingPage() {
     useEffect(() => {
         if (projectData.project_lead) {
             setProjectLeadData(projectData.project_lead.username);
-        }
-        if (projectData.assignee) {
-            setProjectAssigneesData(projectData.assignee.username)
         }
     }, [projectData]);
 
@@ -186,7 +181,6 @@ function ProjectSettingPage() {
     console.log("Icon:", icon)
     console.log("Project Data:", projectData)
     console.log("Project Lead:", projectLeadData)
-    console.log("Project Assignee:", projectAssigneesData)
 
 
     const [name, setName] = useState(''); // Set initial value from project object
@@ -194,84 +188,11 @@ function ProjectSettingPage() {
     const [projectCategory, setProjectCategory] = useState(''); // Set initial value from project object
 
 
-    const location = useLocation();
-
     const {projectId} = useParams()
 
-    const searchParams = new URLSearchParams(location.search);
-
-
-    const [modalVisible, setModalVisible] = useState(false);
-
-    const handleCancel = () => {
-        setModalVisible(false);
-    };
-
-    const handleConfirm = () => {
-        // Do something when confirm button is clicked
-        setModalVisible(false);
-    };
-
-    const showModalForNotification = () => {
-        setModalVisible(true);
-    }
-
-    const items = [{
-        label: <Link onClick={showModalForNotification}>Move to trash </Link>, key: '0',
-    },];
-
-    const [visibleForIcon, setVisibleForIcon] = useState(false);
 
     const [image, setImage] = useState(null);
 
-    const [select, setSelect] = useState(null);
-
-    const [description, setDescription] = useState('');
-
-
-    const handleUpload = (file) => {
-        setImage(file);
-        setVisibleForIcon(false);
-    };
-
-    const handleDescriptionChange = (value) => {
-        setDescription(value);
-    }
-
-    const handleUploadfForDragAndDrop = (file) => {
-        setImage(file);
-        setVisibleForIcon(false);
-    }
-
-    const showModalForIcon = () => {
-        setVisibleForIcon(true);
-        setSelect(1);
-    };
-
-    const handleOkForIcon = () => {
-        setVisibleForIcon(false);
-    };
-
-    const handleCancelForIcon = () => {
-        setVisibleForIcon(false);
-        setImage(null);
-    };
-
-
-    const modalStyle = {
-        borderRadius: 0, height: '1000px', cancelButton: {backgroundColor: 'red'}
-    };
-
-    const LinkedIssue1 = [
-        {value: 'option1', label: 'blocks'},
-        {value: 'option2', label: 'is blocked by'},
-        {value: 'option3', label: 'clones'},
-        {value: 'option4', label: 'is cloned by'},
-        {value: 'option5', label: 'duplicates'},
-        {value: 'option6', label: 'is duplicated by'},
-        {value: 'option7', label: 'relates to'},
-
-    ];
 
     const useroptions = usersData
         ? usersData.map((user) => ({
@@ -284,9 +205,6 @@ function ProjectSettingPage() {
         setSelectedProjectLead(parseInt(value));
     };
 
-    const handleSelectedProjectAssigneesChange = (value) => {
-        setSelectedProjectAssignees(parseInt(value));
-    };
     const handleNameChange = (event) => {
         setName(event.target.value);
     };
@@ -300,28 +218,6 @@ function ProjectSettingPage() {
         setIcon(image);
     }
 
-    const project = {
-        name: name,
-        category: projectCategory?.category,
-        icon: IconPath
-    }
-
-    function getProjectLeadUsername(projectLeadData, useroptions) {
-        // Get the username of the project lead from the projectLeadData object.
-        const projectLeadUsername = projectLeadData.username;
-
-        // Loop through the useroptions object and find the user with the matching username.
-        for (const user of useroptions) {
-            if (user.username === projectLeadUsername) {
-                // Return the username of the project lead.
-                return user.username;
-            }
-        }
-
-        // If the project lead username is not found in the useroptions object, return undefined.
-        return undefined;
-    }
-
 
     function handleSubmit(event) {
         event.preventDefault();
@@ -331,7 +227,6 @@ function ProjectSettingPage() {
             "key": key,
             "icon": image,
             "project_lead": selectedProjectLead,
-            "assignee": selectedProjectAssignees
         };
 
         axios({
@@ -381,10 +276,6 @@ function ProjectSettingPage() {
                                      onSelectChange={handleSelectedProjectLeadChange}
                                      width="50%"/>
                     <Description>Make sure your project lead has access to issues in the project.</Description>
-                    <LabelforDefaultassignee htmlFor="category">Default assignee</LabelforDefaultassignee>
-                    <UserSelectField users={useroptions} defaultValue={`${projectAssigneesData}`}
-                                     onSelectChange={handleSelectedProjectAssigneesChange}
-                                     width="50%"/>
                     <SaveButton>Save</SaveButton>
                 </FormWrapper>
             </PageWrapper>
