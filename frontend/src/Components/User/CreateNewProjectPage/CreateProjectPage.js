@@ -382,7 +382,7 @@ function CreateProject() {
         console.log("------selectedProjectAssignees-----", selectedProjectAssignees)
         console.log("--------projectdata-------", formData)
 
-        axios.post('http://127.0.0.1:8000/api/projects/', formData, {
+        axios.post(`${process.env.REACT_APP_HOST}/api/projects/`, formData, {
             headers: {
                 'Authorization': `Token ${authToken}`,
             },
