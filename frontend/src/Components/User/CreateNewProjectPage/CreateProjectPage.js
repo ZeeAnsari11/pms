@@ -364,8 +364,10 @@ function CreateProject() {
         event.preventDefault();
         const form = event.target;
 
-        const formData = new FormData();
-        formData.append("icon", image);
+        const formData = new FormData()
+        if (image !== null) {
+            formData.append("icon", image);
+        }
         formData.append("name", form.elements.project.value);
         formData.append("slug", generateSlug(form.elements.project.value));
         formData.append("key", uniqueProjectKey);
@@ -378,13 +380,13 @@ function CreateProject() {
         formData.append("category", selectedCategory);
         console.log(selectedCompany, selectedCategory)
         console.log("------selectedProjectAssignees-----", selectedProjectAssignees)
-        console.log("--------projectdata-------",formData)
+        console.log("--------projectdata-------", formData)
 
-        axios.post('http://127.0.0.1:8000/api/projects/',
-            formData, {
+        axios.post('http://127.0.0.1:8000/api/projects/', formData, {
+            headers: {
                 'Authorization': `Token ${authToken}`,
-            }
-        )
+            },
+        })
             .then(response => {
                 // handle the response
                 console.log(response.data);
@@ -403,12 +405,10 @@ function CreateProject() {
                 <Header>
                     <Details>Details</Details>
                 </Header>
-                <FormWrapper onSubmit={handleSubmit}  method="POST">
+                <FormWrapper onSubmit={handleSubmit} method="POST">
                     <ImageUploader onImageChange={handleImageChange}/>
                     <LabelForProject htmlFor="project">Project:</LabelForProject>
                     <Input type="text" id="project" name="project" placeholder="Enter project name"/>
-                    {/*<LabelForKey htmlFor="key">Key:</LabelForKey>*/}
-                    {/*<Input type="text" id="key" name="key" placeholder="Enter project key"/>*/}
                     <LabelForDescriptionBoc htmlFor="key">Description:</LabelForDescriptionBoc>
                     <StyledReactQuill id="exampleEditor" value={text} onChange={handleTextChange}/>
                     <LabelForCompany htmlFor="category">Company:</LabelForCompany>
