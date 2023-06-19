@@ -11,6 +11,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import MultiPartParser, FormParser
 from .models import *
 from . import serializers
+from rest_framework.decorators import action
 
 
 # Create your views here.
@@ -117,17 +118,25 @@ class ProjectViewSet(ModelViewSet):
             return Project.objects.prefetch_related('assignees').prefetch_related('project_lead').select_related(
                 'slack_webhook_url').select_related(
                 'company').select_related('category').all()
-        return Project.objects.filter(Q(project_lead=self.request.user) | Q(assignees__in=[self.request.user])).distinct()
+        return Project.objects.filter(
+            Q(project_lead=self.request.user) | Q(assignees__in=[self.request.user])).distinct()
+
+    @action(detail=True, methods=['GET'])
+    def assignees(self, request, pk=None):
+        project = self.get_object()
+        assignees = project.assignees.all()
+        serializer = serializers.CustomUserSerializer(assignees, many=True)
+        return Response(serializer.data)
 
 
 class IssueViewSet(ModelViewSet):
-    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
+    http_method_names = ['get', 'post', 'patch', 'delete']
     # parser_classes = (MultiPartParser, FormParser)
     filter_backends = [DjangoFilterBackend]
     filterset_class = IssueFilter
 
     def get_serializer_class(self):
-        if self.request.method == 'POST':
+        if self.request.method in ['POST', 'PATCH', 'DELETE']:
             return serializers.CreateIssueSerializer
         return serializers.IssueSerializer
 
@@ -244,13 +253,21 @@ class ProjectIssuesViewSet(ModelViewSet):
         return {'project_id': self.kwargs['project_pk']}
 
     def get_queryset(self):
-        queryset = Issue.objects.filter(project_id=self.kwargs['project_pk']).select_related('reporter')
+        queryset = Issue.objects.filter(project_id=self.kwargs['project_pk']).select_related('reporter').filter(
+            Q(reporter_id=self.request.user) | Q(assignee=self.request.user))
 
         issue_type = self.request.query_params.get('issue_type', None)
         if issue_type:
             queryset = queryset.filter(issue_type=issue_type)
 
         return queryset
+
+    # def get_queryset(self):
+    #     user = self.request.user
+    #     if user.is_staff:
+    #         return Issue.objects.prefetch_related('assignee').select_related('reporter').select_related('project').all()
+    #     return Issue.objects.filter(Q(reporter_id=self.request.user) | Q(assignee=self.request.user))
+    #
 
 
 def upload(request):
