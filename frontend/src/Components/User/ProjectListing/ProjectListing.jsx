@@ -1,10 +1,9 @@
-import React, {useState, useEffect} from 'react';
-import axios from 'axios';
+import React, { useState, useEffect, useContext } from 'react';
+import apiRequest from '../../../Utils/apiRequest';
+import { AuthContext } from '../../../Utils/AuthContext';
 import styled from 'styled-components';
-import Dropdown from '../../Dashboard/Dropdown/index';
-import {HiDotsHorizontal} from 'react-icons/hi';
-import {Link} from 'react-router-dom';
-import {Button, Modal} from 'antd';
+import { Link } from 'react-router-dom';
+import {Modal} from 'antd';
 import {GrAlert} from 'react-icons/gr';
 import {CiSettings} from 'react-icons/ci'
 import ProjectSettingPage from "../ProjectSettingPage/ProjectSettingPage";
@@ -227,47 +226,25 @@ const OptionsColumns = styled.td`
 
 
 const ProjectListing = () => {
-    let authToken = localStorage.getItem('auth_token')
     const [visible, setVisible] = useState(false);
     const [projects, setProjects] = useState([]);
-    const [userimage, setuserimage] = useState([]);
+
+    const { authToken } = useContext(AuthContext);
 
     useEffect(() => {
         const fetchProjects = async () => {
-            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/projects/`, {
-                headers: {
-                    Authorization: `Token ${authToken}`,
-                },
-            });
-            setProjects(response.data);
+            const response = await apiRequest
+                .get(`/api/projects/`, {
+                    headers: {
+                        Authorization: `Token ${authToken}`,
+                    },
+                } );
+                setProjects(response.data);
         };
         fetchProjects()
     }, []);
     console.log("Projects Data:", projects)
 
-
-    // useEffect(() => {
-    //     const fetchuserImage = async () => {
-    //         const userResponse = await axios.get(`${process.env.REACT_APP_HOST}/api/auth/users/me/`, {
-    //             headers: {
-    //                 Authorization: `Token ${authToken}`,
-    //             },
-    //         });
-    //         const avatarResponse = await axios.get(`${process.env.REACT_APP_HOST}/api/avatar/all/`, {
-    //             headers: {
-    //                 Authorization: `Token ${authToken}`,
-    //             },
-    //         });
-    //         if (avatarResponse.data.user.username === userResponse.data.username) {
-    //             setuserimage(avatarResponse.data);
-    //         }
-    //     };
-    //     fetchuserImage();
-    // }, []);
-
-    const showModal = () => {
-        setVisible(true);
-    };
 
     const handleOk = () => {
         setVisible(false);
@@ -277,42 +254,9 @@ const ProjectListing = () => {
         setVisible(false);
     };
 
-    const imagePaths = [
-        `${process.env.REACT_APP_HOST}//media/default_avatars/flamingo.png`,
-        `${process.env.REACT_APP_HOST}//media/default_avatars/butterfly.png`,
-        `${process.env.REACT_APP_HOST}//media/default_avatars/leopard.png`,
-        `${process.env.REACT_APP_HOST}//media/default_avatars/squirrel.png`,
-        `${process.env.REACT_APP_HOST}//media/default_avatars/starfish.png`,
 
-        // Add more image paths here
-    ];
-
-    function getRandomImagePath(imagePaths) {
-        // Generate a random index within the range of available image paths
-        const randomIndex = Math.floor(Math.random() * imagePaths.length);
-
-        // Retrieve the randomly selected image path
-        const randomImagePath = imagePaths[randomIndex];
-        return randomImagePath;
-    }
-
-    const items = [
-        {
-            label: <Link to='/setting'>Project Setting</Link>,
-            key: '0',
-        },
-        {
-            type: 'divider',
-        },
-        {
-            label: <Link onClick={showModal}>Move to trash</Link>,
-            key: '1',
-        },
-    ];
 
     const userIcon = <GrAlert/>;
-    const message = `Welcome, ${userIcon}!`;
-    const someData = {id: 1, name: 'John'};
 
     return (
         <ProjectListingTable>
@@ -360,8 +304,8 @@ const ProjectListing = () => {
                                     <ProjectAvatar
                                         src={
                                             project.icon
-                                                ? `${process.env.REACT_APP_HOST}${project.icon}`
-                                                : "http://localhost:3000/Images/NoImage.jpeg"
+                                                ? `${process.env.REACT_APP_HOST}/${project.icon}`
+                                                : `${process.env.REACT_APP_HOST}/Images/NoImage.jpeg`
                                         }
                                         alt='Project Avatar'
                                     />
@@ -372,11 +316,8 @@ const ProjectListing = () => {
                             </NameColumn>
                         </td>
                         <td>{project.key.toUpperCase()}</td>
-                        {/*<td>{project.type}Team-managed software</td>*/}
                         <td>{project.category?.category}</td>
                         <LeadColumn>
-                            {/*<img src={userimage.image ? userimage.image : 'http://localhost:3000/Images/NoImage.jpeg'}*/}
-                            {/*     alt='Lead Avatar'/>*/}
                             <p>{project.project_lead.username}</p>
                         </LeadColumn>
                         <OptionsColumns>
