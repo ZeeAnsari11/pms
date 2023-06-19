@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import NavBar from "../../Dashboard/Navbar";
 import GenericSelectField from "../../Dashboard/SelectFields/GenericSelectField";
 import {Link} from 'react-router-dom';
-import Selector from "../../../Shared/Components/Select";
 
 
 const PersonalSetting = styled.div`

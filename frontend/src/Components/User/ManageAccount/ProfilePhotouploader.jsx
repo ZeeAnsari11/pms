@@ -1,9 +1,6 @@
 import React, {useState, useRef} from "react";
 import styled from "styled-components";
 
-import {Card, Button} from "antd";
-
-const {Meta} = Card;
 
 const Container = styled.div`
   display: flex;

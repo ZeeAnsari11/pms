@@ -1,7 +1,8 @@
 import React, {useState} from 'react';
 import styled from 'styled-components';
+import apiRequest from '../../../Utils/apiRequest';
+import { StatusCodes } from 'http-status-codes';
 import '../../../Configurations/colors';
-import axios from 'axios';
 
 const Container = styled.div`
   position: absolute;
@@ -87,15 +88,18 @@ const ForgotPassword = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        axios.post(`${process.env.REACT_APP_HOST}/api/auth/users/reset_password/`, {"email": email})
+        apiRequest
+            .post(`/api/auth/users/reset_password/`,
+                {
+                    "email": email
+                } )
             .then(response => {
-                if (response.status === 204) {
-                    setSubmitted(true);
-                } else {
-                    console.error('Error sending password reset email:');
+                if (response.status === StatusCodes.NO_CONTENT) {
+                    setSubmitted(true)
                 }
             })
             .catch(error => {
+                console.error('Error sending password reset email:');
                 console.error('Error:', error);
             });
     };

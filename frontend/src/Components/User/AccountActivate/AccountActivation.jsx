@@ -1,7 +1,7 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {useNavigate, useLocation} from 'react-router-dom';
+import apiRequest from '../../../Utils/apiRequest';
 import styled from 'styled-components';
-import axios from 'axios';
 
 const ForgotPasswordContainer = styled.div`
   position: absolute;
@@ -49,6 +49,7 @@ const Button = styled.button`
 
 const AccountActivation = () => {
     const [activated, setActivated] = useState(false);
+
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -57,7 +58,11 @@ const AccountActivation = () => {
         const uid = searchParams.get('uid');
         const token = searchParams.get('token');
 
-        axios.post(`${process.env.REACT_APP_HOST}/api/auth/users/activation/`, {uid, token})
+        apiRequest
+            .post(`/api/auth/users/activation/`,
+                {
+                    uid, token
+                } )
             .then(response => {
                 if (response.status === 204) {
                     setActivated(true);
@@ -86,14 +91,14 @@ const AccountActivation = () => {
         <ForgotPasswordContainer>
             {!activated && (
                 <span style={{color: 'white', fontWeight: 'bold'}}>
-          Please wait, your account is activating.
+                    Please wait, your account is activating.
         </span>
             )}
             {activated && (
                 <React.Fragment>
-          <span style={{color: 'white', fontWeight: 'bold', marginBottom: '20px'}}>
-            Congratulations! Your account has been activated.
-          </span>
+            <span style={{color: 'white', fontWeight: 'bold', marginBottom: '20px'}}>
+                Congratulations! Your account has been activated.
+            </span>
                     <Button onClick={handleSignInClick}>Go to Sign In Page</Button>
                 </React.Fragment>
             )}
