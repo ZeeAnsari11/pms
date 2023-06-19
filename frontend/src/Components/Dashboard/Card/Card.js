@@ -67,6 +67,14 @@ const CardFooter = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+
+  p {
+    font-weight: 700;
+    font-size: 1rem;
+    color: gray;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
 `;
 
 export const CardProfile = styled.div`
@@ -135,12 +143,11 @@ function Card(props) {
                             {props.Card?.date}
                         </p>
                     )}
-                    {
-                        <p>
-                            <CheckSquare/>
-                            {props.Card.tasks.filter((item) => item.complete).length}/ {props.Card?.tasks?.length}
+                    {props.Card?.slug && (
+                        <p title={props.Card?.slug.toUpperCase()}>
+                            {props.Card?.slug}
                         </p>
-                    }
+                    )}
                 </CardFooter>
                 <CardProfile>
                     <Avatar
