@@ -1,6 +1,7 @@
 from rest_framework_nested import routers
 from . import views
 from core.views import UserProfileViewSet
+from register.views import CompanyViewSet
 from django.urls import path
 
 router = routers.DefaultRouter()
@@ -19,6 +20,8 @@ router.register('project_smtp_webhook', views.ProjectSMTPWebhookViewSet, basenam
 
 router.register('users_list', views.UserViewSet, basename='users')
 router.register('userprofile', UserProfileViewSet, basename='userprofile')
+
+router.register('companies', CompanyViewSet, basename='companies')
 
 projects_router = routers.NestedDefaultRouter(router, 'projects', lookup='project')
 projects_router.register('issues', views.ProjectIssuesViewSet, basename='projects-issues')
