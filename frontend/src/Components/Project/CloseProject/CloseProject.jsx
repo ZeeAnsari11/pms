@@ -1,11 +1,12 @@
-import React, {useState} from 'react';
+import React, { useContext, useState } from 'react';
 import {useParams, useNavigate} from "react-router-dom";
-import {Modal} from 'antd';
+import apiRequest from '../../../Utils/apiRequest';
+import { AuthContext } from '../../../Utils/AuthContext';
 import styled from "styled-components";
+import {ToastContainer, toast} from 'react-toastify';
+import {Modal} from 'antd';
 import NavBar from "../../Dashboard/Navbar";
 import Sidebar from "../../Dashboard/Sidebar";
-import {ToastContainer, toast} from 'react-toastify';
-import axios from 'axios'
 
 
 
@@ -38,17 +39,23 @@ const AddTagButton = styled.button`
 
 const CloseProject = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
+
+    const { authToken } = useContext(AuthContext);
+
     const navigate = useNavigate();
     const {projectId} = useParams();
 
 
     const deleteProject = () => {
         if (projectId !== undefined) {
-            axios
-            .delete(`${process.env.REACT_APP_HOST}/api/projects/${projectId}`)
+            apiRequest
+            .delete(`/api/projects/${projectId}`, {
+                headers: {
+                    Authorization: `Token ${authToken}`},
+            })
             .then(response => {
-                console.log('Project deleted successfully');
                 setIsModalVisible(false);
+                showInfoOnConfirmations();
                 setTimeout(() => {
                     navigate('/project');
                     }, 2000);
@@ -61,7 +68,7 @@ const CloseProject = () => {
 
     const showInfoOnConfirmations = () => {
         toast.info('The project has been deleted. \n  You will be redirected to the project within 2 seconds', {
-        position: "top-center",
+        position: "top-right",
         autoClose: 2000,
         hideProgressBar: false,
         closeOnClick: true,
@@ -90,6 +97,7 @@ const CloseProject = () => {
             <Sidebar/>
             <NavBar/>
             <PermissionsContainer>
+
                 <AddTagButton onClick={handleButtonClick}>Close project</AddTagButton>
                 <Modal
                     title="Confirm Closure"
@@ -100,7 +108,18 @@ const CloseProject = () => {
                     <p>Are you sure you want to close the project?</p>
                 </Modal>
             </PermissionsContainer>
-
+            <ToastContainer
+                position="top-right"
+                autoClose={2000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="colored"
+            />
         </>
     )
         ;

@@ -1,10 +1,12 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import NavBar from "../../Dashboard/Navbar/index";
 import Sidebar from "../../Dashboard/Sidebar";
 import {AiOutlineSetting} from 'react-icons/ai';
 import {DownOutlined} from '@ant-design/icons';
+import apiRequest from '../../../Utils/apiRequest';
+import { AuthContext } from '../../../Utils/AuthContext';
 import {Modal as Modal1, Input} from 'antd';
 import {Modal as Modal2} from 'antd';
 import {Modal as Modal3} from 'antd';
@@ -152,6 +154,14 @@ const PaginationWrapper = styled.div`
   margin-top: 15px;
 `;
 
+const WarningDiv = styled.div`
+  background-color: #fff6f6;
+  border: 1px solid #e0b4b4;
+  color: #9f3a38;
+  margin-top: 10px;
+  padding: 5px;
+`;
+
 function Types() {
 
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -165,6 +175,9 @@ function Types() {
     const [currentPage, setCurrentPage] = useState(1);
     const [isDelete, setIsDelete] = useState(false);
     const [editStatusName, setEditStatusName] = useState('');
+
+    const { authToken } = useContext( AuthContext );
+
     const { projectId } = useParams();
 
 
@@ -195,30 +208,25 @@ function Types() {
         category: 'Project Setting'
     };
 
-    const WarningDiv = styled.div`
-      background-color: #fff6f6;
-      border: 1px solid #e0b4b4;
-      color: #9f3a38;
-      margin-top: 10px;
-      padding: 5px;
-    `;
-
     const handleOk = () => {
         const newTag = {
             "type": inputValue,
             "project": projectId,
         };
 
-        if (inputValue === '' || projectId == undefined) {
+        if (inputValue === '' || projectId === undefined) {
             setIsEmpty(true);
         }
 
         if (inputValue) {
-            const response = axios
-                .post(`${process.env.REACT_APP_HOST}/api/project_type/`, newTag)
+            apiRequest
+                .post(`/api/project_type/`,
+                    newTag,
+                    {
+                        headers:
+                            { "Authorization": `Token ${authToken}` }
+                    } )
                 .then(response => {
-                    const data = response.data;
-                    console.log(data);
                     const result = {
                         "id": response.data.id,
                         "type": response.data.type,
@@ -245,12 +253,16 @@ function Types() {
             return;
         }
 
-        axios
-            .patch(`${process.env.REACT_APP_HOST}/api/project_type/${id}/`, {
-            id: id,
-            type: inputValue2,
-            project: projectId,
-            })
+        apiRequest
+            .patch(`/api/project_type/${id}/`,
+                {
+                    id: id,
+                    type: inputValue2,
+                    project: projectId
+                },{
+                headers:
+                    { "Authorization": `Token ${authToken}` }
+                } )
             .then(response => {
                 console.log('Data updated successfully:', response.data);
             })
@@ -290,8 +302,11 @@ function Types() {
     };
 
     const deleteIssueStatus = (id) => {
-        axios
-            .delete(`${process.env.REACT_APP_HOST}/api/project_type/${id}`)
+        apiRequest
+            .delete(`/api/project_type/${id}`,{
+                headers:
+                    { "Authorization": `Token ${authToken}` }
+            } )
             .then(response => {
                 console.log('Data deleted successfully');
                 setIsDelete(true);
@@ -317,15 +332,17 @@ function Types() {
             setIsDelete(false);
         }
 
-        const queryParams = {
-            project: projectId,
-        };
 
-        axios.get(`${process.env.REACT_APP_HOST}/api/project_type/`, {
-            params: {
-            project: projectId,
-            }
-        })
+        axios
+            .get(`${process.env.REACT_APP_HOST}/api/project_type/`,
+                {
+                    params: {
+                        project: projectId,
+                    },
+                    headers: {
+                        "Authorization": `Token ${authToken}`
+                    }
+                } )
             .then(response => {
                 console.log(response.data);
                 const newDataArray = response.data.map((item) => {
