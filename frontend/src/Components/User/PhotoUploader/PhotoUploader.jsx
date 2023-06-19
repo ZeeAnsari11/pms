@@ -1,5 +1,4 @@
-import {Upload, Button} from 'antd';
-import {UploadOutlined} from '@ant-design/icons';
+import {Upload} from 'antd';
 import React, {useState} from 'react';
 import styled from 'styled-components';
 

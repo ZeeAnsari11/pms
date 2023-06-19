@@ -1,12 +1,13 @@
-import React, {useEffect, useState} from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
+import apiRequest from '../../../Utils/apiRequest';
+import { AuthContext } from '../../../Utils/AuthContext';
+import {v4 as uuidv4} from 'uuid';
+import { useNavigate } from "react-router-dom";
 import ReactQuill from 'react-quill';
-import axios from "axios";
-import {text} from "@fortawesome/fontawesome-svg-core";
 import NavBar from "../../Dashboard/Navbar";
 import GenericSelectField from "../../Dashboard/SelectFields/GenericSelectField";
 import ImageUploader from "../ImageUploader";
-import {v4 as uuidv4} from 'uuid';
 
 const PageWrapper = styled.div`
   background-color: #fff;
@@ -25,18 +26,6 @@ const Details = styled.h1`
   margin-top: 50px;
 `;
 
-const ImageWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 20%;
-`;
-
-const Image = styled.img`
-  max-width: 100%;
-  max-height: 100%;
-  border-radius: 4%;
-`;
 
 const Input = styled.input`
   border: 2px solid #ccc;
@@ -53,28 +42,6 @@ const Input = styled.input`
   }
 `;
 
-const ButtonWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 1rem;
-`;
-
-const UploadButton = styled.button`
-  background-color: #F5F6F8;
-  border-radius: 5%;
-  border: none;
-  color: #050303;
-  cursor: pointer;
-  font-size: 1rem;
-  font-weight: bold;
-  padding: 0.5rem 1rem;
-  transition: background-color 0.3s ease-in-out;
-
-  &:hover {
-    background-color: #ECEDF0;
-  }
-`;
 
 const FormWrapper = styled.form`
   display: flex;
@@ -87,12 +54,6 @@ const LabelForProject = styled.label`
   font-weight: bold;
   margin-bottom: 0.5rem;
   margin-right: 305px;
-`;
-
-const LabelForKey = styled.label`
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-  margin-right: 332px;
 `;
 
 const LabelForDescriptionBoc = styled.label`
@@ -108,11 +69,6 @@ const LabelforLead = styled.label`
   margin-right: 265px;
 `;
 
-const Label = styled.label`
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-  margin-right: 325px;
-`;
 
 const LabelForCompany = styled.label`
   font-weight: bold;
@@ -205,29 +161,20 @@ const StyledReactQuill = styled(ReactQuill)`
 
 function CreateProject() {
 
-    let authToken = localStorage.getItem('auth_token')
-
-    const [visibleForIcon, setVisibleForIcon] = useState(false);
-
+    const [text, setText] = useState('');
     const [image, setImage] = useState(null);
     const [companyData, setCompanyData] = useState([]);
-
     const [categoryData, setCategoryData] = useState([]);
     const [usersData, setUsersData] = useState([]);
-
     const uniqueProjectKey = uuidv4();
     const [selectedCompany, setSelectedCompany] = useState([]);
-
     const [selectedCategory, setSelectedCategory] = useState([]);
-
     const [selectedProjectLead, setSelectedProjectLead] = useState([]);
-
     const [selectedProjectAssignees, setSelectedProjectAssignees] = useState([]);
 
+    const { authToken } = useContext(AuthContext);
 
-    const [select, setSelect] = useState(null);
-
-    const [text, setText] = useState('');
+    const navigate = useNavigate();
 
     const handleTextChange = (value) => {
         setText(value);
@@ -252,102 +199,56 @@ function CreateProject() {
     };
 
 
-    const handleUpload = (file) => {
-        setImage(file);
-        setVisibleForIcon(false);
-    };
-
-    const handleUploadfForDragAndDrop = (file) => {
-        setImage(file);
-        setVisibleForIcon(false);
-    }
-
-    const Onpreview = (file) => {
-        setImage(file);
-    }
-
-    const showModalForIcon = () => {
-        setVisibleForIcon(true);
-        setSelect(1);
-    };
-
-    const handleOkForIcon = () => {
-        setVisibleForIcon(false);
-    };
-
-    const handleCancelForIcon = () => {
-        setVisibleForIcon(false);
-        setImage(null);
-    };
-
-    const handleCloseForIcon = () => {
-        setVisibleForIcon(false);
-    };
-
 
     useEffect(() => {
         const fetchCompanies = async () => {
-            const response = await axios.get('http://127.0.0.1:8000/register/companies/', {
-                headers: {
-                    Authorization: `Token ${authToken}`,
-                },
-            });
+            const response =
+                await apiRequest
+                    .get(`/register/companies/`, {
+                        headers: {
+                            Authorization: `Token ${authToken}`},
+                    } );
             setCompanyData(response.data);
         };
 
         const fetchCategories = async () => {
-            const response = await axios.get('http://127.0.0.1:8000/api/project_categories/', {
-                headers: {
-                    Authorization: `Token ${authToken}`,
-                },
-            });
+            const response =
+                await apiRequest
+                    .get(`/api/project_categories/`, {
+                        headers: {
+                            Authorization: `Token ${authToken}`,
+                        },
+                    });
             setCategoryData(response.data);
         };
 
         const fetchUsers = async () => {
-            const response = await axios.get('http://127.0.0.1:8000/api/users_list/', {
-                headers: {
-                    Authorization: `Token ${authToken}`,
-                },
-            });
+            const response =
+                await apiRequest.get(`/api/users_list/`, {
+                    headers: {
+                        Authorization: `Token ${authToken}`,
+                    },
+                } );
             setUsersData(response.data);
         };
-        fetchCompanies()
-        fetchCategories()
-        fetchUsers()
+        fetchCompanies().then() // @todo handle the exception on Company fetch
+        fetchCategories().then() // @todo handle the exception on Categories fetch
+        fetchUsers().then() // @todo handle the exception on Users fetch
     }, []);
-    console.log("Company Data:", companyData)
-    console.log("Category Data:", categoryData)
+
+    const companyOptions = companyData ? companyData.map(
+        (company) => ({ label: company.company_name, value: company.id, })
+    ) : [];
 
 
-    const companyoptions = companyData
-        ? companyData.map((company) => ({
-            label: company.company_name,
-            value: company.id,
-        }))
-        : [];
+    const categoriesOptions = categoryData ? categoryData.map(
+        (category) => ({ label: category.category, value: category.id, })
+    ) : [];
 
+    const userOptions = usersData ? usersData.map(
+        (user) => ({ label: user.username, value: user.id, })
+    ) : [];
 
-    const categoriesoptions = categoryData
-        ? categoryData.map((category) => ({
-            label: category.category,
-            value: category.id,
-        }))
-        : [];
-
-    const useroptions = usersData
-        ? usersData.map((user) => ({
-            label: user.username,
-            value: user.id,
-        }))
-        : [];
-
-
-    const modalStyle = {
-        borderRadius: 0,
-        height: '1000px',
-        cancelButton: {backgroundColor: 'red'}
-    };
 
 
     function generateSlug(text) {
@@ -382,18 +283,19 @@ function CreateProject() {
         console.log("------selectedProjectAssignees-----", selectedProjectAssignees)
         console.log("--------projectdata-------", formData)
 
-        axios.post(`${process.env.REACT_APP_HOST}/api/projects/`, formData, {
-            headers: {
-                'Authorization': `Token ${authToken}`,
-            },
-        })
+        apiRequest
+            .post(`/api/projects/`, formData, {
+                headers: {
+                    'Authorization': `Token ${authToken}`,
+                },
+            } )
             .then(response => {
                 // handle the response
                 console.log(response.data);
-                window.location.href = 'project';
+                navigate('/project');
             })
             .catch(error => {
-                // handle the error
+                // @todo handle the error here
                 console.log(error);
             });
     }
@@ -414,7 +316,7 @@ function CreateProject() {
                     <LabelForCompany htmlFor="category">Company:</LabelForCompany>
                     <GenericSelectField
                         onSelectChange={handleSelectedCompanyChange}
-                        options={companyoptions}
+                        options={companyOptions}
                         isMultiple={false}
                         placeholder={"Unassigned"}
                         width="50%"/>
@@ -422,21 +324,21 @@ function CreateProject() {
                     <LabelforCategory htmlFor="category">Category:</LabelforCategory>
                     <GenericSelectField
                         onSelectChange={handleSelectedCategoryChange}
-                        options={categoriesoptions}
+                        options={categoriesOptions}
                         isMultiple={false}
                         placeholder={"Unassigned"}
                         width="50%"/>
                     <LabelforAssignees htmlFor="assignees">Assignee:</LabelforAssignees>
                     <GenericSelectField
                         onSelectChange={handleSelectedProjectAssigneesChange}
-                        options={useroptions}
+                        options={userOptions}
                         isMultiple={true}
                         placeholder={"Unassigned"}
                         width="50%"/>
                     <LabelforLead htmlFor="category">Project Lead:</LabelforLead>
                     <GenericSelectField
                         onSelectChange={handleSelectedProjectLeadChange}
-                        options={useroptions}
+                        options={userOptions}
                         isMultiple={false}
                         placeholder={"Unassigned"}
                         width="50%"/>
