@@ -1,17 +1,18 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import NavBar from "../../Dashboard/Navbar/index";
 import Sidebar from "../../Dashboard/Sidebar";
 import {AiOutlineSetting} from 'react-icons/ai';
 import {DownOutlined} from '@ant-design/icons';
+import apiRequest from '../../../Utils/apiRequest';
+import { AuthContext } from '../../../Utils/AuthContext';
 import {Modal as Modal1, Input} from 'antd';
 import {Modal as Modal2} from 'antd';
 import {Modal as Modal3} from 'antd';
 import {ChromePicker} from "react-color";
 import {Dropdown, Space} from 'antd';
 import {Pagination} from 'antd';
-import axios from 'axios';
 
 
 const PageContainer = styled.div`
@@ -171,6 +172,14 @@ const PaginationWrapper = styled.div`
   margin-top: 15px;
 `;
 
+const WarningDiv = styled.div`
+  background-color: #fff6f6;
+  border: 1px solid #e0b4b4;
+  color: #9f3a38;
+  margin-top: 10px;
+  padding: 5px;
+`;
+
 function ProjectTags() {
 
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -189,15 +198,22 @@ function ProjectTags() {
     const [editTagColor, setEditTagColor] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [isDelete, setIsDelete] = useState(false);
+
+    const { authToken } = useContext( AuthContext );
+
     const { projectId } = useParams();
 
     const fetchLabels = () => {
-        axios
-            .get(`${process.env.REACT_APP_HOST}/api/project_labels`, {
-            params: {
-            project: projectId,
-            }
-        })
+        apiRequest
+            .get(`/api/project_labels`,
+                {
+                    params: {
+                        project: projectId,
+                    },
+                    headers: {
+                        "Authorization": `Token ${authToken}`
+                    }
+                } )
             .then(response => {
                 console.log(response.data);
                 const newDataArray = response.data.map((item, index) => {
@@ -207,22 +223,21 @@ function ProjectTags() {
                 setNewArray(newDataArray);
             })
             .catch(error => {
-                // Handle the error
                 console.error(error);
             });
     };
 
-// Function to delete a label
     const deleteLabel = (id) => {
-        axios
-            .delete(`${process.env.REACT_APP_HOST}/api/project_labels/${id}`)
+        apiRequest
+            .delete(`/api/project_labels/${id}`,{
+                headers:
+                    { "Authorization": `Token ${authToken}` }
+            } )
             .then(response => {
-                // Handle success if needed
                 console.log('Data deleted successfully');
                 setIsDelete(true);
             })
             .catch(error => {
-                // Handle error if needed
                 console.error('Error deleting data', error);
             });
     };
@@ -278,14 +293,6 @@ function ProjectTags() {
         category: 'Project Setting'
     };
 
-    const WarningDiv = styled.div`
-      background-color: #fff6f6;
-      border: 1px solid #e0b4b4;
-      color: #9f3a38;
-      margin-top: 10px;
-      padding: 5px;
-    `;
-
     const handleOk = () => {
 
         const newTag = {
@@ -299,20 +306,22 @@ function ProjectTags() {
         }
 
         if (inputValue && color) {
-            const response =
-                axios
-                    .post(`${process.env.REACT_APP_HOST}/api/project_labels/`, newTag)
-                    .then(response => {
-                        const data = response.data;
-                        console.log(data);
-                        const result = {
-                            "id": response.data.id,
-                            "name": response.data.name,
-                            "color": response.data.color
-                        };
-                        setNewArray([...newArray, result]);
-                        setIsModalVisible(false);
-                        setIsEmpty(false);
+            apiRequest
+                .post(`/api/project_labels/`,
+                    newTag,
+                    {
+                        headers:
+                            {"Authorization": `Token ${authToken}`}
+                    } )
+                .then(response => {
+                    const result = {
+                        "id": response.data.id,
+                        "name": response.data.name,
+                        "color": response.data.color
+                    };
+                    setNewArray([...newArray, result]);
+                    setIsModalVisible(false);
+                    setIsEmpty(false);
                 })
                 .catch(error => {
                     console.error('Error fetching data:', error);
@@ -335,12 +344,17 @@ function ProjectTags() {
             return;
         }
 
-        axios.patch(`${process.env.REACT_APP_HOST}/api/project_labels/${id}/`, {
-            id: id,
-            color: color2,
-            name: inputValue2,
-            project: projectId,
-        })
+        apiRequest
+            .patch(`/api/project_labels/${id}/`,
+                {
+                    id: id,
+                    color: color2,
+                    name: inputValue2,
+                    project: projectId},
+                {
+                    headers:
+                        {"Authorization": `Token ${authToken}`}
+                } )
             .then(response => {
                 console.log('Data updated successfully:', response.data);
             })
@@ -380,7 +394,7 @@ function ProjectTags() {
         }
     };
 
-    const handleDeleteTag = (id, name) => {
+    const handleDeleteTag = (id) => {
         Modal3.confirm({
             title: 'Confirm',
             content: 'Are you sure you want to delete this tag ?',
@@ -444,7 +458,7 @@ function ProjectTags() {
                                                         {
                                                             key: 'delete',
                                                             label: 'Delete',
-                                                            onClick: () => handleDeleteTag(tag.id, tag.name)
+                                                            onClick: () => handleDeleteTag(tag.id)
                                                         }
                                                     ]
                                                 }}
