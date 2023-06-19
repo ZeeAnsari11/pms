@@ -11,4 +11,7 @@ class IssueFilter(FilterSet):
             'assignee__username': ['iexact'],
             'reporter__username': ['iexact'],
             'project__name': ['iexact'],
+            'type__type': ['iexact'],
+            'status__status': ['iexact'],
+
         }
