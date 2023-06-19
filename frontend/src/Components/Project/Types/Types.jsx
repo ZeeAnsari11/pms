@@ -12,7 +12,6 @@ import {Modal as Modal2} from 'antd';
 import {Modal as Modal3} from 'antd';
 import {Dropdown, Space} from 'antd';
 import {Pagination} from 'antd';
-import axios from 'axios'
 
 
 const PageContainer = styled.div`
@@ -333,8 +332,8 @@ function Types() {
         }
 
 
-        axios
-            .get(`${process.env.REACT_APP_HOST}/api/project_type/`,
+        apiRequest
+            .get(`/api/project_type/`,
                 {
                     params: {
                         project: projectId,
