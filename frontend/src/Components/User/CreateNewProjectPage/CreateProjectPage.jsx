@@ -204,7 +204,7 @@ function CreateProject() {
         const fetchCompanies = async () => {
             const response =
                 await apiRequest
-                    .get(`/register/companies/`, {
+                    .get(`/api/companies/`, {
                         headers: {
                             Authorization: `Token ${authToken}`},
                     } );

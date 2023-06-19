@@ -1,8 +1,10 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import NavBar from "../../Dashboard/Navbar/index";
 import Sidebar from "../../Dashboard/Sidebar";
+import apiRequest from '../../../Utils/apiRequest';
+import { AuthContext } from '../../../Utils/AuthContext';
 import {AiOutlineSetting} from 'react-icons/ai';
 import {DownOutlined} from '@ant-design/icons';
 import {Modal as Modal1, Input} from 'antd';
@@ -10,7 +12,6 @@ import {Modal as Modal2} from 'antd';
 import {Modal as Modal3} from 'antd';
 import {Dropdown, Space} from 'antd';
 import {Pagination} from 'antd';
-import axios from 'axios'
 
 
 const PageContainer = styled.div`
@@ -152,6 +153,14 @@ const PaginationWrapper = styled.div`
   margin-top: 15px;
 `;
 
+const WarningDiv = styled.div`
+  background-color: #fff6f6;
+  border: 1px solid #e0b4b4;
+  color: #9f3a38;
+  margin-top: 10px;
+  padding: 5px;
+`;
+
 function Columns() {
 
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -165,7 +174,12 @@ function Columns() {
     const [currentPage, setCurrentPage] = useState(1);
     const [isDelete, setIsDelete] = useState(false);
     const [editStatusName, setEditStatusName] = useState('');
+
+    const { authToken } = useContext(AuthContext);
+
     const { projectId } = useParams();
+
+    const ITEMS_PER_PAGE = 10;
 
 
     const showModal = () => {
@@ -195,13 +209,6 @@ function Columns() {
         category: 'Project Setting'
     };
 
-    const WarningDiv = styled.div`
-      background-color: #fff6f6;
-      border: 1px solid #e0b4b4;
-      color: #9f3a38;
-      margin-top: 10px;
-      padding: 5px;
-    `;
 
     const handleOk = () => {
         const newTag = {
@@ -209,16 +216,18 @@ function Columns() {
             "project": projectId,
         };
 
-        if (inputValue === '' || projectId == undefined) {
+        if (inputValue === '' || projectId === undefined) {
             setIsEmpty(true);
         }
 
         if (inputValue) {
-            const response = axios
-                .post(`${process.env.REACT_APP_HOST}/api/project_status/`, newTag)
+            apiRequest
+                .post(`/api/project_status/`,
+                    newTag, {
+                    headers:
+                        {"Authorization": `Token ${authToken}`}
+                } )
                 .then(response => {
-                    const data = response.data;
-                    console.log(data);
                     const result = {
                         "id": response.data.id,
                         "status": response.data.status,
@@ -245,12 +254,15 @@ function Columns() {
             return;
         }
 
-        axios
-            .patch(`${process.env.REACT_APP_HOST}/api/project_status/${id}/`, {
-            id: id,
-            status: inputValue2,
-            project: projectId,
-            })
+        apiRequest
+            .patch(`/api/project_status/${id}/`, {
+                id: id,
+                status: inputValue2,
+                project: projectId,
+            }, {
+                headers:
+                    {"Authorization": `Token ${authToken}`}
+            } )
             .then(response => {
                 console.log('Data updated successfully:', response.data);
             })
@@ -258,8 +270,11 @@ function Columns() {
                 console.error('Error updating data:', error);
             });
 
+
         const updatedArray = newArray.filter((item) => item.id !== id);
+
         let insertIndex = 0;
+
         for (let i = 0; i < updatedArray.length; i++) {
             if (updatedArray[i].id < id) {
                 insertIndex = i + 1;
@@ -290,8 +305,11 @@ function Columns() {
     };
 
     const deleteIssueStatus = (id) => {
-        axios
-            .delete(`${process.env.REACT_APP_HOST}/api/project_status/${id}`)
+        apiRequest
+            .delete(`/api/project_status/${id}`, {
+                headers:
+                    {"Authorization": `Token ${authToken}`}
+            })
             .then(response => {
                 console.log('Data deleted successfully');
                 setIsDelete(true);
@@ -317,17 +335,18 @@ function Columns() {
             setIsDelete(false);
         }
 
-        const queryParams = {
-            project: projectId,
-        };
 
-        axios.get(`${process.env.REACT_APP_HOST}/api/project_status/`, {
-            params: {
-            project: projectId,
-            }
-        })
+        apiRequest
+            .get(`/api/project_status/`,
+                {
+                    params : {
+                        project: projectId,
+                    },
+                    headers: {
+                        "Authorization": `Token ${authToken}`
+                    }
+                } )
             .then(response => {
-                console.log(response.data);
                 const newDataArray = response.data.map((item) => {
                         const {id, status} = item;
                         return {id, status};
@@ -340,7 +359,6 @@ function Columns() {
             });
     }, [isDelete]);
 
-    const ITEMS_PER_PAGE = 10;
 
     const handlePageChange = (page) => {
         setCurrentPage(page);

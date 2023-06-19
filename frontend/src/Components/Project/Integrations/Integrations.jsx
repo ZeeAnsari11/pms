@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import NavBar from "../../Dashboard/Navbar/index";
 import Sidebar from "../../Dashboard/Sidebar";
@@ -8,7 +8,8 @@ import { color } from "../../Dashboard/Sidebar/utils/styles";
 import { ToastContainer, toast } from 'react-toastify';
 import { Input, Button, Form, Switch } from 'antd';
 import { useParams } from "react-router-dom";
-import axios from "axios";
+import apiRequest from '../../../Utils/apiRequest';
+import { AuthContext } from '../../../Utils/AuthContext';
 
 
 const PageContainer = styled.div`
@@ -142,6 +143,8 @@ function Integrations() {
     const [ isSMTPUpdating, setSMTPIsUpdating ] = useState( false );
     const [ initialSlackValues, setInitialSlackValues ] = useState( { id: undefined, project: projectId } );
 
+    const { authToken } = useContext(AuthContext);
+
     const updateSlackIntegrationForm = ( response ) => {
         if ( response.status === 200 ) {
             displaySuccessMessage();
@@ -168,12 +171,15 @@ function Integrations() {
 
 
     const fetchSlackIntegrationsData = () => {
-        axios
-            .get( `${process.env.REACT_APP_HOST}/api/project_slack_webhook/`, {
-                params: {
-                    project: projectId,
-                }
-            } )
+        apiRequest
+            .get( `/api/project_slack_webhook/`,
+                {
+                    params: {
+                        project: projectId,
+                    }, headers: {
+                        "Authorization": `Token ${authToken}`
+                    }
+                } )
             .then( response => {
                 updateSlackIntegrationForm( response );
             } )
@@ -184,12 +190,15 @@ function Integrations() {
 
     const createSlackIntegrationsData = ( values ) => {
         const { slackNotificationStatus, slackChannelGroupUser, slackWebhookUrl } = values
-        axios
-            .post( `${process.env.REACT_APP_HOST}/api/project_slack_webhook/`, {
+        apiRequest
+            .post( `/api/project_slack_webhook/`, {
                 project: projectId,
                 slack_notification_status: slackNotificationStatus,
                 slack_webhook_channel: slackChannelGroupUser,
                 slack_webhook_url: slackWebhookUrl,
+            } ,{
+                headers:
+                    { "Authorization": `Token ${authToken}` }
             } )
             .then( response => {
                 updateSlackIntegrationForm( response );
@@ -207,12 +216,15 @@ function Integrations() {
             return;
         }
         const { slackNotificationStatus, slackChannelGroupUser, slackWebhookUrl } = values
-        axios
-            .patch( `${process.env.REACT_APP_HOST}/api/project_slack_webhook/${id}/`, {
+        apiRequest
+            .patch( `/api/project_slack_webhook/${id}/`, {
                 project: projectId,
                 slack_notification_status: slackNotificationStatus,
                 slack_webhook_channel: slackChannelGroupUser,
                 slack_webhook_url: slackWebhookUrl,
+            },{
+                headers:
+                    { "Authorization": `Token ${authToken}` }
             } )
             .then( response => {
                 console.info( 'response is here', response );
