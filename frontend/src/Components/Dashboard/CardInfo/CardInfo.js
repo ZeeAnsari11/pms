@@ -26,6 +26,7 @@ import {FiUser, FiUsers} from 'react-icons/fi'
 import {CgOptions} from 'react-icons/cg'
 import {RxStopwatch} from 'react-icons/rx'
 import styled from 'styled-components';
+import axios from "axios";
 
 const ModalTitleStyling = styled.div`
   width: 100%;
@@ -112,29 +113,9 @@ const CardInfoBoxClose = styled.div`
 `;
 
 
-const users = [
-    {id: 1, username: "Hashim Doe"},
-    {id: 2, username: "Jane Doe"},
-    {id: 3, username: "Bob Smith"},
-];
-
-
-const statusoptions = [
-    {value: 'option1', label: 'Backlog'},
-    {value: 'option2', label: 'Selected for Development'},
-    {value: 'option3', label: 'In Progress'},
-    {value: 'option4', label: 'Done'},
-];
-
-const priorityoptions = [
-    {value: 'High', label: 'High', icon: <AiOutlineArrowUp color={"#E9494B"}/>},
-    {value: 'Highest', label: 'Highest', icon: <AiOutlineArrowUp color={"#CD1317"}/>},
-    {value: 'Medium', label: 'Medium', icon: <AiOutlineArrowUp color={"#E97F33"}/>},
-    {value: 'Low', label: 'Low', icon: <AiOutlineArrowDown color={"#2E8738"}/>},
-    {value: 'Lowest', label: 'Lowest', icon: <AiOutlineArrowDown color={"#57A55A"}/>}
-];
-
 function CardInfo(props) {
+    let authToken = localStorage.getItem('auth_token')
+
 
     const initialworklogs = [
         {username: 'John', timeTracked: '2', description: 'Worklog 1'},
@@ -161,6 +142,75 @@ function CardInfo(props) {
     const [showWorklog, setShowWorklog] = useState(false);
     const [selectedWorklog, setSelectedWorklog] = useState(null);
 
+    const [IssuesData, setIssuesData] = useState([]);
+    const [IssueType, setIssueType] = useState('');
+    const [IssueStatus, setIssueStatus] = useState('');
+
+    const [selectedIssueStatus, setSelectedIssueStatus] = useState('');
+    const [selectedIssueType, setSelectedIssueType] = useState('');
+    const [selectedPriority, setSelectedPriority] = useState('');
+
+    const [selectedAssignee, setSelectedAssignee] = useState('');
+    const [selectedReporter, setSelectedReporter] = useState('');
+
+    const [Users, setUsers] = useState('');
+
+
+    useEffect(() => {
+        const fetchIssueData = async () => {
+            const response = await axios.get(`http://127.0.0.1:8000/api/issues/${props.card?.id}`, {
+                headers: {
+                    Authorization: `Token ${authToken}`,
+                },
+            });
+            setIssuesData(response.data);
+        };
+
+
+        const fetchDependentUserOptions = async () => {
+            const response = await axios.get(`http://127.0.0.1:8000/api/projects/${props.card.project}/assignees/`, {
+                headers: {
+                    Authorization: `Token ${authToken}`,
+                },
+            });
+            setUsers(response.data);
+        };
+
+
+        const fetchDependentProjectTypes = async () => {
+            const response = await axios.get(`http://127.0.0.1:8000/api/project_type/?project=${props.card.project}`, {
+                headers: {
+                    Authorization: `Token ${authToken}`,
+                },
+            });
+            setIssueType(response.data);
+        };
+
+
+        const fetchDependentProjectStatuses = async () => {
+            const response = await axios.get(`http://127.0.0.1:8000/api/project_status/?project=${props.card.project}`, {
+                headers: {
+                    Authorization: `Token ${authToken}`,
+                },
+            });
+            setIssueStatus(response.data);
+        };
+        fetchIssueData();
+        fetchDependentUserOptions();
+        fetchDependentProjectStatuses();
+        fetchDependentProjectTypes();
+    }, []);
+
+
+    useEffect(() => {
+        if (IssuesData?.id) {
+            setSelectedReporter(IssuesData?.reporter?.id)
+            setSelectedAssignee(IssuesData?.assignee?.id)
+            setSelectedIssueType(IssuesData?.type?.id)
+            setSelectedIssueStatus(IssuesData?.status?.id)
+            setSelectedPriority(IssuesData?.priority)
+        }
+    }, [IssuesData]);
 
     const handleCommentSubmit = (event) => {
         event.preventDefault();
@@ -187,11 +237,31 @@ function CardInfo(props) {
         }
     };
 
+    const handleIssueTypeChange = (value) => {
+        setSelectedIssueType(parseInt(value))
+    };
+
+    const handleIssueStatusChange = (value) => {
+        setSelectedIssueStatus(parseInt(value))
+    };
+
+    const handlePriorityChange = (value) => {
+        setSelectedPriority(value)
+    }
+
+    const handleAssigneeChange = (value) => {
+        setSelectedAssignee(parseInt(value));
+    };
+
+    const handleReporterChange = (value) => {
+        setSelectedReporter(parseInt(value));
+    };
+
 
 //Description
-    const [desc, setDesc] = useState('initial value');
+    const [description, setDescription] = useState(props.card?.desc);
     const handleDescChange = (newDesc) => {
-        setDesc(newDesc);
+        setDescription(newDesc);
     };
 
     const [showDescription, setShowDescription] = useState(false);
@@ -222,6 +292,35 @@ function CardInfo(props) {
         setValues({...values, tasks: tempTasks});
     };
 
+
+    const IssueTypeoptions = IssueType
+        ? IssueType.map((IssueType) => ({
+            label: IssueType.type,
+            value: IssueType.id,
+        }))
+        : [];
+
+    const Statusoptions = IssueStatus
+        ? IssueStatus.map((Status) => ({
+            label: Status.status,
+            value: Status.id,
+        }))
+        : [];
+
+
+    const Priorityoptions = [
+        {label: "Low", value: "Low", icon: <AiOutlineArrowDown color={"#2E8738"}/>},
+        {label: "Medium", value: "Medium", icon: <AiOutlineArrowUp color={"#E97F33"}/>},
+        {label: "High", value: "High", icon: <AiOutlineArrowUp color={"#E9494B"}/>},
+    ]
+
+    const Useroptions = Users
+        ? Users.map((Users) => ({
+            username: Users.username,
+            id: Users.id,
+        }))
+        : [];
+
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (descriptionBoxRef.current && !descriptionBoxRef.current.contains(event.target)) {
@@ -240,11 +339,50 @@ function CardInfo(props) {
         props.updateCard(props.card.id, props.boardId, values)
     }, [values])
 
+    const handleCloseModalSubmit = () => {
+        props.onClose();
+
+        const formData = new FormData();
+        formData.append("type", selectedIssueType);
+        formData.append("status", selectedIssueStatus);
+        formData.append("assignee", selectedAssignee);
+        formData.append("reporter", selectedReporter);
+        formData.append("priority", selectedPriority);
+        formData.append("description", description);
+        formData.append("name", values.title);
+
+
+        // files.forEach((file) => {
+        //     formData.append("file", file);
+        // });
+
+
+        axios({
+            method: 'patch',
+            url: `${process.env.REACT_APP_HOST}/api/issues/${props.card.id}/`,
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                'Authorization': `Token ${authToken}`,
+            },
+            data: formData
+        })
+            .then(response => {
+                // handle the response
+                console.log(response.data);
+                // window.location.href = window.location.href;
+            })
+            .catch(error => {
+                // handle the error
+                console.log(error);
+            });
+
+    }
+
     return (
-        <Modal onClose={() => props.onClose()}>
+        <Modal onClose={() => handleCloseModalSubmit()}>
             <div style={{width: "55%"}}>
                 <div className="modal-header">
-                    <span className="card-id"><b>Card ID: {props.card.id}</b></span>
+                    <span className="card-id"><b>{props.card?.slug.toUpperCase()}</b></span>
                 </div>
                 <ModalTitleStyling>
                     <Editable
@@ -376,7 +514,7 @@ function CardInfo(props) {
                     <CardInfoBoxClose>
                         <AiFillCloseCircle
                             size={30}
-                            onClick={props.onClose}
+                            onClick={handleCloseModalSubmit}
                             style={{cursor: "pointer"}}
                         />
                     </CardInfoBoxClose>
@@ -384,24 +522,47 @@ function CardInfo(props) {
                 <CardInfoBox>
                     <CardInfoBoxTitle>
                         <TbStatusChange/>
+                        Type
+                    </CardInfoBoxTitle>
+                    <TaskList>
+                        <GenericSelectField
+                            options={IssueTypeoptions}
+                            isMultiple={false}
+                            placeholder={"Unassigned"}
+                            defaultValue={props.card?.type?.type}
+                            onSelectChange={handleIssueTypeChange}
+                        />
+                    </TaskList>
+
+                </CardInfoBox>
+
+                <CardInfoBox>
+                    <CardInfoBoxTitle>
+                        <TbStatusChange/>
                         Status
                     </CardInfoBoxTitle>
                     <TaskList>
                         <GenericSelectField
-                            options={statusoptions}
+                            options={Statusoptions}
                             isMultiple={false}
                             placeholder={"Unassigned"}
-                            defaultValue={"Backlog"}/>
+                            defaultValue={props.card?.status?.status}
+                            onSelectChange={handleIssueStatusChange}
+                        />
                     </TaskList>
 
                 </CardInfoBox>
                 <CardInfoBox>
                     <CardInfoBoxTitle>
                         <FiUsers/>
-                        Assignees
+                        Assignee
                     </CardInfoBoxTitle>
                     <TaskList>
-                        <UserSelectField users={users} isMultiple={true} placeholder={"Unassigned"}/>
+                        <UserSelectField defaultValue={props.card?.assignee?.username} users={Useroptions}
+                                         isMultiple={false}
+                                         placeholder={"Unassigned"}
+                                         onSelectChange={handleAssigneeChange}
+                        />
                     </TaskList>
                 </CardInfoBox>
                 <CardInfoBox>
@@ -409,14 +570,12 @@ function CardInfo(props) {
                         <FiUser/>
                         Reporter
                     </CardInfoBoxTitle>
-                    <UserSelectField users={users} isMultiple={false} placeholder={"Unassigned"}/>
                     <TaskList>
-                        {values.reporter?.map((item) => (
-                            <Task key={item.id}>
-                                <p>{item.text}</p>
-                                <p>{item.picture}</p>
-                            </Task>
-                        ))}
+                        <UserSelectField defaultValue={props.card?.reporter?.username} users={Useroptions}
+                                         isMultiple={false}
+                                         placeholder={"Unassigned"}
+                                         onSelectChange={handleReporterChange}
+                        />
                     </TaskList>
                 </CardInfoBox>
 
@@ -424,10 +583,12 @@ function CardInfo(props) {
                     <CardInfoBoxTitle>
                         <CgOptions/>
                         Priority
-
                     </CardInfoBoxTitle>
                     <TaskList>
-                        <GenericSelectField options={priorityoptions} isMultiple={false} placeholder={"Unassigned"}/>
+                        <GenericSelectField options={Priorityoptions} defaultValue={props.card?.priority}
+                                            isMultiple={false} placeholder={"Unassigned"}
+                                            onSelectChange={handlePriorityChange}
+                        />
                     </TaskList>
                 </CardInfoBox>
 

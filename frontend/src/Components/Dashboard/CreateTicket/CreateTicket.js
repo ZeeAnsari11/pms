@@ -225,6 +225,17 @@ const MyModalComponent = ({onClose}) => {
             });
             setLabels(response.data);
         };
+
+        const fetchDependentUserOptions = async () => {
+            const response = await axios.get(`http://127.0.0.1:8000/api/projects/${selectedProject}/assignees/`, {
+                headers: {
+                    Authorization: `Token ${authToken}`,
+                },
+            });
+            setUsers(response.data);
+        };
+
+        fetchDependentUserOptions();
         fetchDependentProjectStatuses();
         fetchDependentProjectTypes();
         fetchDependentProjectLabels();
@@ -239,7 +250,7 @@ const MyModalComponent = ({onClose}) => {
         setSelectedPriority(value);
     }
 
-    const handleIssueChange = (value) => {
+    const handleIssueTypeChange = (value) => {
         setSelectedIssueType(parseInt(value));
     };
 
@@ -269,15 +280,6 @@ const MyModalComponent = ({onClose}) => {
             setProject(response.data);
         };
 
-        const fetchUserOptions = async () => {
-            const response = await axios.get('http://127.0.0.1:8000/api/users_list/', {
-                headers: {
-                    Authorization: `Token ${authToken}`,
-                },
-            });
-            setUsers(response.data);
-        };
-
         const fetchCurrentUserData = async () => {
             try {
                 const response = await axios.get(`${process.env.REACT_APP_HOST}/api/userprofile/`, {
@@ -292,7 +294,6 @@ const MyModalComponent = ({onClose}) => {
         }
 
         fetchProject();
-        fetchUserOptions();
         fetchCurrentUserData();
     }, []);
     console.log("Projects:", project)
@@ -447,7 +448,7 @@ const MyModalComponent = ({onClose}) => {
                                     options={IssueTypeoptions}
                                     isMultiple={false}
                                     placeholder={"Unassigned"}
-                                    onSelectChange={handleIssueChange}/>
+                                    onSelectChange={handleIssueTypeChange}/>
                             </TaskList>
                         </CardInfoBox>
                         <Divider/>
