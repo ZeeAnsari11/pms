@@ -13,7 +13,8 @@ import {
     NavbarLinkExtended,
 } from "./styles";
 import Dropdown from '../Dropdown/index'
-import {accountitems, projectitems, yourworkitems, teamitems, notificationsitems, helpitems} from "./Dropdownitems";
+import {projectItems, yourWorkItems, teamItems, notificationsItems, helpItems} from "./Dropdownitems";
+import { accountItems } from "../../User/Logout/index"
 import {MdKeyboardArrowDown} from 'react-icons/md'
 import {IoMdNotifications} from 'react-icons/io'
 import {RxAvatar} from 'react-icons/rx'
@@ -52,17 +53,17 @@ function NavBar() {
                             >
                                 {extendNavbar ? <>&#10005;</> : <> &#8801;</>}
                             </OpenLinksButton>
-                            <Dropdown items={yourworkitems} name="Your Work"
-                                      icon={<MdKeyboardArrowDown size={20} style={{
-                                          marginRight: "10px", cursor: 'pointer',
-                                          marginLeft: "-7px"
-                                      }}/>}/>
+                            <Dropdown items={yourWorkItems} name="Your Work"
+                                        icon={<MdKeyboardArrowDown size={20} style={{
+                                            marginRight: "10px", cursor: 'pointer',
+                                            marginLeft: "-7px"
+                                        }}/>}/>
 
-                            <Dropdown items={projectitems} name='Projects' icon={<MdKeyboardArrowDown size={20} style={{
+                            <Dropdown items={projectItems} name='Projects' icon={<MdKeyboardArrowDown size={20} style={{
                                 marginRight: "10px", cursor: 'pointer',
                                 marginLeft: "-7px"
                             }}/>}/>
-                            <Dropdown items={teamitems} name='Teams' icon={<MdKeyboardArrowDown size={20} style={{
+                            <Dropdown items={teamItems} name='Teams' icon={<MdKeyboardArrowDown size={20} style={{
                                 marginRight: "10px", cursor: 'pointer',
                                 marginLeft: "-8px"
                             }}/>}/>
@@ -72,11 +73,11 @@ function NavBar() {
                     </LeftContainer>
                     <RightContainer>
                         <SearchBar/>
-                        <Dropdown minWidth="450px" items={notificationsitems}
+                        <Dropdown minWidth="450px" items={notificationsItems}
                                   name={<IoMdNotifications size={24} style={{marginLeft: "10px"}}/>}/>
-                        <Dropdown minWidth="350px" items={helpitems}
+                        <Dropdown minWidth="350px" items={helpItems}
                                   name={<AiFillQuestionCircle size={24} style={{marginLeft: "10px"}}/>}/>
-                        <Dropdown items={accountitems} name={<RxAvatar size={24} style={{marginLeft: "10px"}}/>}/>
+                        <Dropdown items={accountItems} name={<RxAvatar size={24} style={{marginLeft: "10px"}}/>}/>
                     </RightContainer>
                 </NavbarInnerContainer>
                 {extendNavbar && (

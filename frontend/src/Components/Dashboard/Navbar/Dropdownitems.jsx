@@ -1,119 +1,15 @@
-import { ImUser } from "react-icons/im";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
 import { RiExternalLinkLine, RiFeedbackFill } from "react-icons/ri";
 import { VscProject } from "react-icons/vsc";
 import { BiPlus } from "react-icons/bi";
-import { AiOutlineLogout } from "react-icons/ai";
 import { BsArrowRightCircleFill, BsMicrosoftTeams } from "react-icons/bs";
 import { MdOutlineCreate } from "react-icons/md";
 import { GoKeyboard } from "react-icons/go";
-import axios from "axios";
-import React, { useEffect, useState } from "react";
-import Avatar from "react-avatar";
-import styled from "styled-components";
+import { Link } from "react-router-dom";
 
 const iconSize = 20;
 
-const Username = styled.div`
-  margin-left: 40px;
-  margin-top: -35px;
-  color: black;
-`;
-
-const Email = styled.div`
-  margin-left: 40px;
-  margin-top: -5px;
-`;
-
-const AccountDropdown = () => {
-  const [userData, setUserData] = useState(null);
-let authToken = localStorage.getItem('auth_token')
-  useEffect(() => {
-    const fetchUserData = async () => {
-      axios.get(`${process.env.REACT_APP_HOST}/api/auth/users/me/`, {headers: {"Authorization": `Token ${authToken}`}})
-                .then(response => {
-                    setUserData(response.data);
-                }).catch(error => {
-                console.error(error);
-            });
-    };
-
-    fetchUserData();
-  }, []);
-
-  return (
-    <>
-      <strong>ACCOUNT</strong>
-      <div>
-        {/*<ImUser size={iconSize} />*/}
-        <Avatar
-                        name={userData?.username}
-                        size={30}
-                        round={true}
-                        color="#DE350B"
-                        style={{marginRight: '10px', marginTop: '8px'}}
-                    />
-        <Username>{userData?.username}</Username>
-        <Email>{userData?.email}</Email>
-      </div>
-    </>
-  );
-};
-
-async function logout() {
-    let authToken = localStorage.getItem('auth_token')
-    try {
-        const config = {
-            headers: {
-                Authorization: `Token ${authToken}`,
-            },
-        };
-        await axios.post('http://127.0.0.1:8000/api/auth/token/logout/', null, config);
-        localStorage.removeItem('auth_token');
-    } catch (error) {
-        window.location.href = '#';
-    }
-};
-
-export const accountitems = [
-  {
-    key: "1",
-    type: "group",
-    label: <AccountDropdown />,
-    children: [
-      {
-        key: "1-2",
-        label: <Link to="/manage-account">Manage Account</Link>,
-        icon: <RiExternalLinkLine size={iconSize} />,
-      },
-    ],
-  },
-  // {
-  //   key: "2",
-  //   type: "group",
-  //   label: <strong>JIRA</strong>,
-  //   children: [
-  //     {
-  //       key: "2-1",
-  //       label: <Link to="/profile">Profile</Link>,
-  //     },
-  //     {
-  //       key: "2-2",
-  //       label: <Link to="/personal-settings">Personal Settings</Link>,
-  //     },
-  //   ],
-  // },
-  {
-    type: "divider",
-  },
-  {
-    key: "3",
-    icon: <AiOutlineLogout size={iconSize} />,
-    label: <Link to="/" onClick={logout}>Logout</Link>,
-  },
-];
-
-export const projectitems = [
+export const projectItems = [
   {
     icon: <VscProject size={iconSize} />,
     label: <Link to="/project">View All Projects</Link>,
@@ -129,7 +25,7 @@ export const projectitems = [
   },
 ];
 
-export const teamitems = [
+export const teamItems = [
   {
     icon: <BiPlus size={iconSize} />,
     key: "0",
@@ -149,7 +45,7 @@ export const teamitems = [
   },
 ];
 
-export const yourworkitems = [
+export const yourWorkItems = [
   {
     icon: <BsArrowRightCircleFill size={iconSize} />,
     label: <Link to="/project">Go to Your work Page</Link>,
@@ -157,7 +53,7 @@ export const yourworkitems = [
   },
 ];
 
-export const notificationsitems = [
+export const notificationsItems = [
   {
     icon: <RiExternalLinkLine size={iconSize} />,
     label: <Link to="/notifcations">Notifications</Link>,
@@ -172,7 +68,7 @@ export const notificationsitems = [
   },
 ];
 
-export const helpitems = [
+export const helpItems = [
   {
     icon: <GoKeyboard size={iconSize} />,
     label: <Link to="/shortcuts">KeyBoard Shortcuts</Link>,
