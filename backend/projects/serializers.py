@@ -84,7 +84,8 @@ class ProjectIssuesSerializer(serializers.ModelSerializer):
 class CreateProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Project
-        fields = ["id", 'icon', 'name', 'slug', 'key', 'assignees', 'project_lead', 'description', 'company', 'category']
+        fields = ["id", 'icon', 'name', 'slug', 'key', 'assignees', 'project_lead', 'description', 'company',
+                  'category']
 
 
 def save_file_to_storage(file):

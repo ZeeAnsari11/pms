@@ -53,6 +53,10 @@ function Dashboard(props) {
 
     const [projectData, setProjectData] = useState({});
     const [issuesData, setIssuesData] = useState({});
+    const [issuesDataWithTodoStatus, setIssuesDataWithTodoStatus] = useState([]);
+    const [issuesDataWithDoneStatus, setIssuesDataWithDoneStatus] = useState([]);
+    const [issuesDataWithInProgressStatus, setIssuesDataWithInProgressStatus] = useState([]);
+
 
     const [name, setName] = useState(''); // Set initial value from project object
     const [projectCategory, setProjectCategory] = useState(''); // Set initial value from project object
@@ -79,8 +83,98 @@ function Dashboard(props) {
             });
             setIssuesData(response.data);
         };
+
+        const fetchIssuesWithTodoStatus = async () => {
+            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/projects/${projectId}/issues/?status__status__iexact=To+Do`, {
+                headers: {
+                    Authorization: `Token ${authToken}`,
+                },
+            });
+            setIssuesDataWithTodoStatus(response.data);
+        };
+
+        const fetchIssuesWithDoneStatus = async () => {
+            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/projects/${projectId}/issues/?status__status__iexact=Done`, {
+                headers: {
+                    Authorization: `Token ${authToken}`,
+                },
+            });
+            setIssuesDataWithDoneStatus(response.data);
+        };
+
+        const fetchIssuesWithInProgressStatus = async () => {
+            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/projects/${projectId}/issues/?status__status__iexact=In+Progress`, {
+                headers: {
+                    Authorization: `Token ${authToken}`,
+                },
+            });
+            setIssuesDataWithInProgressStatus(response.data);
+        };
+
         fetchProjects();
         fetchIssues();
+        fetchIssuesWithTodoStatus();
+        fetchIssuesWithDoneStatus();
+        fetchIssuesWithInProgressStatus();
+
+        // const todoCards = issuesDataWithTodoStatus.map(issue => ({
+        //     id: issue?.id,
+        //     title: issue?.name,
+        //     tasks: [],
+        //     labels: [
+        //         {
+        //             text: issue?.name,
+        //             color: "red",
+        //         },
+        //     ],
+        //     desc: issue?.description,
+        //     date: "",
+        // }))
+        // const doneCards = issuesDataWithDoneStatus.map(issue => ({
+        //     id: issue?.id,
+        //     title: issue?.name,
+        //     tasks: [],
+        //     labels: [
+        //         {
+        //             text: issue?.name,
+        //             color: "red",
+        //         },
+        //     ],
+        //     desc: issue?.description,
+        //     date: "",
+        // }))
+        //
+        // const inProgressCards = issuesDataWithInProgressStatus.map(issue => ({
+        //     id: issue?.id,
+        //     title: issue?.name,
+        //     tasks: [],
+        //     labels: [
+        //         {
+        //             text: issue?.name,
+        //             color: "red",
+        //         },
+        //     ],
+        //     desc: issue?.description,
+        //     date: "",
+        // }))
+        // setboards([{
+        //     id: Date.now() + Math.random() * 2,
+        //     title: "To Do",
+        //     cards: [todoCards],
+        // },
+        //
+        //     {
+        //         id: Date.now() + Math.random() * 2,
+        //         title: "Done",
+        //         cards: [doneCards],
+        //     },
+        //
+        //     {
+        //         id: Date.now() + Math.random() * 2,
+        //         title: "In Progress",
+        //         cards: [inProgressCards],
+        //     },])
+
     }, []);
 
 
@@ -93,7 +187,10 @@ function Dashboard(props) {
     }, [projectData]);
     console.log("Project Issues:", issuesData)
 
-    console.log("Project Icon:", projectIcon)
+    console.log("Project Issues with To Do Status:", issuesDataWithTodoStatus)
+    console.log("Project Issues with Done Status:", issuesDataWithDoneStatus)
+    console.log("Project Issues with In Progress Status:", issuesDataWithInProgressStatus)
+
 
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
@@ -103,53 +200,113 @@ function Dashboard(props) {
         cid: "",
         bid: "",
     })
-    const [boards, setboards] = useState([
-        {
-            id: Date.now() + Math.random() * 2,
-            title: "To Do",
-            cards: [
+
+    const [boards, setboards] = useState([]);
+
+    useEffect(() => {
+        const todoCards = issuesDataWithTodoStatus.map((issue) => ({
+            id: issue?.id,
+            title: issue?.name,
+            tasks: [],
+            labels: [
                 {
-                    id: Date.now() + Math.random(),
-                    title: "I am testing this to check whether styling remains consistent or not.",
-                    tasks: [],
-                    labels: [
-                        {
-                            text: "critical",
-                            color: "red",
-                        },
-                    ],
-                    desc: "Frontend of Dashboard",
-                    date: "",
+                    text: issue?.label?.name,
+                    color: issue?.label?.color,
                 },
             ],
-        },
+            desc: issue?.description,
+            date: "",
+            slug: issue?.slug,
+            estimate: issue?.estimate,
+            project: issue?.project,
+            priority: issue?.priority,
+            created_at: issue?.created_at,
+            updated_at: issue?.updated_at,
+            created_by: issue?.created_by,
+            updated_by: issue?.updated_by,
+            file: issue?.file,
+            status: issue?.status,
+            type: issue?.type,
+            assignee: issue?.assignee,
+            reporter: issue?.reporter,
 
-        {
-            id: Date.now() + Math.random() * 2,
-            title: "Done",
-            cards: [
+        }));
+
+        const doneCards = issuesDataWithDoneStatus.map((issue) => ({
+            id: issue?.id,
+            title: issue?.name,
+            tasks: [],
+            labels: [
                 {
-                    id: Date.now() + Math.random(),
-                    title: "I am testing this to check whether styling remains consistent or not.",
-                    tasks: [],
-                    labels: [
-                        {
-                            text: "critical",
-                            color: "red",
-                        },
-                    ],
-                    desc: "Frontend of Dashboard",
-                    date: "",
+                    text: issue?.label?.name,
+                    color: issue?.label?.color,
                 },
             ],
-        },
+            desc: issue?.description,
+            date: "",
+            slug: issue?.slug,
+            estimate: issue?.estimate,
+            project: issue?.project,
+            priority: issue?.priority,
+            created_at: issue?.created_at,
+            updated_at: issue?.updated_at,
+            created_by: issue?.created_by,
+            updated_by: issue?.updated_by,
+            file: issue?.file,
+            status: issue?.status,
+            type: issue?.type,
+            assignee: issue?.assignee,
+            reporter: issue?.reporter,
 
-        {
-            id: Date.now() + Math.random() * 2,
-            title: "In Progress",
-            cards: [],
-        },
-    ]);
+        }));
+
+        const inProgressCards = issuesDataWithInProgressStatus.map((issue) => ({
+            id: issue?.id,
+            title: issue?.name,
+            tasks: [],
+            labels: [
+                {
+                    text: issue?.label?.name,
+                    color: issue?.label?.color,
+                },
+            ],
+            desc: issue?.description,
+            date: "",
+            slug: issue?.slug,
+            estimate: issue?.estimate,
+            project: issue?.project,
+            priority: issue?.priority,
+            created_at: issue?.created_at,
+            updated_at: issue?.updated_at,
+            created_by: issue?.created_by,
+            updated_by: issue?.updated_by,
+            file: issue?.file,
+            status: issue?.status,
+            type: issue?.type,
+            assignee: issue?.assignee,
+            reporter: issue?.reporter,
+        }));
+
+        const newBoards = [
+            {
+                id: Date.now() + Math.random() * 2,
+                title: "To Do",
+                cards: todoCards,
+            },
+            {
+                id: Date.now() + Math.random() * 2,
+                title: "Done",
+                cards: doneCards,
+            },
+            {
+                id: Date.now() + Math.random() * 2,
+                title: "In Progress",
+                cards: inProgressCards,
+            },
+        ];
+
+        setboards(newBoards);
+    }, [issuesDataWithTodoStatus, issuesDataWithDoneStatus, issuesDataWithInProgressStatus]);
 
     const addCard = (title, bid) => {
         const card = {
@@ -246,6 +403,12 @@ function Dashboard(props) {
         setboards(tempBoards);
     }
 
+    // const project = {
+    //     name: projectData.name,
+    //     category: projectData.project_category,
+    //     icon: projectData.icon
+    // }
+
     let IconPath = projectData.icon
     if (IconPath != null) {
         IconPath = `${process.env.REACT_APP_HOST}/${projectIcon}`
@@ -254,15 +417,9 @@ function Dashboard(props) {
     }
 
 
-    const project = {
-        name: name,
-        category: projectCategory?.category,
-        icon: IconPath,
-    }
-
     return (
         <DashboardContainer>
-            <Sidebar project={project}/>
+            <Sidebar/>
             <NavBar/>
             <DashboardOuter>
                 <DashboardBoards>
