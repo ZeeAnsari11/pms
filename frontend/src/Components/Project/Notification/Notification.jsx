@@ -1,16 +1,16 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import styled from 'styled-components';
 import NavBar from "../../Dashboard/Navbar/index";
 import Sidebar from "../../Dashboard/Sidebar";
-import GenericSelectField from '../../Dashboard/SelectFields/GenericSelectField';
 import {AiFillSlackCircle} from 'react-icons/ai';
 import {FcGoogle} from 'react-icons/fc';
 import {IoNotificationsSharp, IoNotificationsOff} from 'react-icons/io5';
+import apiRequest from '../../../Utils/apiRequest';
+import { AuthContext } from '../../../Utils/AuthContext';
 import {color} from "../../Dashboard/Sidebar/utils/styles";
 import {ToastContainer, toast} from 'react-toastify';
 import {Switch} from 'antd';
 import {useParams} from "react-router-dom";
-import axios from "axios";
 
 
 const PageContainer = styled.div`
@@ -32,17 +32,6 @@ const SummaryHeading = styled.p`
   }
 `;
 
-const SubHeading = styled.p`
-  margin-left: 40px;
-  font-size: 16px;
-  color: black;
-  font-weight: bolder;
-  width: 250px;
-
-  @media (max-width: 768px) {
-    margin: 5px 0;
-  }
-`;
 
 const SubHeadingForNotificationMethods = styled.p`
   margin-left: 10px;
@@ -54,12 +43,6 @@ const SubHeadingForNotificationMethods = styled.p`
   @media (max-width: 768px) {
     margin: 5px 0;
   }
-`;
-
-const OptionWrapper = styled.div`
-  width: 217px;
-  margin-left: 281px;
-  margin-top: -44px;
 `;
 
 const ContentWrapper = styled.div`
@@ -144,6 +127,9 @@ function Notification() {
     const [gmailAPIResponse, setGmailAPIResponse] = useState([]);
     const [switchValueForSlack, setSwitchValueForSlack] = useState(false);
     const [switchValueForGmail, setSwitchValueForGmail] = useState(false);
+
+    const { authToken } = useContext(AuthContext);
+
     const { projectId } = useParams();
 
 
@@ -162,12 +148,15 @@ function Notification() {
     }
 
     useEffect(() => {
-    axios
-        .get(`${process.env.REACT_APP_HOST}/api/project_slack_webhook/`, {
-            params: {
-            project: projectId,
-            }
-        })
+    apiRequest
+        .get(`/api/project_slack_webhook/`,
+            {
+                params: {
+                    project: projectId,
+            }, headers: {
+                    "Authorization": `Token ${authToken}`
+                }
+            } )
         .then(response => {
             if(response.status === 200) {
                 handleAPIResponseData(response);
@@ -179,11 +168,6 @@ function Notification() {
         });
     }, [switchValueForSlack, switchValueForGmail]);
 
-
-    const items = [
-        {icon: <AiFillSlackCircle/>, label: 'Slack', value: 'Slack'},
-        {icon: <FcGoogle/>, label: 'Gmail', value: 'Gmail'},
-    ];
 
     const handleSwitchChangeForSlack = (checked) => {
         if (checked === true) {
@@ -210,17 +194,19 @@ function Notification() {
             });
         }
         if (slackAPIResponse.length > 0) {
-            const { id, slack_notification_status, slack_webhook_url, project } = slackAPIResponse[0];
+            const { id, slack_webhook_url, project } = slackAPIResponse[0];
             const updatedData = {
                 id: id,
                 slack_notification_status: switchValueForSlack,
                 slack_webhook_url: slack_webhook_url,
                 project: project,
             };
-            axios
-            .put(`${process.env.REACT_APP_HOST}/api/project_slack_webhook/`, {
+            apiRequest
+            .put(`/api/project_slack_webhook/`, {
                 updatedData
-            })
+            },{
+                headers:{ "Authorization": `Token ${authToken}` }
+            } )
             .then(response => {
             if(response.status === 200) {
                 handleAPIResponseData(response);
