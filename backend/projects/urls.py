@@ -1,6 +1,7 @@
 from rest_framework_nested import routers
 from . import views
 from core.views import UserProfileViewSet
+from django.urls import path
 
 router = routers.DefaultRouter()
 router.register('projects', views.ProjectViewSet, basename='projects')
@@ -22,4 +23,5 @@ router.register('userprofile', UserProfileViewSet, basename='userprofile')
 projects_router = routers.NestedDefaultRouter(router, 'projects', lookup='project')
 projects_router.register('issues', views.ProjectIssuesViewSet, basename='projects-issues')
 
-urlpatterns = router.urls + projects_router.urls
+urlpatterns = [path('api/projects/<int:pk>/assignees/', views.ProjectViewSet.as_view({'get': 'assignees'}),
+                    name='project-assignees'), ] + router.urls + projects_router.urls
