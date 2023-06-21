@@ -1,8 +1,9 @@
-import React, {useState} from "react";
+import React, {useState,useEffect} from "react";
 import styled from "styled-components";
 import {Card} from 'antd';
 import {VscFileCode} from "react-icons/vsc";
 import {AiOutlineFileZip, AiOutlineFilePdf, AiOutlineFileUnknown} from 'react-icons/ai'
+import axios from "axios";
 
 const UploadContainer = styled.div`
   border: 2px dashed #ccc;
@@ -113,6 +114,14 @@ const CardContainer = styled.div`
 function FileUpload(props) {
     const [files, setFiles] = useState([]);
 
+
+   useEffect(() => {
+    if (props.fileAttachmentArray) {
+        // Combine fileAttachmentsArray with existing files
+      setFiles(props.fileAttachmentArray);
+    }
+  }, []);
+
     const handleDragOver = (event) => {
         event.preventDefault();
         event.stopPropagation();
@@ -135,6 +144,8 @@ function FileUpload(props) {
         props.onFilesChange([...files, ...fileList]);
     };
 
+
+
     const handleRemoveFile = (index) => {
         const newFiles = [...files];
         newFiles.splice(index, 1);
@@ -151,27 +162,102 @@ function FileUpload(props) {
     );
 
     const getFilePreview = (file) => {
-        const fileExtension = file.name.split('.').pop();
+        const fileExtension = typeof file === 'string' ? file.split('.').pop() : file.name.split('.').pop();
 
-        if (file.type.includes("image")) {
-            return <PreviewImage src={URL.createObjectURL(file)}
-                                 onClick={() => openFileWindow(URL.createObjectURL(file))}/>;
-        } else if (file.type.includes("pdf")) {
-            return <PreviewIcon icon={AiOutlineFilePdf}
-                                onClick={() => openFileWindow(URL.createObjectURL(file))}/>;
-        } else if (file.type.includes("video")) {
-            return <PreviewVideo src={URL.createObjectURL(file)}
-                                 onClick={() => openFileWindow(URL.createObjectURL(file))} controls/>;
-        } else if (['js', 'jsx', 'ts', 'tsx', 'php', 'py'].includes(fileExtension)) {
-            return <PreviewIcon icon={VscFileCode}
-                                onClick={() => openFileWindow(URL.createObjectURL(file))}/>;
-
-        } else if (['zip'].includes(fileExtension)) {
-            return <PreviewIcon icon={AiOutlineFileZip} onClick={() => openFileWindow(URL.createObjectURL(file))}/>;
-
+        if (typeof file === 'string') {
+            // Handle existing files
+            if (['png', 'jpeg', 'jpg'].includes(fileExtension)) {
+                return (
+                    <PreviewImage
+                        src={file}
+                        onClick={() => openFileWindow(file)}
+                    />
+                );
+            } else if (['pdf'].includes(fileExtension)) {
+                return (
+                    <PreviewIcon
+                        icon={AiOutlineFilePdf}
+                        onClick={() => openFileWindow(file)}
+                    />
+                );
+            } else if (['video'].includes(fileExtension)) {
+                return (
+                    <PreviewVideo
+                        src={URL.createObjectURL(file)}
+                        onClick={() => openFileWindow(file)}
+                        controls
+                    />
+                );
+            } else if (['js', 'jsx', 'ts', 'tsx', 'php', 'py'].includes(fileExtension)) {
+                return (
+                    <PreviewIcon
+                        icon={VscFileCode}
+                        onClick={() => openFileWindow(file)}
+                    />
+                );
+            } else if (['zip'].includes(fileExtension)) {
+                return (
+                    <PreviewIcon
+                        icon={AiOutlineFileZip}
+                        onClick={() => openFileWindow(file)}
+                    />
+                );
+            } else {
+                // Default preview for other file types
+                return (
+                    <PreviewIcon
+                        icon={AiOutlineFileUnknown}
+                        onClick={() => openFileWindow(file)}
+                    />
+                );
+            }
         } else {
-            return <PreviewIcon icon={AiOutlineFileUnknown}
-                                onClick={() => openFileWindow(URL.createObjectURL(file))}/>;
+            // Handle newly attached files
+            if (file.type.includes('image')) {
+                return (
+                    <PreviewImage
+                        src={URL.createObjectURL(file)}
+                        onClick={() => openFileWindow(URL.createObjectURL(file))}
+                    />
+                );
+            } else if (file.type.includes('pdf')) {
+                return (
+                    <PreviewIcon
+                        icon={AiOutlineFilePdf}
+                        onClick={() => openFileWindow(URL.createObjectURL(file))}
+                    />
+                );
+            } else if (file.type.includes('video')) {
+                return (
+                    <PreviewVideo
+                        src={URL.createObjectURL(file)}
+                        onClick={() => openFileWindow(URL.createObjectURL(file))}
+                        controls
+                    />
+                );
+            } else if (['js', 'jsx', 'ts', 'tsx', 'php', 'py'].includes(fileExtension)) {
+                return (
+                    <PreviewIcon
+                        icon={VscFileCode}
+                        onClick={() => openFileWindow(URL.createObjectURL(file))}
+                    />
+                );
+            } else if (['zip'].includes(fileExtension)) {
+                return (
+                    <PreviewIcon
+                        icon={AiOutlineFileZip}
+                        onClick={() => openFileWindow(URL.createObjectURL(file))}
+                    />
+                );
+            } else {
+                // Default preview for other file types
+                return (
+                    <PreviewIcon
+                        icon={AiOutlineFileUnknown}
+                        onClick={() => openFileWindow(URL.createObjectURL(file))}
+                    />
+                );
+            }
         }
     };
 
@@ -201,13 +287,14 @@ function FileUpload(props) {
                                         size={"small"}
                                         style={{border: "1px solid grey"}}
                                     >
-                                        <Card.Meta title={file.name}
-                                                   onClick={() => openFileWindow(URL.createObjectURL(file))}/>
+                                        <Card.Meta title={typeof file === 'string' ? file.split('/').pop() : file.name}
+                                                   onClick={() => openFileWindow(typeof file === 'string' ? file : URL.createObjectURL(file))}/>
                                     </Card>
                                 </CardContainer>
                             </PreviewItem>
                         ))}
                     </PreviewContainer>
+
                 </div>
             ) : null}
         </div>
