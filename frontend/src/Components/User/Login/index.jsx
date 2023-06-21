@@ -308,7 +308,6 @@ function Login() {
                             <Link to="/forgot-password">Forgot Password?</Link>
                             <br></br>
                             <br></br>
-                            <Link to="/reset-password">Password Reset?</Link>
                         </Anchor>
                         <Button>Sign In</Button>
                     </Form>
