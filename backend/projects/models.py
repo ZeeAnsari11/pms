@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.core.validators import URLValidator
 from .validators import validate_file_size
 from django.utils.text import slugify
@@ -115,6 +115,8 @@ class Project(models.Model):
     )
     assignees = models.ManyToManyField(
         User,
+        through='ProjectMembership',
+        through_fields=('project','user'),
         related_name='projects_assignees'
     )
     category = models.ForeignKey(
@@ -153,6 +155,15 @@ class Project(models.Model):
 
     class Meta:
         ordering = ['name', 'company']
+
+
+class ProjectMembership(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('user', 'project', 'group')
 
 
 class Issue(models.Model):
