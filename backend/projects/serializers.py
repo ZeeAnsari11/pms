@@ -5,6 +5,7 @@ from django.db.models.aggregates import Count
 from register.serializers import CompanySerializer
 from django.core.files.storage import default_storage
 import os
+from urllib.parse import urlparse
 
 
 # from rest_framework import serializers
@@ -111,27 +112,48 @@ def save_file_to_storage(file):
 
 
 class CreateIssueSerializer(serializers.ModelSerializer):
-    file = serializers.ListField(child=serializers.FileField(), required=False)
+    file = serializers.ListField(required=False)
 
     class Meta:
         model = models.Issue
         fields = "__all__"
 
+    def save_files(self, instance, files):
+        file_urls = []
+        for file in files:
+            if isinstance(file, str) and file.startswith('http://localhost:8000'):
+                # Remove the prefix from the file URL
+                parsed_url = urlparse(file)
+                file_path = parsed_url.path
+                file_urls.append(file_path)
+            elif isinstance(file, str):
+                # Handle existing file paths
+                file_urls.append(file)
+            else:
+                # Save the file to a storage location (e.g., AWS S3, local storage)
+                # and obtain the URL for the saved file
+                file_url = save_file_to_storage(file)
+                file_urls.append(file_url)
+
+        instance.file = file_urls
+        instance.save()
+
     def create(self, validated_data):
         files = validated_data.pop('file', [])
         issue = super().create(validated_data)
 
-        # Process file uploads and convert them to a list of file URLs
-        file_urls = []
-        for file in files:
-            # Save the file to a storage location (e.g., AWS S3, local storage)
-            # and obtain the URL for the saved file
-            file_url = save_file_to_storage(file)
-            file_urls.append(file_url)
+        if files:
+            self.save_files(issue, files)
 
-        issue.file = file_urls
-        issue.save()
         return issue
+
+    def update(self, instance, validated_data):
+        files = validated_data.pop('file', [])
+
+        if files:
+            self.save_files(instance, files)
+
+        return super().update(instance, validated_data)
 
 
 class IssueSerializer(serializers.ModelSerializer):
