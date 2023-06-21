@@ -155,6 +155,8 @@ function CardInfo(props) {
 
     const [Users, setUsers] = useState('');
 
+    const [files, setFiles] = useState([]);
+
 
     useEffect(() => {
         const fetchIssueData = async () => {
@@ -258,6 +260,10 @@ function CardInfo(props) {
     };
 
 
+    const handleFilesChange = (newFiles) => {
+        setFiles(newFiles);
+    };
+
 //Description
     const [description, setDescription] = useState(props.card?.desc);
     const handleDescChange = (newDesc) => {
@@ -314,6 +320,12 @@ function CardInfo(props) {
         {label: "High", value: "High", icon: <AiOutlineArrowUp color={"#E9494B"}/>},
     ]
 
+    const fileArray = props.card?.file
+    const prefix = "http://localhost:8000";
+    const combinedArray = fileArray.map((file) => `${prefix}${file}`);
+
+    console.log(combinedArray);
+
     const Useroptions = Users
         ? Users.map((Users) => ({
             username: Users.username,
@@ -350,18 +362,15 @@ function CardInfo(props) {
         formData.append("priority", selectedPriority);
         formData.append("description", description);
         formData.append("name", values.title);
-
-
-        // files.forEach((file) => {
-        //     formData.append("file", file);
-        // });
+        files.forEach((file) => {
+            formData.append("file", file);
+        });
 
 
         axios({
             method: 'patch',
             url: `${process.env.REACT_APP_HOST}/api/issues/${props.card.id}/`,
             headers: {
-                'Content-Type': 'multipart/form-data',
                 'Authorization': `Token ${authToken}`,
             },
             data: formData
@@ -369,7 +378,6 @@ function CardInfo(props) {
             .then(response => {
                 // handle the response
                 console.log(response.data);
-                // window.location.href = window.location.href;
             })
             .catch(error => {
                 // handle the error
@@ -408,7 +416,7 @@ function CardInfo(props) {
                             <File/>
                             File Attachments
                         </CardInfoBoxTitle>
-                        <FileUpload/>
+                        <FileUpload onFilesChange={handleFilesChange} fileAttachmentArray={combinedArray}/>
                     </CardInfoBoxCustom>
                 </div>
                 <CardInfoBox>
