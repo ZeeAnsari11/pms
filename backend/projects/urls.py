@@ -15,10 +15,12 @@ router.register('project_categories', views.ProjectCategoryViewSet, basename="pr
 router.register('project_type', views.ProjectTypeViewSet, basename="project_type")
 router.register('project_status', views.ProjectStatusViewSet, basename="project_status")
 router.register('project_labels', views.ProjectLabelsViewSet, basename='project_labels')
+router.register('project_memberships', views.ProjectMembershipViewSet, basename='project_memberships')
 router.register('project_slack_webhook', views.ProjectSlackWebhookViewSet, basename='project_slack_webhook')
 router.register('project_smtp_webhook', views.ProjectSMTPWebhookViewSet, basename='project_smtp_webhook')
 
 router.register('users_list', views.UserViewSet, basename='users')
+router.register('user_groups', views.GroupPermissionsViewSet, basename='user_groups')
 router.register('userprofile', UserProfileViewSet, basename='userprofile')
 
 router.register('companies', CompanyViewSet, basename='companies')
