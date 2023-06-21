@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from rest_framework.viewsets import ModelViewSet
 from django_filters.rest_framework import DjangoFilterBackend
+from django.contrib.auth.models import Group
 from rest_framework.filters import SearchFilter, OrderingFilter
 from .filters import IssueFilter
 from rest_framework.response import Response
@@ -9,6 +10,7 @@ from django.db.models import Q
 from django.contrib.auth.models import User
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import MultiPartParser, FormParser
+from .permissions import IsAdminOrReadOnly
 from .models import *
 from . import serializers
 from rest_framework.decorators import action
@@ -40,7 +42,7 @@ class ProjectTypeViewSet(ModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_fields = "__all__"
 
-    serializer_class = serializers.ProjectTypeSerialzer
+    serializer_class = serializers.ProjectTypeSerializer
     permission_classes = [IsAuthenticated]
 
     queryset = ProjectType.objects.all()
@@ -91,22 +93,19 @@ class ProjectSMTPWebhookViewSet(ModelViewSet):
 
 
 class ProjectViewSet(ModelViewSet):
-    # parser_classes = (MultiPartParser, FormParser)
     http_method_names = ['get', 'post', 'patch', 'delete']
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['name', 'key', 'slug', 'assignees__id', 'project_lead__username', 'company__company_name',
                         'category__category']
 
     def get_serializer_class(self):
-        if self.request.method in ['POST', 'PATCH']:
+        if self.request.method in ['POST', 'PATCH', 'DELETE']:
             return serializers.CreateProjectSerializer
         return serializers.ProjectSerializer
 
-    permission_classes = [IsAuthenticated]
-
     def get_permissions(self):
         if self.request.method in ['POST', 'PATCH', 'DELETE']:
-            return [IsAuthenticated()]
+            return [IsAdminOrReadOnly()]
         return [IsAuthenticated()]
 
     def get_serializer_context(self):
@@ -117,21 +116,50 @@ class ProjectViewSet(ModelViewSet):
         if user.is_staff:
             return Project.objects.prefetch_related('assignees').prefetch_related('project_lead').select_related(
                 'slack_webhook_url').select_related(
-                'company').select_related('category').all()
+                'company').select_related('category').distinct()
         return Project.objects.filter(
             Q(project_lead=self.request.user) | Q(assignees__in=[self.request.user])).distinct()
 
     @action(detail=True, methods=['GET'])
     def assignees(self, request, pk=None):
         project = self.get_object()
-        assignees = project.assignees.all()
+        assignees = project.assignees.distinct()
         serializer = serializers.CustomUserSerializer(assignees, many=True)
         return Response(serializer.data)
 
 
+class ProjectMembershipViewSet(ModelViewSet):
+    http_method_names = ['get', 'post', 'patch', 'delete']
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = "__all__"
+
+    def get_serializer_class(self):
+        if self.request.method in ['POST', 'PATCH', 'DELETE']:
+            return serializers.CreateProjectMembershipSerializer
+        return serializers.ProjectMembershipSerializer
+
+    permission_classes = [IsAuthenticated]
+
+    queryset = ProjectMembership.objects.all()
+
+
+class GroupPermissionsViewSet(ModelViewSet):
+    http_method_names = ['get', 'post', 'patch', 'delete']
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = "__all__"
+
+    def get_serializer_class(self):
+        if self.request.method in ['POST', 'PATCH', 'DELETE']:
+            return serializers.GroupPermissionsSerializer
+        return serializers.DetailedGroupPermissionsSerializer
+
+    permission_classes = [IsAuthenticated]
+
+    queryset = Group.objects.all()
+
+
 class IssueViewSet(ModelViewSet):
     http_method_names = ['get', 'post', 'patch', 'delete']
-    # parser_classes = (MultiPartParser, FormParser)
     filter_backends = [DjangoFilterBackend]
     filterset_class = IssueFilter
 

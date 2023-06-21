@@ -103,6 +103,11 @@ class ProjectStatusAdmin(admin.ModelAdmin):
     autocomplete_fields = ['project']
 
 
+class ProjectMembershipAdmin(admin.ModelAdmin):
+    list_display = ['user', 'project', 'group']
+    search_fields = ['user', 'project', 'group']
+    autocomplete_fields = ['user', 'project', 'group']
+
 
 admin.site.register(models.Project, ProjectAdmin)
 
@@ -112,6 +117,7 @@ admin.site.register(models.ProjectType, ProjectTypeAdmin)
 admin.site.register(models.ProjectStatus, ProjectStatusAdmin)
 admin.site.register(models.ProjectSlackWebhook, ProjectSlackWebhookAdmin)
 admin.site.register(models.ProjectSMTPWebhook, ProjectSMTPWebhookAdmin)
+admin.site.register(models.ProjectMembership, ProjectMembershipAdmin)
 
 admin.site.register(models.Issue, IssueAdmin)
 
