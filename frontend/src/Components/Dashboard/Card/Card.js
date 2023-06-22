@@ -5,6 +5,7 @@ import Dropdown from "../Dropdown/Dropdown";
 import CardInfo from "../CardInfo/CardInfo";
 import Avatar from 'react-avatar';
 import styled from 'styled-components';
+import {useNavigate} from "react-router-dom";
 
 const CardContainer = styled.div`
   position: relative;
@@ -96,6 +97,23 @@ function Card(props) {
     const [showDropDown, setShowDropdown] = useState(false);
     const [showModal, setshowModal] = useState(false);
     const [showName, setshowName] = useState(false);
+    const navigate = useNavigate();
+
+
+    const handleCardClick = (event) => {
+        event.preventDefault();
+        setshowModal(true);
+        const {Card} = props;
+        const {slug: issueSlug} = Card;
+        const currentURL = window.location.pathname;
+        const newURL = `${currentURL}?selectedIssue=${issueSlug}/`;
+        navigate(newURL);
+    };
+
+    const handleModalClose = () => {
+        setshowModal(false);
+        navigate(-1); // Go back to the previous URL
+    };
 
 
     return (
@@ -105,14 +123,14 @@ function Card(props) {
                     card={props.Card}
                     updateCard={props.updateCard}
                     boardId={props.boardId}
-                    onClose={() => setshowModal(false)}
+                    onClose={handleModalClose}
                 />
             )}
             <CardContainer
                 draggable
                 onDragEnd={() => props.handleDragEnd(props.Card?.id, props.boardId)}
                 onDragEnter={() => props.handleDragEnter(props.Card?.id, props.boardId)}
-                onClick={() => setshowModal(true)}
+                onClick={handleCardClick}
             >
                 <CardTop>
 
