@@ -1,7 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react';
 import NavBar from "../../Dashboard/Navbar";
-import ProfilePhotouploader from "../ManageAccount/ProfilePhotouploader";
+import ProfilePhotouploader from "../Manage/ProfilePhotouploader";
 import GenericSelectField from "../../Dashboard/SelectFields/GenericSelectField";
+import UserSidebar from "../../Dashboard/Sidebar/UserSidebar";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import { AuthContext } from '../../../Utils/AuthContext';
 import {faImage} from '@fortawesome/free-solid-svg-icons';
@@ -42,7 +43,6 @@ const ImageWrapper = styled.div`
   background-color: #FFFFFF;
   width: 100%;
   height: 212px;
-  //border-radius: 3px;
   box-shadow: var(--ds-shadow-raised, 0 1px 1px rgba(9, 30, 66, 0.25), 0 0 1px 1px rgba(9, 30, 66, 0.13));
 
   @media (max-width: 768px) {
@@ -86,6 +86,7 @@ const CoverPictureWrapper = styled.div`
   position: relative;
   width: 100%;
   height: 212px;
+  margin-left: 200px;
   background-color: #80ffa1;
   background-image: url('/Images/CoverBackground.jpg');
   background-size: cover;
@@ -215,6 +216,7 @@ const HeadingLabel = styled.span`
 const SectionsWrapper = styled.div`
   display: flex;
   border-radius: 3px;
+  margin-left: 200px;
   box-shadow: var(--ds-shadow-raised, 0 1px 1px rgba(9, 30, 66, 0.25), 0 0 1px 1px rgba(9, 30, 66, 0.13));
 `;
 
@@ -472,6 +474,7 @@ const ProfileVisibility = () => {
     return (
         <div>
             <NavBar/>
+            <UserSidebar/>
             <Wrapper>
                 <FormWrapper onSubmit={handleSubmit} encType="multipart/form-data" method="POST">
 

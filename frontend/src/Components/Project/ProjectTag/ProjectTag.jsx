@@ -2,7 +2,7 @@ import React, {useState, useEffect, useContext} from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import NavBar from "../../Dashboard/Navbar/index";
-import Sidebar from "../../Dashboard/Sidebar";
+import ProjectSidebar from "../../Dashboard/Sidebar/ProjectSidebar";
 import {AiOutlineSetting} from 'react-icons/ai';
 import {DownOutlined} from '@ant-design/icons';
 import apiRequest from '../../../Utils/apiRequest';
@@ -418,7 +418,7 @@ function ProjectTags() {
     return (
         <div>
             <PageContainer>
-                <Sidebar project={project}/>
+                <ProjectSidebar project={project}/>
                 <NavBar/>
                 <ContentWrapper>
                     <HeadingWrapper>

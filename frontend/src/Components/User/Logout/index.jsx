@@ -4,6 +4,10 @@ import AccountDropdown from "../AccountDropdown";
 import apiRequest from '../../../Utils/apiRequest';
 import { AiOutlineLogout } from "react-icons/ai";
 import { RiExternalLinkLine } from "react-icons/ri";
+import { FaUsersCog } from "react-icons/fa";
+import { MdGroups } from "react-icons/md";
+import { GrSettingsOption } from "react-icons/gr";
+
 import React, { useContext } from "react";
 
 const iconSize = 20;
@@ -45,6 +49,21 @@ const accountItems = [
                 key: "1-2",
                 label: <Link to="/manage-account">Manage Account</Link>,
                 icon: <RiExternalLinkLine size={iconSize} />,
+            },
+            {
+                key: "1-3",
+                label: <Link to="/manage-users">Manage Users</Link>,
+                icon: <FaUsersCog size={iconSize} />,
+            },
+            {
+                key: "1-4",
+                label: <Link to="/manage-groups">Manage Groups</Link>,
+                icon: <MdGroups size={iconSize} />,
+            },
+            {
+                key: "1-5",
+                label: <Link to="/manage-general-settings">Manage General Settings</Link>,
+                icon: <GrSettingsOption size={iconSize} />,
             },
         ],
     }, {

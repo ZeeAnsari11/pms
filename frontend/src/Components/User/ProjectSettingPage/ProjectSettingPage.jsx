@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate, useParams } from "react-router-dom";
 import NavBar from "../../Dashboard/Navbar";
-import Sidebar from "../../Dashboard/Sidebar";
+import ProjectSidebar from "../../Dashboard/Sidebar/ProjectSidebar";
 import UserSelectField from "../../Dashboard/SelectFields/UserSelectField";
 import apiRequest from '../../../Utils/apiRequest';
 import { AuthContext } from '../../../Utils/AuthContext';
@@ -230,7 +230,7 @@ function ProjectSettingPage() {
     return (
         <div>
             <NavBar/>
-            <Sidebar/>
+            <ProjectSidebar/>
             <PageWrapper>
 
                 <Header>

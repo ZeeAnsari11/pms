@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import styled from 'styled-components';
 import NavBar from "../../Dashboard/Navbar/index";
-import Sidebar from "../../Dashboard/Sidebar";
+import ProjectSidebar from "../../Dashboard/Sidebar/ProjectSidebar";
 import {AiFillSlackCircle} from 'react-icons/ai';
 import {FcGoogle} from 'react-icons/fc';
 import {IoNotificationsSharp, IoNotificationsOff} from 'react-icons/io5';
@@ -251,7 +251,7 @@ function Notification() {
     return (
         <div>
             <PageContainer>
-                <Sidebar/>
+                <ProjectSidebar/>
                 <NavBar/>
                 <ContentWrapper>
                     <HeadingWrapper>
