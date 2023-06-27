@@ -7,6 +7,9 @@ import {BiCodeAlt} from 'react-icons/bi'
 import {BsGraphUpArrow} from 'react-icons/bs'
 import {GrSettingsOption} from "react-icons/gr";
 import {TiTags} from "react-icons/ti";
+import { RiExternalLinkLine } from "react-icons/ri";
+import { FaUsersCog } from "react-icons/fa";
+import { MdGroups } from "react-icons/md";
 import {TbLayoutColumns} from "react-icons/tb";
 import {AiOutlineCloseCircle, AiOutlineUnlock} from "react-icons/ai";
 
@@ -30,6 +33,14 @@ const Icon = ({type, size}) => {
             return <FiSettings size={size} color={"black"}/>;
         case 'Summary':
             return <MdOutlineSummarize size={size} color={"black"}/>;
+        case 'My Account':
+            return <RiExternalLinkLine size={size} color={"black"}/>;
+        case 'Manage Users':
+            return <FaUsersCog size={size} color={"black"}/>;
+        case 'Manage Groups':
+            return <MdGroups size={size} color={"black"}/>;
+        case 'General Setting':
+            return <GrSettingsOption size={size} color={"black"}/>;
         case 'Notifications':
             return <MdNotificationsNone size={size} color={"black"}/>;
         case 'Integrations':

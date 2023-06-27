@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Button, Table } from 'antd';
 import styled from 'styled-components';
 import NavBar from '../../Dashboard/Navbar/index';
-import Sidebar from "../../Dashboard/Sidebar";
+import ProjectSidebar from "../../Dashboard/Sidebar/ProjectSidebar";
 import apiRequest from '../../../Utils/apiRequest';
 import { AuthContext } from '../../../Utils/AuthContext';
 import { toast, ToastContainer } from "react-toastify";
@@ -253,7 +253,7 @@ const Permissions = () => {
 
     return (
         <>
-            <Sidebar/>
+            <ProjectSidebar/>
             <NavBar/>
             <PermissionsContainer>
                 <Heading>Allowed Users</Heading>
