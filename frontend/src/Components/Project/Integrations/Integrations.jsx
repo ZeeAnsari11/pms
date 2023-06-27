@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import NavBar from "../../Dashboard/Navbar/index";
-import Sidebar from "../../Dashboard/Sidebar";
+import ProjectSidebar from "../../Dashboard/Sidebar/ProjectSidebar";
 import { AiFillSlackCircle } from 'react-icons/ai';
 import { FcGoogle } from 'react-icons/fc';
 import { color } from "../../Dashboard/Sidebar/utils/styles";
@@ -273,11 +273,6 @@ function Integrations() {
         { icon: <><FcGoogle/></>, label: 'Gmail', value: 'Gmail' },
     ];
 
-    const project = {
-        name: 'Project Name',
-        category: 'Project Setting'
-    };
-
     const handleSlackSaveOrUpdateForm = ( values ) => {
         const { id } = initialSlackValues;
         if ( isSlackUpdating ) {
@@ -305,7 +300,7 @@ function Integrations() {
     return (
         <div>
             <PageContainer>
-                <Sidebar project={project}/>
+                <ProjectSidebar />
                 <NavBar/>
                 <ContentWrapper>
                     <HeadingWrapper>
