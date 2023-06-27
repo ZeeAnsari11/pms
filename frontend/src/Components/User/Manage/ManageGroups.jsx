@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import NavBar from "../../Dashboard/Navbar";
+import UserSidebar from "../../Dashboard/Sidebar/UserSidebar";
 import GenericSelectField from "../../Dashboard/SelectFields/GenericSelectField";
 import {Link} from 'react-router-dom';
 
@@ -15,6 +16,7 @@ const PersonalSetting = styled.div`
 const PageWrapper = styled.div`
   background-color: #fff;
   height: 100vh;
+  margin-left: 50px;
   padding: 40px 20% 0 14%;
 `;
 
@@ -114,11 +116,12 @@ const notificationFormat = [
     {value: 'option2', label: 'Text'},
 ];
 
-function ProjectSettingPage() {
+function ManageGroups() {
 
     return (
         <PersonalSetting>
             <NavBar/>
+            <UserSidebar/>
             <PageWrapper>
                 <Header>
                     <Details>Personal Settings</Details>
@@ -245,4 +248,4 @@ function ProjectSettingPage() {
 }
 
 
-export default ProjectSettingPage;
+export default ManageGroups;

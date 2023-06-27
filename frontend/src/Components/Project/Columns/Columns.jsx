@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import NavBar from "../../Dashboard/Navbar/index";
-import Sidebar from "../../Dashboard/Sidebar";
+import ProjectSidebar from "../../Dashboard/Sidebar/ProjectSidebar";
 import apiRequest from '../../../Utils/apiRequest';
 import { AuthContext } from '../../../Utils/AuthContext';
 import {AiOutlineSetting} from 'react-icons/ai';
@@ -204,11 +204,6 @@ function Columns() {
         setEditStatusName(e.target.value);
     };
 
-    const project = {
-        name: 'Project Name',
-        category: 'Project Setting'
-    };
-
 
     const handleOk = () => {
         const newTag = {
@@ -371,7 +366,7 @@ function Columns() {
     return (
         <div>
             <PageContainer>
-                <Sidebar project={project}/>
+                <ProjectSidebar />
                 <NavBar/>
                 <ContentWrapper>
                     <HeadingWrapper>
