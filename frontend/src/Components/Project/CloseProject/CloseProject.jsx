@@ -6,7 +6,7 @@ import styled from "styled-components";
 import {ToastContainer, toast} from 'react-toastify';
 import {Modal} from 'antd';
 import NavBar from "../../Dashboard/Navbar";
-import Sidebar from "../../Dashboard/Sidebar";
+import ProjectSidebar from "../../Dashboard/Sidebar/ProjectSidebar";
 
 
 
@@ -94,7 +94,7 @@ const CloseProject = () => {
 
     return (
         <>
-            <Sidebar/>
+            <ProjectSidebar/>
             <NavBar/>
             <PermissionsContainer>
 

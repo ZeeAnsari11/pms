@@ -8,8 +8,10 @@ import UserProfilePage from "../Components/User/UserProfilePage/UserProfilePage"
 import ProjectsPage from "../Components/User/ProjectViews/ProjectViews";
 import ProjectSettingPage from "../Components/User/ProjectSettingPage/ProjectSettingPage";
 import CreateProject from "../Components/User/CreateNewProjectPage/CreateProjectPage";
-import ManageAccount from "../Components/User/ManageAccount/ManageAccount";
-import PersonalSettingsPage from "../Components/User/PersonalSettingPage/PersonalSettingsPage";
+import ManageAccount from "../Components/User/Manage/ManageAccount";
+import ManageUsers from "../Components/User/Manage/ManageUsers";
+import ManageGroups from "../Components/User/Manage/ManageGroups";
+import GeneralSettings from "../Components/User/Manage/GeneralSettings";
 import ProjectSummary from "../Components/Project/ProjectSummaryPage/ProjectSummary";
 import Notification from "../Components/Project/Notification/Notification";
 import Integrations from "../Components/Project/Integrations/Integrations";
@@ -41,7 +43,7 @@ function Url() {
                 <Route path="/forgot-password" element={<ForgotPassword/>}/>
                 <Route path="/reset-password" element={<ResetPasswordPage/>}/>
                 <Route index element={<Login/>}/>
-                {/* Private routes */}
+                {/* Private routes */}PersonalSettingsPage
                 <Route path="/dashboard" element={<PrivateRoute element={Dashboard}/>}/>
                 <Route path="/profile" element={<PrivateRoute element={UserProfilePage}/>}/>
                 <Route path="/project" element={<PrivateRoute element={ProjectsPage}/>}/>
@@ -55,8 +57,10 @@ function Url() {
                 />
                 <Route path="/project-setting" element={<ProjectSettingPage/>}/>
                 <Route path="/create-project" element={<CreateProject/>}/>
-                <Route path="/personal-settings" element={<PersonalSettingsPage/>}/>
                 <Route path="/manage-account" element={<ManageAccount/>}/>
+                <Route path="/manage-users" element={<ManageUsers/>}/>
+                <Route path="/manage-groups" element={<ManageGroups/>}/>
+                <Route path="/manage-general-settings" element={<GeneralSettings/>}/>
                 <Route path="/project/:projectId/setting/summary" element={<ProjectSummary/>}/>
                 <Route path="/project/:projectId/setting/notification" element={<Notification/>}/>
                 <Route path="/project/:projectId/setting/integrations" element={<Integrations/>}/>

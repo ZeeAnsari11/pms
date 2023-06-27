@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import Board from '../Board/Board';
 import Editable from '../Editable/Editable';
-import Sidebar from '../Sidebar/index';
+import ProjectSidebar from '../Sidebar/ProjectSidebar';
 import NavBar from "../Navbar/index";
 import styled from 'styled-components';
 import {useLocation, useParams} from 'react-router-dom';
@@ -419,7 +419,7 @@ function Dashboard(props) {
 
     return (
         <DashboardContainer>
-            <Sidebar/>
+            <ProjectSidebar/>
             <NavBar/>
             <DashboardOuter>
                 <DashboardBoards>
