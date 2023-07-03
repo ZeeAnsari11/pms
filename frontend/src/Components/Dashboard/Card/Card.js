@@ -134,9 +134,11 @@ function Card(props) {
             >
                 <CardTop>
 
-                    {props.Card?.labels?.map((item, index) => (
-                        <Chip key={index} text={item.text} color={item.color}/>
-                    ))}
+                    {props.Card?.labels?.map((item, index) => {
+                        if (item.color) {
+                            return <Chip key={index} text={item.text} color={item.color} />;
+                        }
+                    })}
 
                     <CardTopMore
                         onClick={(e) => {
