@@ -141,21 +141,16 @@ function CardInfo(props) {
     const [worklogs, setWorklogs] = useState(initialworklogs);
     const [showWorklog, setShowWorklog] = useState(false);
     const [selectedWorklog, setSelectedWorklog] = useState(null);
-
     const [IssuesData, setIssuesData] = useState([]);
     const [IssueType, setIssueType] = useState('');
     const [IssueStatus, setIssueStatus] = useState('');
-
     const [selectedIssueStatus, setSelectedIssueStatus] = useState('');
     const [selectedIssueType, setSelectedIssueType] = useState('');
     const [selectedPriority, setSelectedPriority] = useState('');
-
     const [selectedAssignee, setSelectedAssignee] = useState('');
     const [selectedReporter, setSelectedReporter] = useState('');
-
     const [Users, setUsers] = useState('');
     const [currentUserData, setCurrentUserData] = useState({});
-
     const [files, setFiles] = useState([]);
 
 
