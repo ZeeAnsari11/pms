@@ -7,6 +7,7 @@ import styled from 'styled-components';
 import {useLocation, useParams} from 'react-router-dom';
 import {BsPlusSquare} from "react-icons/bs";
 import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
 
 const DashboardContainer = styled.div`
   height: 100vh;
@@ -53,17 +54,30 @@ function Dashboard(props) {
 
     const [projectData, setProjectData] = useState({});
     const [issuesData, setIssuesData] = useState({});
-    const [issuesDataWithTodoStatus, setIssuesDataWithTodoStatus] = useState([]);
-    const [issuesDataWithDoneStatus, setIssuesDataWithDoneStatus] = useState([]);
-    const [issuesDataWithInProgressStatus, setIssuesDataWithInProgressStatus] = useState([]);
-
-
-    const [name, setName] = useState(''); // Set initial value from project object
-    const [projectCategory, setProjectCategory] = useState(''); // Set initial value from project object
-    const [projectIcon, setProjectIcon] = useState(''); // Set initial value from project object
-
+    const [issuesStatues, setIssuesStatues] = useState({});
+    const [name, setName] = useState('');
+    const [projectCategory, setProjectCategory] = useState('');
+    const [projectIcon, setProjectIcon] = useState('');
+    const [target, setTarget] = useState({ cid: "", bid: "", })
+    const [boards, setboards] = useState([]);
 
     const {projectId} = useParams()
+    const location = useLocation();
+    const searchParams = new URLSearchParams(location.search);
+
+    const deleteIssue =  (issueId) => {
+        axios
+            .delete(`${process.env.REACT_APP_HOST}/api/projects/${projectId}/issues/${issueId}/`, {
+                headers: { Authorization: `Token ${authToken}`},
+            } )
+            .then(response => {
+                displaySuccessMessage(`Successfully delete the task with id: ${issueId}`)
+            })
+            .catch(error => {
+                displayErrorMessage(`An error occurred while deleting the task. Please try again.`)
+            })
+    };
+
     useEffect(() => {
         const fetchProjects = async () => {
             const response = await axios.get(`${process.env.REACT_APP_HOST}/api/projects/${projectId}`, {
@@ -75,7 +89,7 @@ function Dashboard(props) {
 
         };
 
-        const fetchIssues = async () => {
+        const fetchProjectIssues = async () => {
             const response = await axios.get(`${process.env.REACT_APP_HOST}/api/projects/${projectId}/issues`, {
                 headers: {
                     Authorization: `Token ${authToken}`,
@@ -84,97 +98,17 @@ function Dashboard(props) {
             setIssuesData(response.data);
         };
 
-        const fetchIssuesWithTodoStatus = async () => {
-            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/projects/${projectId}/issues/?status__status__iexact=To+Do`, {
-                headers: {
-                    Authorization: `Token ${authToken}`,
-                },
+        const fetchProjectIssuesStatuses = async () => {
+            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/project_status`, {
+                params: { project: projectId },
+                headers: { Authorization: `Token ${authToken}`},
             });
-            setIssuesDataWithTodoStatus(response.data);
-        };
-
-        const fetchIssuesWithDoneStatus = async () => {
-            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/projects/${projectId}/issues/?status__status__iexact=Done`, {
-                headers: {
-                    Authorization: `Token ${authToken}`,
-                },
-            });
-            setIssuesDataWithDoneStatus(response.data);
-        };
-
-        const fetchIssuesWithInProgressStatus = async () => {
-            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/projects/${projectId}/issues/?status__status__iexact=In+Progress`, {
-                headers: {
-                    Authorization: `Token ${authToken}`,
-                },
-            });
-            setIssuesDataWithInProgressStatus(response.data);
+            setIssuesStatues(response.data);
         };
 
         fetchProjects();
-        fetchIssues();
-        fetchIssuesWithTodoStatus();
-        fetchIssuesWithDoneStatus();
-        fetchIssuesWithInProgressStatus();
-
-        // const todoCards = issuesDataWithTodoStatus.map(issue => ({
-        //     id: issue?.id,
-        //     title: issue?.name,
-        //     tasks: [],
-        //     labels: [
-        //         {
-        //             text: issue?.name,
-        //             color: "red",
-        //         },
-        //     ],
-        //     desc: issue?.description,
-        //     date: "",
-        // }))
-        // const doneCards = issuesDataWithDoneStatus.map(issue => ({
-        //     id: issue?.id,
-        //     title: issue?.name,
-        //     tasks: [],
-        //     labels: [
-        //         {
-        //             text: issue?.name,
-        //             color: "red",
-        //         },
-        //     ],
-        //     desc: issue?.description,
-        //     date: "",
-        // }))
-        //
-        // const inProgressCards = issuesDataWithInProgressStatus.map(issue => ({
-        //     id: issue?.id,
-        //     title: issue?.name,
-        //     tasks: [],
-        //     labels: [
-        //         {
-        //             text: issue?.name,
-        //             color: "red",
-        //         },
-        //     ],
-        //     desc: issue?.description,
-        //     date: "",
-        // }))
-        // setboards([{
-        //     id: Date.now() + Math.random() * 2,
-        //     title: "To Do",
-        //     cards: [todoCards],
-        // },
-        //
-        //     {
-        //         id: Date.now() + Math.random() * 2,
-        //         title: "Done",
-        //         cards: [doneCards],
-        //     },
-        //
-        //     {
-        //         id: Date.now() + Math.random() * 2,
-        //         title: "In Progress",
-        //         cards: [inProgressCards],
-        //     },])
-
+        fetchProjectIssues();
+        fetchProjectIssuesStatuses()
     }, []);
 
 
@@ -185,129 +119,101 @@ function Dashboard(props) {
             setProjectCategory(projectData.category)
         }
     }, [projectData]);
-    console.log("Project Issues:", issuesData)
-
-    console.log("Project Issues with To Do Status:", issuesDataWithTodoStatus)
-    console.log("Project Issues with Done Status:", issuesDataWithDoneStatus)
-    console.log("Project Issues with In Progress Status:", issuesDataWithInProgressStatus)
-
-
-    const location = useLocation();
-    const searchParams = new URLSearchParams(location.search);
-
-
-    const [target, setTarget] = useState({
-        cid: "",
-        bid: "",
-    })
-
-    const [boards, setboards] = useState([]);
 
     useEffect(() => {
-        const todoCards = issuesDataWithTodoStatus.map((issue) => ({
-            id: issue?.id,
-            title: issue?.name,
-            tasks: [],
-            labels: [
-                {
-                    text: issue?.label?.name,
-                    color: issue?.label?.color,
-                },
-            ],
-            desc: issue?.description,
-            date: "",
-            slug: issue?.slug,
-            estimate: issue?.estimate,
-            project: issue?.project,
-            priority: issue?.priority,
-            created_at: issue?.created_at,
-            updated_at: issue?.updated_at,
-            created_by: issue?.created_by,
-            updated_by: issue?.updated_by,
-            file: issue?.file,
-            status: issue?.status,
-            type: issue?.type,
-            assignee: issue?.assignee,
-            reporter: issue?.reporter,
+        const issuesValueMapper = (issue) => {
+            return {
+                id: issue?.id,
+                title: issue?.name,
+                tasks: [],
+                labels: [
+                    {
+                        text: issue?.label?.name,
+                        color: issue?.label?.color,
+                    },
+                ],
+                desc: issue?.description,
+                date: "",
+                slug: issue?.slug,
+                estimate: issue?.estimate,
+                project: issue?.project,
+                priority: issue?.priority,
+                created_at: issue?.created_at,
+                updated_at: issue?.updated_at,
+                created_by: issue?.created_by,
+                updated_by: issue?.updated_by,
+                file: issue?.file,
+                status: issue?.status,
+                type: issue?.type,
+                assignee: issue?.assignee,
+                reporter: issue?.reporter,
+            }
+        }
 
-        }));
+        const prepareIssuesData = (issues) => {
+            if (!issues || typeof issues !== 'object' || (!Symbol.iterator) in Object(issues)) {
+                console.error('Issues is not iterable.');
+                return {};
+            }
+            const statusMap = {};
+            Array.from(issues).forEach((issue) => {
+                const statusTitle = issue.status?.status || "Unknown Status";
+                if (!statusMap[statusTitle]) {
+                    statusMap[statusTitle] = [];
+                }
+                statusMap[statusTitle].push(issuesValueMapper(issue));
+            });
+            console.log('Status Mapped is', statusMap);
+            return statusMap;
+        };
 
-        const doneCards = issuesDataWithDoneStatus.map((issue) => ({
-            id: issue?.id,
-            title: issue?.name,
-            tasks: [],
-            labels: [
-                {
-                    text: issue?.label?.name,
-                    color: issue?.label?.color,
-                },
-            ],
-            desc: issue?.description,
-            date: "",
-            slug: issue?.slug,
-            estimate: issue?.estimate,
-            project: issue?.project,
-            priority: issue?.priority,
-            created_at: issue?.created_at,
-            updated_at: issue?.updated_at,
-            created_by: issue?.created_by,
-            updated_by: issue?.updated_by,
-            file: issue?.file,
-            status: issue?.status,
-            type: issue?.type,
-            assignee: issue?.assignee,
-            reporter: issue?.reporter,
-
-        }));
-
-        const inProgressCards = issuesDataWithInProgressStatus.map((issue) => ({
-            id: issue?.id,
-            title: issue?.name,
-            tasks: [],
-            labels: [
-                {
-                    text: issue?.label?.name,
-                    color: issue?.label?.color,
-                },
-            ],
-            desc: issue?.description,
-            date: "",
-            slug: issue?.slug,
-            estimate: issue?.estimate,
-            project: issue?.project,
-            priority: issue?.priority,
-            created_at: issue?.created_at,
-            updated_at: issue?.updated_at,
-            created_by: issue?.created_by,
-            updated_by: issue?.updated_by,
-            file: issue?.file,
-            status: issue?.status,
-            type: issue?.type,
-            assignee: issue?.assignee,
-            reporter: issue?.reporter,
-        }));
-
-        const newBoards = [
-            {
+        if(issuesData && Array.isArray(issuesStatues)){
+            const cardsData = prepareIssuesData(issuesData);
+            const newBoardData = issuesStatues.map((status) => {
+            return {
                 id: Date.now() + Math.random() * 2,
-                title: "To Do",
-                cards: todoCards,
-            },
-            {
-                id: Date.now() + Math.random() * 2,
-                title: "Done",
-                cards: doneCards,
-            },
-            {
-                id: Date.now() + Math.random() * 2,
-                title: "In Progress",
-                cards: inProgressCards,
-            },
-        ];
+                title: status.status,
+                cards: cardsData.hasOwnProperty(status.status) ? cardsData[status.status] : []
+            };
+        })
 
-        setboards(newBoards);
-    }, [issuesDataWithTodoStatus, issuesDataWithDoneStatus, issuesDataWithInProgressStatus]);
+        if(cardsData.hasOwnProperty('Unknown Status')) {
+            newBoardData.push({
+                id: Date.now() + Math.random() * 2,
+                title: 'Unknown Status',
+                cards: cardsData['Unknown Status']
+            });
+        }
 
+        setboards(newBoardData);
+        }
+    }, [issuesData, issuesStatues]);
+
+    const displayErrorMessage = (message) => {
+        toast.error(message, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        });
+    }
+
+    const displaySuccessMessage = (message) => {
+        toast.success(message, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        });
+    }
     const addCard = (title, bid) => {
         const card = {
             id: Date.now() + Math.random(),
@@ -330,11 +236,12 @@ function Dashboard(props) {
         const bIndex = boards.findIndex((item) => item.id === bid);
         if (bIndex < 0) return;
 
-        const cIndex = boards[bIndex].cards.findIndex((item) => item.id === cid);
+        const cIndex = boards[bIndex].cards.findIndex((item) => item.id === cid);;
         if (cIndex < 0) return;
 
         const tempBoards = [...boards];
         tempBoards[bIndex].cards.splice(cIndex, 1);
+        deleteIssue(cid)
         setboards(tempBoards);
     };
 
@@ -351,7 +258,6 @@ function Dashboard(props) {
 
     const removeBoard = bid => {
         const tempBoards = boards.filter((item) => item.id !== bid);
-
         setboards(tempBoards);
     };
 
@@ -403,12 +309,6 @@ function Dashboard(props) {
         setboards(tempBoards);
     }
 
-    // const project = {
-    //     name: projectData.name,
-    //     category: projectData.project_category,
-    //     icon: projectData.icon
-    // }
-
     let IconPath = projectData.icon
     if (IconPath != null) {
         IconPath = `${process.env.REACT_APP_HOST}/${projectIcon}`
@@ -444,6 +344,18 @@ function Dashboard(props) {
                         />
                     </BoardDashboardBoards>
                 </DashboardBoards>
+                <ToastContainer
+                    position="top-right"
+                    autoClose={2000}
+                    hideProgressBar={false}
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss
+                    draggable
+                    pauseOnHover
+                    theme="colored"
+                />
             </DashboardOuter>
         </DashboardContainer>
     );
