@@ -9,7 +9,7 @@ const TimeEstimationField = ({onHoursChange}) => {
         fontSize: "16px",
         padding: "8px",
         borderRadius: "4px",
-        border: "2px solid #ccc",
+        border: "2px solid #FFFFFF",
         marginBottom: "16px",
         width: "96%",
         background: "rgb(242, 242, 242)",
@@ -25,7 +25,7 @@ const TimeEstimationField = ({onHoursChange}) => {
         setInput(inputVal);
 
         // Regex to match the time estimation format in the sequence of "w d h m"
-        const regex = /^(\d+w\s*)(\d+d\s*)(\d+h\s*)(\d+m\s*)?$/;
+        const regex = /^(\d+w\s*)?(\d+d\s*)?(\d+h\s*)?(\d+m\s*)?$/;
 
         // Check if input matches the regex
         if (!regex.test(inputVal) && inputVal !== "") {
