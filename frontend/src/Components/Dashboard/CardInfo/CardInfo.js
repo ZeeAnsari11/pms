@@ -154,23 +154,45 @@ function CardInfo(props) {
     const [selectedReporter, setSelectedReporter] = useState('');
 
     const [Users, setUsers] = useState('');
+    const [currentUserData, setCurrentUserData] = useState({});
 
     const [files, setFiles] = useState([]);
 
 
+    const getComments = async () => {
+        try {
+            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/comments/?issue=${props.card?.id}`, {
+                headers: {
+                    Authorization: `Token ${authToken}`,
+                },
+            });
+            setComments(response.data)
+        } catch (error) {
+            console.log(error);
+            throw new Error('Failed to fetch comments');
+        }
+    };
+
     useEffect(() => {
         const fetchIssueData = async () => {
-            const response = await axios.get(`http://127.0.0.1:8000/api/issues/${props.card?.id}`, {
+            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/issues/${props.card?.id}`, {
                 headers: {
                     Authorization: `Token ${authToken}`,
                 },
             });
             setIssuesData(response.data);
         };
-
+        const fetchComments = async () => {
+            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/comments/?issue=${props.card?.id}`, {
+                headers: {
+                    Authorization: `Token ${authToken}`,
+                },
+            });
+            setComments(response.data);
+        };
 
         const fetchDependentUserOptions = async () => {
-            const response = await axios.get(`http://127.0.0.1:8000/api/projects/${props.card.project}/assignees/`, {
+            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/projects/${props.card.project}/assignees/`, {
                 headers: {
                     Authorization: `Token ${authToken}`,
                 },
@@ -180,7 +202,7 @@ function CardInfo(props) {
 
 
         const fetchDependentProjectTypes = async () => {
-            const response = await axios.get(`http://127.0.0.1:8000/api/project_type/?project=${props.card.project}`, {
+            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/project_type/?project=${props.card.project}`, {
                 headers: {
                     Authorization: `Token ${authToken}`,
                 },
@@ -190,17 +212,31 @@ function CardInfo(props) {
 
 
         const fetchDependentProjectStatuses = async () => {
-            const response = await axios.get(`http://127.0.0.1:8000/api/project_status/?project=${props.card.project}`, {
+            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/project_status/?project=${props.card.project}`, {
                 headers: {
                     Authorization: `Token ${authToken}`,
                 },
             });
             setIssueStatus(response.data);
         };
+
+        const fetchCurrentUserData = async () => {
+            try {
+                const response = await axios.get(`${process.env.REACT_APP_HOST}/api/userprofile/`, {
+                    headers: {"Authorization": `Token ${authToken}`}
+                });
+                setCurrentUserData(response.data[0]);
+            } catch (error) {
+                console.error(error);
+            }
+        }
         fetchIssueData();
+        fetchCurrentUserData();
         fetchDependentUserOptions();
         fetchDependentProjectStatuses();
         fetchDependentProjectTypes();
+        fetchComments();
+
     }, []);
 
 
@@ -214,30 +250,101 @@ function CardInfo(props) {
         }
     }, [IssuesData]);
 
+
     const handleCommentSubmit = (event) => {
         event.preventDefault();
-        setComments([...comments, newComment]);
-        setNewComment('');
+
+        const commentData = {
+            body: newComment,
+            issue: props.card?.id,
+            user: currentUserData?.id,
+        };
+
+        axios
+            .post(`${process.env.REACT_APP_HOST}/api/comments/`, commentData, {
+                headers: {
+                    Authorization: `Token ${authToken}`,
+                },
+            })
+            .then((response) => {
+                // Handle successful response
+                console.log(response.data);
+                setComments([...comments, response.data]);
+                getComments();
+                setNewComment("");
+            })
+            .catch((error) => {
+                // Handle error
+                console.log(error);
+            });
     };
+
 
     const handleNewCommentChange = (event) => {
         setNewComment(event.target.value);
     };
 
     const handleCommentDelete = (index) => {
-        setComments(comments.filter((_, i) => i !== index));
+        axios
+            .delete(`http://127.0.0.1:8000/api/comments/${index}/`, {
+                headers: {
+                    Authorization: `Token ${authToken}`,
+                },
+            })
+            .then((response) => {
+                // Comment deleted successfully, update the state or perform any necessary actions
+                setComments((prevComments) =>
+                    prevComments.filter((_, i) => i !== index)
+                );
+                getComments();
+            })
+            .catch((error) => {
+                // Handle the error appropriately
+                console.log(error);
+            });
     };
 
-    const handleCommentEdit = (index, comment) => {
+    const handleCommentEdit = (index, comment, key) => {
         if (selectedComment === null) {
             setSelectedComment(index);
         } else if (selectedComment === index) {
-            setSelectedComment(null);
-            setComments(
-                comments.map((c, i) => (i === index ? comment : c))
-            );
+            const updatedComment = {...comment, body: comment};
+
+            const commentData = {
+                body: updatedComment.body,
+                issue: props.card?.id,
+                user: currentUserData?.id,
+            };
+
+            axios
+                .patch(
+                    `${process.env.REACT_APP_HOST}/api/comments/${index}/`,
+                    commentData,
+                    {
+                        headers: {
+                            Authorization: `Token ${authToken}`,
+                        },
+                    }
+                )
+                .then((response) => {
+                    // Handle successful response
+                    console.log(response.data);
+
+                    const updatedComments = [...comments];
+                    updatedComments[index] = response.data?.body; // Replace the comment at the specified index
+                    setComments(
+                        comments.map((c, i) => (i === index ? comment : c))
+                    );
+                    setSelectedComment(null);
+                    getComments();
+                })
+                .catch((error) => {
+                    // Handle error
+                    console.log(error);
+                });
         }
     };
+
 
     const handleIssueTypeChange = (value) => {
         setSelectedIssueType(parseInt(value))
@@ -486,8 +593,12 @@ function CardInfo(props) {
                                     {comments.map((comment, index) => (
                                         <Comment
                                             key={index}
-                                            comment={comment}
-                                            index={index}
+                                            comment={comment?.body}
+                                            created_at={comment?.created_at}
+                                            index={comment?.id}
+                                            created_by={comment?.user?.username}
+                                            commentUserId={comment?.user?.id}
+                                            currentUser={currentUserData}
                                             onDelete={handleCommentDelete}
                                             onEdit={handleCommentEdit}
                                             selectedComment={selectedComment}
@@ -606,7 +717,7 @@ function CardInfo(props) {
                         Time Tracking
                     </CardInfoBoxTitle>
                     <div>
-                        <TrackingField/>
+                        <TrackingField OrginalEstimate={props.card?.estimate}/>
                     </div>
                 </CardInfoBox>
             </div>

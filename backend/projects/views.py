@@ -163,7 +163,7 @@ class CommentViewSet(ModelViewSet):
     filterset_fields = "__all__"
 
     def get_serializer_class(self):
-        if self.request.method == 'POST':
+        if self.request.method in ['POST', 'PATCH', 'PUT']:
             return serializers.CreateCommentSerializer
         return serializers.CommentSerializer
 
@@ -176,7 +176,7 @@ class CommentViewSet(ModelViewSet):
         user = self.request.user
         if user.is_staff:
             return Comment.objects.select_related('issue').select_related('user').all()
-        return Comment.objects.filter(user_id=self.request.user)
+        return Comment.objects.all()
 
 
 class WorklogViewSet(ModelViewSet):
@@ -253,7 +253,10 @@ class ProjectIssuesViewSet(ModelViewSet):
         return {'project_id': self.kwargs['project_pk']}
 
     def get_queryset(self):
-        queryset = Issue.objects.filter(project_id=self.kwargs['project_pk']).select_related('reporter').filter(
+        if self.request.user.is_staff:
+            return Issue.objects.filter(project_id=self.kwargs['project_pk']).select_related('reporter')
+
+        return Issue.objects.filter(project_id=self.kwargs['project_pk']).select_related('reporter').filter(
             Q(reporter_id=self.request.user) | Q(assignee=self.request.user))
 
         issue_type = self.request.query_params.get('issue_type', None)
