@@ -6,8 +6,8 @@ import 'react-quill/dist/quill.snow.css';
 import {TimeTrackingContainer, ProgressBarContainer, InputHeading, ModalContent} from './styles'
 import Worklog from '../Worklog/Worklog';
 
-const TimeTracking = () => {
-    const [originalEstimate, setOriginalEstimate] = useState(0);
+const TimeTracking = ({OrginalEstimate}) => {
+    const [originalEstimate, setOriginalEstimate] = useState(OrginalEstimate);
     const [timeSpent, setTimeSpent] = useState(0);
     const [timeRemaining, setTimeRemaining] = useState(0);
     const [startDate, setStartDate] = useState(null);
@@ -22,9 +22,9 @@ const TimeTracking = () => {
 
     const handleModalOk = () => {
         const newWorklog = {
-          username: "Alice", // replace with actual username
-          timeTracked: timeSpent,
-          description: workDescription
+            username: "Alice", // replace with actual username
+            timeTracked: timeSpent,
+            description: workDescription
         };
         setWorklogs([...worklogs, newWorklog]);
         setIsModalVisible(false);
