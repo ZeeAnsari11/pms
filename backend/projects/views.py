@@ -271,7 +271,7 @@ class WatcherViewSet(ModelViewSet):
 
 
 class ProjectIssuesViewSet(ModelViewSet):
-    http_method_names = ['get']
+    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
     serializer_class = serializers.ProjectIssuesSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_class = IssueFilter
