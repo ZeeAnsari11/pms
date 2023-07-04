@@ -1,5 +1,6 @@
 import React, {useState} from "react";
-import {CheckSquare, Clock, MoreHorizontal} from "react-feather";
+import {Delete, Clock, MoreHorizontal} from "react-feather";
+import { Modal } from 'antd';
 import Chip from "../Chip/Chip";
 import Dropdown from "../Dropdown/Dropdown";
 import CardInfo from "../CardInfo/CardInfo";
@@ -40,23 +41,6 @@ const CardTopMore = styled.div`
 `;
 
 
-const BoardDropdown = styled.div`
-  box-shadow: 1px 0px 20px rgba(0, 0, 0, 0.12);
-  width: 100px !important;
-  cursor: default;
-  background-color: #fff;
-
-  p {
-    border-bottom: 1px solid #f8f8f8;
-    cursor: pointer;
-  }
-`;
-
-const Paragraph = styled.div`
-  border-bottom: 1px solid #f8f8f8;
-  cursor: pointer;
-`;
-
 const CardTitle = styled.div`
   flex: 1;
   font-weight: bold;
@@ -94,7 +78,7 @@ export const CardProfileName = styled.div`
 `;
 
 function Card(props) {
-    const [showDropDown, setShowDropdown] = useState(false);
+    const [displayDeleteTaskModal, setDisplayDeleteTaskModal] = useState(false);
     const [showModal, setshowModal] = useState(false);
     const [showName, setshowName] = useState(false);
     const navigate = useNavigate();
@@ -114,6 +98,7 @@ function Card(props) {
         setshowModal(false);
         navigate(-1); // Go back to the previous URL
     };
+
 
 
     return (
@@ -143,15 +128,27 @@ function Card(props) {
                     <CardTopMore
                         onClick={(e) => {
                             e.stopPropagation();
-                            setShowDropdown(!showDropDown)
+                            setDisplayDeleteTaskModal(!displayDeleteTaskModal)
                         }}>
-                        <MoreHorizontal/>
-                        {showDropDown && (
-                            <Dropdown onClick={() => setShowDropdown(!showDropDown)}>
-                                <BoardDropdown>
-                                    <p onClick={() => props.removeCard(props.Card?.id, props.boardId)}>Delete Card</p>
-                                </BoardDropdown>
-                            </Dropdown>
+                        <Delete/>
+                        {displayDeleteTaskModal && (
+                            <Modal
+                                title="Confirm Deletion"
+                                open={displayDeleteTaskModal}
+                                onCancel={() => setDisplayDeleteTaskModal(!displayDeleteTaskModal)}
+                                onOk={() => {
+                                    props.removeCard(props.Card?.id, props.boardId);
+                                    setDisplayDeleteTaskModal(!displayDeleteTaskModal);
+                                }}
+                                okButtonProps={{ style: { backgroundColor: 'rgb(30, 100, 209)' } }}
+                                okText="Delete"
+                                cancelText="Cancel"
+                                >
+                                <p>
+                                    Are you sure you want to delete task: <strong>{props.Card?.slug}</strong>?
+                                </p>
+
+                                </Modal>
                         )}
                     </CardTopMore>
                 </CardTop>
