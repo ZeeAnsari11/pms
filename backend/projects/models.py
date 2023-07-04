@@ -23,6 +23,9 @@ class ProjectType(models.Model):
     def __str__(self):
         return self.type
 
+    class Meta:
+        unique_together = ('project', 'type')
+
 
 class ProjectStatus(models.Model):
     project = models.ForeignKey(
@@ -34,6 +37,9 @@ class ProjectStatus(models.Model):
 
     def __str__(self):
         return self.status
+
+    class Meta:
+        unique_together = ('project', 'status')
 
 
 class ProjectSlackWebhook(models.Model):
@@ -95,6 +101,9 @@ class ProjectLabels(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        unique_together = ('project', 'name')
+
 
 class Project(models.Model):
     icon = models.ImageField(
@@ -116,7 +125,7 @@ class Project(models.Model):
     assignees = models.ManyToManyField(
         User,
         through='ProjectMembership',
-        through_fields=('project','user'),
+        through_fields=('project', 'user'),
         related_name='projects_assignees'
     )
     category = models.ForeignKey(

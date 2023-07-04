@@ -127,8 +127,8 @@ const Permissions = () => {
                         { "Authorization": `Token ${ authToken }` }
                 } )
             .then( response => {
-                displaySuccessMessage( `Successfully delete the project permission with id: ${ id }` )
                 const updatedPermissions = [ ...permissions ];
+                displaySuccessMessage( `Successfully delete the project permission.` )
                 updatedPermissions.splice( index, 1 );
                 setPermissions( updatedPermissions );
             } )
