@@ -19,7 +19,7 @@ from rest_framework.decorators import action
 # Create your views here.
 class UserViewSet(ModelViewSet):
     http_method_names = ['get', 'post', 'patch']
-    serializer_class = serializers.CustomUserSerializer
+    serializer_class = serializers.ComprehensiveUserSerializer
     permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = "__all__"
@@ -124,7 +124,7 @@ class ProjectViewSet(ModelViewSet):
     def assignees(self, request, pk=None):
         project = self.get_object()
         assignees = project.assignees.distinct()
-        serializer = serializers.CustomUserSerializer(assignees, many=True)
+        serializer = serializers.ComprehensiveUserSerializer(assignees, many=True)
         return Response(serializer.data)
 
 

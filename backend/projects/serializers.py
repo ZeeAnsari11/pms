@@ -9,10 +9,16 @@ from urllib.parse import urlparse
 
 # from rest_framework import serializers
 
-class CustomUserSerializer(serializers.ModelSerializer):
+class ComprehensiveUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username', 'last_login', 'is_superuser', 'email', 'is_staff', 'is_active', 'user_permissions']
+
+
+class SummarizedUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username']
 
 
 class ContentPermissionsSerializer(serializers.ModelSerializer):
@@ -34,11 +40,6 @@ class DetailedGroupPermissionsSerializer(serializers.ModelSerializer):
         model = Group
         fields = ['id', 'name', 'permissions']
 
-
-class UserPermissionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ['id', 'username']
 
 
 class ProjectPermissionsSerializer(serializers.ModelSerializer):
@@ -84,8 +85,8 @@ class ProjectSMTPWebhookSerializer(serializers.ModelSerializer):
 
 
 class ProjectSerializer(serializers.ModelSerializer):
-    assignees = CustomUserSerializer(many=True)
-    project_lead = CustomUserSerializer(read_only=True)
+    assignees = ComprehensiveUserSerializer(many=True)
+    project_lead = ComprehensiveUserSerializer(read_only=True)
     type = ProjectTypeSerializer(read_only=True)
     status = ProjectStatusSerializer(read_only=True)
     category = ProjectCategorySerializer(read_only=True)
@@ -99,7 +100,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
 
 class ProjectMembershipSerializer(serializers.ModelSerializer):
-    user = UserPermissionSerializer(read_only=True)
+    user = SummarizedUserSerializer(read_only=True)
     project = ProjectPermissionsSerializer(read_only=True)
     group = GroupPermissionsSerializer(read_only=True)
 
@@ -115,10 +116,10 @@ class CreateProjectMembershipSerializer(serializers.ModelSerializer):
 
 
 class ProjectIssuesSerializer(serializers.ModelSerializer):
-    assignee = CustomUserSerializer(read_only=True)
-    reporter = CustomUserSerializer(read_only=True)
-    created_by = CustomUserSerializer(read_only=True)
-    updated_by = CustomUserSerializer(read_only=True)
+    assignee = ComprehensiveUserSerializer(read_only=True)
+    reporter = SummarizedUserSerializer(read_only=True)
+    created_by = SummarizedUserSerializer(read_only=True)
+    updated_by = SummarizedUserSerializer(read_only=True)
     label = ProjectLabelsSerializer(read_only=True)
     type = ProjectTypeSerializer(read_only=True)
     status = ProjectStatusSerializer(read_only=True)
@@ -203,8 +204,8 @@ class CreateIssueSerializer(serializers.ModelSerializer):
 
 
 class IssueSerializer(serializers.ModelSerializer):
-    assignee = CustomUserSerializer(read_only=True)
-    reporter = CustomUserSerializer(read_only=True)
+    assignee = ComprehensiveUserSerializer(read_only=True)
+    reporter = ComprehensiveUserSerializer(read_only=True)
     label = ProjectLabelsSerializer(read_only=True)
     type = ProjectTypeSerializer(read_only=True)
     status = ProjectStatusSerializer(read_only=True)
@@ -221,7 +222,7 @@ class CreateCommentSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    user = CustomUserSerializer(read_only=True)
+    user = ComprehensiveUserSerializer(read_only=True)
     issue = IssueSerializer(read_only=True)
 
     class Meta:
@@ -242,7 +243,7 @@ class CreateWorkLogSerializer(serializers.ModelSerializer):
 
 
 class WorkLogSerializer(serializers.ModelSerializer):
-    user = CustomUserSerializer(read_only=True)
+    user = ComprehensiveUserSerializer(read_only=True)
     issue = IssueSerializer(read_only=True)
 
     class Meta:
@@ -257,7 +258,7 @@ class CreateWatcherSerializer(serializers.ModelSerializer):
 
 
 class WatcherSerializer(serializers.ModelSerializer):
-    user = CustomUserSerializer(read_only=True)
+    user = ComprehensiveUserSerializer(read_only=True)
     issue = IssueSerializer(read_only=True)
 
     class Meta:
