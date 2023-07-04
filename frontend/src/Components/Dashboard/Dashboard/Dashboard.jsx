@@ -71,7 +71,7 @@ function Dashboard(props) {
                 headers: { Authorization: `Token ${authToken}`},
             } )
             .then(response => {
-                displaySuccessMessage(`Successfully delete the task with id: ${issueId}`)
+                displaySuccessMessage(`Successfully delete the task.`)
             })
             .catch(error => {
                 displayErrorMessage(`An error occurred while deleting the task. Please try again.`)
@@ -236,24 +236,13 @@ function Dashboard(props) {
         const bIndex = boards.findIndex((item) => item.id === bid);
         if (bIndex < 0) return;
 
-        const cIndex = boards[bIndex].cards.findIndex((item) => item.id === cid);;
+        const cIndex = boards[bIndex].cards.findIndex((item) => item.id === cid);
         if (cIndex < 0) return;
 
         const tempBoards = [...boards];
         tempBoards[bIndex].cards.splice(cIndex, 1);
         deleteIssue(cid)
         setboards(tempBoards);
-    };
-
-    const addBoard = (title) => {
-        setboards([
-            ...boards,
-            {
-                id: Date.now() + Math.random(),
-                title,
-                cards: [],
-            },
-        ]);
     };
 
     const removeBoard = bid => {
@@ -335,14 +324,6 @@ function Dashboard(props) {
                             />
                         ))
                     }
-                    <BoardDashboardBoards>
-                        <Editable
-                            icon={<BsPlusSquare size={30}/>}
-                            className={BoardAdd}
-                            placeholder="Enter Board Title"
-                            onSubmit={(value) => addBoard(value)}
-                        />
-                    </BoardDashboardBoards>
                 </DashboardBoards>
                 <ToastContainer
                     position="top-right"

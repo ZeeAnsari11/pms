@@ -54,18 +54,6 @@ const BoardTopMore = styled.button`
   }
 `;
 
-const BoardHeaderTitle = styled.div`
-  font-weight: bold;
-  font-size: 1rem;
-  display: flex;
-  gap: 5px;
-  align-items: center;
-  margin-left: 10px;
-`;
-
-const BoardHeaderTitleSpan = styled.span`
-  color: rgb(145, 145, 145);
-`;
 
 const BoardDropdown = styled.div`
   box-shadow: 1px 0px 20px rgba(0, 0, 0, 0.12);
@@ -85,10 +73,6 @@ const BoardDropdown = styled.div`
   }
 `;
 
-const CardDropdown = styled(BoardDropdown)`
-  position: absolute;
-  right: -190px;
-`;
 
 const BoardCards = styled.div`
   background-color: #ebebeb;
@@ -98,32 +82,6 @@ const BoardCards = styled.div`
   flex-direction: column;
   gap: 10px;
   overflow-y: auto;
-`;
-
-const BoardCardsAdd = styled.div`
-  width: 100%;
-  background-color: #fff;
-  border-radius: 5px;
-  box-shadow: 1px 2px 0 1px rgba(0, 0, 0, 0.15);
-
-  &:hover {
-    box-shadow: 1px 2px 0 1px #ccc;
-  }
-`;
-
-const BoardAddCard = styled.div`
-  background-color: #fff;
-  color: #000;
-  border-radius: 10px;
-  box-shadow: 1px 1px 0 1px rgba(0, 0, 0, 0.12);
-  width: 100%;
-  text-align: center;
-`;
-
-const BoardAddCardEdit = styled.div`
-  background-color: #fff;
-  border-radius: 10px;
-  padding: 10px;
 `;
 
 const ParagraphWrapper = styled.p`
