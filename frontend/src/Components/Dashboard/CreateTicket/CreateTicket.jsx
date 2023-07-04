@@ -199,7 +199,7 @@ const MyModalComponent = ({onClose}) => {
 
     useEffect(() => {
         const fetchDependentProjectTypes = async () => {
-            const response = await axios.get(`http://127.0.0.1:8000/api/project_type/?project=${selectedProject}`, {
+            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/project_type/?project=${selectedProject}`, {
                 headers: {
                     Authorization: `Token ${authToken}`,
                 },
@@ -209,7 +209,7 @@ const MyModalComponent = ({onClose}) => {
 
 
         const fetchDependentProjectStatuses = async () => {
-            const response = await axios.get(`http://127.0.0.1:8000/api/project_status/?project=${selectedProject}`, {
+            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/project_status/?project=${selectedProject}`, {
                 headers: {
                     Authorization: `Token ${authToken}`,
                 },
@@ -218,7 +218,7 @@ const MyModalComponent = ({onClose}) => {
         };
 
         const fetchDependentProjectLabels = async () => {
-            const response = await axios.get(`http://127.0.0.1:8000/api/project_labels/?project=${selectedProject}`, {
+            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/project_labels/?project=${selectedProject}`, {
                 headers: {
                     Authorization: `Token ${authToken}`,
                 },
@@ -227,7 +227,7 @@ const MyModalComponent = ({onClose}) => {
         };
 
         const fetchDependentUserOptions = async () => {
-            const response = await axios.get(`http://127.0.0.1:8000/api/projects/${selectedProject}/assignees/`, {
+            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/projects/${selectedProject}/assignees/`, {
                 headers: {
                     Authorization: `Token ${authToken}`,
                 },
@@ -272,7 +272,7 @@ const MyModalComponent = ({onClose}) => {
 
     useEffect(() => {
         const fetchProject = async () => {
-            const response = await axios.get('http://127.0.0.1:8000/api/projects/', {
+            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/projects/`, {
                 headers: {
                     Authorization: `Token ${authToken}`,
                 },
@@ -299,7 +299,7 @@ const MyModalComponent = ({onClose}) => {
     console.log("Projects:", project)
 
 
-    const Projectoptions = project
+    const projectOptions = project
         ? project.map((project) => ({
             label: project.name,
             value: project.id,
@@ -378,16 +378,15 @@ const MyModalComponent = ({onClose}) => {
         formData.append("created_by", currentUserId);
         formData.append("updated_by", currentUserId);
 
-        fetch("http://127.0.0.1:8000/api/issues/", {
+        fetch(`${process.env.REACT_APP_HOST}/api/issues/`, {
             method: "POST",
-            headers: {
-                Authorization: `Token ${authToken}`,
-            },
+            headers: { Authorization: `Token ${authToken}`},
             body: formData,
         })
             .then((response) => {
                 // handle the response
                 console.log(response);
+                onClose();
                 console.log(formData);
             })
             .catch((error) => {
@@ -395,8 +394,6 @@ const MyModalComponent = ({onClose}) => {
                 console.log(error);
             });
     }
-
-
     return (
 
         <ModalOverlay>
@@ -421,6 +418,7 @@ const MyModalComponent = ({onClose}) => {
                                     type="text"
                                     value={name}
                                     onChange={handleNameChange}
+                                    required
                                 />
                             </TaskList>
                         </CardInfoBox>
@@ -431,7 +429,7 @@ const MyModalComponent = ({onClose}) => {
                             </CardInfoBoxTitle>
                             <TaskList>
                                 <GenericSelectField
-                                    options={Projectoptions}
+                                    options={projectOptions}
                                     isMultiple={false}
                                     placeholder={"Unassigned"}
                                     onSelectChange={handleProjectChange}/>
@@ -452,7 +450,6 @@ const MyModalComponent = ({onClose}) => {
                             </TaskList>
                         </CardInfoBox>
                         <Divider/>
-
                         <CardInfoBox>
                             <CardInfoBoxTitle>
                                 <TbStatusChange/>
@@ -466,8 +463,6 @@ const MyModalComponent = ({onClose}) => {
                                     onSelectChange={handleStatusChange}/>
                             </TaskList>
                         </CardInfoBox>
-
-
                         <CardInfoBox>
                             <CardInfoBoxTitle>
                                 <TbStatusChange/>
@@ -481,7 +476,6 @@ const MyModalComponent = ({onClose}) => {
                                     onSelectChange={handlePriorityChange}/>
                             </TaskList>
                         </CardInfoBox>
-
                         <CardInfoBox>
                             <CardInfoBoxTitle>
                                 <TbStatusChange/>
@@ -492,10 +486,10 @@ const MyModalComponent = ({onClose}) => {
                                     type="text"
                                     value={summary}
                                     onChange={handleSummaryChange}
+                                    required
                                 />
                             </TaskList>
                         </CardInfoBox>
-
                         <CardInfoBox>
                             <CardInfoBoxTitle>
                                 <TbStatusChange/>
@@ -505,7 +499,6 @@ const MyModalComponent = ({onClose}) => {
                                 <ReactQuill value={description} onChange={handleDescriptionChange}/>
                             </TaskList>
                         </CardInfoBox>
-
                         <CardInfoBox>
                             <CardInfoBoxTitle>
                                 <TbStatusChange/>
@@ -526,7 +519,7 @@ const MyModalComponent = ({onClose}) => {
                             </CardInfoBoxTitle>
                             <TaskList>
                                 <UserSelectField users={Useroptions} isMultiple={false} placeholder={"Unassigned"}
-                                                 onChange={handleUserChange}/>
+                                                    onChange={handleUserChange}/>
                             </TaskList>
                         </CardInfoBox>
 
@@ -550,7 +543,7 @@ const MyModalComponent = ({onClose}) => {
                                 Reporter
                             </CardInfoBoxTitle>
                             <UserSelectField users={Reporteroptions} isMultiple={false} placeholder={"Unassigned"}
-                                             onChange={handleReporterChange}/>
+                                                onChange={handleReporterChange}/>
                             <TaskList>
                                 {values.reporter?.map((item) => (
                                     <Task key={item.id}>

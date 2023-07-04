@@ -530,9 +530,9 @@ function CardInfo(props) {
                         {values.tasks?.map((item) => (
                             <Task key={item.id}>
                                 <input type="checkbox"
-                                       defaultChecked={item.complete}
-                                       onChange={(event) =>
-                                           updateTask(item.id, event.target.checked)}
+                                        defaultChecked={item.complete}
+                                        onChange={(event) =>
+                                            updateTask(item.id, event.target.checked)}
                                 />
                                 <p>{item.text}</p>
                                 <Trash onClick={() => removeTask(item.id)}/>
@@ -673,9 +673,9 @@ function CardInfo(props) {
                     </CardInfoBoxTitle>
                     <TaskList>
                         <UserSelectField defaultValue={props.card?.assignee?.username} users={Useroptions}
-                                         isMultiple={false}
-                                         placeholder={"Unassigned"}
-                                         onSelectChange={handleAssigneeChange}
+                                            isMultiple={false}
+                                            placeholder={"Unassigned"}
+                                            onSelectChange={handleAssigneeChange}
                         />
                     </TaskList>
                 </CardInfoBox>
@@ -686,9 +686,9 @@ function CardInfo(props) {
                     </CardInfoBoxTitle>
                     <TaskList>
                         <UserSelectField defaultValue={props.card?.reporter?.username} users={Useroptions}
-                                         isMultiple={false}
-                                         placeholder={"Unassigned"}
-                                         onSelectChange={handleReporterChange}
+                                            isMultiple={false}
+                                            placeholder={"Unassigned"}
+                                            onSelectChange={handleReporterChange}
                         />
                     </TaskList>
                 </CardInfoBox>
