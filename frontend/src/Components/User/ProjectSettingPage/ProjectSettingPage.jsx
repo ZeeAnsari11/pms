@@ -5,7 +5,7 @@ import NavBar from "../../Dashboard/Navbar";
 import ProjectSidebar from "../../Dashboard/Sidebar/ProjectSidebar";
 import UserSelectField from "../../Dashboard/SelectFields/UserSelectField";
 import apiRequest from '../../../Utils/apiRequest';
-import { AuthContext } from '../../../Utils/AuthContext';
+
 import ImageUploader from "../ImageUploader";
 import axios from "axios";
 import {Input} from 'antd';
@@ -110,7 +110,7 @@ function ProjectSettingPage() {
     const {projectId} = useParams()
     const navigate = useNavigate();
 
-    const { authToken } = useContext(AuthContext);
+    let authToken = localStorage.getItem('auth_token');
 
     const defaultIconPath = "Images/NoImage.jpeg"
 
