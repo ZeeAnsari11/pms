@@ -6,7 +6,7 @@ import ProjectSidebar from "../../Dashboard/Sidebar/ProjectSidebar";
 import {AiOutlineSetting} from 'react-icons/ai';
 import {DownOutlined} from '@ant-design/icons';
 import apiRequest from '../../../Utils/apiRequest';
-import { AuthContext } from '../../../Utils/AuthContext';
+
 import {Modal as Modal1, Input} from 'antd';
 import {Modal as Modal2} from 'antd';
 import {Modal as Modal3} from 'antd';
@@ -199,7 +199,7 @@ function ProjectTags() {
     const [currentPage, setCurrentPage] = useState(1);
     const [isDelete, setIsDelete] = useState(false);
 
-    const { authToken } = useContext( AuthContext );
+    let authToken = localStorage.getItem('auth_token');
 
     const { projectId } = useParams();
 

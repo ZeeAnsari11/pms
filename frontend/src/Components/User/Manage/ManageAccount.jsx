@@ -4,7 +4,7 @@ import ProfilePhotouploader from "../Manage/ProfilePhotouploader";
 import GenericSelectField from "../../Dashboard/SelectFields/GenericSelectField";
 import UserSidebar from "../../Dashboard/Sidebar/UserSidebar";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import { AuthContext } from '../../../Utils/AuthContext';
+
 import {faImage} from '@fortawesome/free-solid-svg-icons';
 import { Link, useNavigate } from "react-router-dom";
 import styled from 'styled-components';
@@ -314,7 +314,7 @@ const ProfileVisibility = () => {
     const [userImage, setUserImage] = useState(null);
     const [companies, setCompanies] = useState('');
 
-    const { authToken} = useContext( AuthContext );
+    let authToken = localStorage.getItem('auth_token');
     const navigate = useNavigate();
 
 
