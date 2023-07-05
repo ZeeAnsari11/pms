@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import apiRequest from '../../../Utils/apiRequest';
-import { AuthContext } from '../../../Utils/AuthContext';
+
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import {Modal} from 'antd';
@@ -229,7 +229,7 @@ const ProjectListing = () => {
     const [visible, setVisible] = useState(false);
     const [projects, setProjects] = useState([]);
 
-    const { authToken } = useContext(AuthContext);
+    let authToken = localStorage.getItem('auth_token');
 
     useEffect(() => {
         const fetchProjects = async () => {

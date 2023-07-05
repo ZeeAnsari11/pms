@@ -1,19 +1,18 @@
-import { Link, useNavigate } from "react-router-dom";
-import { AuthContext } from '../../../Utils/AuthContext';
-import AccountDropdown from "../AccountDropdown";
+import React from "react";
 import apiRequest from '../../../Utils/apiRequest';
+import AccountDropdown from "../AccountDropdown";
+import { Link, useNavigate } from "react-router-dom";
 import { AiOutlineLogout } from "react-icons/ai";
 import { RiExternalLinkLine } from "react-icons/ri";
 import { FaUsersCog } from "react-icons/fa";
 import { MdGroups } from "react-icons/md";
 import { GrSettingsOption } from "react-icons/gr";
 
-import React, { useContext } from "react";
 
 const iconSize = 20;
 
 
-const logout = (navigate, authToken, setAuthToken) => {
+const logout = (navigate, authToken) => {
     try {
         apiRequest
             .post('/api/auth/token/logout/', null, {
@@ -22,7 +21,6 @@ const logout = (navigate, authToken, setAuthToken) => {
             },
             } )
             .then((response) => {
-                setAuthToken(null)
                 localStorage.removeItem('auth_token'); // @todo remove token from local storage
                 navigate('/')
         });
@@ -32,10 +30,10 @@ const logout = (navigate, authToken, setAuthToken) => {
 };
 
 const LinkItem = () => {
-    const { authToken, setAuthToken } = useContext( AuthContext );
+    const { authToken }  = localStorage.getItem('auth_token');
     const navigate = useNavigate();
     return (
-        <Link to="/" onClick={() => logout(navigate, authToken, setAuthToken)}>Logout</Link>
+        <Link to="/" onClick={() => logout(navigate, authToken)}>Logout</Link>
     )
 }
 

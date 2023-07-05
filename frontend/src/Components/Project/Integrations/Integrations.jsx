@@ -9,7 +9,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import { Input, Button, Form, Switch } from 'antd';
 import { useParams } from "react-router-dom";
 import apiRequest from '../../../Utils/apiRequest';
-import { AuthContext } from '../../../Utils/AuthContext';
+
 
 
 const PageContainer = styled.div`
@@ -143,7 +143,7 @@ function Integrations() {
     const [ isSMTPUpdating, setSMTPIsUpdating ] = useState( false );
     const [ initialSlackValues, setInitialSlackValues ] = useState( { id: undefined, project: projectId } );
 
-    const { authToken } = useContext(AuthContext);
+    let authToken = localStorage.getItem('auth_token');
 
     const updateSlackIntegrationForm = ( response ) => {
         if ( response.status === 200 ) {
