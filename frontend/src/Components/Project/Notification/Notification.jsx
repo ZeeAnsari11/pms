@@ -6,7 +6,7 @@ import {AiFillSlackCircle} from 'react-icons/ai';
 import {FcGoogle} from 'react-icons/fc';
 import {IoNotificationsSharp, IoNotificationsOff} from 'react-icons/io5';
 import apiRequest from '../../../Utils/apiRequest';
-import { AuthContext } from '../../../Utils/AuthContext';
+
 import {color} from "../../Dashboard/Sidebar/utils/styles";
 import {ToastContainer, toast} from 'react-toastify';
 import {Switch} from 'antd';
@@ -128,7 +128,7 @@ function Notification() {
     const [switchValueForSlack, setSwitchValueForSlack] = useState(false);
     const [switchValueForGmail, setSwitchValueForGmail] = useState(false);
 
-    const { authToken } = useContext(AuthContext);
+    let authToken = localStorage.getItem('auth_token');
 
     const { projectId } = useParams();
 

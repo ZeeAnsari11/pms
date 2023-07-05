@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import {useParams, useNavigate} from "react-router-dom";
 import apiRequest from '../../../Utils/apiRequest';
-import { AuthContext } from '../../../Utils/AuthContext';
+
 import styled from "styled-components";
 import {ToastContainer, toast} from 'react-toastify';
 import {Modal} from 'antd';
@@ -40,7 +40,7 @@ const AddTagButton = styled.button`
 const CloseProject = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
 
-    const { authToken } = useContext(AuthContext);
+    let authToken = localStorage.getItem('auth_token');
 
     const navigate = useNavigate();
     const {projectId} = useParams();

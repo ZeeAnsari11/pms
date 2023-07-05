@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import NavBar from '../../Dashboard/Navbar/index';
 import ProjectSidebar from "../../Dashboard/Sidebar/ProjectSidebar";
 import apiRequest from '../../../Utils/apiRequest';
-import { AuthContext } from '../../../Utils/AuthContext';
+
 import { toast, ToastContainer } from "react-toastify";
 import GenericSelectField from "../../Dashboard/SelectFields/GenericSelectField";
 import { useParams } from "react-router-dom";
@@ -51,7 +51,7 @@ const Permissions = () => {
     const [permissions, setPermissions] = useState([]);
     const [dataSource, setDataSource] = useState([]);
 
-    const { authToken } = useContext(AuthContext);
+    let authToken = localStorage.getItem('auth_token');
 
     const { projectId } = useParams();
 

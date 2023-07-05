@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import apiRequest from '../../../Utils/apiRequest';
-import { AuthContext } from '../../../Utils/AuthContext';
+
 import {v4 as uuidv4} from 'uuid';
 import { useNavigate } from "react-router-dom";
 import ReactQuill from 'react-quill';
@@ -172,7 +172,7 @@ function CreateProject() {
     const [selectedProjectLead, setSelectedProjectLead] = useState([]);
     const [selectedProjectAssignees, setSelectedProjectAssignees] = useState([]);
 
-    const { authToken } = useContext(AuthContext);
+    let authToken = localStorage.getItem('auth_token');
 
     const navigate = useNavigate();
 

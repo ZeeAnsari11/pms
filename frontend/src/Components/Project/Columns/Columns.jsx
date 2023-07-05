@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import NavBar from "../../Dashboard/Navbar/index";
 import ProjectSidebar from "../../Dashboard/Sidebar/ProjectSidebar";
 import apiRequest from '../../../Utils/apiRequest';
-import { AuthContext } from '../../../Utils/AuthContext';
+
 import {AiOutlineSetting} from 'react-icons/ai';
 import {DownOutlined} from '@ant-design/icons';
 import {Modal as Modal1, Input} from 'antd';
@@ -175,7 +175,7 @@ function Columns() {
     const [isDelete, setIsDelete] = useState(false);
     const [editStatusName, setEditStatusName] = useState('');
 
-    const { authToken } = useContext(AuthContext);
+    let authToken = localStorage.getItem('auth_token');
 
     const { projectId } = useParams();
 
