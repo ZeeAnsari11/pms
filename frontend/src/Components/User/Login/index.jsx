@@ -1,7 +1,6 @@
-import React, {useState, useContext} from "react";
+import React, {useState} from "react";
 import apiRequest from '../../../Utils/apiRequest';
 import styled from "styled-components";
-import { AuthContext } from '../../../Utils/AuthContext';
 import { Link, useNavigate } from "react-router-dom";
 import { colorCode } from "../../../Configurations/colors";
 import {ToastContainer, toast} from 'react-toastify';
@@ -198,7 +197,6 @@ function Login() {
     const [usernameForSignIn, setUsernameForSignIn] = useState('');
     const [passwordForSignIn, setPasswordForSignIn] = useState('');
 
-    const { setAuthToken } = useContext(AuthContext);
     const navigate = useNavigate();
 
     const errorMessage = (message) => {
@@ -237,7 +235,6 @@ function Login() {
             } )
             .then(response => {
                 localStorage.setItem('auth_token', response.data.auth_token) // @todo remove this
-                setAuthToken(response.data.auth_token);
                 navigate('/dashboard');
             })
             .catch(error => {

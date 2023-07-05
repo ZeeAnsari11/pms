@@ -1,5 +1,5 @@
 import {BrowserRouter, Routes, Route, Navigate} from "react-router-dom";
-import React, {useContext} from 'react';
+import React from 'react';
 import Login from "../Components/User/Login"
 import ResetPasswordPage from "../Components/User/ResetPassword/ResetPasswordPage"
 import ForgotPassword from "../Components/User/ForgetPassword/ForgetPassword"
@@ -21,11 +21,10 @@ import Types from "../Components/Project/Types/Types";
 import Permissions from "../Components/Project/Permissions/Permissions";
 import CloseProject from "../Components/Project/CloseProject/CloseProject";
 import AccountActivation from "../Components/User/AccountActivate/AccountActivation";
-import { AuthContext } from "./AuthContext";
 
 // Custom Route component for authentication check
 function PrivateRoute({element: Component, ...rest}) {
-    const { authToken } = useContext(AuthContext);
+    let authToken = localStorage.getItem('auth_token')
 
     if (!authToken) {
         return <Navigate to="/"/>;
