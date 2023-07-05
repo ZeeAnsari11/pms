@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { AuthContext } from '../../../Utils/AuthContext';
+
 import React, { useContext, useEffect, useState } from "react";
 import apiRequest from '../../../Utils/apiRequest';
 import Avatar from "react-avatar";
@@ -20,7 +20,7 @@ const Email = styled.div`
 
 const AccountDropdown = () => {
     const [userData, setUserData] = useState(null);
-    const { authToken} = useContext( AuthContext );
+    let authToken = localStorage.getItem('auth_token');
 
     const navigate = useNavigate();
 
