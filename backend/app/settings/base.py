@@ -133,3 +133,20 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # Celery broker details
 CELERY_BROKER_URL = os.environ.get("CELERY_BROKER")
 CELERY_RESULT_BACKEND = os.environ.get("CELERY_BACKEND")
+
+
+CORS_ALLOWED_ORIGINS = [
+    "https://projex.phpstudios.com:3000",
+    "https://projex.phpstudios.com",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
+
+CORS_ALLOW_METHODS = (
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
+)
