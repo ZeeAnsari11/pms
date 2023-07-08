@@ -10,7 +10,7 @@ from django.db.models import Q
 from django.contrib.auth.models import User
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import MultiPartParser, FormParser
-from .permissions import IsAdminOrReadOnly
+from .permissions import IsAdminOrReadOnly, IsAdminUser
 from .models import *
 from . import serializers
 from rest_framework.decorators import action
@@ -18,9 +18,9 @@ from rest_framework.decorators import action
 
 # Create your views here.
 class UserViewSet(ModelViewSet):
-    http_method_names = ['get', 'post', 'patch']
+    http_method_names = ['get', 'post', 'patch', 'delete']
     serializer_class = serializers.ComprehensiveUserSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAdminUser]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = "__all__"
 

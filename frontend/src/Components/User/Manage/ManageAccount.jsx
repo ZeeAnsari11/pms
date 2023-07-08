@@ -84,7 +84,7 @@ const InsideContentWrapper = styled.div`
 
 const CoverPictureWrapper = styled.div`
   position: relative;
-  width: 100%;
+  width: auto;
   height: 212px;
   margin-left: 200px;
   background-color: #80ffa1;
