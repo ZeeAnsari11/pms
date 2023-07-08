@@ -249,9 +249,6 @@ const ManageUsers = ( ) => {
                 open={modalVisible}
                 onCancel={handleModalClose}
                 footer={[
-                    <Button key="cancel" onClick={handleModalClose}>
-                        Cancel
-                    </Button>,
                     <Button key="submit" type="primary" onClick={form.submit}>
                         Submit
                     </Button>,
