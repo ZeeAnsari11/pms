@@ -13,14 +13,11 @@ import UserSidebar from "../../Dashboard/Sidebar/UserSidebar";
 const UserContainer = styled.div`
     margin-left: 16%;
     margin-top: 0%;
-    padding-top: 61px;
-    padding-left: 80px;
-    margin-right: 90px;
+    padding-top: 50px;
+    padding-left: 20px;
+    margin-right: 20px;
 `;
 
-const Heading = styled.h2`
-    margin-left: 10px;
-`;
 
 const PermissionsTable = styled(Table)`
     margin-top: 20px;
@@ -56,7 +53,7 @@ const ManageUsers = ( ) => {
 
     const  updateTable = ( responseData, id ) => {
         const updatedData = data.map(item => {
-            if (item.id === id) {
+            if (item.id === responseData.id) {
                 return {
                     id: responseData.id,
                     username: responseData.username,
@@ -128,7 +125,7 @@ const ManageUsers = ( ) => {
                 },
                 { headers: {"Authorization": `Token ${authToken}`} } )
             .then(response => {
-                updateTable(response.data, modalData.id);
+                updateTable(response.data);
                 displaySuccessMessage(`Successfully Update the user: ${values.email} `)
             })
             .catch(error => {
@@ -223,7 +220,7 @@ const ManageUsers = ( ) => {
             <NavBar/>
             <Toast/>
             <UserContainer>
-                <Heading>Users List</Heading>
+                <h2>Users List</h2>
                 <Input.Search placeholder="Search by Username or Email" value={searchQuery} onChange={handleSearch} style={{ marginBottom: 16 }} />
                 <PermissionsTable
                     dataSource={paginatedData}
