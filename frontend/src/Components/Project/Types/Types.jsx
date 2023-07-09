@@ -1,465 +1,274 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import NavBar from "../../Dashboard/Navbar/index";
 import ProjectSidebar from "../../Dashboard/Sidebar/ProjectSidebar";
-import {AiOutlineSetting} from 'react-icons/ai';
-import {DownOutlined} from '@ant-design/icons';
+import { AiOutlineDelete, AiOutlineEdit, AiOutlinePlus } from 'react-icons/ai';
+import Toast from "../../../Shared/Components/Toast"
+import { displayErrorMessage, displaySuccessMessage } from "../../../Shared/notify"
 import apiRequest from '../../../Utils/apiRequest';
-
-import {Modal as Modal1, Input} from 'antd';
-import {Modal as Modal2} from 'antd';
-import {Modal as Modal3} from 'antd';
-import {Dropdown, Space} from 'antd';
-import {Pagination} from 'antd';
+import { Button, Form as EditForm, Form as AddForm, Input, Modal, Space, Table } from 'antd';
 
 
-const PageContainer = styled.div`
-  height: 100vh;
-  width: 100%;
+const TypesContainer = styled.div`
+    margin-left: 16%;
+    margin-top: 0%;
+    padding-top: 50px;
+    padding-left: 20px;
+    margin-right: 20px;
+`;
+
+
+const StyledEditFormItem = styled(EditForm.Item)`
   display: flex;
-  flex-direction: column;
-`;
-
-const SummaryHeading = styled.p`
-  font-size: 26px;
-  color: black;
-  margin-left: 40px;
-  font-weight: bolder;
-  margin-top: 70px;
-
-  @media (max-width: 768px) {
-    margin: 5px 0;
-  }
-`;
-
-const ContentWrapper = styled.div`
-  flex: 1;
-  overflow-x: auto;
-  padding: 0px 20px 0px 20px;
-  margin-left: 200px;
-  margin-bottom: -10px;
-
-  @media (max-width: 768px) {
-    margin-left: 0;
-  }
-`;
-
-const HeadingWrapper = styled.div`
-  width: 100%;
-`;
-
-const BodyWrapper = styled.div`
-  margin-left: 5%;
-  margin-right: 5%;
-  height: auto;
-`;
-
-const AddTagButton = styled.button`
-  background-color: #0062FF;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  font-size: 1rem;
-  font-weight: bold;
-  padding: 0.5rem 1rem;
-  margin-top: 1rem;
+  align-items: center;
   margin-bottom: 10px;
-  cursor: pointer;
-  transition: background-color 0.3s ease-in-out;
-  margin-right: 310px;
-
-  &:hover {
-    background-color: #3e81ed;
-  }
+  justify-content: space-between;
 `;
 
-const TableContainer = styled.div`
-  display: table;
-  border-collapse: collapse;
-  width: 100%;
-
-  @media (max-width: 768px) {
-    display: block;
-  }
-`;
-
-const TableHeader = styled.div`
-  display: table-header-group;
-  background-color: #f5f5f5;
-  font-weight: bold;
-
-  @media (max-width: 768px) {
-    display: none;
-  }
-`;
-
-const TableHeaderCell = styled.div`
-  display: table-cell;
-  padding: 10px 544px 10px 10px;
-  border: none;
-  text-align: center;
-
-  @media (max-width: 768px) {
-    display: block;
-    width: 50%;
-    float: left;
-  }
-`;
-
-const TableRow = styled.div`
-  display: table-row;
-
-  &:hover {
-    background-color: #EBECF0;
-  }
-
-  @media (max-width: 768px) {
-    display: block;
-    margin-bottom: 10px;
-  }
-`;
-
-const TableCellForTag = styled.div`
-  display: table-cell;
-  padding: 10px;
-  border: none;
-  text-align: center;
-  width: 442px;
-  word-wrap: break-word;
-
-`;
-
-
-const NameTag = styled.span`
-  margin: 0 30px;
-  border-radius: 5px;
-  color: black;
-  padding: 5px 544px 5px 5px;
-`;
-
-
-const IconWrapper = styled.div`
-  width: 30px;
-  height: 10px;
-`;
-
-const ButtonWrapper = styled.div`
-  width: 100%;
-`;
-
-const PaginationWrapper = styled.div`
-  float: right;
-  margin-top: 15px;
-`;
-
-const WarningDiv = styled.div`
-  background-color: #fff6f6;
-  border: 1px solid #e0b4b4;
-  color: #9f3a38;
-  margin-top: 10px;
-  padding: 5px;
+const StyledAddFormItem = styled(AddForm.Item)`
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  justify-content: space-between;
 `;
 
 function Types() {
 
-    const [isModalVisible, setIsModalVisible] = useState(false);
-    const [inputValue, setInputValue] = useState('');
-    const [newArray, setNewArray] = useState([]);
-    const [isEmpty, setIsEmpty] = useState(false);
-    const [isModalVisible2, setIsModalVisible2] = useState(false);
-    const [inputValue2, setInputValue2] = useState('');
-    const [isEmpty2, setIsEmpty2] = useState(false);
-    const [id, setId] = useState(null);
+    const [data, setData] = useState([]);
+    const [filteredData, setFilteredData] = useState([]);
+    const [searchQuery, setSearchQuery] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
-    const [isDelete, setIsDelete] = useState(false);
-    const [editStatusName, setEditStatusName] = useState('');
+    const [pageSize, setPageSize] = useState(10);
+    const [totalItems, setTotalItems] = useState(0);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [selectedItem, setSelectedItem] = useState(null);
+
+    const [editTypeForm] = EditForm.useForm();
+    const [addTypeForm] = AddForm.useForm();
 
     let authToken = localStorage.getItem('auth_token');
 
     const { projectId } = useParams();
 
 
-    const showModal = () => {
-        setIsModalVisible(true);
-    };
+    const  updateTable = ( responseData ) => {
+        const updatedData = data.map(item => {
+            if (item.id === responseData.id) {
+                return {
+                    id: responseData.id,
+                    type: responseData.type,
+                }
+            }
+            return {
+                ...item,
+            };
+        });
+        setData(updatedData);
+        setFilteredData(updatedData);
+        setTotalItems((totalItems) => totalItems + 1);
+        setModalVisible(false);
+    }
 
-
-    const handleCancel = () => {
-        setIsModalVisible(false);
-    };
-
-    const handleCancel2 = () => {
-        setIsModalVisible2(false);
-    };
-
-    const handleInputChange = (e) => {
-        setInputValue(e.target.value);
-    };
-
-    const handleInputChange2 = (e) => {
-        setInputValue2(e.target.value);
-        setEditStatusName(e.target.value);
-    };
-
-    const handleOk = () => {
-        const newTag = {
-            "type": inputValue,
-            "project": projectId,
-        };
-
-        if (inputValue === '' || projectId === undefined) {
-            setIsEmpty(true);
-        }
-
-        if (inputValue) {
-            apiRequest
-                .post(`/api/project_type/`,
-                    newTag,
-                    {
-                        headers:
-                            { "Authorization": `Token ${authToken}` }
-                    } )
-                .then(response => {
-                    const result = {
-                        "id": response.data.id,
-                        "type": response.data.type,
-                    };
-                    setNewArray([...newArray, result]);
-                    setIsModalVisible(false);
-                    setIsEmpty(false);
-                })
-                .catch(error => {
-                    console.error('Error fetching data:', error);
-                });
-        }
-        setInputValue('');
-    };
-
-    const handleOk2 = () => {
-        const newTag = {
-            id: id,
-            type: inputValue2,
-        };
-
-        if (inputValue2 === '') {
-            setIsEmpty2(true);
-            return;
-        }
-
+    const updadteIssueType = (values) => {
         apiRequest
-            .patch(`/api/project_type/${id}/`,
+            .patch(`/api/project_type/${selectedItem.id}/`,
+                {"type": values.type, },
+                { headers: { "Authorization": `Token ${authToken}` }
+            })
+            .then(response => {
+                displaySuccessMessage('Successfully update the requested Type!');
+                updateTable(response.data)
+            })
+            .catch(error => {
+                displayErrorMessage(`Error occurred while updating the type ${error}`);
+            });
+    };
+
+    const deleteIssueType = (id) => {
+        apiRequest
+            .delete(`/api/project_type/${id}`,{ headers: { "Authorization": `Token ${authToken}` }
+            })
+            .then(response => {
+                displaySuccessMessage('Successfully delete the requested Type!');
+            })
+            .catch(error => {
+                displayErrorMessage(`Error occurred while deleting the type ${error}`);
+            });
+    };
+
+    const createIssueType = (values) => {
+        apiRequest
+            .post(`/api/project_type/`,
+                { "project" : projectId, "type" : values.type },
+                { headers: { "Authorization": `Token ${authToken}` }
+            })
+            .then(response => {
+                const result = { "id": response.data.id, "type": response.data.type};
+                setData((data) => [...data, result]);
+                setFilteredData((filteredData) => [...filteredData, result]);
+                setTotalItems((totalItems) => totalItems + 1);
+                setModalVisible(false);
+            })
+            .catch(error => {
+                displayErrorMessage(`Error occurred while creating new type: ${error}`);
+            });
+    };
+
+    useEffect(() => {
+        apiRequest
+            .get(`/api/project_type/`,
                 {
-                    id: id,
-                    type: inputValue2,
-                    project: projectId
-                },{
-                headers:
-                    { "Authorization": `Token ${authToken}` }
+                    params: { project: projectId, },
+                    headers: { "Authorization": `Token ${authToken}` }
                 } )
             .then(response => {
-                console.log('Data updated successfully:', response.data);
+                const dataArray = response.data.map(item => {
+                    const { id, type } = item;
+                    return { id, type };
+                })
+                setData(dataArray);
+                setFilteredData(dataArray);
+                setTotalItems(dataArray.length);
             })
             .catch(error => {
-                console.error('Error updating data:', error);
+                displayErrorMessage(`Error occurred while fetching data: ${error}`);
             });
+    }, []);
 
-        const updatedArray = newArray.filter((item) => item.id !== id);
-        let insertIndex = 0;
-        for (let i = 0; i < updatedArray.length; i++) {
-            if (updatedArray[i].id < id) {
-                insertIndex = i + 1;
-            } else {
-                break;
-            }
-        }
-
-        updatedArray.splice(insertIndex, 0, newTag);
-        setNewArray(updatedArray);
-        setIsModalVisible2(false);
-        setIsEmpty2(false);
-        setInputValue2('');
-        setId(0);
-    };
-
-    const handleEditTag = (id) => {
-        setIsModalVisible2(true);
-        setId(id);
-
-        const tag = newArray.find((item) => item.id === id);
-
-        if (tag) {
-            setId(id);
-            setEditStatusName(tag.type);
-            setIsModalVisible2(true);
-        }
-    };
-
-    const deleteIssueStatus = (id) => {
-        apiRequest
-            .delete(`/api/project_type/${id}`,{
-                headers:
-                    { "Authorization": `Token ${authToken}` }
-            } )
-            .then(response => {
-                console.log('Data deleted successfully');
-                setIsDelete(true);
-            })
-            .catch(error => {
-                console.error('Error deleting data', error);
-            });
-    };
-
-    const handleDeleteTag = (id, name) => {
-        Modal3.confirm({
+    const handleDeleteLink = (record) => {
+        Modal.confirm({
             title: 'Confirm',
-            content: 'Are you sure you want to delete this issue type: ' + name + ' ?',
+            content: `Are you sure you want to delete this issue type: ${record.type}  ?`,
             onOk() {
-                deleteIssueStatus(id);
+                deleteIssueType(record.id);
+                const updatedData = data.filter((item) => item.id !== record.id);
+                setData(updatedData);
+                setFilteredData(updatedData);
+                setTotalItems(updatedData.length);
             },
         });
     };
 
+    const handleEditLink = ( record ) => {
+        console.log( 'Needs to edit value', record );
+        setSelectedItem(record);
+        editTypeForm.setFieldsValue(record);
+        setModalVisible( true );
+    };
 
-    useEffect(() => {
-        if (isDelete) {
-            setIsDelete(false);
-        }
+    const handleAddLink = () => {
+        addTypeForm.setFieldsValue(null);
+        setSelectedItem(null);
+        setModalVisible(true);
+    };
 
-
-        apiRequest
-            .get(`/api/project_type/`,
-                {
-                    params: {
-                        project: projectId,
-                    },
-                    headers: {
-                        "Authorization": `Token ${authToken}`
-                    }
-                } )
-            .then(response => {
-                console.log(response.data);
-                const newDataArray = response.data.map((item) => {
-                        const {id, type} = item;
-                        return {id, type};
-                    }
-                );
-                setNewArray(newDataArray);
-            })
-            .catch(error => {
-                console.log(error)
-            });
-    }, [isDelete]);
-
-    const ITEMS_PER_PAGE = 10;
-
-    const handlePageChange = (page) => {
-        setCurrentPage(page);
+    const handleEditModal = (values) => {
+        updadteIssueType(values)
     }
 
-    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    const endIndex = startIndex + ITEMS_PER_PAGE;
-    const currentItems = newArray.slice(startIndex, endIndex);
+    const handleAddModal = (values) => {
+        createIssueType(values)
+    }
+
+    const handleSearch = (e) => {
+        const query = e.target.value;
+        setSearchQuery(query);
+
+        const filtered = data.filter(
+            item => item.type.toLowerCase().includes(query.toLowerCase())
+        );
+        setFilteredData(filtered);
+        setTotalItems(filtered.length);
+        setCurrentPage(1);
+    };
+
+    const handlePageChange = page => {
+        setCurrentPage(page);
+    };
+    const handlePageSizeChange = (current, size) => {
+        setPageSize(size);
+        setCurrentPage(1);
+    };
+
+    const columns = [
+        { title: 'ID', dataIndex: 'id' },
+        { title: 'Username', dataIndex: 'type' },
+        {
+            title: 'Actions',
+                render: (_, record) => (
+                <Space>
+                    <Button type="link" onClick={() => handleEditLink(record)}>
+                        <AiOutlineEdit /> Edit
+                    </Button>
+                    <Button type="link" onClick={() => handleDeleteLink(record)}>
+                        <AiOutlineDelete /> Delete
+                    </Button>
+                </Space>
+                ),
+            },
+    ];
+
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    const paginatedData = filteredData.slice(startIndex, endIndex);
 
     return (
         <div>
-            <PageContainer>
-                <ProjectSidebar />
-                <NavBar/>
-                <ContentWrapper>
-                    <HeadingWrapper>
-                        <SummaryHeading>Project Issues Types</SummaryHeading>
-                    </HeadingWrapper>
-                    <BodyWrapper>
-                        <ButtonWrapper>
-                            <AddTagButton label="Click me!" onClick={showModal}>Add Types </AddTagButton>
-                            <PaginationWrapper>
-                                <Pagination
-                                    current={currentPage}
-                                    total={newArray.length}
-                                    pageSize={ITEMS_PER_PAGE}
-                                    onChange={handlePageChange}
-                                    showSizeChanger={false}
-                                    showQuickJumper={false}
-                                />
-                            </PaginationWrapper>
-                        </ButtonWrapper>
-                        <TableContainer>
-                            <TableHeader>
-                                <TableHeaderCell>Types</TableHeaderCell>
-
-                            </TableHeader>
-                            {currentItems.map(tag => (
-                                <TableRow key={tag.id}>
-                                    <TableCellForTag>
-                                        <IconWrapper>
-                                            <Dropdown
-                                                menu={{
-                                                    items: [
-                                                        {
-                                                            key: 'edit',
-                                                            label: 'Edit',
-                                                            onClick: () => handleEditTag(tag.id)
-                                                        },
-                                                        {
-                                                            key: 'delete',
-                                                            label: 'Delete',
-                                                            onClick: () => handleDeleteTag(tag.id, tag.type)
-                                                        }
-                                                    ]
-                                                }}
-                                            >
-                                                <a onClick={(e) => e.preventDefault()}>
-                                                    <Space>
-                                                        <AiOutlineSetting size={'24px'}/>
-                                                        <DownOutlined/>
-                                                    </Space>
-                                                </a>
-                                            </Dropdown>
-                                        </IconWrapper>
-                                        <NameTag>{tag.type}</NameTag>
-                                    </TableCellForTag>
-                                </TableRow>
-                            ))}
-                        </TableContainer>
-                    </BodyWrapper>
-                </ContentWrapper>
-            </PageContainer>
-
-            <Modal1
-                title="Add New Column"
-                open={isModalVisible}
-                onOk={handleOk}
-                onCancel={handleCancel}
-            >
-                <label>Name</label>
-                <Input style={{marginBottom: `10px`}} value={inputValue} onChange={handleInputChange}/>
-
-                {isEmpty && (
-                    <WarningDiv>Oops! The name field is empty. Please enter Issue Type name.</WarningDiv>
-                )}
-            </Modal1>
-
-            <Modal2
-                title="Edit Tag"
-                open={isModalVisible2}
-                onOk={handleOk2}
-                onCancel={handleCancel2}
-            >
-                <label>Name</label>
-                <Input style={{marginBottom: `10px`}} value={editStatusName} onChange={handleInputChange2}/>
-
-                {isEmpty2 && (
-                    <WarningDiv>Oops! The name field is empty. Please enter Column name.</WarningDiv>
-                )}
-            </Modal2>
+            <ProjectSidebar />
+            <NavBar/>
+            <Toast />
+            <TypesContainer>
+                <h2>Project Issues Types</h2>
+                <Input.Search placeholder="Search by label name" value={searchQuery} onChange={handleSearch} style={{ marginBottom: 16 }} />
+                <div style={{ marginBottom: 16 }}>
+                    <Button type="primary" onClick={handleAddLink}>
+                        <AiOutlinePlus /> Add
+                    </Button>
+                </div>
+                <Table
+                    dataSource={paginatedData}
+                    columns={columns}
+                    rowKey="id"
+                    pagination={{
+                        current: currentPage,
+                        pageSize: pageSize,
+                        total: totalItems,
+                        onChange: handlePageChange,
+                        showSizeChanger: true,
+                        onShowSizeChange: handlePageSizeChange
+                    }}
+                />
+                <Modal
+                    title={selectedItem ? 'Edit Item' : 'Add Item'}
+                    open={modalVisible}
+                    onCancel={() => setModalVisible(false)}
+                    footer={[
+                        <Button key="submit" type="primary" onClick={() => {selectedItem ? editTypeForm.submit() : addTypeForm.submit()}}>
+                            { selectedItem ? 'Edit Item' : 'Add Item'}
+                        </Button>,
+                    ]}
+                >
+                    {selectedItem ? (
+                        <>
+                            <EditForm form={editTypeForm} onFinish={handleEditModal}>
+                                <StyledEditFormItem label="Type" name="type" rules={[{ required:true}]}>
+                                    <Input />
+                                </StyledEditFormItem>
+                            </EditForm>
+                        </>
+                    ) : (
+                        <>
+                            <AddForm form={addTypeForm} onFinish={handleAddModal} >
+                                <StyledAddFormItem label="Type" name="type" value={null} rules={[{required:true, message: 'Please enter the new Type' }]}>
+                                    <Input />
+                                </StyledAddFormItem>
+                            </AddForm>
+                        </>
+                    )}
+                </Modal>
+            </TypesContainer>
         </div>
     );
 }
-
 export default Types;
-
-
-
-
-
