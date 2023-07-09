@@ -1,51 +1,32 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import NavBar from "../../Dashboard/Navbar/index";
 import ProjectSidebar from "../../Dashboard/Sidebar/ProjectSidebar";
-import { AiOutlineEdit, AiOutlineDelete, AiOutlinePlus } from 'react-icons/ai';
+import { AiOutlineDelete, AiOutlineEdit, AiOutlinePlus } from 'react-icons/ai';
 import Toast from "../../../Shared/Components/Toast"
-import {displaySuccessMessage, displayErrorMessage} from "../../../Shared/notify"
+import { displayErrorMessage, displaySuccessMessage } from "../../../Shared/notify"
 import apiRequest from '../../../Utils/apiRequest';
-import { Modal, Button, Input, Table, Form } from 'antd';
+import { Button, Form as EditForm, Form as AddForm, Input, Modal, Space, Table } from 'antd';
 
 
-const PageContainer = styled.div`
-  height: 100vh;
-  width: 100%;
+const TypesContainer = styled.div`
+    margin-left: 16%;
+    margin-top: 0%;
+    padding-top: 50px;
+    padding-left: 20px;
+    margin-right: 20px;
+`;
+
+
+const StyledEditFormItem = styled(EditForm.Item)`
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  margin-bottom: 10px;
+  justify-content: space-between;
 `;
 
-const SummaryHeading = styled.p`
-  font-size: 26px;
-  color: black;
-  margin-left: 40px;
-  font-weight: bolder;
-  margin-top: 70px;
-
-  @media (max-width: 768px) {
-    margin: 5px 0;
-  }
-`;
-
-const ContentWrapper = styled.div`
-  flex: 1;
-  overflow-x: auto;
-  padding: 0px 20px 0px 20px;
-  margin-left: 200px;
-  margin-bottom: -10px;
-
-  @media (max-width: 768px) {
-    margin-left: 0;
-  }
-`;
-
-const HeadingWrapper = styled.div`
-  width: 100%;
-`;
-
-const StyledFormItem = styled(Form.Item)`
+const StyledAddFormItem = styled(AddForm.Item)`
   display: flex;
   align-items: center;
   margin-bottom: 10px;
@@ -63,61 +44,130 @@ function Types() {
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
 
-    const [editTypeForm] = Form.useForm();
-    const [addTypeForm] = Form.useForm();
+    const [editTypeForm] = EditForm.useForm();
+    const [addTypeForm] = AddForm.useForm();
 
     let authToken = localStorage.getItem('auth_token');
 
     const { projectId } = useParams();
 
 
-    const deleteIssueType = (id) => {
+    const  updateTable = ( responseData ) => {
+        const updatedData = data.map(item => {
+            if (item.id === responseData.id) {
+                return {
+                    id: responseData.id,
+                    type: responseData.type,
+                }
+            }
+            return {
+                ...item,
+            };
+        });
+        setData(updatedData);
+        setFilteredData(updatedData);
+        setTotalItems((totalItems) => totalItems + 1);
+        setModalVisible(false);
+    }
+
+    const updadteIssueType = (values) => {
         apiRequest
-            .delete(`/api/project_type/${id}`,{
-                headers:
-                    { "Authorization": `Token ${authToken}` }
-            } )
+            .patch(`/api/project_type/${selectedItem.id}/`,
+                {"type": values.type, },
+                { headers: { "Authorization": `Token ${authToken}` }
+            })
             .then(response => {
-                console.log('Data deleted successfully');
+                displaySuccessMessage('Successfully update the requested Type!');
+                updateTable(response.data)
             })
             .catch(error => {
-                console.error('Error deleting data', error);
+                displayErrorMessage(`Error occurred while updating the type ${error}`);
+            });
+    };
+
+    const deleteIssueType = (id) => {
+        apiRequest
+            .delete(`/api/project_type/${id}`,{ headers: { "Authorization": `Token ${authToken}` }
+            })
+            .then(response => {
+                displaySuccessMessage('Successfully delete the requested Type!');
+            })
+            .catch(error => {
+                displayErrorMessage(`Error occurred while deleting the type ${error}`);
             });
     };
 
     const createIssueType = (values) => {
         apiRequest
-                .post(`/api/project_type/`,
-                    {
-                        "type": values.type
-                    },
-                    { headers: { "Authorization": `Token ${authToken}` } } )
-                .then(response => {
-                    const result = {
-                        "id": response.data.id,
-                        "type": response.data.type,
-                    };
-                })
-                .catch(error => {
-                    console.error('Error fetching data:', error);
-                });
+            .post(`/api/project_type/`,
+                { "project" : projectId, "type" : values.type },
+                { headers: { "Authorization": `Token ${authToken}` }
+            })
+            .then(response => {
+                const result = { "id": response.data.id, "type": response.data.type};
+                setData((data) => [...data, result]);
+                setFilteredData((filteredData) => [...filteredData, result]);
+                setTotalItems((totalItems) => totalItems + 1);
+                setModalVisible(false);
+            })
+            .catch(error => {
+                displayErrorMessage(`Error occurred while creating new type: ${error}`);
+            });
     };
 
-    const handleDeleteType = (record) => {
+    useEffect(() => {
+        apiRequest
+            .get(`/api/project_type/`,
+                {
+                    params: { project: projectId, },
+                    headers: { "Authorization": `Token ${authToken}` }
+                } )
+            .then(response => {
+                const dataArray = response.data.map(item => {
+                    const { id, type } = item;
+                    return { id, type };
+                })
+                setData(dataArray);
+                setFilteredData(dataArray);
+                setTotalItems(dataArray.length);
+            })
+            .catch(error => {
+                displayErrorMessage(`Error occurred while fetching data: ${error}`);
+            });
+    }, []);
+
+    const handleDeleteLink = (record) => {
         Modal.confirm({
             title: 'Confirm',
             content: `Are you sure you want to delete this issue type: ${record.type}  ?`,
             onOk() {
                 deleteIssueType(record.id);
+                const updatedData = data.filter((item) => item.id !== record.id);
+                setData(updatedData);
+                setFilteredData(updatedData);
+                setTotalItems(updatedData.length);
             },
         });
     };
 
-    const handleEditType = (values) => {
+    const handleEditLink = ( record ) => {
+        console.log( 'Needs to edit value', record );
+        setSelectedItem(record);
+        editTypeForm.setFieldsValue(record);
+        setModalVisible( true );
+    };
 
+    const handleAddLink = () => {
+        addTypeForm.setFieldsValue(null);
+        setSelectedItem(null);
+        setModalVisible(true);
+    };
+
+    const handleEditModal = (values) => {
+        updadteIssueType(values)
     }
 
-    const handleAddType = (values) => {
+    const handleAddModal = (values) => {
         createIssueType(values)
     }
 
@@ -141,126 +191,83 @@ function Types() {
         setCurrentPage(1);
     };
 
-    const handleAdd = () => {
-        setSelectedItem(null);
-        setModalVisible(true);
-    };
-
-
-    const handleEdit = item => {
-        setSelectedItem(item);
-        setModalVisible(true);
-    };
-
-
-    useEffect(() => {
-        apiRequest
-            .get(`/api/project_type/`,
-                {
-                    params: {
-                        project: projectId,
-                    },
-                    headers: {
-                        "Authorization": `Token ${authToken}`
-                    }
-                } )
-            .then(response => {
-                const dataArray = response.data.map(item => {
-                    const { id, type } = item;
-                    return { id, type };
-                })
-                setData(dataArray);
-                setFilteredData(dataArray);
-                setTotalItems(dataArray.length);
-            })
-            .catch(error => {
-                console.log(error)
-            });
-    }, []);
-
     const columns = [
         { title: 'ID', dataIndex: 'id' },
-        { title: 'Type', dataIndex: 'type' },
+        { title: 'Username', dataIndex: 'type' },
         {
             title: 'Actions',
-            dataIndex: 'actions',
-            render: (_, record) => (
-                <>
-                    <Button type="link" onClick={() => handleEdit(record)}>
+                render: (_, record) => (
+                <Space>
+                    <Button type="link" onClick={() => handleEditLink(record)}>
                         <AiOutlineEdit /> Edit
                     </Button>
-                    <Button type="link" onClick={() => handleDeleteType(record)}>
+                    <Button type="link" onClick={() => handleDeleteLink(record)}>
                         <AiOutlineDelete /> Delete
                     </Button>
-                </>
-            )
-        }
+                </Space>
+                ),
+            },
     ];
 
     const startIndex = (currentPage - 1) * pageSize;
     const endIndex = startIndex + pageSize;
     const paginatedData = filteredData.slice(startIndex, endIndex);
 
-
     return (
         <div>
-            <PageContainer>
-                <ProjectSidebar />
-                <NavBar/>
-                <Toast />
-                <ContentWrapper>
-                    <HeadingWrapper>
-                        <SummaryHeading>Project Issues Types</SummaryHeading>
-                    </HeadingWrapper>
-                    <Input.Search placeholder="Search by label name" value={searchQuery} onChange={handleSearch} style={{ marginBottom: 16 }} />
-                    <div style={{ marginBottom: 16 }}>
-                        <Button type="primary" onClick={handleAdd}>
-                            <AiOutlinePlus /> Add
-                        </Button>
-                    </div>
-                    <Table
-                        dataSource={paginatedData}
-                        columns={columns}
-                        rowKey="id"
-                        pagination={{
-                            current: currentPage,
-                            pageSize: pageSize,
-                            total: totalItems,
-                            onChange: handlePageChange,
-                            showSizeChanger: true,
-                            onShowSizeChange: handlePageSizeChange
-                        }}
-                    />
-                    <Modal
-                        title={selectedItem ? 'Edit Item' : 'Add Item'}
-                        open={modalVisible}
-                        onCancel={() => setModalVisible(false)}
-                        footer={[
-                            <Button key="submit" type="primary" onClick={() => selectedItem ? editTypeForm.submit : addTypeForm.submit}>
-                                { selectedItem ? 'Edit Item' : 'Add Item'}
-                            </Button>,
-                        ]}
-                    >
-                        {selectedItem ? ((
-                            <>
-                                <Form form={editTypeForm} onFinish={handleEditType} initialValues={selectedItem}>
-                                    <StyledFormItem label="Type" name="type" rules={[{ required:true}]}>
-                                        <Input />
-                                    </StyledFormItem>
-                                </Form>
-                            </>
-                        )) : ((
-                            <>
-                                <Form form={addTypeForm} onFinish={handleAddType}>
-                                    <StyledFormItem label="Type" name="type" rules={[{required:true, message: 'Please enter the new Type' }]}>
-                                        <Input />
-                                    </StyledFormItem>
-                                </Form>
-                            </>
-                        ))}
-                    </Modal>
-                </ContentWrapper>
-            </PageContainer>
+            <ProjectSidebar />
+            <NavBar/>
+            <Toast />
+            <TypesContainer>
+                <h2>Project Issues Types</h2>
+                <Input.Search placeholder="Search by label name" value={searchQuery} onChange={handleSearch} style={{ marginBottom: 16 }} />
+                <div style={{ marginBottom: 16 }}>
+                    <Button type="primary" onClick={handleAddLink}>
+                        <AiOutlinePlus /> Add
+                    </Button>
+                </div>
+                <Table
+                    dataSource={paginatedData}
+                    columns={columns}
+                    rowKey="id"
+                    pagination={{
+                        current: currentPage,
+                        pageSize: pageSize,
+                        total: totalItems,
+                        onChange: handlePageChange,
+                        showSizeChanger: true,
+                        onShowSizeChange: handlePageSizeChange
+                    }}
+                />
+                <Modal
+                    title={selectedItem ? 'Edit Item' : 'Add Item'}
+                    open={modalVisible}
+                    onCancel={() => setModalVisible(false)}
+                    footer={[
+                        <Button key="submit" type="primary" onClick={() => {selectedItem ? editTypeForm.submit() : addTypeForm.submit()}}>
+                            { selectedItem ? 'Edit Item' : 'Add Item'}
+                        </Button>,
+                    ]}
+                >
+                    {selectedItem ? (
+                        <>
+                            <EditForm form={editTypeForm} onFinish={handleEditModal}>
+                                <StyledEditFormItem label="Type" name="type" rules={[{ required:true}]}>
+                                    <Input />
+                                </StyledEditFormItem>
+                            </EditForm>
+                        </>
+                    ) : (
+                        <>
+                            <AddForm form={addTypeForm} onFinish={handleAddModal} >
+                                <StyledAddFormItem label="Type" name="type" value={null} rules={[{required:true, message: 'Please enter the new Type' }]}>
+                                    <Input />
+                                </StyledAddFormItem>
+                            </AddForm>
+                        </>
+                    )}
+                </Modal>
+            </TypesContainer>
         </div>
     );
 }
