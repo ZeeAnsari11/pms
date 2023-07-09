@@ -1,33 +1,22 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import NavBar from '../../Dashboard/Navbar/index';
 import apiRequest from '../../../Utils/apiRequest';
-
-import { toast, ToastContainer } from "react-toastify";
-import GenericSelectField from "../../Dashboard/SelectFields/GenericSelectField";
-import { useParams } from "react-router-dom";
-import { StatusCodes } from "http-status-codes";
-import { AxiosError } from "axios";
+import Toast from "../../../Shared/Components/Toast"
+import {displaySuccessMessage, displayErrorMessage} from "../../../Shared/notify"
 import { Table, Input, Button, Modal, Pagination, Space, Form, Switch } from 'antd';
-import { AiOutlineSetting, AiOutlineEdit, AiOutlineDelete } from 'react-icons/ai';
+import { AiOutlineEdit, AiOutlineDelete } from 'react-icons/ai';
 import UserSidebar from "../../Dashboard/Sidebar/UserSidebar";
 
-const { Column } = Table;
-const {userModalForm} = Form;
 
 
-const PermissionsContainer = styled.div`
+const UserContainer = styled.div`
     margin-left: 16%;
     margin-top: 0%;
-    padding-top: 61px;
-    padding-left: 80px;
-    margin-right: 90px;
+    padding-top: 50px;
+    padding-left: 20px;
+    margin-right: 20px;
 `;
-
-const Heading = styled.h2`
-    margin-left: 10px;
-`;
-
 
 
 const PermissionsTable = styled(Table)`
@@ -39,80 +28,138 @@ const PaginationWrapper = styled.div`
   margin-top: 15px;
 `;
 
+const StyledFormItem = styled(Form.Item)`
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  justify-content: space-between;
+`;
 
 
-const ManageUsers = () => {
-    const [data, setData] = useState([]); // Data for the table
-    const [filteredData, setFilteredData] = useState([]); // Filtered data based on search query
-    const [searchQuery, setSearchQuery] = useState(''); // Search query
-    const [currentPage, setCurrentPage] = useState(1); // Current page number
-    const [pageSize, setPageSize] = useState(10); // Number of items per page
-    const [totalItems, setTotalItems] = useState(0); // Total number of items
-    const [modalVisible, setModalVisible] = useState(false); // Modal visibility
-    const [modalData, setModalData] = useState(null); // Data for the modal
-    const [modalEditedData, setModalEditedData] = useState(null); // Data for the modal
+const ManageUsers = ( ) => {
+    const [data, setData] = useState([]);
+    const [filteredData, setFilteredData] = useState([]);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pageSize, setPageSize] = useState(10);
+    const [totalItems, setTotalItems] = useState(0);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [modalData, setModalData] = useState(null);
 
+
+    const [form] = Form.useForm();
 
     let authToken = localStorage.getItem('auth_token');
 
-    const { projectId } = useParams();
+    const  updateTable = ( responseData, id ) => {
+        const updatedData = data.map(item => {
+            if (item.id === responseData.id) {
+                return {
+                    id: responseData.id,
+                    username: responseData.username,
+                    email: responseData.email,
+                    isSuperUser: responseData.is_superuser,
+                    isActive: responseData.is_active,
+                    isStaff: responseData.is_staff,
+                    lastLogIn: responseData.last_login
+                }
+            }
+            return {
+                ...item,
+            };
+        });
+        setData(updatedData);
+        setFilteredData(updatedData);
+        setTotalItems(updatedData.length);
+    }
 
-    // Mock API call to fetch data
-    const fetchData = () => {
-        // Replace this with your actual API call to fetch data
+    const handleDelete = (id) => {
+        Modal.confirm({
+        title: 'Confirm Delete',
+        content: 'Are you sure you want to delete this user?',
+        onOk: () => {
+            deleteUser(id);
+            const updatedData = data.filter((item) => item.id !== id);
+            setData(updatedData);
+            setFilteredData(updatedData);
+            setTotalItems(updatedData.length);
+            },
+        });
+    };
 
-        const response = [
-            { id: 1, username: 'john123', email: 'john@example.com', firstName: 'John', lastName: 'Doe', isStaff: true },
-            { id: 2, username: 'jane456', email: 'jane@example.com', firstName: 'Jane', lastName: 'Smith', isStaff: false },
-            { id: 3, username: 'jane456', email: 'jane@example.com', firstName: 'Jane', lastName: 'Smith', isStaff: false },
-            { id: 4, username: 'jane456', email: 'jane@example.com', firstName: 'Jane', lastName: 'Smith', isStaff: false },
-            { id: 5, username: 'jane456', email: 'jane@example.com', firstName: 'Jane', lastName: 'Smith', isStaff: false },
-            { id: 6, username: 'jane456', email: 'jane@example.com', firstName: 'Jane', lastName: 'Smith', isStaff: false },
-            { id: 7, username: 'jane456', email: 'jane@example.com', firstName: 'Jane', lastName: 'Smith', isStaff: false },
-            { id: 8, username: 'jane456', email: 'jane@example.com', firstName: 'Jane', lastName: 'Smith', isStaff: false },
-            { id: 9, username: 'jane456', email: 'jane@example.com', firstName: 'Jane', lastName: 'Smith', isStaff: false },
-            { id: 10, username: 'jane456', email: 'jane@example.com', firstName: 'Jane', lastName: 'Smith', isStaff: false },
-            { id: 11, username: 'jane456', email: 'jane@example.com', firstName: 'Jane', lastName: 'Smith', isStaff: false },
-            { id: 12, username: 'jane456', email: 'jane@example.com', firstName: 'Jane', lastName: 'Smith', isStaff: false },
-            { id: 13, username: 'jane456', email: 'jane@example.com', firstName: 'Jane', lastName: 'Smith', isStaff: false },
-            { id: 14, username: 'jane456', email: 'jane@example.com', firstName: 'Jane', lastName: 'Smith', isStaff: false },
-            { id: 15, username: 'jane456', email: 'jane@example.com', firstName: 'Jane', lastName: 'Smith', isStaff: false },
-            { id: 16, username: 'jane456', email: 'jane@example.com', firstName: 'Jane', lastName: 'Smith', isStaff: false },
-            { id: 17, username: 'jane456', email: 'jane@example.com', firstName: 'Jane', lastName: 'Smith', isStaff: false },
-            // Add more data...
-        ];
+    const fetchUsers = () => {
+        apiRequest
+            .get(`/api/users_list/`, { headers: {"Authorization": `Token ${authToken}`} } )
+            .then(response => {
+                const mappedValues = response.data.map(item => {
+                    return {
+                        id: item.id,
+                        username: item.username,
+                        email: item.email,
+                        isSuperUser: item.is_superuser,
+                        isActive: item.is_active,
+                        isStaff: item.is_staff,
+                        lastLogIn: item.last_login
+                    };
+                });
+                setData(mappedValues);
+                setFilteredData(mappedValues);
+                setTotalItems(mappedValues.length);
+            })
+            .catch(error => {
+                displayErrorMessage(error.message)
+            });
+    };
 
-        setData(response);
-        setFilteredData(response);
-        setTotalItems(response.length);
+    const updateUser = (values) => {
+        if(modalData.id){
+            console.log('updated data', values);
+            apiRequest
+            .patch(`/api/users_list/${modalData.id}/`,
+                {
+                    "username": values.username,
+                    "email": values.email,
+                    "is_superuser": values.isSuperUser,
+                    "is_staff": values.isStaff,
+                    "is_active": values.isActive,
+                },
+                { headers: {"Authorization": `Token ${authToken}`} } )
+            .then(response => {
+                updateTable(response.data);
+                displaySuccessMessage(`Successfully Update the user: ${values.email} `)
+            })
+            .catch(error => {
+                displayErrorMessage(error.message)
+            });
+        }
+    };
+    const deleteUser = (id) => {
+        apiRequest
+            .delete(`/api/users_list/${id}`, { headers: {"Authorization": `Token ${authToken}`} } )
+            .then(response => {
+                displaySuccessMessage('Successfully delete the requested user!')
+            })
+            .catch(error => {
+                displayErrorMessage(error.message)
+            });
     };
 
     useEffect(() => {
-        fetchData();
+        fetchUsers();
     }, []);
-
-    const layout = {
-        labelCol: { span: 6 },
-        wrapperCol: { span: 16 },
-    };
 
     const handleSearch = (e) => {
         const query = e.target.value;
         setSearchQuery(query);
-
-        // Filter the data based on search query
         const filtered = data.filter((item) =>
             item.username.toLowerCase().includes(query.toLowerCase()) ||
-            item.email.toLowerCase().includes(query.toLowerCase()) ||
-            item.firstName.toLowerCase().includes(query.toLowerCase()) ||
-            item.lastName.toLowerCase().includes(query.toLowerCase())
+            item.email.toLowerCase().includes(query.toLowerCase())
         );
         setFilteredData(filtered);
         setTotalItems(filtered.length);
         setCurrentPage(1);
     };
 
-      // Handle page change
     const handlePageChange = (page) => {
         setCurrentPage(page);
     };
@@ -122,40 +169,30 @@ const ManageUsers = () => {
         setCurrentPage(1);
     };
 
-    const handleDelete = (id) => {
-        const updatedData = data.filter((item) => item.id !== id);
-            setData(updatedData);
-            setFilteredData(updatedData);
-            setTotalItems(updatedData.length);
-    };
-
-    // Handle edit action
     const handleEdit = (record) => {
         setModalData(record);
         setModalVisible(true);
     };
 
-  // Handle modal close
     const handleModalClose = () => {
         setModalVisible(false);
         setModalData(null);
     };
 
-    const handleModalSave = () => {
-        console.log('Modal data before edit', modalData);
+    const handleModalSave = (values) => {
+        updateUser(values);
         setModalVisible(false);
         setModalData(null);
     };
-
-
 
     const columns = [
     { title: 'ID', dataIndex: 'id' },
     { title: 'Username', dataIndex: 'username' },
     { title: 'Email', dataIndex: 'email' },
-    { title: 'First Name', dataIndex: 'firstName' },
-    { title: 'Last Name', dataIndex: 'lastName' },
-    { title: 'Is Staff', dataIndex: 'isStaff', render: (isStaff) => (isStaff ? 'Yes' : 'No') },
+    { title: 'Admin Status', dataIndex: 'isSuperUser', render: (isSuperUser) => (isSuperUser ? 'Yes' : 'No') },
+    { title: 'Active Status', dataIndex: 'isActive', render: (isActive) => (isActive ? 'Yes' : 'No') },
+    { title: 'Staff Status', dataIndex: 'isStaff', render: (isStaff) => (isStaff ? 'Yes' : 'No') },
+    { title: 'Last LogIn', dataIndex: 'lastLogIn' },
     {
         title: 'Actions',
             render: (_, record) => (
@@ -171,7 +208,6 @@ const ManageUsers = () => {
         },
     ];
 
-    // Calculate pagination values
     const startIndex = (currentPage - 1) * pageSize;
     const endIndex = startIndex + pageSize;
     const paginatedData = filteredData.slice(startIndex, endIndex);
@@ -182,9 +218,10 @@ const ManageUsers = () => {
         <>
             <UserSidebar/>
             <NavBar/>
-            <PermissionsContainer>
-                <Heading>Users List</Heading>
-                <Input.Search placeholder="Search" value={searchQuery} onChange={handleSearch} style={{ marginBottom: 16 }} />
+            <Toast/>
+            <UserContainer>
+                <h2>Users List</h2>
+                <Input.Search placeholder="Search by Username or Email" value={searchQuery} onChange={handleSearch} style={{ marginBottom: 16 }} />
                 <PermissionsTable
                     dataSource={paginatedData}
                     columns={columns}
@@ -202,49 +239,38 @@ const ManageUsers = () => {
                         style={{ marginBottom: 16 }}
                 />
                 </PaginationWrapper>
-            </PermissionsContainer>
-            <ToastContainer
-                position="top-right"
-                autoClose={5000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                theme="colored"
-            />
+            </UserContainer>
 
             <Modal
                 title="Edit User"
                 open={modalVisible}
-                onOk={handleModalSave}
                 onCancel={handleModalClose}
                 footer={[
-                    <Button form="myForm" key="submit" htmlType="submit">
+                    <Button key="submit" type="primary" onClick={form.submit}>
                         Submit
-                    </Button>
-        ]}
+                    </Button>,
+                ]}
             >
             {modalData && (
-                <Form initialValues={modalData}
-                >
-                    <Form.Item label="Username" name="username" rules={[{ required: true, message: 'Please enter a username' }]}>
+                <Form form={form} onFinish={handleModalSave} initialValues={modalData}>
+                    <StyledFormItem label="Username" name="username" rules={[{ message: 'Please enter a username' }]}>
                         <Input />
-                    </Form.Item>
-                    <Form.Item label="Email" name="email" rules={[{ required: true, message: 'Please enter an email' }]}>
+                    </StyledFormItem>
+                    <StyledFormItem label="Email" name="email" rules={[{ message: 'Please enter an email' }]}>
                         <Input />
-                    </Form.Item>
-                    <Form.Item label="First Name" name="firstName" rules={[{ required: true, message: 'Please enter a first name' }]}>
-                        <Input />
-                    </Form.Item>
-                    <Form.Item label="Last Name" name="lastName" rules={[{ required: true, message: 'Please enter a last name' }]}>
-                        <Input />
-                    </Form.Item>
-                    <Form.Item label="Is Staff" name="isStaff" valuePropName="checked">
+                    </StyledFormItem>
+                    <StyledFormItem label="Admin Status" name="isSuperUser" valuePropName="checked">
                         <Switch />
-                    </Form.Item>
+                    </StyledFormItem>
+                    <StyledFormItem label="Active Status" name="isActive" valuePropName="checked">
+                        <Switch />
+                    </StyledFormItem>
+                    <StyledFormItem label="Is Staff" name="isStaff" valuePropName="checked">
+                        <Switch />
+                    </StyledFormItem>
+                    <StyledFormItem label="Last LogIn" name="lastLogIn" rules={[{message: 'Please enter an email' }]}>
+                        <Input disabled />
+                    </StyledFormItem>
                 </Form>
             )}
             </Modal>
