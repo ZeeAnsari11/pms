@@ -34,12 +34,13 @@ class ProjectStatus(models.Model):
         related_name='statuses'
     )
     status = models.CharField(max_length=255, default='In Progress')
+    priority = models.SmallIntegerField(default=0)
 
     def __str__(self):
         return self.status
 
     class Meta:
-        unique_together = ('project', 'status')
+        unique_together = ('project', 'status', 'priority')
 
 
 class ProjectSlackWebhook(models.Model):
