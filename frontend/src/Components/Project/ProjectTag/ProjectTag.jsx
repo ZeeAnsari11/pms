@@ -7,7 +7,8 @@ import { AiOutlineDelete, AiOutlineEdit, AiOutlinePlus } from 'react-icons/ai';
 import Toast from "../../../Shared/Components/Toast"
 import { displayErrorMessage, displaySuccessMessage } from "../../../Shared/notify"
 import apiRequest from '../../../Utils/apiRequest';
-import { Button, Form as EditForm, Form as AddForm, Input, Modal, Space, Table, Col, Row, ColorPicker  } from 'antd';
+import { Button, Form as EditForm, Form as AddForm, Input, Modal, Space, Table  } from 'antd';
+import { ChromePicker } from 'react-color';
 
 
 const TypesContainer = styled.div`
@@ -33,10 +34,17 @@ const StyledAddFormItem = styled(AddForm.Item)`
   justify-content: space-between;
 `;
 
+const ColorBox = styled.div`
+  width: 40px;
+  height: 20px;
+  background-color: ${(props) => props.color};
+`;
+
 function Tags() {
 
     const [data, setData] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
+    const [pickedColor, setPickedColor] = useState('#1677ff');
     const [searchQuery, setSearchQuery] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
@@ -74,15 +82,15 @@ function Tags() {
     const updadteIssueStatus = (values) => {
         apiRequest
             .patch(`/api/project_labels/${selectedItem.id}/`,
-                {"name": values.name, "color": values.color},
+                {"name": values.name, "color": values.color?.hex},
                 { headers: { "Authorization": `Token ${authToken}` }
             })
             .then(response => {
-                displaySuccessMessage('Successfully update the requested Status!');
+                displaySuccessMessage('Successfully update the requested Tag!');
                 updateTable(response.data)
             })
             .catch(error => {
-                displayErrorMessage(`Error occurred while updating the Status ${error}`);
+                displayErrorMessage(`Error occurred while updating the Tag ${error}`);
             });
     };
     const deleteIssueStatus = (id) => {
@@ -90,17 +98,17 @@ function Tags() {
             .delete(`/api/project_labels/${id}`,{ headers: { "Authorization": `Token ${authToken}` }
             })
             .then(response => {
-                displaySuccessMessage('Successfully delete the requested Status!');
+                displaySuccessMessage('Successfully delete the requested Tag!');
             })
             .catch(error => {
-                displayErrorMessage(`Error occurred while deleting the Status ${error}`);
+                displayErrorMessage(`Error occurred while deleting the Tag ${error}`);
             });
     };
 
     const createIssueType = (values) => {
         apiRequest
             .post(`/api/project_labels/`,
-                { "project" : projectId, "name" : values.name, "color" : values.color },
+                { "project" : projectId, "name" : values.name, "color" : values.color.hex },
                 { headers: { "Authorization": `Token ${authToken}` }
             })
             .then(response => {
@@ -113,7 +121,7 @@ function Tags() {
                 setModalVisible(false);
             })
             .catch(error => {
-                displayErrorMessage(`Error occurred while creating new Status: ${error}`);
+                displayErrorMessage(`Error occurred while creating new Tag: ${error}`);
             });
     };
 
@@ -141,7 +149,7 @@ function Tags() {
     const handleDeleteLink = (record) => {
         Modal.confirm({
             title: 'Confirm',
-            content: `Are you sure you want to delete this issue Status: ${record.name}  ?`,
+            content: `Are you sure you want to delete this issue Tag: ${record.name}  ?`,
             onOk() {
                 deleteIssueStatus(record.id);
                 const updatedData = data.filter((item) => item.id !== record.id);
@@ -155,13 +163,13 @@ function Tags() {
     const handleEditLink = ( record ) => {
         setSelectedItem(record);
         editTagForm.setFieldValue('name', record.name);
-        editTagForm.setFieldValue('color', record.color);
+        setPickedColor(record.color);
         setModalVisible( true );
     };
 
     const handleAddLink = () => {
         addTagForm.setFieldValue('name',null);
-        addTagForm.setFieldValue('color',null);
+        setPickedColor('#1677ff');
         setSelectedItem(null);
         setModalVisible(true);
     };
@@ -197,7 +205,11 @@ function Tags() {
     const columns = [
         { title: 'ID', dataIndex: 'id' },
         { title: 'Name', dataIndex: 'name' },
-        { title: 'Color', dataIndex: 'color' },
+        {
+            title: 'Color',
+            dataIndex: 'color',
+            render: (color) => <ColorBox color={color} />,
+        },
         {
             title: 'Actions',
                 render: (_, record) => (
@@ -260,25 +272,18 @@ function Tags() {
                                     <Input />
                                 </StyledEditFormItem>
                                 <StyledEditFormItem label="Color" name="color" rules={[{ required:true,}]}>
-                                    <Input />
+                                    <ChromePicker color={pickedColor} onChange={(color) => setPickedColor(color)} />
                                 </StyledEditFormItem>
                             </EditForm>
                         </>
                     ) : (
                         <>
                             <AddForm form={addTagForm} onFinish={handleAddModal} >
-                                <StyledAddFormItem label="Name" name="name" value={null} rules={[{required:true, message: 'Please enter the Status Name' }]}>
+                                <StyledAddFormItem label="Name" name="name" value={null} rules={[{required:true, message: 'Please enter the Tag Name' }]}>
                                     <Input />
                                 </StyledAddFormItem>
                                 <StyledEditFormItem label="Color" name="color" rules={[{ required: true }]}>
-                                    <Row gutter={8} align="middle">
-                                        <Col span={18}>
-                                          <Input />
-                                        </Col>
-                                    <Col span={6}>
-                                        <ColorPicker />
-                                    </Col>
-                                  </Row>
+                                    <ChromePicker color={pickedColor} onChange={(color) => setPickedColor(color)} />
                                 </StyledEditFormItem>
                             </AddForm>
                         </>
