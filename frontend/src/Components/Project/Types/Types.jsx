@@ -193,7 +193,7 @@ function Types() {
 
     const columns = [
         { title: 'ID', dataIndex: 'id' },
-        { title: 'Username', dataIndex: 'type' },
+        { title: 'Type', dataIndex: 'type' },
         {
             title: 'Actions',
                 render: (_, record) => (
