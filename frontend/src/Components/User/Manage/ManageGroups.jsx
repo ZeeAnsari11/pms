@@ -1,251 +1,327 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
-import NavBar from "../../Dashboard/Navbar";
+import NavBar from "../../Dashboard/Navbar/index";
 import UserSidebar from "../../Dashboard/Sidebar/UserSidebar";
-import GenericSelectField from "../../Dashboard/SelectFields/GenericSelectField";
-import {Link} from 'react-router-dom';
+import { AiOutlineDelete, AiOutlineEdit, AiOutlinePlus } from 'react-icons/ai';
+import Toast from "../../../Shared/Components/Toast"
+import { displayErrorMessage, displaySuccessMessage } from "../../../Shared/notify"
+import apiRequest from '../../../Utils/apiRequest';
+import { Button, Form as EditForm, Form as AddForm, Input, Modal, Space, Table, Transfer, Form } from 'antd';
 
 
-const PersonalSetting = styled.div`
-  height: 100vh;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
+const UserGroupContainer = styled.div`
+    margin-left: 16%;
+    margin-top: 0%;
+    padding-top: 50px;
+    padding-left: 20px;
+    margin-right: 20px;
 `;
 
-const PageWrapper = styled.div`
-  background-color: #fff;
-  height: 100vh;
-  margin-left: 50px;
-  padding: 40px 20% 0 14%;
-`;
 
-const Header = styled.header`
+const StyledEditFormItem = styled(EditForm.Item)`
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 20px 10px 20px 0;
-`;
-
-const Details = styled.h1`
-  margin: 0;
-`;
-
-const CardInfoBox = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  width: 60%;
-  //padding-bottom: 5px;
-`;
-
-const CardInfoBoxTitle = styled.div`
-  font-weight: bold;
-  font-size: 1.3rem;
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  margin-top: 10px;
-`;
-
-const TaskList = styled.div`
-  margin: 8px 0 15px;
-`;
-
-const ConfigureMessage = styled.p`
-  margin-top: -5px;
-  font-size: 0.9rem;
-`;
-
-const CheckboxWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
   margin-bottom: 10px;
-  margin-top: -5px;
+  justify-content: space-between;
 `;
 
-const CheckboxLabel = styled.label`
-  margin-bottom: 7px;
-`;
-
-const FormWrapper = styled.form`
+const StyledAddFormItem = styled(AddForm.Item)`
   display: flex;
-  flex-direction: column;
-  margin-top: 1rem;
+  align-items: center;
+  margin-bottom: 10px;
+  justify-content: space-between;
 `;
 
-
-const SaveButton = styled.button`
-  background-color: #0062FF;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  font-size: 0.8rem;
-  font-weight: bold;
-  padding: 0.5rem 1rem;
-  margin-top: 1rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease-in-out;
-  width: fit-content;
-  margin-bottom: 15px;
-
-  &:hover {
-    background-color: #3e81ed;
-  }
-`;
-
-const issues = [
-    {value: 'option1', label: 'Enabled'},
-    {value: 'option2', label: 'Disabled'},
-    {value: 'option3', label: 'Inherit from global settings'},
+const availablePermissions = [
+    {
+        key: 1,
+        name:"Can add log entry",
+        formatted_name: "admin | logentry | Can add log entry",
+        codename: "add_logentry",
+        content_type: 1
+    }, {
+        key: 2,
+        name: "Can change log entry",
+        formatted_name: "admin | logentry | Can change log entry",
+        codename: "change_logentry",
+        content_type: 1
+    }, {
+        key: 3,
+        name: "Can delete log entry",
+        formatted_name: "admin | logentry | Can delete log entry",
+        codename: "delete_logentry",
+        content_type: 1
+    }, {
+        key: 4,
+        name: "Can view log entry",
+        formatted_name: "admin | logentry | Can view log entry",
+        codename: "view_logentry",
+        content_type: 1
+    }, {
+        key: 9,
+        name: "Can add group",
+        formatted_name: "auth | group | Can add group",
+        codename: "add_group",
+        content_type: 3
+    }, {
+        key: 10,
+        name: "Can change group",
+        formatted_name: "auth | group | Can change group",
+        codename: "change_group",
+        content_type: 3
+}
 ];
 
-const homepage = [
-    {value: 'option1', label: 'Your work'},
-    {value: 'option2', label: 'Projects directory'},
-    {value: 'option3', label: 'Dashboards'},
-];
-
-const email = [
-    {value: 'option1', label: 'Send me email notifications'},
-    {value: 'option2', label: 'Do not send me email notifications'},
-];
-
-const notificationFormat = [
-    {value: 'option1', label: 'HTML'},
-    {value: 'option2', label: 'Text'},
-];
 
 function ManageGroups() {
 
+    const [data, setData] = useState([]);
+    const [filteredData, setFilteredData] = useState([]);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pageSize, setPageSize] = useState(10);
+    const [totalItems, setTotalItems] = useState(0);
+    const [availablePermissions, setAvailablePermissions] = useState([]);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [selectedItem, setSelectedItem] = useState(null);
+    const [targetKeys, setTargetKeys] = useState();
+    const [selectedKeys, setSelectedKeys] = useState([]);
+
+    const [editTypeForm] = EditForm.useForm();
+    const [addTypeForm] = AddForm.useForm();
+
+    let authToken = localStorage.getItem('auth_token');
+
+    const  updateTable = ( responseData ) => {
+        const updatedData = data.map(item => {
+            if (item.key === responseData.key) {
+                return {
+                    key: responseData.key,
+                    type: responseData.type,
+                }
+            }
+            return {
+                ...item,
+            };
+        });
+        setData(updatedData);
+        setFilteredData(updatedData);
+        setTotalItems((totalItems) => totalItems + 1);
+        setModalVisible(false);
+    }
+
+    const updadteUserGroup = (values) => {
+    };
+
+    const deleteIssueType = (id) => {
+        apiRequest
+            .delete(`/api/user_groups/${id}`,{ headers: { "Authorization": `Token ${authToken}` } })
+            .then(response => {
+                displaySuccessMessage('Successfully delete the requested Group!');
+            })
+            .catch(error => {
+                displayErrorMessage(`Error occurred while deleting the Group ${error}`);
+            });
+    };
+
+    const createIssueType = (values) => {
+    };
+
+    const onPermissionChange = (nextTargetKeys, direction, moveKeys) => {
+        console.log('targetKeys:', nextTargetKeys);
+        console.log('direction:', direction);
+        console.log('moveKeys:', moveKeys);
+        setTargetKeys(nextTargetKeys);
+    };
+
+    const onPermissionSelectionChange = (sourceSelectedKeys, targetSelectedKeys) => {
+        console.log('sourceSelectedKeys:', sourceSelectedKeys);
+        console.log('targetSelectedKeys:', targetSelectedKeys);
+        setSelectedKeys([...sourceSelectedKeys, ...targetSelectedKeys]);
+    };
+
+    const fetchData = async () => {
+        try {
+            const [groupsResponse, permissionsResponse] = await Promise.all([
+                apiRequest.get(`/api/user_groups/`, { headers: { "Authorization": `Token ${authToken}` } }),
+                apiRequest.get(`/api/user_permissions/`, { headers: { "Authorization": `Token ${authToken}` } })
+            ]);
+
+            const groupsData = groupsResponse.data.map(item => ({
+                id: item.id,
+                name: item.name,
+                permissions: item.permissions
+            }));
+
+            const permissionsData = permissionsResponse.data.map(item => ({
+                key: item.id,
+                formatted_name: item.formatted_name
+            }));
+
+            console.log('Groups Data:', groupsData);
+            console.log('Permissions Data:', permissionsData);
+
+            setData(groupsData);
+            setFilteredData(groupsData);
+            setTotalItems(groupsData.length);
+            setAvailablePermissions(permissionsData);
+        } catch (error) {
+            displayErrorMessage(`Error occurred while fetching data: ${error}`);
+        }
+    };
+
+    useEffect(() => {
+        fetchData();
+    }, [authToken]);
+
+    const handleDeleteLink = (record) => {
+        Modal.confirm({
+            title: 'Confirm',
+            content: `Are you sure you want to delete this Group: ${record.name}  ?`,
+            onOk() {
+                deleteIssueType(record.id);
+                const updatedData = data.filter((item) => item.id !== record.id);
+                setData(updatedData);
+                setFilteredData(updatedData);
+                setTotalItems(updatedData.length);
+            },
+        });
+    };
+
+    const handleEditLink = ( record ) => {
+        setSelectedItem(record);
+        editTypeForm.setFieldsValue(record);
+        setModalVisible( true );
+    };
+
+    const handleAddLink = () => {
+        setSelectedItem(null);
+        setModalVisible(true);
+    };
+
+    const handleEditModal = (values) => {
+        updadteUserGroup(values)
+    }
+
+    const handleAddModal = (values) => {
+        console.log('Values on submission of form', values);
+        setModalVisible(false);
+        createIssueType(values)
+    }
+
+    const handleSearch = (e) => {
+        const query = e.target.value;
+        setSearchQuery(query);
+
+        const filtered = data.filter(
+            item => item.formatted_name.toLowerCase().includes(query.toLowerCase())
+        );
+        setFilteredData(filtered);
+        setTotalItems(filtered.length);
+        setCurrentPage(1);
+    };
+
+    const handlePageChange = page => {
+        setCurrentPage(page);
+    };
+    const handlePageSizeChange = (current, size) => {
+        setPageSize(size);
+        setCurrentPage(1);
+    };
+
+    const columns = [
+        { title: 'ID', dataIndex: 'id' },
+        { title: 'Group', dataIndex: 'name' },
+        {
+            title: 'Actions',
+                render: (_, record) => (
+                <Space>
+                    <Button type="link" onClick={() => handleEditLink(record)}>
+                        <AiOutlineEdit /> Edit
+                    </Button>
+                    <Button type="link" onClick={() => handleDeleteLink(record)}>
+                        <AiOutlineDelete /> Delete
+                    </Button>
+                </Space>
+                ),
+            },
+    ];
+
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    const paginatedData = filteredData.slice(startIndex, endIndex);
+
     return (
-        <PersonalSetting>
+        <div>
+            <UserSidebar />
             <NavBar/>
-            <UserSidebar/>
-            <PageWrapper>
-                <Header>
-                    <Details>Personal Settings</Details>
-                </Header>
-                <FormWrapper>
-                <CardInfoBox>
-                    <CardInfoBoxTitle>
-                        Your time zone
-                    </CardInfoBoxTitle>
-                    <TaskList>
-                        <GenericSelectField
-                            options={issues}
-                            isMultiple={false}
-                            defaultValue={"Asia/Karachi"}
-                            isDisabled={true}/>
-                    </TaskList>
-                </CardInfoBox>
-                <ConfigureMessage>Configure your timezone settings in your <Link to="/profile">profile settings
-                    page</Link></ConfigureMessage>
-
-                <CardInfoBox>
-                    <CardInfoBoxTitle>
-                        Language
-                    </CardInfoBoxTitle>
-                    <TaskList>
-                        <GenericSelectField
-                            options={issues}
-                            isMultiple={false}
-                            defaultValue={"English (United Kingdom)"}
-                            isDisabled={true}/>
-                    </TaskList>
-                </CardInfoBox>
-                <ConfigureMessage>Configure your language settings in your <Link to="/profile">profile settings
-                    page</Link></ConfigureMessage>
-
-
-                <CardInfoBox>
-                    <CardInfoBoxTitle>
-                        Watch your issues
-                    </CardInfoBoxTitle>
-                    <TaskList>
-                        <GenericSelectField
-                            options={issues}
-                            isMultiple={false}
-                            defaultValue={"Inherit from global settings"}/>
-                    </TaskList>
-                </CardInfoBox>
-                <ConfigureMessage>If you select enabled, you will automatically 'watch' the issues you interact
-                    with.</ConfigureMessage>
-
-                <CardInfoBox>
-                    <CardInfoBoxTitle>
-                        Your Jira homepage
-                    </CardInfoBoxTitle>
-                    <TaskList>
-                        <GenericSelectField
-                            options={homepage}
-                            isMultiple={false}
-                            defaultValue={"Your work"}/>
-                    </TaskList>
-                </CardInfoBox>
-                <ConfigureMessage>You'll see this page when you log in or select the Jira logo.</ConfigureMessage>
-
-                <CardInfoBox>
-                    <CardInfoBoxTitle>
-                        Email notification for issue activity
-                    </CardInfoBoxTitle>
-                    <TaskList>
-                        <GenericSelectField
-                            options={email}
-                            isMultiple={false}
-                            placeholder={"Unassigned"}
-                            defaultValue={"Send me email notifications"}/>
-                    </TaskList>
-                    <ConfigureMessage>Get email updates for issue activity when:</ConfigureMessage>
-                    <CheckboxWrapper>
-                        <CheckboxLabel htmlFor="watching">
-                            <input type="checkbox" defaultChecked={true} id="watching"/>
-                            You're <strong>watching</strong> the issue
-                        </CheckboxLabel>
-
-                        <CheckboxLabel htmlFor="reporter">
-                            <input type="checkbox" defaultChecked={true} id="reporter"/>
-                            You're the <strong>reporter</strong>
-                        </CheckboxLabel>
-
-                        <CheckboxLabel htmlFor="assignee">
-                            <input type="checkbox" defaultChecked={true} id="assignee"/>
-                            You're the <strong>assignee</strong> for the issue
-                        </CheckboxLabel>
-
-                        <CheckboxLabel htmlFor="mention">
-                            <input type="checkbox" defaultChecked={true} id="mention"/>
-                            Someone <strong>mentions</strong> you
-                        </CheckboxLabel>
-
-                        <CheckboxLabel htmlFor="changes">
-                            <input type="checkbox" id="changes"/>
-                            You <strong>make changes</strong> to the issue
-                        </CheckboxLabel>
-                    </CheckboxWrapper>
-                    <ConfigureMessage>You may also receive other email notifications like those configured by your Jira
-                        admin and updates for filter subscriptions.</ConfigureMessage>
-                    <ConfigureMessage><Link to="/profile">Learn more about email notifications</Link></ConfigureMessage>
-                </CardInfoBox>
-
-                <CardInfoBox>
-                    <CardInfoBoxTitle>
-                        Email notifications format
-                    </CardInfoBoxTitle>
-                    <TaskList>
-                        <GenericSelectField
-                            options={notificationFormat}
-                            isMultiple={false}
-                            defaultValue={"HTML"}/>
-                    </TaskList>
-                </CardInfoBox>
-                <SaveButton>Save Changes</SaveButton>
-            </FormWrapper>
-
-            </PageWrapper>
-        </PersonalSetting>
+            <Toast />
+            <UserGroupContainer>
+                <h2>User Groups</h2>
+                <Input.Search placeholder="Search by group name" value={searchQuery} onChange={handleSearch} style={{ marginBottom: 16 }} />
+                <div style={{ marginBottom: 16 }}>
+                    <Button type="primary" onClick={handleAddLink}>
+                        <AiOutlinePlus /> Add
+                    </Button>
+                </div>
+                <Table
+                    dataSource={paginatedData}
+                    columns={columns}
+                    rowKey="key"
+                    pagination={{
+                        current: currentPage,
+                        pageSize: pageSize,
+                        total: totalItems,
+                        onChange: handlePageChange,
+                        showSizeChanger: true,
+                        onShowSizeChange: handlePageSizeChange
+                    }}
+                />
+                <Modal
+                    title={selectedItem ? 'Edit Item' : 'Add Item'}
+                    open={modalVisible}
+                    onCancel={() => setModalVisible(false)}
+                    footer={[
+                        <Button key="submit" type="primary" onClick={() => {selectedItem ? editTypeForm.submit() : addTypeForm.submit()}}>
+                            { selectedItem ? 'Edit Item' : 'Add Item'}
+                        </Button>,
+                    ]}
+                    width={800}
+                >
+                    {selectedItem ? (
+                        <>
+                            <EditForm form={editTypeForm} onFinish={handleEditModal}>
+                                <StyledEditFormItem label="Type" name="type" rules={[{ required:true}]}>
+                                    <Input />
+                                </StyledEditFormItem>
+                            </EditForm>
+                        </>
+                    ) : (
+                        <>
+                            <AddForm form={addTypeForm} onFinish={handleAddModal} >
+                                <StyledAddFormItem label="Group" name="name" value={null} rules={[{ required: true, message: 'Please enter Group name' }]}>
+                                    <Input placeholder="Enter Group name" />
+                                </StyledAddFormItem>
+                                <StyledEditFormItem label="Permissions" name="targetKeys" >
+                                    <Transfer
+                                        dataSource={availablePermissions}
+                                        titles={['Available Permissions', 'Selected Permissions']}
+                                        targetKeys={targetKeys}
+                                        selectedKeys={selectedKeys}
+                                        onChange={onPermissionChange}
+                                        onSelectChange={onPermissionSelectionChange}
+                                        render={(item) => item.formatted_name}
+                                        listStyle={{ height: 300, width: 300 }}
+                                        showSearch
+                                    />
+                                </StyledEditFormItem>
+                            </AddForm>
+                        </>
+                    )}
+                </Modal>
+            </UserGroupContainer>
+        </div>
     );
 }
-
-
 export default ManageGroups;
