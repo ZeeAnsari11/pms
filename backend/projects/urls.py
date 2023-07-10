@@ -1,6 +1,7 @@
 from rest_framework_nested import routers
 from . import views
 from core.views import UserProfileViewSet
+from core.views import UserGroupPermissionViewSet
 from register.views import CompanyViewSet
 from django.urls import path
 
@@ -20,8 +21,9 @@ router.register('project_slack_webhook', views.ProjectSlackWebhookViewSet, basen
 router.register('project_smtp_webhook', views.ProjectSMTPWebhookViewSet, basename='project_smtp_webhook')
 
 router.register('users_list', views.UserViewSet, basename='users')
-router.register('user_groups', views.GroupPermissionsViewSet, basename='user_groups')
 router.register('userprofile', UserProfileViewSet, basename='userprofile')
+router.register('user_groups', views.GroupPermissionsViewSet, basename='user_groups')
+router.register('user_permissions', UserGroupPermissionViewSet, basename='user_permissions')
 
 router.register('companies', CompanyViewSet, basename='companies')
 
