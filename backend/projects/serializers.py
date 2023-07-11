@@ -41,7 +41,6 @@ class DetailedGroupPermissionsSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'permissions']
 
 
-
 class ProjectPermissionsSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Project
@@ -133,7 +132,7 @@ class CreateProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Project
         fields = ["id", 'icon', 'name', 'slug', 'key', 'assignees', 'project_lead', 'description', 'company',
-                'category']
+                  'category']
 
 
 def save_file_to_storage(file):
@@ -239,7 +238,7 @@ class CreateWorkLogSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.WorkLog
-        fields = ['time_spent', 'comment', 'issue_id']
+        fields = ['time_spent', 'comment', 'issue_id', 'date', 'time']
 
 
 class WorkLogSerializer(serializers.ModelSerializer):

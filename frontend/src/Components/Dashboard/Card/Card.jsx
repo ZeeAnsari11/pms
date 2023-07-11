@@ -90,7 +90,7 @@ function Card(props) {
         const {Card} = props;
         const {slug: issueSlug} = Card;
         const currentURL = window.location.pathname;
-        const newURL = `${currentURL}?selectedIssue=${issueSlug}/`;
+        const newURL = `${currentURL}?selectedIssue=${issueSlug}`;
         navigate(newURL);
     };
 
