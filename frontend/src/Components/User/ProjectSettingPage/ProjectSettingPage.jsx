@@ -1,13 +1,11 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate, useParams } from "react-router-dom";
 import NavBar from "../../Dashboard/Navbar";
 import ProjectSidebar from "../../Dashboard/Sidebar/ProjectSidebar";
 import UserSelectField from "../../Dashboard/SelectFields/UserSelectField";
 import apiRequest from '../../../Utils/apiRequest';
-
 import ImageUploader from "../ImageUploader";
-import axios from "axios";
 import {Input} from 'antd';
 
 const PageWrapper = styled.div`

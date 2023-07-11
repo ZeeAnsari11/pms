@@ -1,10 +1,11 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import NavBar from "../../Dashboard/Navbar";
 import ProfilePhotouploader from "../Manage/ProfilePhotouploader";
 import GenericSelectField from "../../Dashboard/SelectFields/GenericSelectField";
 import UserSidebar from "../../Dashboard/Sidebar/UserSidebar";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-
+import Toast from "../../../Shared/Components/Toast"
+import { displayErrorMessage, displaySuccessMessage } from "../../../Shared/notify"
 import {faImage} from '@fortawesome/free-solid-svg-icons';
 import { Link, useNavigate } from "react-router-dom";
 import styled from 'styled-components';
@@ -319,38 +320,31 @@ const ProfileVisibility = () => {
 
 
     let IconPath = userData?.image
-    console.log("Icon Path:", IconPath)
 
     const titleMessageWhenDisable = "This field is disabled. Enabled for Admin User Only";
 
-    const fetchUserData = async () => {
+    const fetchData = async () => {
         try {
-            const response = await apiRequest
-                .get(`/api/userprofile/`, {
-                    headers: {"Authorization": `Token ${authToken}`}
-                } );
-            setUserData(response.data[0]);
-            setUserId(response.data[0].id)
-        } catch (error) {
-            console.error(error);
-        }
-    }
 
-    const fetchCompaniesList = async () => {
-        const response = await apiRequest
-            .get(`/api/companies`, {
-                headers: {
-                    Authorization: `Token ${authToken}`
-                },
-            } );
-        console.log('Companies list', response.data);
-        setCompanies(response.data);
+            const [userDataResponse, companiesListResponse] = await Promise.all([
+                apiRequest.get(`/api/userprofile/`, {
+                    headers: { Authorization: `Token ${authToken}` }
+                }),
+                apiRequest.get(`/api/companies`, {
+                    headers: { Authorization: `Token ${authToken}` }
+                })
+            ]);
+            setUserData(userDataResponse.data[0]);
+            setUserId(userDataResponse.data[0].id);
+            setCompanies(companiesListResponse.data);
+        } catch (error) {
+            displayErrorMessage(error);
+        }
     };
 
 
     useEffect(() => {
-        fetchUserData();
-        fetchCompaniesList();
+        fetchData();
     }, []);
 
     useEffect(() => {
@@ -369,11 +363,6 @@ const ProfileVisibility = () => {
             setEmailNotificationFormat(userData?.email_format)
         }
     }, [userData]);
-
-    console.log('User Image:', userImage)
-    console.log('Reporter Data:', IsreporterData)
-    console.log('Assignee Data:', IsassigneeData)
-
 
     const handleUserNameChange = (event) => {
         setUserName(event.target.value);
@@ -414,8 +403,7 @@ const ProfileVisibility = () => {
         setEmailNotificationFormat(value);
     };
 
-    const companiesOptions = companies
-    ? companies.map((company) => ({
+    const companiesOptions = companies ? companies.map((company) => ({
         label: company.company_name,
         value: company.id,
     }))
@@ -426,7 +414,6 @@ const ProfileVisibility = () => {
         setIsImageChanged(true);
     }
 
-    console.log("User Image:", userImage)
 
     function handleSubmit(event) {
         event.preventDefault();
@@ -446,8 +433,6 @@ const ProfileVisibility = () => {
             manageAccountData.company = userOrganization
         }
 
-        console.log("ManageAccountData:", manageAccountData)
-
         apiRequest
             .patch(`/api/userprofile/${userId}/`,
                 manageAccountData,
@@ -458,23 +443,19 @@ const ProfileVisibility = () => {
                     }
                 } )
             .then(response => {
-                // Handle the response
-                console.log(response.data);
+                displaySuccessMessage(`Successfully update the user profile!`);
                 navigate('/manage-account');
             })
             .catch(error => {
-            // Handle the error
-            console.log(error)
+            displayErrorMessage(error);
             });
     }
 
-    console.log("Logged in user", userData)
-
-    console.log('userId:', userId)
     return (
         <div>
             <NavBar/>
             <UserSidebar/>
+            <Toast />
             <Wrapper>
                 <FormWrapper onSubmit={handleSubmit} encType="multipart/form-data" method="POST">
 
@@ -484,13 +465,11 @@ const ProfileVisibility = () => {
                                 <ProfilePhotouploader onImageChange={handleImageChange} id="image" imagePath={IconPath}/>
                                 <UpdateProfile className="update-cover">
                                     <FontAwesomeIcon icon={faImage} fontSize={"30px"} onClick={() => {
-                                        console.log("Clicked")
                                     }}/>
                                 </UpdateProfile>
                             </CircleImage>
                             <UpdateCover className="update-cover">
                                 <FontAwesomeIcon icon={faImage} fontSize={"35px"} onClick={() => {
-                                    console.log("Clicked")
                                 }}/>
                                 Update your cover photo
                             </UpdateCover>

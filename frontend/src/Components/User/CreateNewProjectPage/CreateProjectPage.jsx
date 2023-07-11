@@ -1,7 +1,8 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, {useEffect, useState } from 'react';
 import styled from 'styled-components';
 import apiRequest from '../../../Utils/apiRequest';
-
+import Toast from "../../../Shared/Components/Toast"
+import { displayErrorMessage, displaySuccessMessage } from "../../../Shared/notify"
 import {v4 as uuidv4} from 'uuid';
 import { useNavigate } from "react-router-dom";
 import ReactQuill from 'react-quill';
@@ -279,10 +280,6 @@ function CreateProject() {
         formData.append("description", text);
         formData.append("company", selectedCompany);
         formData.append("category", selectedCategory);
-        console.log(selectedCompany, selectedCategory)
-        console.log("------selectedProjectAssignees-----", selectedProjectAssignees)
-        console.log("--------projectdata-------", formData)
-
         apiRequest
             .post(`/api/projects/`, formData, {
                 headers: {
@@ -291,18 +288,18 @@ function CreateProject() {
             } )
             .then(response => {
                 // handle the response
-                console.log(response.data);
+                displaySuccessMessage(`Successfully create new project!`);
                 navigate('/project');
             })
             .catch(error => {
-                // @todo handle the error here
-                console.log(error);
+                displayErrorMessage(error);
             });
     }
 
     return (
         <div>
             <NavBar/>
+            <Toast />
             <PageWrapper>
                 <Header>
                     <Details>Details</Details>
