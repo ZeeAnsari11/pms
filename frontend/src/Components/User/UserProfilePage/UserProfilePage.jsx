@@ -1,12 +1,13 @@
 import React, {useEffect, useState} from 'react';
 import styled from 'styled-components';
 import {faBriefcase, faCalendar, faEdit, faSitemap} from '@fortawesome/free-solid-svg-icons';
+import { displayErrorMessage } from "../../../Shared/notify"
+import Toast from "../../../Shared/Components/Toast"
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import Editable from "../Editable/Editable";
 import NavBar from "../../Dashboard/Navbar";
-import {DatePicker} from 'antd'
 import axios from "axios";
-import {User} from "react-feather";
+
 
 
 const ProfileWrapper = styled.div`
@@ -138,11 +139,8 @@ const HorizontalLine = styled.div`
 `;
 
 const UserProfilePage = () => {
-    const [startDate, setStartDate] = useState(null);
     const [userData, setUserData] = useState({});
-    const [LoggedInUser, setLoggedInUser] = useState(null);
 
-    const [Users, setUsers] = useState('');
     let authToken = localStorage.getItem('auth_token')
 
     useEffect(() => {
@@ -154,18 +152,16 @@ const UserProfilePage = () => {
                 setUserData(response.data);
 
             } catch (error) {
-                console.error(error);
+                displayErrorMessage(error);
             }
         }
         fetchUserData();
     }, []);
 
-    console.log("userData", userData)
-
-
     return (
         <div>
             <NavBar/>
+            <Toast />
             <ProfileWrapper>
                 <ProfileHeader>
                     <ProfileImage src={`${userData?.image}`} alt="Profile Picture"/>

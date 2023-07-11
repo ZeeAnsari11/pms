@@ -151,7 +151,6 @@ function Types() {
     };
 
     const handleEditLink = ( record ) => {
-        console.log( 'Needs to edit value', record );
         setSelectedItem(record);
         editTypeForm.setFieldsValue(record);
         setModalVisible( true );

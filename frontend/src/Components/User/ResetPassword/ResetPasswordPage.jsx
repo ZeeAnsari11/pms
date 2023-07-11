@@ -1,8 +1,9 @@
 import React, {useState, useEffect} from 'react';
 import {useNavigate, useLocation} from 'react-router-dom';
+import { displayErrorMessage } from "../../../Shared/notify"
+import Toast from "../../../Shared/Components/Toast"
 import styled from 'styled-components';
 import axios from 'axios';
-import {ToastContainer, toast} from 'react-toastify';
 
 const ForgotPasswordContainer = styled.div`
   position: absolute;
@@ -74,14 +75,6 @@ const Button = styled.button`
   }
 `;
 
-const WarningDiv = styled.div`
-  background-color: #fff6f6;
-  border: 1px solid #e0b4b4;
-  color: #9f3a38;
-  margin-top: 10px;
-  padding: 5px;
-`;
-
 const ResetPasswordPage = () => {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -125,38 +118,21 @@ const ResetPasswordPage = () => {
                     if (response.status === 204) {
                         navigate('/');
                     } else {
-                        console.error('Error sending password reset email');
+                        displayErrorMessage(`Error sending password reset email`);
                     }
                 })
                 .catch(error => {
-                    toast.error('🦄 Please click on the password reset link and try again', {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        theme: "colored",
-                    });
+                    displayErrorMessage(`Please click on the password reset link and try again`);
                 });
         } else {
-            toast.error('🦄 Passwords do not match', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "colored",
-            });
+            displayErrorMessage(`Passwords do not match`)
         }
     };
 
 
     return (
         <>
+            <Toast />
             <ForgotPasswordContainer>
                 <form onSubmit={handleSubmit}>
                     <ForgotPasswordHeadline>---- Reset Password! ----</ForgotPasswordHeadline>
@@ -180,18 +156,6 @@ const ResetPasswordPage = () => {
                     <Button type="submit">Reset Password</Button>
                 </form>
             </ForgotPasswordContainer>
-            <ToastContainer
-                position="top-right"
-                autoClose={5000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                theme="colored"
-            />
         </>
     );
 };
