@@ -33,46 +33,6 @@ const StyledAddFormItem = styled(AddForm.Item)`
   justify-content: space-between;
 `;
 
-const availablePermissions = [
-    {
-        key: 1,
-        name:"Can add log entry",
-        formatted_name: "admin | logentry | Can add log entry",
-        codename: "add_logentry",
-        content_type: 1
-    }, {
-        key: 2,
-        name: "Can change log entry",
-        formatted_name: "admin | logentry | Can change log entry",
-        codename: "change_logentry",
-        content_type: 1
-    }, {
-        key: 3,
-        name: "Can delete log entry",
-        formatted_name: "admin | logentry | Can delete log entry",
-        codename: "delete_logentry",
-        content_type: 1
-    }, {
-        key: 4,
-        name: "Can view log entry",
-        formatted_name: "admin | logentry | Can view log entry",
-        codename: "view_logentry",
-        content_type: 1
-    }, {
-        key: 9,
-        name: "Can add group",
-        formatted_name: "auth | group | Can add group",
-        codename: "add_group",
-        content_type: 3
-    }, {
-        key: 10,
-        name: "Can change group",
-        formatted_name: "auth | group | Can change group",
-        codename: "change_group",
-        content_type: 3
-}
-];
-
 
 function ManageGroups() {
 
@@ -95,10 +55,11 @@ function ManageGroups() {
 
     const  updateTable = ( responseData ) => {
         const updatedData = data.map(item => {
-            if (item.key === responseData.key) {
+            if (item.id === responseData.id) {
                 return {
-                    key: responseData.key,
-                    type: responseData.type,
+                    id: responseData.id,
+                    name: responseData.name,
+                    permissions : responseData.permissions
                 }
             }
             return {
@@ -111,33 +72,58 @@ function ManageGroups() {
         setModalVisible(false);
     }
 
-    const updadteUserGroup = (values) => {
+    const updateUserGroup = (values) => {
+        apiRequest
+            .patch(`/api/user_groups/${selectedItem.id}/`,
+                {"name": values.name, "permissions": values.targetKeys  },
+                { headers: { "Authorization": `Token ${authToken}` }
+            })
+            .then(response => {
+                updateTable(response.data)
+                displaySuccessMessage('Successfully update the requested Type!');
+            })
+            .catch(error => {
+                displayErrorMessage(`Error occurred while updating the type ${error}`);
+            });
     };
 
     const deleteIssueType = (id) => {
         apiRequest
             .delete(`/api/user_groups/${id}`,{ headers: { "Authorization": `Token ${authToken}` } })
             .then(response => {
-                displaySuccessMessage('Successfully delete the requested Group!');
+                displaySuccessMessage('Successfully delete the requested User Group!');
             })
             .catch(error => {
-                displayErrorMessage(`Error occurred while deleting the Group ${error}`);
+                displayErrorMessage(`Error occurred while deleting the User Group ${error}`);
             });
     };
 
-    const createIssueType = (values) => {
+    const createUserGroup = (values) => {
+        apiRequest
+            .post(`/api/user_groups/`,
+                {
+                    name: values.name,
+                    permissions: values.targetKeys,
+                }, {
+                headers: { "Authorization": `Token ${authToken}` } })
+            .then(response => {
+                displaySuccessMessage('Successfully create the requested User Group!');
+                const result = { "id": response.data.id, "name": response.data.name, "permissions": response.data.permissions};
+                setData((data) => [...data, result]);
+                setFilteredData((filteredData) => [...filteredData, result]);
+                setTotalItems((totalItems) => totalItems + 1);
+                setModalVisible(false);
+            })
+            .catch(error => {
+                displayErrorMessage(`Error occurred while creating new User Group ${error}`);
+            });
     };
 
-    const onPermissionChange = (nextTargetKeys, direction, moveKeys) => {
-        console.log('targetKeys:', nextTargetKeys);
-        console.log('direction:', direction);
-        console.log('moveKeys:', moveKeys);
+    const onPermissionChange = (nextTargetKeys) => {
         setTargetKeys(nextTargetKeys);
     };
 
     const onPermissionSelectionChange = (sourceSelectedKeys, targetSelectedKeys) => {
-        console.log('sourceSelectedKeys:', sourceSelectedKeys);
-        console.log('targetSelectedKeys:', targetSelectedKeys);
         setSelectedKeys([...sourceSelectedKeys, ...targetSelectedKeys]);
     };
 
@@ -159,9 +145,6 @@ function ManageGroups() {
                 formatted_name: item.formatted_name
             }));
 
-            console.log('Groups Data:', groupsData);
-            console.log('Permissions Data:', permissionsData);
-
             setData(groupsData);
             setFilteredData(groupsData);
             setTotalItems(groupsData.length);
@@ -178,7 +161,7 @@ function ManageGroups() {
     const handleDeleteLink = (record) => {
         Modal.confirm({
             title: 'Confirm',
-            content: `Are you sure you want to delete this Group: ${record.name}  ?`,
+            content: `Are you sure you want to delete this User Group: ${record.name}  ?`,
             onOk() {
                 deleteIssueType(record.id);
                 const updatedData = data.filter((item) => item.id !== record.id);
@@ -190,24 +173,27 @@ function ManageGroups() {
     };
 
     const handleEditLink = ( record ) => {
+        editTypeForm.setFieldValue('name', record.name);
+        if (record.permissions && record.permissions.length > 0) {
+            setTargetKeys(record.permissions.map(permission => permission.id));
+        }
         setSelectedItem(record);
-        editTypeForm.setFieldsValue(record);
         setModalVisible( true );
     };
 
     const handleAddLink = () => {
+        addTypeForm.resetFields();
+        setTargetKeys([]);
         setSelectedItem(null);
         setModalVisible(true);
     };
 
     const handleEditModal = (values) => {
-        updadteUserGroup(values)
+        updateUserGroup(values)
     }
 
     const handleAddModal = (values) => {
-        console.log('Values on submission of form', values);
-        setModalVisible(false);
-        createIssueType(values)
+        createUserGroup(values)
     }
 
     const handleSearch = (e) => {
@@ -292,15 +278,28 @@ function ManageGroups() {
                     {selectedItem ? (
                         <>
                             <EditForm form={editTypeForm} onFinish={handleEditModal}>
-                                <StyledEditFormItem label="Type" name="type" rules={[{ required:true}]}>
-                                    <Input />
+                                <StyledAddFormItem label="Group" name="name" rules={[{ required: true, message: 'Please enter Group name' }]}>
+                                    <Input placeholder="Enter Group name" />
+                                </StyledAddFormItem>
+                                <StyledEditFormItem label="Permissions" name="targetKeys" >
+                                    <Transfer
+                                        dataSource={availablePermissions}
+                                        titles={['Available Permissions', 'Selected Permissions']}
+                                        targetKeys={targetKeys}
+                                        selectedKeys={selectedKeys}
+                                        onChange={onPermissionChange}
+                                        onSelectChange={onPermissionSelectionChange}
+                                        render={(item) => item.formatted_name}
+                                        listStyle={{ height: 300, width: 300 }}
+                                        showSearch
+                                    />
                                 </StyledEditFormItem>
                             </EditForm>
                         </>
                     ) : (
                         <>
                             <AddForm form={addTypeForm} onFinish={handleAddModal} >
-                                <StyledAddFormItem label="Group" name="name" value={null} rules={[{ required: true, message: 'Please enter Group name' }]}>
+                                <StyledAddFormItem label="Group" name="name" rules={[{ required: true, message: 'Please enter Group name' }]}>
                                     <Input placeholder="Enter Group name" />
                                 </StyledAddFormItem>
                                 <StyledEditFormItem label="Permissions" name="targetKeys" >
