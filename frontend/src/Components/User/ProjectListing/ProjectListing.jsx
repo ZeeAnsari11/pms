@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
 import apiRequest from '../../../Utils/apiRequest';
-
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import {Modal} from 'antd';
@@ -327,8 +326,6 @@ const ProjectListing = () => {
                                 )}
                             </Link>
                         </OptionsColumns>
-
-
                     </tr>
                 ))
             )}
