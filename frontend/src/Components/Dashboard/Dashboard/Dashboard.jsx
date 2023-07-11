@@ -1,13 +1,12 @@
 import React, {useEffect, useState} from 'react';
 import Board from '../Board/Board';
-import Editable from '../Editable/Editable';
+import Toast from "../../../Shared/Components/Toast"
+import { displayErrorMessage, displaySuccessMessage } from "../../../Shared/notify"
 import ProjectSidebar from '../Sidebar/ProjectSidebar';
 import NavBar from "../Navbar/index";
 import styled from 'styled-components';
-import {useLocation, useParams} from 'react-router-dom';
-import {BsPlusSquare} from "react-icons/bs";
+import {useParams} from 'react-router-dom';
 import axios from "axios";
-import { toast, ToastContainer } from "react-toastify";
 
 const DashboardContainer = styled.div`
   height: 100vh;
@@ -32,39 +31,18 @@ const DashboardBoards = styled.div`
   margin-top: 50px;
 `;
 
-const BoardDashboardBoards = styled.div`
-  min-width: 290px;
-  width: 290px;
-`;
-
-const BoardAdd = styled.div`
-  width: 100%;
-  background-color: #fff;
-  border-radius: 5px;
-  box-shadow: 1px 2px 0 1px rgba(0, 0, 0, 0.15);
-
-  &:hover {
-    box-shadow: 1px 2px 0 1px #ccc;
-  }
-`;
 
 
 function Dashboard(props) {
-    let authToken = localStorage.getItem('auth_token')
 
-    const [projectData, setProjectData] = useState({});
     const [issuesData, setIssuesData] = useState({});
     const [issuesStatues, setIssuesStatues] = useState({});
-    const [name, setName] = useState('');
-    const [projectCategory, setProjectCategory] = useState('');
-    const [projectIcon, setProjectIcon] = useState('');
     const [target, setTarget] = useState({ cid: "", bid: "", })
     const [boards, setboards] = useState([]);
 
     const {projectId} = useParams()
-    const location = useLocation();
-    const searchParams = new URLSearchParams(location.search);
 
+    let authToken = localStorage.getItem('auth_token')
     const deleteIssue =  (issueId) => {
         axios
             .delete(`${process.env.REACT_APP_HOST}/api/projects/${projectId}/issues/${issueId}/`, {
@@ -78,47 +56,35 @@ function Dashboard(props) {
             })
     };
 
-    useEffect(() => {
-        const fetchProjects = async () => {
-            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/projects/${projectId}`, {
+
+    const fetchData = async () => {
+        try {
+            const projectIssuesPromise = axios.get(`${process.env.REACT_APP_HOST}/api/projects/${projectId}/issues`, {
                 headers: {
                     Authorization: `Token ${authToken}`,
                 },
             });
-            setProjectData(response.data);
 
-        };
-
-        const fetchProjectIssues = async () => {
-            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/projects/${projectId}/issues`, {
-                headers: {
-                    Authorization: `Token ${authToken}`,
-                },
-            });
-            setIssuesData(response.data);
-        };
-
-        const fetchProjectIssuesStatuses = async () => {
-            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/project_status`, {
+            const projectIssuesStatusesPromise = axios.get(`${process.env.REACT_APP_HOST}/api/project_status`, {
                 params: { project: projectId },
-                headers: { Authorization: `Token ${authToken}`},
+                headers: { Authorization: `Token ${authToken}` },
             });
-            setIssuesStatues(response.data);
-        };
 
-        fetchProjects();
-        fetchProjectIssues();
-        fetchProjectIssuesStatuses()
-    }, []);
+            const [projectIssuesResponse, projectIssuesStatusesResponse] = await Promise.all([
+                projectIssuesPromise,
+                projectIssuesStatusesPromise,
+            ]);
 
+            setIssuesData(projectIssuesResponse.data);
+            setIssuesStatues(projectIssuesStatusesResponse.data);
+        } catch (error) {
+            displayErrorMessage(error);
+        }
+    };
 
     useEffect(() => {
-        if (projectData.name) {
-            setName(projectData.name);
-            setProjectIcon(projectData.icon);
-            setProjectCategory(projectData.category)
-        }
-    }, [projectData]);
+        fetchData();
+    }, []);
 
     useEffect(() => {
         const issuesValueMapper = (issue) => {
@@ -152,7 +118,6 @@ function Dashboard(props) {
 
         const prepareIssuesData = (issues) => {
             if (!issues || typeof issues !== 'object' || (!Symbol.iterator) in Object(issues)) {
-                console.error('Issues is not iterable.');
                 return {};
             }
             const statusMap = {};
@@ -173,9 +138,11 @@ function Dashboard(props) {
             return {
                 id: Date.now() + Math.random() * 2,
                 title: status.status,
+                priority: status.priority,
                 cards: cardsData.hasOwnProperty(status.status) ? cardsData[status.status] : []
             };
         })
+            .sort((a, b) => a.priority - b.priority);
 
         if(cardsData.hasOwnProperty('Unknown Status')) {
             newBoardData.push({
@@ -189,31 +156,6 @@ function Dashboard(props) {
         }
     }, [issuesData, issuesStatues]);
 
-    const displayErrorMessage = (message) => {
-        toast.error(message, {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-        });
-    }
-
-    const displaySuccessMessage = (message) => {
-        toast.success(message, {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-        });
-    }
     const addCard = (title, bid) => {
         const card = {
             id: Date.now() + Math.random(),
@@ -298,18 +240,11 @@ function Dashboard(props) {
         setboards(tempBoards);
     }
 
-    let IconPath = projectData.icon
-    if (IconPath != null) {
-        IconPath = `${process.env.REACT_APP_HOST}/${projectIcon}`
-    } else {
-        IconPath = 'http://localhost:3000/Images/NoImage.jpeg'
-    }
-
-
     return (
         <DashboardContainer>
             <ProjectSidebar/>
             <NavBar/>
+            <Toast />
             <DashboardOuter>
                 <DashboardBoards>
                     {
@@ -325,18 +260,6 @@ function Dashboard(props) {
                         ))
                     }
                 </DashboardBoards>
-                <ToastContainer
-                    position="top-right"
-                    autoClose={2000}
-                    hideProgressBar={false}
-                    newestOnTop={false}
-                    closeOnClick
-                    rtl={false}
-                    pauseOnFocusLoss
-                    draggable
-                    pauseOnHover
-                    theme="colored"
-                />
             </DashboardOuter>
         </DashboardContainer>
     );
