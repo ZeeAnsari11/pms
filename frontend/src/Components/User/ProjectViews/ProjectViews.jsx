@@ -139,7 +139,7 @@ const ProjectsPage = () => {
                     <SearchInputContainer>
                         <SearchIcon/>
                         <SearchInput type="text" placeholder="Search Projects" value={searchValue}
-                                     onChange={handleSearchChange}/>
+                                        onChange={handleSearchChange}/>
                     </SearchInputContainer>
                 </SearchContainer>
                 <ProjectListing/>
