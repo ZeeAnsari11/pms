@@ -113,7 +113,6 @@ const ManageUsers = ( ) => {
 
     const updateUser = (values) => {
         if(modalData.id){
-            console.log('updated data', values);
             apiRequest
             .patch(`/api/users_list/${modalData.id}/`,
                 {
