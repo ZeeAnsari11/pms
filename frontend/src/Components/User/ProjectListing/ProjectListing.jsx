@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import apiRequest from '../../../Utils/apiRequest';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
+import {Link} from 'react-router-dom';
 import {Modal} from 'antd';
 import {GrAlert} from 'react-icons/gr';
 import {CiSettings} from 'react-icons/ci'
@@ -138,7 +138,6 @@ const NameColumn = styled.td`
 `;
 
 
-
 const ProjectAvatar = styled.img`
   width: 24px;
   height: 24px;
@@ -228,7 +227,9 @@ const ProjectListing = () => {
     const [visible, setVisible] = useState(false);
     const [projects, setProjects] = useState([]);
 
-    let authToken = localStorage.getItem('auth_token');
+    // const { authToken } = useContext(AuthContext);
+
+    let authToken = localStorage.getItem('auth_token')
 
     useEffect(() => {
         const fetchProjects = async () => {
@@ -237,8 +238,8 @@ const ProjectListing = () => {
                     headers: {
                         Authorization: `Token ${authToken}`,
                     },
-                } );
-                setProjects(response.data);
+                });
+            setProjects(response.data);
         };
         fetchProjects()
     }, []);
@@ -252,7 +253,6 @@ const ProjectListing = () => {
     const handleCancel = () => {
         setVisible(false);
     };
-
 
 
     const userIcon = <GrAlert/>;

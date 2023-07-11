@@ -105,7 +105,7 @@ class ProjectViewSet(ModelViewSet):
 
     def get_permissions(self):
         if self.request.method in ['POST', 'PATCH', 'DELETE']:
-            return [IsAdminOrReadOnly()]
+            return [IsAuthenticated()]
         return [IsAuthenticated()]
 
     def get_serializer_context(self):
@@ -213,7 +213,7 @@ class WorklogViewSet(ModelViewSet):
     filterset_fields = "__all__"
 
     def get_serializer_class(self):
-        if self.request.method == 'POST':
+        if self.request.method in ['POST', 'PATCH', 'PUT']:
             return serializers.CreateWorkLogSerializer
         return serializers.WorkLogSerializer
 
