@@ -1,4 +1,5 @@
 import React, {useEffect, useRef, useState} from "react";
+import {NavLink, useParams} from 'react-router-dom';
 import Modal from "../Modal/Modal";
 import FileUpload from "../FileAttachement/FileUpload";
 import {
@@ -57,6 +58,16 @@ const TaskList = styled.div`
   margin: 8px 0 25px;
 `;
 
+
+const StyledSlug = styled.div`
+  color: #0847A6;
+  text-decoration: none;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+`;
 
 const ModalTitle = styled.div`
   width: fit-content;
@@ -127,30 +138,38 @@ function CardInfo(props) {
         const newWorklogs = [...worklogs];
         newWorklogs.splice(index, 1);
         setWorklogs(newWorklogs);
+        getWorklogs();
     };
 
     const handleWorklogEdit = (index) => {
+        setWorklogs([...worklogs])
+        getWorklogs();
     };
-
 
     //Comments
     const [comments, setComments] = useState([]);
     const [newComment, setNewComment] = useState('');
     const [selectedComment, setSelectedComment] = useState(null);
     const [showComments, setShowComments] = useState(true);
-    const [worklogs, setWorklogs] = useState(initialworklogs);
+    const [worklogs, setWorklogs] = useState([]);
     const [showWorklog, setShowWorklog] = useState(false);
     const [selectedWorklog, setSelectedWorklog] = useState(null);
+
     const [IssuesData, setIssuesData] = useState([]);
     const [IssueType, setIssueType] = useState('');
     const [IssueStatus, setIssueStatus] = useState('');
+
     const [selectedIssueStatus, setSelectedIssueStatus] = useState('');
     const [selectedIssueType, setSelectedIssueType] = useState('');
     const [selectedPriority, setSelectedPriority] = useState('');
+
     const [selectedAssignee, setSelectedAssignee] = useState('');
     const [selectedReporter, setSelectedReporter] = useState('');
+
     const [Users, setUsers] = useState('');
     const [currentUserData, setCurrentUserData] = useState({});
+    const [currentUserEmail, setCurrentUserEmail] = useState({});
+
     const [files, setFiles] = useState([]);
 
 
@@ -168,6 +187,34 @@ function CardInfo(props) {
         }
     };
 
+    const getWorklogs = async () => {
+        try {
+            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/worklogs/?issue=${props.card?.id}`, {
+                headers: {
+                    Authorization: `Token ${authToken}`,
+                },
+            });
+            setWorklogs(response.data)
+        } catch (error) {
+            console.log(error);
+            throw new Error('Failed to fetch comments');
+        }
+    };
+
+    useEffect(() => {
+        const fetchCurrentUserEmail = async () => {
+            try {
+                const response = await axios.get(`${process.env.REACT_APP_HOST}/api/auth/users/me/`, {
+                    headers: {"Authorization": `Token ${authToken}`}
+                });
+                setCurrentUserEmail(response.data);
+            } catch (error) {
+                console.error(error);
+            }
+        }
+        fetchCurrentUserEmail();
+    }, []);
+
     useEffect(() => {
         const fetchIssueData = async () => {
             const response = await axios.get(`${process.env.REACT_APP_HOST}/api/issues/${props.card?.id}`, {
@@ -184,6 +231,14 @@ function CardInfo(props) {
                 },
             });
             setComments(response.data);
+        };
+        const fetchWorklogs = async () => {
+            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/worklogs/?issue=${props.card?.id}`, {
+                headers: {
+                    Authorization: `Token ${authToken}`,
+                },
+            });
+            setWorklogs(response.data);
         };
 
         const fetchDependentUserOptions = async () => {
@@ -215,9 +270,9 @@ function CardInfo(props) {
             setIssueStatus(response.data);
         };
 
-        const fetchCurrentUserData = async () => {
+        const fetchCurrentUserDataFromUserList = async () => {
             try {
-                const response = await axios.get(`${process.env.REACT_APP_HOST}/api/userprofile/`, {
+                const response = await axios.get(`${process.env.REACT_APP_HOST}/api/userprofile/?user__email__iexact=${currentUserEmail}`, {
                     headers: {"Authorization": `Token ${authToken}`}
                 });
                 setCurrentUserData(response.data[0]);
@@ -226,13 +281,31 @@ function CardInfo(props) {
             }
         }
         fetchIssueData();
-        fetchCurrentUserData();
+        // fetchCurrentUserDataFromUserList();
         fetchDependentUserOptions();
         fetchDependentProjectStatuses();
         fetchDependentProjectTypes();
         fetchComments();
+        fetchWorklogs();
 
     }, []);
+    console.log("currentUserEmail:", currentUserEmail)
+
+    useEffect(() => {
+        if (currentUserEmail) {
+            const fetchCurrentUserDataFromUserList = async () => {
+                try {
+                    const response = await axios.get(`${process.env.REACT_APP_HOST}/api/userprofile/?user__email__iexact=${currentUserEmail.email}`, {
+                        headers: {"Authorization": `Token ${authToken}`}
+                    });
+                    setCurrentUserData(response.data[0]);
+                } catch (error) {
+                    console.error(error);
+                }
+            }
+            fetchCurrentUserDataFromUserList();
+        }
+    }, [currentUserEmail]);
 
 
     useEffect(() => {
@@ -487,12 +560,18 @@ function CardInfo(props) {
             });
 
     }
+    const {projectId} = useParams()
+
 
     return (
         <Modal onClose={() => handleCloseModalSubmit()}>
             <div style={{width: "55%"}}>
                 <div className="modal-header">
-                    <span className="card-id"><b>{props.card?.slug.toUpperCase()}</b></span>
+                    <StyledSlug>
+                        <NavLink to={`/project/${projectId}/browse/issue/${props.card?.id}`} target="_blank">
+                            <b>{props.card?.slug.toUpperCase()}</b>
+                        </NavLink>
+                    </StyledSlug>
                 </div>
                 <ModalTitleStyling>
                     <Editable
@@ -530,9 +609,9 @@ function CardInfo(props) {
                         {values.tasks?.map((item) => (
                             <Task key={item.id}>
                                 <input type="checkbox"
-                                        defaultChecked={item.complete}
-                                        onChange={(event) =>
-                                            updateTask(item.id, event.target.checked)}
+                                       defaultChecked={item.complete}
+                                       onChange={(event) =>
+                                           updateTask(item.id, event.target.checked)}
                                 />
                                 <p>{item.text}</p>
                                 <Trash onClick={() => removeTask(item.id)}/>
@@ -608,8 +687,14 @@ function CardInfo(props) {
                                 <ul style={{marginTop: "-30px"}}>
                                     {worklogs.map((worklog, index) => (
                                         <Worklog
+                                            created_at={worklog?.created_at}
+                                            worklogDate={worklog.date}
+                                            worklogTime={worklog.time}
+                                            created_by={worklog?.user?.username}
+                                            worklogUserId={worklog?.user?.id}
+                                            currentUser={currentUserData}
                                             key={index}
-                                            index={index}
+                                            index={worklog?.id}
                                             worklog={worklog}
                                             onDelete={handleWorklogDelete}
                                             onEdit={handleWorklogEdit}
@@ -673,9 +758,9 @@ function CardInfo(props) {
                     </CardInfoBoxTitle>
                     <TaskList>
                         <UserSelectField defaultValue={props.card?.assignee?.username} users={Useroptions}
-                                            isMultiple={false}
-                                            placeholder={"Unassigned"}
-                                            onSelectChange={handleAssigneeChange}
+                                         isMultiple={false}
+                                         placeholder={"Unassigned"}
+                                         onSelectChange={handleAssigneeChange}
                         />
                     </TaskList>
                 </CardInfoBox>
@@ -686,9 +771,9 @@ function CardInfo(props) {
                     </CardInfoBoxTitle>
                     <TaskList>
                         <UserSelectField defaultValue={props.card?.reporter?.username} users={Useroptions}
-                                            isMultiple={false}
-                                            placeholder={"Unassigned"}
-                                            onSelectChange={handleReporterChange}
+                                         isMultiple={false}
+                                         placeholder={"Unassigned"}
+                                         onSelectChange={handleReporterChange}
                         />
                     </TaskList>
                 </CardInfoBox>
