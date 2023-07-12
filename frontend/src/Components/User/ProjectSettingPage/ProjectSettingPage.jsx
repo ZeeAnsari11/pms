@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import styled from 'styled-components';
-import { useNavigate, useParams } from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import NavBar from "../../Dashboard/Navbar";
 import ProjectSidebar from "../../Dashboard/Sidebar/ProjectSidebar";
 import UserSelectField from "../../Dashboard/SelectFields/UserSelectField";
 import apiRequest from '../../../Utils/apiRequest';
+
 import ImageUploader from "../ImageUploader";
+import axios from "axios";
 import {Input} from 'antd';
 
 const PageWrapper = styled.div`
@@ -108,7 +110,7 @@ function ProjectSettingPage() {
     const {projectId} = useParams()
     const navigate = useNavigate();
 
-    let authToken = localStorage.getItem('auth_token');
+    let authToken = localStorage.getItem('auth_token')
 
     const defaultIconPath = "Images/NoImage.jpeg"
 
@@ -119,7 +121,7 @@ function ProjectSettingPage() {
                     headers: {
                         Authorization: `Token ${authToken}`,
                     },
-                } );
+                });
             setProjectData(response.data);
 
         };
@@ -130,7 +132,7 @@ function ProjectSettingPage() {
                     headers: {
                         Authorization: `Token ${authToken}`,
                     },
-                } );
+                });
             setUsersData(response.data);
         };
         fetchProjects();
@@ -215,13 +217,13 @@ function ProjectSettingPage() {
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Token ${authToken}`,
                 },
-            } )
-        .then(response => {
-            navigate(`/project/${projectId}/project-setting`);
-        })
-        .catch(error => {
-            console.log(error);
-        });
+            })
+            .then(response => {
+                navigate(`/project/${projectId}/project-setting`);
+            })
+            .catch(error => {
+                console.log(error);
+            });
     }
 
 
@@ -238,15 +240,16 @@ function ProjectSettingPage() {
                 <FormWrapper onSubmit={handleSubmit} encType="multipart/form-data" method="POST">
                     <ImageUploader id="image" imagePath={IconPath} onImageChange={handleImageChange}/>
                     <Label htmlFor="name">Name:</Label>
-                    <NameInput type="text" id="name" name="name" placeholder="Project name" value={name} onChange={handleNameChange}/>
+                    <NameInput type="text" id="name" name="name" placeholder="Project name" value={name}
+                               onChange={handleNameChange}/>
                     <LabelForKey htmlFor="key">Key:</LabelForKey>
                     <Input style={{width: "50%", height: "35px"}} id="key" name="key" placeholder="Project key"
-                            value={key} disabled bordered onChange={handleKeyChange}/>
+                           value={key} disabled bordered onChange={handleKeyChange}/>
                     <Labelforlead htmlFor="category">Project lead:</Labelforlead>
                     <UserSelectField users={useroptions}
-                                        defaultValue={projectLeadData}
-                                        onSelectChange={handleSelectedProjectLeadChange}
-                                        width="50%"/>
+                                     defaultValue={projectLeadData}
+                                     onSelectChange={handleSelectedProjectLeadChange}
+                                     width="50%"/>
                     <Description>Make sure your project lead has access to issues in the project.</Description>
                     <SaveButton>Save</SaveButton>
                 </FormWrapper>

@@ -13,6 +13,16 @@ export const ProgressBarContainer = styled.div`
   width: 100%;
 `;
 
+export const StyledSpan = styled.span`
+  display: inline-block;
+  background-color: #DFE1E6;
+  color: black;
+  font-size: 0.8rem;
+  padding: 0.1rem 0.5rem;
+  border-radius: 40px;
+`;
+
+
 export const InputHeading = styled.div`
   font-size: 15px;
   font-weight: bold;
