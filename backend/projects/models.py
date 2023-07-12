@@ -3,6 +3,8 @@ from django.contrib.auth.models import User, Group
 from django.core.validators import URLValidator
 from .validators import validate_file_size
 from django.utils.text import slugify
+from datetime import date
+from datetime import time
 
 
 class ProjectCategory(models.Model):
@@ -291,6 +293,7 @@ class WorkLog(models.Model):
     time_spent = models.DecimalField(
         max_digits=6,
         decimal_places=2,
+        default=0.0,
         error_messages={'time_spent': "Duration Field Format is not correct"}
     )
     comment = models.TextField(blank=True)
@@ -303,6 +306,8 @@ class WorkLog(models.Model):
         on_delete=models.CASCADE,
         related_name='worklogs'
     )
+    date = models.DateField(default=date(2023, 7, 1))
+    time = models.TimeField(default=time(0, 0, 0))
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

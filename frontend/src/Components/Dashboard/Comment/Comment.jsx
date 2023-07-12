@@ -171,7 +171,7 @@ function Comment({
                         </>
                     ) : (
                         <>
-                            {commentUserId === currentUser?.id && ( // Added conditional rendering
+                            {(commentUserId === currentUser?.id || currentUser?.user?.is_staff) && ( // Added conditional rendering
                                 <CommentButtons>
                                     <CommentActionButton onClick={handleEdit}>Edit</CommentActionButton>
                                     <CommentActionButton onClick={handleDelete}>Delete</CommentActionButton>

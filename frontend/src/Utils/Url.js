@@ -1,5 +1,5 @@
 import {BrowserRouter, Routes, Route, Navigate} from "react-router-dom";
-import React from 'react';
+import React, {useContext} from 'react';
 import Login from "../Components/User/Login"
 import ResetPasswordPage from "../Components/User/ResetPassword/ResetPasswordPage"
 import ForgotPassword from "../Components/User/ForgetPassword/ForgetPassword"
@@ -21,9 +21,12 @@ import Types from "../Components/Project/Types/Types";
 import Permissions from "../Components/Project/Permissions/Permissions";
 import CloseProject from "../Components/Project/CloseProject/CloseProject";
 import AccountActivation from "../Components/User/AccountActivate/AccountActivation";
+import EditTicketPage from "../Components/Dashboard/EditTicketPage/EditTicketPage";
 
 // Custom Route component for authentication check
 function PrivateRoute({element: Component, ...rest}) {
+    // const { authToken } = useContext(AuthContext);
+
     let authToken = localStorage.getItem('auth_token')
 
     if (!authToken) {
@@ -53,6 +56,10 @@ function Url() {
                 <Route
                     path="/project/:projectId/dashboard"
                     element={<PrivateRoute element={Dashboard}/>}
+                />
+                <Route
+                    path="/project/:projectId/browse/issue/:issueId"
+                    element={<PrivateRoute element={EditTicketPage}/>}
                 />
                 <Route path="/project-setting" element={<ProjectSettingPage/>}/>
                 <Route path="/create-project" element={<CreateProject/>}/>
