@@ -4,7 +4,6 @@ import {InfoCircleOutlined} from "@ant-design/icons";
 
 const TimeEstimationField = ({onHoursChange, defaultValue}) => {
     const [input, setInput] = useState("");
-    const [hours, setHours] = useState("");
     const [error, setError] = useState(null);
 
     useEffect(() => {
@@ -51,7 +50,6 @@ const TimeEstimationField = ({onHoursChange, defaultValue}) => {
         // Check if input matches the regex
         if (!regex.test(inputVal) && inputVal !== "") {
             setError("Invalid time estimation format 0w 0d 0h 0m");
-            setHours(null);
         } else {
             setError(null);
             const timeUnits = inputVal
@@ -83,7 +81,6 @@ const TimeEstimationField = ({onHoursChange, defaultValue}) => {
                         break;
                 }
             }
-            setHours(totalHours);
             onHoursChange(totalHours);
         }
     };
