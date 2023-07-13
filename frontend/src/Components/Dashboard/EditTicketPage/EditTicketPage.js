@@ -594,7 +594,7 @@ function EditTicketPage({props}) {
 
     const handleCommentDelete = (index) => {
         axios
-            .delete(`http://127.0.0.1:8000/api/comments/${index}/`, {
+            .delete(`${process.env.REACT_APP_HOST}/api/comments/${index}/`, {
                 headers: {
                     Authorization: `Token ${authToken}`,
                 },
@@ -785,7 +785,7 @@ function EditTicketPage({props}) {
 
                                     <ContentInfoTitle>
                                         <span>Time Tracking</span>
-                                        <TrackingField OrginalEstimate={IssueEstimate}/>
+                                        <TrackingField OriginalEstimate={IssueEstimate}/>
                                     </ContentInfoTitle>
 
                                     <ContentInfoTitle>

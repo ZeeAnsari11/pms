@@ -1,37 +1,42 @@
 import React, {useEffect, useState} from 'react';
 import {useParams} from "react-router-dom";
-import {Progress, Modal, DatePicker, TimePicker, InputNumber, Input} from 'antd';
-import moment from 'moment';
+import {Progress, Modal, DatePicker, TimePicker} from 'antd';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import {TimeTrackingContainer, ProgressBarContainer, InputHeading, ModalContent, StyledSpan} from './styles'
-import Worklog from '../Worklog/Worklog';
+import {
+    TimeTrackingContainer,
+    ProgressBarContainer,
+    StyledProgressBarContainer,
+    InputHeading,
+    WorkLogModalContent,
+    TimeEstimate,
+    TimeTextDisplayContainer,
+    ModalTimeTextContainer,
+    TapTimeTextContainer,
+    WorklogDescription,
+} from './styles'
 import EstimateTimer from "../EstimateTimer/EstimateTimer";
 import axios from 'axios';
 
-const TimeTracking = ({OrginalEstimate}) => {
-    let authToken = localStorage.getItem('auth_token')
+const TimeTracking = ({OriginalEstimate}) => {
 
-
-    const [originalEstimate, setOriginalEstimate] = useState(OrginalEstimate);
-    const [currentIssueid, setCurrentIssueid] = useState('');
-    const [timeSpent, setTimeSpent] = useState(0);
-    const [timeRemaining, setTimeRemaining] = useState(0);
+    const [currentIssueId, setCurrentIssueId] = useState('');
+    const [currentTimeLog, setCurrentTimeLog] = useState(0);
     const [startDate, setStartDate] = useState('');
     const [startTime, setStartTime] = useState('');
-    const [workDescription, setWorkDescription] = useState("");
+    const [workDescription, setWorkDescription] = useState(null);
     const [isModalVisible, setIsModalVisible] = useState(false);
-    const [worklogs, setWorklogs] = useState([]);
+    const [timeLoggedHistory, setTimeLoggedHistory] = useState([]);
+    const [timeLogged, setTimeLogged] = useState(0);
 
-    const handleProgressBarClick = () => {
-        setIsModalVisible(true);
-    };
 
     const urlParams = new URLSearchParams(window.location.search);
     const selectedIssueSlug = urlParams.get('selectedIssue');
     console.log("selectedIssueSlug", selectedIssueSlug);
 
-    const {issueId, projectId} = useParams();
+    const {issueId } = useParams();
+    const originalEstimate = OriginalEstimate;
+    let authToken = localStorage.getItem('auth_token')
 
 
     useEffect(() => {
@@ -42,7 +47,7 @@ const TimeTracking = ({OrginalEstimate}) => {
                         Authorization: `Token ${authToken}`,
                     },
                 });
-                setCurrentIssueid(response.data[0].id);
+                setCurrentIssueId(response.data[0].id);
             } catch (error) {
                 console.log(error);
                 throw new Error('Failed to fetch Current Issue Id');
@@ -52,48 +57,21 @@ const TimeTracking = ({OrginalEstimate}) => {
         if (selectedIssueSlug) {
             getCurrentIssueId();
         } else {
-            setCurrentIssueid(issueId);
+            setCurrentIssueId(issueId);
         }
     }, [selectedIssueSlug, issueId]);
 
-    useEffect(() => {
-        if (timeRemaining === 0) {
-            setTimeRemaining(originalEstimate)
-        } else {
-            setTimeRemaining(timeRemaining);
-        }
-    }, [timeRemaining]);
-
 
     useEffect(() => {
         const fetchWorklogs = async () => {
             try {
-                const response = await axios.get(`${process.env.REACT_APP_HOST}/api/worklogs/?issue=${currentIssueid}`, {
-                    headers: {
-                        Authorization: `Token ${authToken}`,
-                    },
-                });
-                setWorklogs(response.data);
-            } catch (error) {
-                console.log(error);
-                throw new Error('Failed to fetch comments');
-            }
-        };
-
-        fetchWorklogs();
-    }, []);
-
-
-    useEffect(() => {
-        const fetchWorklogs = async () => {
-            try {
-                if (currentIssueid) {
-                    const response = await axios.get(`${process.env.REACT_APP_HOST}/api/worklogs/?issue=${currentIssueid}`, {
+                if (currentIssueId) {
+                    const response = await axios.get(`${process.env.REACT_APP_HOST}/api/worklogs/?issue=${currentIssueId}`, {
                         headers: {
                             Authorization: `Token ${authToken}`,
                         },
                     });
-                    setWorklogs(response.data);
+                    setTimeLoggedHistory(response.data);
                 }
             } catch (error) {
                 console.log(error);
@@ -102,18 +80,16 @@ const TimeTracking = ({OrginalEstimate}) => {
         };
 
         fetchWorklogs();
-    }, [currentIssueid]);
+    }, [currentIssueId]);
 
 
     useEffect(() => {
         let totalSpent = 0;
-        worklogs.forEach(worklog => {
+        timeLoggedHistory.forEach(worklog => {
             totalSpent += worklog.time_spent;
         });
-        const remainingTime = originalEstimate - totalSpent;
-        setTimeRemaining(remainingTime);
-        setTimeSpent(totalSpent);
-    }, [worklogs]);
+        setTimeLogged(totalSpent);
+    }, [timeLoggedHistory]);
 
 
     const handleModalOk = () => {
@@ -124,49 +100,39 @@ const TimeTracking = ({OrginalEstimate}) => {
             }
         };
 
-        const newWorklog = {
-            time_spent: timeSpent,
+        const newTimelog = {
+            time_spent: currentTimeLog,
             comment: workDescription,
-            issue_id: currentIssueid,
+            issue_id: currentIssueId,
             date: startDate.format('YYYY-MM-DD'),
             time: startTime.format('HH:mm:ss'),
         };
-
-        // Make the POST request
-        axios.post(`${process.env.REACT_APP_HOST}/api/worklogs/`, newWorklog, config)
+        console.log('New Time ', startTime );
+        console.log('New Date ', startDate );
+        axios.post(`${process.env.REACT_APP_HOST}/api/worklogs/`, newTimelog, config)
 
             .then(response => {
-                // Handle the response if needed
                 console.log(response.data);
             })
             .catch(error => {
-                // Handle the error if the request fails
                 console.error(error);
             });
-
-        setWorklogs([...worklogs, newWorklog]);
+        setTimeLoggedHistory([...timeLoggedHistory, newTimelog]);
         setIsModalVisible(false);
+        setCurrentTimeLog(0);
+        setWorkDescription(null);
     };
 
     const handleModalCancel = () => {
         setIsModalVisible(false);
+        setCurrentTimeLog(0);
+        setWorkDescription(null);
     };
 
     const handleTimeSpentChange = (value) => {
-        setTimeSpent(value);
-        const remainingTime = originalEstimate - value;
-        setTimeRemaining(remainingTime <= 0 ? '0m' : remainingTime);
+        setCurrentTimeLog(value);
     };
 
-    const handleTimeRemainingChange = (value) => {
-        setTimeRemaining(value);
-        const remainingTime = originalEstimate - value;
-        setTimeRemaining(remainingTime <= 0 ? '0m' : remainingTime);
-    };
-
-    const handleOriginalEstimateTimeChange = (value) => {
-        setOriginalEstimate(value);
-    };
     const handleDateChange = (date) => {
         setStartDate(date);
     };
@@ -182,32 +148,35 @@ const TimeTracking = ({OrginalEstimate}) => {
 
 
     const getTimePercentage = () => {
-        let totalTime;
-        if (!timeRemaining && originalEstimate) {
-            totalTime = originalEstimate;
-        } else {
-            totalTime = timeSpent + originalEstimate;
+        let totalTimeLog =  timeLogged + currentTimeLog;
+        if(totalTimeLog > originalEstimate){
+            return Math.round((originalEstimate / totalTimeLog) * 100);
         }
-        return Math.round((timeSpent / totalTime) * 100);
+        return Math.round((totalTimeLog / originalEstimate) * 100);
     };
 
-    const getTimeLogged = () => {
-        const hours = Math.floor(timeSpent);
-        if (hours > 0) {
-            return `${convertToTimeFormat(hours)} logged`;
+    const getTotalTimeLog = () => {
+        let totalTimeLog =  timeLogged + currentTimeLog;
+        if (totalTimeLog > 0) {
+            return `${convertToTimeFormat(totalTimeLog)} logged`;
         } else {
             return "No time logged";
         }
     };
 
-    const getTimeRemaining = () => {
-        const hours = Math.floor(timeRemaining);
-        if (timeRemaining) {
-            return `${convertToTimeFormat(hours)} remaining`;
+    const getTotalTimeRemaining = () => {
+        let totalTimeSpent = timeLogged + currentTimeLog;
+        if(totalTimeSpent > originalEstimate) {
+            return `${convertToTimeFormat(totalTimeSpent-originalEstimate)} over the original estimate`;
+        }
+
+        let remainingTime = originalEstimate - totalTimeSpent;
+        if (remainingTime > 0) {
+            return `${convertToTimeFormat(remainingTime)} remaining`;
         } else if (originalEstimate) {
             return `${convertToTimeFormat(originalEstimate)} estimated`;
         } else {
-            return "";
+            return "No Original estimate was provided";
         }
     };
 
@@ -245,59 +214,75 @@ const TimeTracking = ({OrginalEstimate}) => {
             <TimeTrackingContainer>
                 <div>
                 <span style={{fontWeight: "bold", marginRight: "10px"}}>
-          Original Estimate
+                    Original Estimate
                 </span>
-                    <StyledSpan
-                    >{convertToTimeFormat(originalEstimate)}</StyledSpan>.
+                    <TimeEstimate>{originalEstimate > 0 ? convertToTimeFormat(originalEstimate) : '0m' }</TimeEstimate>
                     {/*<InputNumber size={"small"} min={0} value={originalEstimate}*/}
                     {/*             onChange={handleOriginalEstimateTimeChange}/>*/}
                 </div>
                 <ProgressBarContainer>
-                    <Progress style={{marginTop: "20px"}} percent={getTimePercentage()}
-                              onClick={handleProgressBarClick}/>
+                    {timeLogged > originalEstimate ? (
+                        <Progress
+                            style={{marginTop: "5px" , cursor: 'pointer' }}
+                            strokeColor={ '#1e64d1'} trailColor={"#d2193b"}
+                            showInfo={false} percent={getTimePercentage()}
+                            onClick={() => setIsModalVisible(true)}
+                        />
+                    ) : (
+                        <Progress
+                            style={{marginTop: "5px" , cursor: 'pointer' }}
+                            strokeColor={ '#1e64d1'} trailColor={"#ccc6c6"}
+                            showInfo={false} percent={getTimePercentage()}
+                            onClick={() => setIsModalVisible(true)}
+                        />
+                    ) }
                 </ProgressBarContainer>
-                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%'}}>
-                    <div><p style={{marginTop: 0, fontWeight: "bold"}}>{getTimeLogged()}</p></div>
-                    <div><p style={{marginTop: 0, fontWeight: "bold"}}>{getTimeRemaining()}</p></div>
-                </div>
+                <TimeTextDisplayContainer>
+                    <TapTimeTextContainer><p>{getTotalTimeLog()}</p></TapTimeTextContainer>
+                    <TapTimeTextContainer><p>{getTotalTimeRemaining()}</p></TapTimeTextContainer>
+                </TimeTextDisplayContainer>
                 <Modal
                     title="Time Tracking"
                     open={isModalVisible}
                     onOk={handleModalOk}
                     onCancel={handleModalCancel}
                 >
-                    <ProgressBarContainer>
-                        <Progress style={{marginTop: "20px"}} percent={getTimePercentage()}
-                                  onClick={handleProgressBarClick}/>
-                    </ProgressBarContainer>
-                    <div
-                        style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%'}}>
-                        <div><p style={{marginTop: 0, fontWeight: "bold"}}>{getTimeLogged()}</p></div>
-                        <div><p style={{marginTop: 0, fontWeight: "bold"}}>{getTimeRemaining()}</p></div>
-                    </div>
+                    <StyledProgressBarContainer>
+                        {(timeLogged + currentTimeLog) > originalEstimate ? (
+                        <Progress
+                            style={{marginTop: "5px"  }}
+                            strokeColor={ '#1e64d1'} trailColor={"#d2193b"}
+                            showInfo={false} percent={getTimePercentage()}
+                        />
+                    ) : (
+                        <Progress
+                            style={{marginTop: "5px"}}
+                            strokeColor={ '#1e64d1'} trailColor={"#ccc6c6"}
+                            showInfo={false} percent={getTimePercentage()}
+                        />
+                    ) }
+                    </StyledProgressBarContainer>
+                    <TimeTextDisplayContainer>
+                        <ModalTimeTextContainer><p>{getTotalTimeLog()}</p></ModalTimeTextContainer>
+                        <ModalTimeTextContainer><p>{getTotalTimeRemaining()}</p></ModalTimeTextContainer>
+                    </TimeTextDisplayContainer>
 
-                    <div
-                        style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%'}}>
+                    <TimeTextDisplayContainer>
                         <div><p
                             style={{alignSelf: "center", fontSize: "1rem", marginTop: 0, fontWeight: "500"}}>The
                             original estimate for
-                            this issue was <StyledSpan
-                            >{convertToTimeFormat(originalEstimate)}</StyledSpan>.
+                            this issue was
+                            <TimeEstimate>{originalEstimate > 0 ? convertToTimeFormat(originalEstimate) : '0m' }</TimeEstimate>
                         </p></div>
-                    </div>
+                    </TimeTextDisplayContainer>
 
-                    <ModalContent style={{marginTop: "20px"}}>
+                    <WorkLogModalContent>
 
                         <div>
                             <InputHeading>Time spent</InputHeading>
                             <EstimateTimer onHoursChange={handleTimeSpentChange}/>
                         </div>
-                        <div>
-                            <InputHeading>Time remaining
-                            </InputHeading>
-                            <StyledSpan>{convertToTimeFormat(timeRemaining)}</StyledSpan>
-                        </div>
-
+                        <br/>
                         <div>
                             <InputHeading>Date:</InputHeading>
                             <DatePicker value={startDate} onChange={handleDateChange}/>
@@ -308,13 +293,12 @@ const TimeTracking = ({OrginalEstimate}) => {
                                         onChange={handleTimeChange}/>
                         </div>
 
-                    </ModalContent>
-                    {timeSpent ? (
-                        <div style={{marginTop: "10px", marginBottom: "10px"}}>
+                    </WorkLogModalContent>
+                    {currentTimeLog ? (
+                        <WorklogDescription>
                             <InputHeading>Work Description:</InputHeading>
-                            <ReactQuill value={workDescription} onChange={handleWorklogDescription}
-                            />
-                        </div>
+                            <ReactQuill value={workDescription} onChange={handleWorklogDescription}/>
+                        </WorklogDescription>
                     ) : null}
                 </Modal>
             </TimeTrackingContainer>
