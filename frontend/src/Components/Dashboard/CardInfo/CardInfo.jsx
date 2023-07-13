@@ -128,12 +128,6 @@ function CardInfo(props) {
     let authToken = localStorage.getItem('auth_token')
 
 
-    const initialworklogs = [
-        {username: 'John', timeTracked: '2', description: 'Worklog 1'},
-        {username: 'Jane', timeTracked: '3', description: 'Worklog 2'},
-        {username: 'Bob', timeTracked: '1', description: 'Worklog 3'},
-    ];
-
     const handleWorklogDelete = (index) => {
         const newWorklogs = [...worklogs];
         newWorklogs.splice(index, 1);
@@ -354,7 +348,7 @@ function CardInfo(props) {
 
     const handleCommentDelete = (index) => {
         axios
-            .delete(`http://127.0.0.1:8000/api/comments/${index}/`, {
+            .delete(`${process.env.REACT_APP_HOST}/api/comments/${index}/`, {
                 headers: {
                     Authorization: `Token ${authToken}`,
                 },
@@ -481,7 +475,7 @@ function CardInfo(props) {
         }))
         : [];
 
-    const Statusoptions = IssueStatus
+    const statusOptions = IssueStatus
         ? IssueStatus.map((Status) => ({
             label: Status.status,
             value: Status.id,
@@ -742,7 +736,7 @@ function CardInfo(props) {
                     </CardInfoBoxTitle>
                     <TaskList>
                         <GenericSelectField
-                            options={Statusoptions}
+                            options={statusOptions}
                             isMultiple={false}
                             placeholder={"Unassigned"}
                             defaultValue={props.card?.status?.status}
@@ -758,9 +752,9 @@ function CardInfo(props) {
                     </CardInfoBoxTitle>
                     <TaskList>
                         <UserSelectField defaultValue={props.card?.assignee?.username} users={Useroptions}
-                                         isMultiple={false}
-                                         placeholder={"Unassigned"}
-                                         onSelectChange={handleAssigneeChange}
+                                            isMultiple={false}
+                                            placeholder={"Unassigned"}
+                                            onSelectChange={handleAssigneeChange}
                         />
                     </TaskList>
                 </CardInfoBox>
@@ -771,9 +765,9 @@ function CardInfo(props) {
                     </CardInfoBoxTitle>
                     <TaskList>
                         <UserSelectField defaultValue={props.card?.reporter?.username} users={Useroptions}
-                                         isMultiple={false}
-                                         placeholder={"Unassigned"}
-                                         onSelectChange={handleReporterChange}
+                                            isMultiple={false}
+                                            placeholder={"Unassigned"}
+                                            onSelectChange={handleReporterChange}
                         />
                     </TaskList>
                 </CardInfoBox>
@@ -797,7 +791,7 @@ function CardInfo(props) {
                         Time Tracking
                     </CardInfoBoxTitle>
                     <div>
-                        <TrackingField OrginalEstimate={props.card?.estimate}/>
+                        <TrackingField OriginalEstimate={props.card?.estimate}/>
                     </div>
                 </CardInfoBox>
             </div>
