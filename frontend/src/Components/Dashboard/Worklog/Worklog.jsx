@@ -1,7 +1,12 @@
 import React, {useState} from "react";
 import styled from "styled-components";
 import Avatar from "react-avatar";
-import {Modal, Button, DatePicker, TimePicker} from "antd";
+import {Modal, Button} from "antd";
+import dayjs, { Dayjs } from 'dayjs';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { TimePicker } from '@mui/x-date-pickers/TimePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import {ImWarning} from 'react-icons/im'
 import moment from 'moment';
 import EstimateTimer from "../EstimateTimer/EstimateTimer";
@@ -94,39 +99,27 @@ function Worklog({
                         onDelete,
                         onEdit
 }) {
-    const [editWorklog, setEditWorklog] = useState(worklog);
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [timeSpent, setTimeSpent] = useState(worklog.time_spent);
     const [timeRemaining, setTimeRemaining] = useState(worklog.time_remaining);
     const [workDescription, setWorkDescription] = useState(worklog.comment);
-    const [startDate, setStartDate] = useState(moment(worklogDate));
-    const [startTime, setStartTime] = useState(moment(worklogTime, 'h:mm a'));
-    console.log('work log date in pro is ', worklogDate);
-    console.log('work log date in state is ', startDate);
-    console.log('work log time in pro is', worklogTime);
-    console.log('work log time in state is', startTime);
+    const [startDate, setStartDate] = useState(dayjs(worklogDate));
+    const [startTime, setStartTime] = useState(dayjs(worklogTime, 'HH:mm:ss'));
 
     let authToken = localStorage.getItem('auth_token')
     const handleEdit = () => {
-        onEdit(index);
-        setEditWorklog(worklog);
-        setShowEditModal(true); // Set the state to true to show the modal
+        setShowEditModal(true);
     };
-
-
-    const handleEditModal = () => {
-        setShowEditModal(false);
-        setStartTime('');
-        setStartTime('');
-    }
 
     const handleUpdate = () => {
         const formData = new FormData();
+        const formattedDate = startDate.format('YYYY-MM-DD');
+        const formattedTime = startTime.format('HH:mm:ss');
         formData.append("time_spent", timeSpent);
         formData.append("time_remaining", timeRemaining);
-        formData.append("date", moment(startDate.format('YYYY-MM-DD')));
-        formData.append("time", moment(startTime.format('hh:mm[:ss[.uuuuuu]]')));
+        formData.append("date", formattedDate);
+        formData.append("time", formattedTime);
         formData.append("comment", workDescription);
 
         axios({
@@ -138,8 +131,6 @@ function Worklog({
             data: formData
         })
             .then(response => {
-                console.log('updated work log is ', response.data);
-                onEdit(index, editWorklog);
                 setShowEditModal(false);
             })
             .catch(error => {
@@ -156,12 +147,10 @@ function Worklog({
                 },
             })
             .then((response) => {
-                // Comment deleted successfully, update the state or perform any necessary actions
                 console.log(response.data)
                 onDelete(index);
             })
             .catch((error) => {
-                // Handle the error appropriately
                 console.log(error);
             });
         setShowDeleteDialog(false);
@@ -183,6 +172,7 @@ function Worklog({
 
     const handleDateChange = (date) => {
         setStartDate(date);
+        console.log('On Date Change', date);
     };
 
     const handleTimeChange = (time) => {
@@ -221,7 +211,9 @@ function Worklog({
     };
 
     const formatTime = (timeString) => {
-        return  moment(timeString, 'HH:mm:ss').format('h:mm A');
+        console.log('time is ', timeString);
+        console.log('formated time is' , moment(timeString, 'HH:mm:ss'))
+        return  moment(timeString, 'HH:mm:ss').format('hh:mm a');
     };
 
     const sanitizeComment = (comment) => {
@@ -255,7 +247,7 @@ function Worklog({
                     <Modal
                         title={<>Edit work log - worklog id: {worklog.id} </>}
                         open={showEditModal}
-                        onCancel={handleEditModal}
+                        onCancel={() => setShowEditModal(false)}
                         footer={[
                             <Button key="save" type="primary" onClick={handleUpdate}>
                                 Update
@@ -271,12 +263,15 @@ function Worklog({
                             <br></br>
                             <div>
                                 <InputHeading>Date:</InputHeading>
-                                <DatePicker value={startDate} onChange={handleDateChange}/>
+                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                        <DatePicker value={startDate} onChange={handleDateChange}/>
+                                    </LocalizationProvider>
                             </div>
                             <div>
                                 <InputHeading>Time:</InputHeading>
-                                <TimePicker use12Hours format="h:mm a" value={startTime}
-                                            onChange={handleTimeChange}/>
+                                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                    <TimePicker value={startTime} onChange={handleTimeChange}/>
+                                </LocalizationProvider>
                             </div>
                         </EditModalContent>
                         <div style={{marginTop: "10px", marginBottom: "10px"}}>
