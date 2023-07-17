@@ -1,11 +1,14 @@
 import React, {useState} from "react";
+import {useDispatch, useSelector} from 'react-redux';
+import {login} from '../../../Store/Slice/User/loginSlice';
+import {signUp} from '../../../Store/Slice/User/signupSlice';
 import apiRequest from '../../../Utils/apiRequest';
 import styled from "styled-components";
-import { Link, useNavigate } from "react-router-dom";
-import { colorCode } from "../../../Configurations/colors";
+import {Link, useNavigate} from "react-router-dom";
+import {colorCode} from "../../../Configurations/colors";
 import {ToastContainer, toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+import Loader from "../../../Utils/Loader"
 
 export const Container = styled.div`
   background-color: #fff;
@@ -28,13 +31,13 @@ export const SignUpContainer = styled.div`
   opacity: 0;
   z-index: 1;
   ${props =>
-    props.signingIn !== true
-      ? `
+          props.signingIn !== true
+                  ? `
   transform: translateX(100%);
 	opacity: 1;
 	z-index: 5;
 	`
-      : null}
+                  : null}
 `;
 
 export const SignInContainer = styled.div`
@@ -83,16 +86,19 @@ export const Button = styled.button`
   letter-spacing: 1px;
   text-transform: uppercase;
   transition: transform 80ms ease-in;
+
   &:active {
     transform: scale(0.95);
   }
+
   &:focus {
     outline: none;
   }
+
   &:hover {
     background-color: #000000;
   }
-  
+
 `;
 
 export const GhostButton = styled(Button)`
@@ -122,7 +128,7 @@ export const OverlayContainer = styled.div`
   transition: transform 0.6s ease-in-out;
   z-index: 100;
   ${props =>
-    props.signingIn !== true ? `transform: translateX(-100%);` : null}
+          props.signingIn !== true ? `transform: translateX(-100%);` : null}
 `;
 
 export const Overlay = styled.div`
@@ -190,6 +196,12 @@ export const ParentContainer = styled.div`
 
 
 function Login() {
+    const dispatch = useDispatch();
+    const auth = useSelector((state) => state.login.authToken);
+    const isLoginPending = useSelector((state) => state.login.loading);
+    const isSignupPending = useSelector((state) => state.signUp.loading);
+    const signupSuccessMessage = useSelector((state) => state.signUp.successMessage);
+
     const [signIn, setSignIn] = useState(true);
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
@@ -228,110 +240,121 @@ function Login() {
     const handleSubmitSignIn = (e) => {
         e.preventDefault();
 
-        apiRequest
-            .post(`/api/auth/token/login/`, {
-                "password": passwordForSignIn,
-                "username": usernameForSignIn,
-            } )
-            .then(response => {
-                localStorage.setItem('auth_token', response.data.auth_token) // @todo remove this
-                navigate('/dashboard');
+        dispatch(login({username: usernameForSignIn, password: passwordForSignIn}))
+            .then((result) => {
+                if (result.payload.auth_token) {
+                    localStorage.setItem('auth_token', result.payload.auth_token); // Store auth token in local storage
+                    navigate('/project');
+                } else {
+                    errorMessage('Incorrect username or password. Please try again.');
+                }
             })
-            .catch(error => {
+            .catch((error) => {
                 console.log(error);
-                errorMessage("Incorrect username or password. Please try again.")
+                errorMessage('Incorrect username or password. Please try again.');
             });
-    }
+    };
+
 
     const handleSubmitSignUp = (e) => {
         e.preventDefault();
 
-        apiRequest
-            .post(`/api/auth/users/`, {
-                "email": email,
-                "username": name,
-                "password": password,
-            })
-            .then(response => {
-                if (response.data.username) {
-                    successMessage(`Thanks for registration! Check your email ${response.data.email}  and click the link to activate your account. If you need help, contact us. We appreciate your business!`)
+        if (!name || !email || !password) {
+            errorMessage('Please fill in all fields.');
+            return;
+        }
+
+        dispatch(signUp({name, email, password}))
+            .then(() => {
+                if (signupSuccessMessage) {
+                    successMessage(signupSuccessMessage);
                 }
             })
-            .catch(error => {
-                if (error.response.data.username) {
-                    let errors = error.response.data.username;
-                    for (let i = 0; i < errors.length; i++) {
-                        errorMessage(errors[i])
+            .catch((error) => {
+                if (error.response && error.response.data) {
+                    if (error.response.data.username) {
+                        const usernameErrors = error.response.data.username;
+                        for (let i = 0; i < usernameErrors.length; i++) {
+                            errorMessage(usernameErrors[i]);
+                        }
                     }
-                }
-                if (error.response.data.password) {
-                    let errors = error.response.data.password;
-                    for (let i = 0; i < errors.length; i++) {
-                        errorMessage(errors[i])
+                    if (error.response.data.password) {
+                        const passwordErrors = error.response.data.password;
+                        for (let i = 0; i < passwordErrors.length; i++) {
+                            errorMessage(passwordErrors[i]);
+                        }
                     }
-                }
-                if (error.response.data.email) {
-                    let errors = error.response.data.email;
-                    for (let i = 0; i < errors.length; i++) {
-                        errorMessage(errors[i])
+                    if (error.response.data.email) {
+                        const emailErrors = error.response.data.email;
+                        for (let i = 0; i < emailErrors.length; i++) {
+                            errorMessage(emailErrors[i]);
+                        }
                     }
+                } else {
+                    errorMessage('An error occurred while signing up.');
                 }
             });
+
+
     }
 
     return (
         <ParentContainer>
-            <Container>
-                <SignUpContainer signingIn={signIn}>
-                    <Form onSubmit={handleSubmitSignUp}>
-                        <Title>Create Account</Title>
-                        <Input type="text" placeholder="Name" value={name}
-                                            onChange={(e) => setName(e.target.value)}/>
-                        <Input type="email" placeholder="Email" value={email}
-                                            onChange={(e) => setEmail(e.target.value)}/>
-                        <Input type="password" placeholder="Password" value={password}
-                                            onChange={(e) => setPassword(e.target.value)}/>
-                        <Button>Sign Up</Button>
-                    </Form>
-                </SignUpContainer>
-                <SignInContainer signingIn={signIn}>
-                    <Form onSubmit={handleSubmitSignIn}>
-                        <Title>Sign In</Title>
-                        <Input type="text" placeholder="Name" value={usernameForSignIn}
-                                            onChange={(e) => setUsernameForSignIn(e.target.value)}/>
-                        <Input type="password" placeholder="Password" value={passwordForSignIn}
-                                            onChange={(e) => setPasswordForSignIn(e.target.value)}/>
-                        <Anchor>
-                            <Link to="/forgot-password">Forgot Password?</Link>
-                            <br></br>
-                            <br></br>
-                        </Anchor>
-                        <Button>Sign In</Button>
-                    </Form>
-                </SignInContainer>
-                <OverlayContainer signingIn={signIn}>
-                    <Overlay signingIn={signIn}>
-                        <LeftOverlayPanel signingIn={signIn}>
-                            <Title>Welcome Back!</Title>
-                            <Paragraph>
-                                To keep connected with us please login with your personal info
-                            </Paragraph>
-                            <GhostButton onClick={() => setSignIn(true)}>
-                                Sign In
-                            </GhostButton>
-                        </LeftOverlayPanel>
-                        <RightOverlayPanel signingIn={signIn}>
-                            <Title>PHP Studios!</Title>
-                            <Paragraph>
-                                Enter your personal details and start journey with us
-                            </Paragraph>
-                            <GhostButton onClick={() => setSignIn(false)}>
-                                Sign Up
-                            </GhostButton>
-                        </RightOverlayPanel>
-                    </Overlay>
-                </OverlayContainer>
-            </Container>
+            {isLoginPending ? (
+                <Loader/>
+            ) : (
+                <Container>
+                    <SignUpContainer signingIn={signIn}>
+                        <Form onSubmit={handleSubmitSignUp}>
+                            <Title>Create Account</Title>
+                            <Input type="text" placeholder="Name" value={name}
+                                   onChange={(e) => setName(e.target.value)}/>
+                            <Input type="email" placeholder="Email" value={email}
+                                   onChange={(e) => setEmail(e.target.value)}/>
+                            <Input type="password" placeholder="Password" value={password}
+                                   onChange={(e) => setPassword(e.target.value)}/>
+                            <Button>Sign Up</Button>
+                        </Form>
+                    </SignUpContainer>
+                    <SignInContainer signingIn={signIn}>
+                        <Form onSubmit={handleSubmitSignIn}>
+                            <Title>Sign In</Title>
+                            <Input type="text" placeholder="Name" value={usernameForSignIn}
+                                   onChange={(e) => setUsernameForSignIn(e.target.value)}/>
+                            <Input type="password" placeholder="Password" value={passwordForSignIn}
+                                   onChange={(e) => setPasswordForSignIn(e.target.value)}/>
+                            <Anchor>
+                                <Link to="/forgot-password">Forgot Password?</Link>
+                                <br></br>
+                                <br></br>
+                            </Anchor>
+                            <Button>Sign In</Button>
+                        </Form>
+                    </SignInContainer>
+                    <OverlayContainer signingIn={signIn}>
+                        <Overlay signingIn={signIn}>
+                            <LeftOverlayPanel signingIn={signIn}>
+                                <Title>Welcome Back!</Title>
+                                <Paragraph>
+                                    To keep connected with us please login with your personal info
+                                </Paragraph>
+                                <GhostButton onClick={() => setSignIn(true)}>
+                                    Sign In
+                                </GhostButton>
+                            </LeftOverlayPanel>
+                            <RightOverlayPanel signingIn={signIn}>
+                                <Title>PHP Studios!</Title>
+                                <Paragraph>
+                                    Enter your personal details and start journey with us
+                                </Paragraph>
+                                <GhostButton onClick={() => setSignIn(false)}>
+                                    Sign Up
+                                </GhostButton>
+                            </RightOverlayPanel>
+                        </Overlay>
+                    </OverlayContainer>
+                </Container>
+            )}
             <ToastContainer
                 position="top-right"
                 autoClose={5000}
