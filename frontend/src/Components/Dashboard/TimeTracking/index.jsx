@@ -1,6 +1,10 @@
 import React, {useEffect, useState} from 'react';
 import {useParams} from "react-router-dom";
-import {Progress, Modal, DatePicker, TimePicker} from 'antd';
+import { Progress, Modal, Button } from 'antd';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { TimePicker } from '@mui/x-date-pickers/TimePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import {
@@ -244,8 +248,12 @@ const TimeTracking = ({OriginalEstimate}) => {
                 <Modal
                     title="Time Tracking"
                     open={isModalVisible}
-                    onOk={handleModalOk}
                     onCancel={handleModalCancel}
+                    footer={[
+                            <Button key="save" type="primary" onClick={handleModalOk}>
+                                Save
+                            </Button>
+                    ]}
                 >
                     <StyledProgressBarContainer>
                         {(timeLogged + currentTimeLog) > originalEstimate ? (
@@ -285,12 +293,16 @@ const TimeTracking = ({OriginalEstimate}) => {
                         <br/>
                         <div>
                             <InputHeading>Date:</InputHeading>
-                            <DatePicker value={startDate} onChange={handleDateChange}/>
+                                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                    <DatePicker value={startDate} onChange={handleDateChange}/>
+                                </LocalizationProvider>
                         </div>
                         <div>
                             <InputHeading>Time:</InputHeading>
-                            <TimePicker use12Hours format="h:mm a" value={startTime}
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <TimePicker label="Controlled picker" value={startTime}
                                         onChange={handleTimeChange}/>
+                            </LocalizationProvider>
                         </div>
 
                     </WorkLogModalContent>
