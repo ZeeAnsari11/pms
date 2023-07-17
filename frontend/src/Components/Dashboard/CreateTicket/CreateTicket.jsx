@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import styled from "styled-components";
-import {AiFillCloseCircle} from "react-icons/ai";
+import { AiFillCloseCircle, AiOutlineArrowDown, AiOutlineArrowUp } from "react-icons/ai";
 import {TbStatusChange} from "react-icons/tb";
 import GenericSelectField from "../SelectFields/GenericSelectField";
 import ReactQuill from "react-quill";
@@ -155,10 +155,8 @@ const MyModalComponent = ({onClose}) => {
     const [IssueType, setIssueType] = useState('');
     const [Status, setStatus] = useState('');
     const [Labels, setLabels] = useState('');
-    const [Priority, setPriority] = useState('');
 
     const [Users, setUsers] = useState('');
-    const [Reporter, setReporter] = useState('');
     const [currentUserData, setCurrentUserData] = useState({});
     const [currentUserId, setCurrentUserId] = useState({});
 
@@ -321,11 +319,13 @@ const MyModalComponent = ({onClose}) => {
         : [];
 
 
-    const Priorityoptions = [
-        {label: "Low", value: "Low"},
-        {label: "Medium", value: "Medium"},
-        {label: "High", value: "High"},
+    const priorityOptions = [
+        {label: "Low", value: "Low", icon: <AiOutlineArrowDown color={"#2E8738"}/>},
+        {label: "Medium", value: "Medium", icon: <AiOutlineArrowUp color={"#E97F33"}/>},
+        {label: "High", value: "High", icon: <AiOutlineArrowUp color={"#E9494B"}/>},
     ]
+
+
 
     const Labeloptions = Labels
         ? Labels.map((Labels) => ({
@@ -470,7 +470,7 @@ const MyModalComponent = ({onClose}) => {
                             </CardInfoBoxTitle>
                             <TaskList>
                                 <GenericSelectField
-                                    options={Priorityoptions}
+                                    options={priorityOptions}
                                     isMultiple={false}
                                     placeholder={"Unassigned"}
                                     onSelectChange={handlePriorityChange}/>

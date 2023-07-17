@@ -128,19 +128,14 @@ function CardInfo(props) {
     let authToken = localStorage.getItem('auth_token')
 
 
-    const handleWorklogDelete = (index) => {
-        const newWorklogs = [...worklogs];
-        newWorklogs.splice(index, 1);
-        setWorklogs(newWorklogs);
+    const handleWorklogDelete = () => {
         getWorklogs();
     };
 
-    const handleWorklogEdit = (index) => {
-        setWorklogs([...worklogs])
+    const handleWorklogEdit = () => {
         getWorklogs();
     };
 
-    //Comments
     const [comments, setComments] = useState([]);
     const [newComment, setNewComment] = useState('');
     const [selectedComment, setSelectedComment] = useState(null);
@@ -483,7 +478,7 @@ function CardInfo(props) {
         : [];
 
 
-    const Priorityoptions = [
+    const priorityOptions = [
         {label: "Low", value: "Low", icon: <AiOutlineArrowDown color={"#2E8738"}/>},
         {label: "Medium", value: "Medium", icon: <AiOutlineArrowUp color={"#E97F33"}/>},
         {label: "High", value: "High", icon: <AiOutlineArrowUp color={"#E9494B"}/>},
@@ -778,7 +773,7 @@ function CardInfo(props) {
                         Priority
                     </CardInfoBoxTitle>
                     <TaskList>
-                        <GenericSelectField options={Priorityoptions} defaultValue={props.card?.priority}
+                        <GenericSelectField options={priorityOptions} defaultValue={props.card?.priority}
                                             isMultiple={false} placeholder={"Unassigned"}
                                             onSelectChange={handlePriorityChange}
                         />
