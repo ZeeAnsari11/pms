@@ -24,7 +24,7 @@ class CreateUserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
         fields = ('id', 'image', 'user', 'company', 'department', 'job_title', 'joining_date', 'is_reporter', 'is_assignee',
-                  'send_email', 'email_format')
+                'send_email', 'email_format')
 
 
 class PermissionSerializer(serializers.ModelSerializer):

@@ -3,7 +3,8 @@ import {useNavigate, useLocation} from 'react-router-dom';
 import { displayErrorMessage } from "../../../Shared/notify"
 import Toast from "../../../Shared/Components/Toast"
 import styled from 'styled-components';
-import axios from 'axios';
+import apiRequest from '../../../Utils/apiRequest';
+import { AxiosError } from "axios";
 
 const ForgotPasswordContainer = styled.div`
   position: absolute;
@@ -108,8 +109,8 @@ const ResetPasswordPage = () => {
         event.preventDefault();
 
         if (password === confirmPassword) {
-            axios
-                .post(`${process.env.REACT_APP_HOST}/api/auth/users/reset_password_confirm/`, {
+            apiRequest
+                .post(`/api/auth/users/reset_password_confirm/`, {
                     uid: uid,
                     token: token,
                     new_password: password
@@ -122,7 +123,15 @@ const ResetPasswordPage = () => {
                     }
                 })
                 .catch(error => {
-                    displayErrorMessage(`Please click on the password reset link and try again`);
+                    if(error.code === AxiosError.ERR_NETWORK){
+                        return displayErrorMessage(`${error.message}`)
+                    }
+                    if (error.response.data.new_password) {
+                        let newPasswordError = error.response.data.new_password;
+                        for (let i = 0; i < newPasswordError.length; i++) {
+                            displayErrorMessage(`${newPasswordError[i]}`);
+                        }
+                    }
                 });
         } else {
             displayErrorMessage(`Passwords do not match`)
