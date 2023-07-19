@@ -1,18 +1,21 @@
-import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import apiRequest from '../../../Utils/apiRequest';
+import { setLoading } from "./loginSlice";
 
 export const signUp = createAsyncThunk(
     'signup',
-    async ({name, email, password}, {rejectWithValue}) => {
+    async ({name, email, password}, {rejectWithValue, dispatch}) => {
         try {
-            const response = await apiRequest.post('/api/auth/users/', {
+            dispatch(setLoading(true));
+            return await apiRequest.post( '/api/auth/users/', {
                 email,
-                username: name,
+                username : name,
                 password,
-            });
-            return response.data;
+            } );
         } catch (error) {
-            return rejectWithValue(error.response.data);
+            return rejectWithValue(error);
+        } finally {
+            dispatch(setLoading(false))
         }
     }
 );
@@ -36,7 +39,7 @@ const signupSlice = createSlice({
             })
             .addCase(signUp.fulfilled, (state) => {
                 state.loading = false;
-                state.successMessage = 'Thanks for registration! Check your email and click the link to activate your account. If you need help, contact us. We appreciate your business!';
+                state.successMessage = null;
             })
             .addCase(signUp.rejected, (state, action) => {
                 state.loading = false;
