@@ -1,37 +1,31 @@
-// authSlice.js
-
-import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import apiRequest from '../../../Utils/apiRequest';
 
-// Initial state
 const initialState = {
     isAuthenticated: false,
-    loading: false, // Add loading state to initial state
+    loading: false,
     error: null,
     authToken: null,
 };
 
-// Async thunk for login
 export const login = createAsyncThunk(
     'login',
     async ({username, password}, {rejectWithValue, dispatch}) => {
         try {
-            dispatch(setLoading(true)); // Set loading to true before making the API request
-
-            const response = await apiRequest.post(`/api/auth/token/login/`, {
+            dispatch(setLoading(true));
+            return await apiRequest.post( `/api/auth/token/login/`, {
                 username,
                 password,
-            });
-            return response.data;
+            } );
         } catch (error) {
-            return rejectWithValue(error.response.data);
+            return rejectWithValue(error)
         } finally {
-            dispatch(setLoading(false)); // Set loading to false after the API request completes
+            dispatch(setLoading(false))
         }
     }
 );
 
-// Slice configuration
+
 const loginSlice = createSlice({
     name: 'login',
     initialState,
@@ -60,8 +54,7 @@ const loginSlice = createSlice({
     },
 });
 
-// Actions
+
 export const {logout, setLoading} = loginSlice.actions;
 
-// Reducer
 export default loginSlice.reducer;
