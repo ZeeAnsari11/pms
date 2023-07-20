@@ -13,7 +13,6 @@ import ManageUsers from "../Components/User/Manage/ManageUsers";
 import ManageGroups from "../Components/User/Manage/ManageGroups";
 import GeneralSettings from "../Components/User/Manage/GeneralSettings";
 import ProjectSummary from "../Components/Project/ProjectSummaryPage/ProjectSummary";
-import Notification from "../Components/Project/Notification/Notification";
 import Integrations from "../Components/Project/Integrations/Integrations";
 import ProjectTag from "../Components/Project/ProjectTag/ProjectTag";
 import Columns from "../Components/Project/Columns/Columns";
@@ -68,7 +67,6 @@ function Url() {
                 <Route path="/manage-groups" element={<ManageGroups/>}/>
                 <Route path="/manage-general-settings" element={<GeneralSettings/>}/>
                 <Route path="/project/:projectId/setting/summary" element={<ProjectSummary/>}/>
-                <Route path="/project/:projectId/setting/notification" element={<Notification/>}/>
                 <Route path="/project/:projectId/setting/integrations" element={<Integrations/>}/>
                 <Route path="/project/:projectId/setting/tags" element={<ProjectTag/>}/>
                 <Route path="/project/:projectId/setting/types" element={<Types/>}/>

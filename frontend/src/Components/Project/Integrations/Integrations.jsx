@@ -1,15 +1,14 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import styled from 'styled-components';
 import NavBar from "../../Dashboard/Navbar/index";
 import ProjectSidebar from "../../Dashboard/Sidebar/ProjectSidebar";
-import { AiFillSlackCircle } from 'react-icons/ai';
-import { FcGoogle } from 'react-icons/fc';
-import { color } from "../../Dashboard/Sidebar/utils/styles";
-import { ToastContainer, toast } from 'react-toastify';
-import { Input, Button, Form, Switch } from 'antd';
-import { useParams } from "react-router-dom";
+import {AiFillSlackCircle} from 'react-icons/ai';
+import {FcGoogle} from 'react-icons/fc';
+import {color} from "../../Dashboard/Sidebar/utils/styles";
+import {ToastContainer, toast} from 'react-toastify';
+import {Input, Button, Form, Switch} from 'antd';
+import {useParams} from "react-router-dom";
 import apiRequest from '../../../Utils/apiRequest';
-
 
 
 const PageContainer = styled.div`
@@ -76,7 +75,7 @@ const NotificationContainerForSlack = styled.div`
   margin-top: 25px;
   background-color: #EBEBEB;
   border-radius: 5px;
-  height: 335px;
+  height: 420px;
   width: 100%;
   box-shadow: var(--ds-shadow-raised, 0 1px 1px rgba(9, 30, 66, 0.25), 0 0 1px 1px rgba(9, 30, 66, 0.13));
 
@@ -90,7 +89,7 @@ const NotificationContainerForGmail = styled.div`
   margin-top: 25px;
   background-color: #EBEBEB;
   border-radius: 5px;
-  height: 475px;
+  height: 600px;
   width: 100%;
   box-shadow: var(--ds-shadow-raised, 0 1px 1px rgba(9, 30, 66, 0.25), 0 0 1px 1px rgba(9, 30, 66, 0.13));
 
@@ -106,7 +105,7 @@ const NotificationWrapper = styled.div`
   padding: 10px;
 `;
 
-const StyledFormItem = styled( Form.Item )`
+const StyledFormItem = styled(Form.Item)`
   float: right;
   margin-top: -56px;
   margin-right: 230px;
@@ -125,8 +124,7 @@ const InnerNotificationWrapper = styled.div`
 `;
 
 const FormWrapper = styled.div`
-  height: 155px;
-  width: 400px;
+  width: 500px;
 `;
 
 const ParagraphNote = styled.p`
@@ -135,108 +133,109 @@ const ParagraphNote = styled.p`
   margin-left: 140px
 `;
 
+
 function Integrations() {
 
-    const [ slackForm ] = Form.useForm();
-    const { projectId } = useParams();
-    const [ isSlackUpdating, setSlackIsUpdating ] = useState( false );
-    const [ isSMTPUpdating, setSMTPIsUpdating ] = useState( false );
-    const [ initialSlackValues, setInitialSlackValues ] = useState( { id: undefined, project: projectId } );
+    const [slackForm] = Form.useForm();
+    const {projectId} = useParams();
+    const [isSlackUpdating, setSlackIsUpdating] = useState(false);
+    const [isSMTPUpdating, setSMTPIsUpdating] = useState(false);
+    const [initialSlackValues, setInitialSlackValues] = useState({id: undefined, project: projectId});
 
     let authToken = localStorage.getItem('auth_token');
 
-    const updateSlackIntegrationForm = ( response ) => {
-        if ( response.status === 200 ) {
+    const updateSlackIntegrationForm = (response) => {
+        if (response.status === 200) {
             displaySuccessMessage();
             let responseData;
             responseData = response.data;
-            if ( typeof responseData === 'object' ) {
+            if (typeof responseData === 'object') {
                 responseData = response.data;
             }
-            if ( Array.isArray( response.data ) ) {
-                responseData = response.data[ 0 ];
+            if (Array.isArray(response.data)) {
+                responseData = response.data[0];
             }
-            const { id, project, slack_notification_status, slack_webhook_url, slack_webhook_channel } = responseData;
-            setInitialSlackValues( {
+            const {id, project, slack_notification_status, slack_webhook_url, slack_webhook_channel} = responseData;
+            setInitialSlackValues({
                 id: id,
                 project: project,
-            } );
-            slackForm.setFieldsValue( {
+            });
+            slackForm.setFieldsValue({
                 slackChannelGroupUser: slack_webhook_channel,
                 slackNotificationStatus: slack_notification_status,
                 slackWebhookUrl: slack_webhook_url,
-            } );
+            });
         }
     }
 
 
     const fetchSlackIntegrationsData = () => {
         apiRequest
-            .get( `/api/project_slack_webhook/`,
+            .get(`/api/project_slack_webhook/`,
                 {
                     params: {
                         project: projectId,
                     }, headers: {
                         "Authorization": `Token ${authToken}`
                     }
-                } )
-            .then( response => {
-                updateSlackIntegrationForm( response );
-            } )
-            .catch( error => {
-                console.error( error )
-            } );
+                })
+            .then(response => {
+                updateSlackIntegrationForm(response);
+            })
+            .catch(error => {
+                console.error(error)
+            });
     }
 
-    const createSlackIntegrationsData = ( values ) => {
-        const { slackNotificationStatus, slackChannelGroupUser, slackWebhookUrl } = values
+    const createSlackIntegrationsData = (values) => {
+        const {slackNotificationStatus, slackChannelGroupUser, slackWebhookUrl} = values
         apiRequest
-            .post( `/api/project_slack_webhook/`, {
+            .post(`/api/project_slack_webhook/`, {
                 project: projectId,
                 slack_notification_status: slackNotificationStatus,
                 slack_webhook_channel: slackChannelGroupUser,
                 slack_webhook_url: slackWebhookUrl,
-            } ,{
+            }, {
                 headers:
-                    { "Authorization": `Token ${authToken}` }
-            } )
-            .then( response => {
-                updateSlackIntegrationForm( response );
-            } )
-            .catch( error => {
-                console.error( error )
-            } );
+                    {"Authorization": `Token ${authToken}`}
+            })
+            .then(response => {
+                updateSlackIntegrationForm(response);
+            })
+            .catch(error => {
+                console.error(error)
+            });
     }
 
 
-    const patchSlackIntegrationsData = ( values ) => {
-        const { id } = initialSlackValues
-        if ( id === undefined ) {
+    const patchSlackIntegrationsData = (values) => {
+        const {id} = initialSlackValues
+        if (id === undefined) {
             displayInfoMessage();
             return;
         }
-        const { slackNotificationStatus, slackChannelGroupUser, slackWebhookUrl } = values
+        const {slackNotificationStatus, slackChannelGroupUser, slackWebhookUrl} = values
         apiRequest
-            .patch( `/api/project_slack_webhook/${id}/`, {
+            .patch(`/api/project_slack_webhook/${id}/`, {
                 project: projectId,
                 slack_notification_status: slackNotificationStatus,
                 slack_webhook_channel: slackChannelGroupUser,
                 slack_webhook_url: slackWebhookUrl,
-            },{
+            }, {
                 headers:
-                    { "Authorization": `Token ${authToken}` }
-            } )
-            .then( response => {
-                console.info( 'response is here', response );
-                updateSlackIntegrationForm( response );
-            } )
-            .catch( error => {
-                console.error( error )
-            } );
+                    {"Authorization": `Token ${authToken}`}
+            })
+            .then(response => {
+                console.info('response is here', response);
+                updateSlackIntegrationForm(response);
+            })
+            .catch(error => {
+                console.error(error)
+            });
     }
 
     const displayInfoMessage = () => {
-        toast.info( 'Please save the configuration first!', {
+        toast.info('Please save the configuration first!', {
             position: "bottom-left",
             autoClose: 5000,
             hideProgressBar: false,
@@ -245,11 +244,11 @@ function Integrations() {
             draggable: true,
             progress: undefined,
             theme: "colored",
-        } );
+        });
     }
 
     const displaySuccessMessage = () => {
-        toast.success( <><AiFillSlackCircle/> Slack Webhook is Integrated</>, {
+        toast.success(<><AiFillSlackCircle/> Slack Webhook is Integrated</>, {
             position: "bottom-left",
             autoClose: 5000,
             hideProgressBar: false,
@@ -258,33 +257,33 @@ function Integrations() {
             draggable: true,
             progress: undefined,
             theme: "colored",
-        } );
+        });
     }
 
 
-    useEffect( () => {
-        if ( projectId !== undefined ) {
+    useEffect(() => {
+        if (projectId !== undefined) {
             fetchSlackIntegrationsData();
         }
-    }, [] );
+    }, []);
 
     const items = [
-        { icon: <><AiFillSlackCircle style={{ fontSize: '15px' }}/> </>, label: 'Slack', value: 'Slack' },
-        { icon: <><FcGoogle/></>, label: 'Gmail', value: 'Gmail' },
+        {icon: <><AiFillSlackCircle style={{fontSize: '15px'}}/> </>, label: 'Slack', value: 'Slack'},
+        {icon: <><FcGoogle/></>, label: 'Gmail', value: 'Gmail'},
     ];
 
-    const handleSlackSaveOrUpdateForm = ( values ) => {
-        const { id } = initialSlackValues;
-        if ( isSlackUpdating ) {
-            patchSlackIntegrationsData( values )
+    const handleSlackSaveOrUpdateForm = (values) => {
+        const {id} = initialSlackValues;
+        if (isSlackUpdating) {
+            patchSlackIntegrationsData(values)
         } else {
-            createSlackIntegrationsData( values );
+            createSlackIntegrationsData(values);
         }
 
     };
 
     const handleGmailSaveOrUpdateForm = () => {
-        toast.success( <><FcGoogle/> Gmail is Integrated</>, {
+        toast.success(<><FcGoogle/> Gmail is Integrated</>, {
             position: "bottom-left",
             autoClose: 5000,
             hideProgressBar: false,
@@ -293,14 +292,14 @@ function Integrations() {
             draggable: true,
             progress: undefined,
             theme: "colored",
-        } );
+        });
     };
 
 
     return (
         <div>
             <PageContainer>
-                <ProjectSidebar />
+                <ProjectSidebar/>
                 <NavBar/>
                 <ContentWrapper>
                     <HeadingWrapper>
@@ -321,20 +320,20 @@ function Integrations() {
                                     </IconWrapperDiv>
                                     <IconName>Slack Configuration</IconName>
                                     <FormWrapper>
-                                        <Form form={slackForm} onFinish={handleSlackSaveOrUpdateForm}>
+                                        <Form layout="vertical" form={slackForm} onFinish={handleSlackSaveOrUpdateForm}>
                                             <Form.Item
                                                 name="slackWebhookUrl"
                                                 label="Webhook URL"
-                                                rules={[ { required: true, message: 'Please enter the webhook URL' } ]}
+                                                rules={[{required: true, message: 'Please enter the webhook URL'}]}
                                             ><Input/>
                                             </Form.Item>
                                             <Form.Item
                                                 name="slackChannelGroupUser"
                                                 label="Channel/Group/User"
-                                                rules={[ {
+                                                rules={[{
                                                     required: false,
                                                     message: 'Please enter the Channel/Group/User'
-                                                } ]}
+                                                }]}
                                             >
                                                 <Input/>
                                             </Form.Item>
@@ -347,11 +346,11 @@ function Integrations() {
                                             </Form.Item>
                                             <Form.Item>
                                                 <Button type="primary" htmlType="submit"
-                                                        onClick={() => setSlackIsUpdating( false )}>Save</Button>
+                                                        onClick={() => setSlackIsUpdating(false)}>Save</Button>
                                             </Form.Item>
                                             <StyledFormItem>
                                                 <Button type="primary" htmlType="update"
-                                                        onClick={() => setSlackIsUpdating( true )}>Update</Button>
+                                                        onClick={() => setSlackIsUpdating(true)}>Update</Button>
                                             </StyledFormItem>
                                         </Form>
                                     </FormWrapper>
@@ -373,29 +372,29 @@ function Integrations() {
                                     </IconWrapperDiv>
                                     <IconName>Gmail Configuration</IconName>
                                     <FormWrapper>
-                                        <Form onFinish={handleGmailSaveOrUpdateForm}>
+                                        <Form layout="vertical" onFinish={handleGmailSaveOrUpdateForm}>
                                             <Form.Item
                                                 name="hostName"
                                                 label="Hostname"
-                                                rules={[ { required: true, message: 'Please input a hostname!' } ]}
+                                                rules={[{required: true, message: 'Please input a hostname!'}]}
                                             ><Input/>
                                             </Form.Item>
                                             <Form.Item
                                                 name="port"
                                                 label="Port"
-                                                rules={[ { required: true, message: 'Please input a port!' } ]}
+                                                rules={[{required: true, message: 'Please input a port!'}]}
                                             ><Input/>
                                             </Form.Item>
                                             <Form.Item
                                                 name="userName"
                                                 label="Username"
-                                                rules={[ { required: true, message: 'Please input a username!' } ]}
+                                                rules={[{required: true, message: 'Please input a username!'}]}
                                             ><Input/>
                                             </Form.Item>
                                             <Form.Item
                                                 label="Password"
                                                 name="password"
-                                                rules={[ { required: true, message: 'Please input a password!' } ]}
+                                                rules={[{required: true, message: 'Please input a password!'}]}
                                             ><Input.Password/>
                                             </Form.Item>
                                             <Form.Item
@@ -405,12 +404,12 @@ function Integrations() {
                                                     {
                                                         required: true,
                                                         message: 'Please select a security protocol!',
-                                                        validator: ( rule, value ) => {
+                                                        validator: (rule, value) => {
                                                             const pattern = /^(SSL|TLS)$/i;
-                                                            if ( !value || pattern.test( value ) ) {
+                                                            if (!value || pattern.test(value)) {
                                                                 return Promise.resolve();
                                                             }
-                                                            return Promise.reject( 'Please enter a valid security protocol (SSL or TLS)' );
+                                                            return Promise.reject('Please enter a valid security protocol (SSL or TLS)');
                                                         },
                                                     },
                                                 ]}
@@ -420,11 +419,11 @@ function Integrations() {
                                             <ParagraphNote>Please enter security protocol SSL or TLS </ParagraphNote>
                                             <Form.Item>
                                                 <Button type="primary" htmlType="submit"
-                                                        onClick={() => setSMTPIsUpdating( false )}>Save</Button>
+                                                        onClick={() => setSMTPIsUpdating(false)}>Save</Button>
                                             </Form.Item>
                                             <StyledFormItem>
                                                 <Button type="primary" htmlType="update"
-                                                        onClick={() => setSMTPIsUpdating( true )}>Update</Button>
+                                                        onClick={() => setSMTPIsUpdating(true)}>Update</Button>
                                             </StyledFormItem>
                                         </Form>
                                     </FormWrapper>

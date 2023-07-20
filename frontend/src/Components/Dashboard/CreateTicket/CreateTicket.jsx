@@ -1,11 +1,12 @@
 import React, {useEffect, useState} from "react";
 import styled from "styled-components";
-import { AiFillCloseCircle, AiOutlineArrowDown, AiOutlineArrowUp } from "react-icons/ai";
+import {AiFillCloseCircle, AiOutlineArrowDown, AiOutlineArrowUp} from "react-icons/ai";
 import {TbStatusChange} from "react-icons/tb";
 import GenericSelectField from "../SelectFields/GenericSelectField";
 import ReactQuill from "react-quill";
 import {FiUser, FiUsers} from "react-icons/fi";
 import UserSelectField from "../SelectFields/UserSelectField";
+import MutliSelectField from "../SelectFields/MultiSelectField";
 import {File} from "react-feather";
 import FileUpload from "../FileAttachement/FileUpload";
 import axios from "axios";
@@ -165,7 +166,7 @@ const MyModalComponent = ({onClose}) => {
     const [selectedProject, setSelectedProject] = useState('');
     const [selectedIssueType, setSelectedIssueType] = useState('');
     const [selectedStatus, setSelectedStatus] = useState('');
-    const [selectedLabels, setSelectedLabels] = useState('');
+    const [selectedLabels, setSelectedLabels] = useState([]);
     const [selectedPriority, setSelectedPriority] = useState('');
     const [selectedUsers, setSelectedUsers] = useState('');
     const [selectedReporter, setSelectedReporter] = useState('');
@@ -252,10 +253,10 @@ const MyModalComponent = ({onClose}) => {
         setSelectedIssueType(parseInt(value));
     };
 
-    const handleLabelChange = (value) => {
-        setSelectedLabels(parseInt(value));
-        console.log("Labels", selectedLabels)
+    const handleLabelChange = (values) => {
+        setSelectedLabels(values);
     };
+    console.log("selectedLabels", selectedLabels)
 
     const handleUserChange = (value) => {
         setSelectedUsers(parseInt(value));
@@ -326,11 +327,11 @@ const MyModalComponent = ({onClose}) => {
     ]
 
 
-
     const Labeloptions = Labels
         ? Labels.map((Labels) => ({
-            label: Labels.name,
-            value: Labels.id,
+            id: Labels.id,
+            name: Labels.name,
+            color: Labels.color,
         }))
         : [];
 
@@ -370,7 +371,9 @@ const MyModalComponent = ({onClose}) => {
         formData.append("project", selectedProject);
         formData.append("reporter", selectedReporter);
         formData.append("type", selectedIssueType);
-        formData.append("label", selectedLabels);
+        selectedLabels.forEach((label) => {
+            formData.append("label", label);
+        });
         formData.append("estimate", EstimateHours);
         formData.append("status", selectedStatus);
         formData.append("assignee", selectedUsers);
@@ -380,7 +383,7 @@ const MyModalComponent = ({onClose}) => {
 
         fetch(`${process.env.REACT_APP_HOST}/api/issues/`, {
             method: "POST",
-            headers: { Authorization: `Token ${authToken}`},
+            headers: {Authorization: `Token ${authToken}`},
             body: formData,
         })
             .then((response) => {
@@ -394,6 +397,7 @@ const MyModalComponent = ({onClose}) => {
                 console.log(error);
             });
     }
+
     return (
 
         <ModalOverlay>
@@ -432,7 +436,8 @@ const MyModalComponent = ({onClose}) => {
                                     options={projectOptions}
                                     isMultiple={false}
                                     placeholder={"Unassigned"}
-                                    onSelectChange={handleProjectChange}/>
+                                    onSelectChange={handleProjectChange}
+                                />
                             </TaskList>
                         </CardInfoBox>
 
@@ -515,11 +520,11 @@ const MyModalComponent = ({onClose}) => {
                         <CardInfoBox>
                             <CardInfoBoxTitle>
                                 <FiUsers/>
-                                Assignees
+                                Assignee
                             </CardInfoBoxTitle>
                             <TaskList>
                                 <UserSelectField users={Useroptions} isMultiple={false} placeholder={"Unassigned"}
-                                                    onChange={handleUserChange}/>
+                                                 onChange={handleUserChange}/>
                             </TaskList>
                         </CardInfoBox>
 
@@ -529,10 +534,8 @@ const MyModalComponent = ({onClose}) => {
                                 Labels
                             </CardInfoBoxTitle>
                             <TaskList>
-                                <GenericSelectField
+                                <MutliSelectField
                                     options={Labeloptions}
-                                    isMultiple={false}
-                                    placeholder={" "}
                                     onSelectChange={handleLabelChange}/>
                             </TaskList>
                         </CardInfoBox>
@@ -543,7 +546,7 @@ const MyModalComponent = ({onClose}) => {
                                 Reporter
                             </CardInfoBoxTitle>
                             <UserSelectField users={Reporteroptions} isMultiple={false} placeholder={"Unassigned"}
-                                                onChange={handleReporterChange}/>
+                                             onChange={handleReporterChange}/>
                             <TaskList>
                                 {values.reporter?.map((item) => (
                                     <Task key={item.id}>

@@ -12,6 +12,8 @@ const StyledChip = styled.div`
   border-radius: 40px;
   font-size: 14px;
   width: fit-content;
+  margin-right: 5px;
+  margin-bottom: 5px;
 
   svg {
     height: 16px;
