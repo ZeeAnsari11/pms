@@ -460,7 +460,7 @@ const ProfileVisibility = () => {
                     <ImageWrapper>
                         <CoverPictureWrapper>
                             <CircleImage>
-                                <ProfilePhotouploader onImageChange={handleImageChange} id="image" imagePath={`${process.env.REACT_APP_HOST}/media/${userData?.image}`}/>
+                                <ProfilePhotouploader onImageChange={handleImageChange} id="image" imagePath={`${process.env.REACT_APP_HOST}/${userData?.image}`}/>
                                 <UpdateProfile className="update-cover">
                                     <FontAwesomeIcon icon={faImage} fontSize={"30px"} onClick={() => {
                                     }}/>
