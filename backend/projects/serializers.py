@@ -2,6 +2,7 @@ from rest_framework import serializers
 from . import models
 from django.contrib.auth.models import User, Group, Permission
 from register.serializers import CompanySerializer
+from core.models import UserProfile
 from django.core.files.storage import default_storage
 import os
 from urllib.parse import urlparse
@@ -9,16 +10,29 @@ from urllib.parse import urlparse
 
 # from rest_framework import serializers
 
+class UserProfileSerializer(serializers.ModelSerializer):
+    image = serializers.ImageField(max_length=None, use_url=True)
+
+    class Meta:
+        model = UserProfile
+        fields = "__all__"
+
+
 class ComprehensiveUserSerializer(serializers.ModelSerializer):
+    userprofile = UserProfileSerializer(read_only=True)
+
     class Meta:
         model = User
-        fields = ['id', 'username', 'last_login', 'is_superuser', 'email', 'is_staff', 'is_active', 'user_permissions']
+        fields = ['id', 'username', 'last_login', 'is_superuser', 'email', 'is_staff', 'is_active', 'user_permissions',
+                  'userprofile']
 
 
 class SummarizedUserSerializer(serializers.ModelSerializer):
+    userprofile = UserProfileSerializer(read_only=True)
+
     class Meta:
         model = User
-        fields = ['id', 'username']
+        fields = ['id', 'username', 'email', 'userprofile']
 
 
 class ContentPermissionsSerializer(serializers.ModelSerializer):
@@ -84,8 +98,8 @@ class ProjectSMTPWebhookSerializer(serializers.ModelSerializer):
 
 
 class ProjectSerializer(serializers.ModelSerializer):
-    assignees = ComprehensiveUserSerializer(many=True)
-    project_lead = ComprehensiveUserSerializer(read_only=True)
+    assignees = SummarizedUserSerializer(many=True)
+    project_lead = SummarizedUserSerializer(read_only=True)
     type = ProjectTypeSerializer(read_only=True)
     status = ProjectStatusSerializer(read_only=True)
     category = ProjectCategorySerializer(read_only=True)
@@ -115,7 +129,7 @@ class CreateProjectMembershipSerializer(serializers.ModelSerializer):
 
 
 class ProjectIssuesSerializer(serializers.ModelSerializer):
-    assignee = ComprehensiveUserSerializer(read_only=True)
+    assignee = SummarizedUserSerializer(read_only=True)
     reporter = SummarizedUserSerializer(read_only=True)
     created_by = SummarizedUserSerializer(read_only=True)
     updated_by = SummarizedUserSerializer(read_only=True)
