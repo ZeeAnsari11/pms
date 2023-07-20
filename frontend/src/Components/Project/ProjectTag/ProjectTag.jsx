@@ -25,6 +25,10 @@ const StyledEditFormItem = styled(EditForm.Item)`
   align-items: center;
   margin-bottom: 10px;
   justify-content: space-between;
+
+  .ant-form-item-label {
+    font-weight: bold;
+  }
 `;
 
 const StyledAddFormItem = styled(AddForm.Item)`
@@ -32,6 +36,10 @@ const StyledAddFormItem = styled(AddForm.Item)`
   align-items: center;
   margin-bottom: 10px;
   justify-content: space-between;
+
+  .ant-form-item-label {
+    font-weight: bold;
+  }
 `;
 
 const ColorBox = styled.div`
@@ -267,7 +275,7 @@ function Tags() {
                 >
                     {selectedItem ? (
                         <>
-                            <EditForm form={editTagForm} onFinish={handleEditModal}>
+                            <EditForm layout="vertical" form={editTagForm} onFinish={handleEditModal}>
                                 <StyledEditFormItem label="Name" name="name" rules={[{ required:true}]}>
                                     <Input />
                                 </StyledEditFormItem>
@@ -278,7 +286,7 @@ function Tags() {
                         </>
                     ) : (
                         <>
-                            <AddForm form={addTagForm} onFinish={handleAddModal} >
+                            <AddForm layout="vertical" form={addTagForm} onFinish={handleAddModal} >
                                 <StyledAddFormItem label="Name" name="name" value={null} rules={[{required:true, message: 'Please enter the Tag Name' }]}>
                                     <Input />
                                 </StyledAddFormItem>

@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import {Delete, Clock, MoreHorizontal} from "react-feather";
-import { Modal } from 'antd';
+import {Modal} from 'antd';
 import Chip from "../Chip/Chip";
 import Dropdown from "../Dropdown/Dropdown";
 import CardInfo from "../CardInfo/CardInfo";
@@ -20,6 +20,7 @@ const CardContainer = styled.div`
 
 const CardTop = styled.div`
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-start;
 `;
 
@@ -28,6 +29,7 @@ const CardTopMore = styled.div`
   height: 20px;
   transform: translateX(15px);
   flex: 1;
+  float: right;
   cursor: pointer;
   opacity: 0;
   transition: 200ms;
@@ -37,7 +39,6 @@ const CardTopMore = styled.div`
   &:hover {
     opacity: 1;
   }
-
 `;
 
 
@@ -98,7 +99,7 @@ function Card(props) {
         setshowModal(false);
         navigate(-1); // Go back to the previous URL
     };
-
+    console.log("props.Card?.labels:", props.Card?.labels)
 
 
     return (
@@ -117,14 +118,7 @@ function Card(props) {
                 onDragEnter={() => props.handleDragEnter(props.Card?.id, props.boardId)}
                 onClick={handleCardClick}
             >
-                <CardTop>
-
-                    {props.Card?.labels?.map((item, index) => {
-                        if (item.color) {
-                            return <Chip key={index} text={item.text} color={item.color} />;
-                        }
-                    })}
-
+                <div>
                     <CardTopMore
                         onClick={(e) => {
                             e.stopPropagation();
@@ -140,18 +134,25 @@ function Card(props) {
                                     props.removeCard(props.Card?.id, props.boardId);
                                     setDisplayDeleteTaskModal(!displayDeleteTaskModal);
                                 }}
-                                okButtonProps={{ style: { backgroundColor: 'rgb(30, 100, 209)' } }}
+                                okButtonProps={{style: {backgroundColor: 'rgb(30, 100, 209)'}}}
                                 okText="Delete"
                                 cancelText="Cancel"
-                                >
+                            >
                                 <p>
                                     Are you sure you want to delete task: <strong>{props.Card?.slug}</strong>?
                                 </p>
 
-                                </Modal>
+                            </Modal>
                         )}
                     </CardTopMore>
-                </CardTop>
+                    <CardTop>
+                        {props.Card?.labels?.map((item, index) => {
+                            if (item.color) {
+                                return <Chip key={index} text={item.name} color={item.color}/>;
+                            }
+                        })}
+                    </CardTop>
+                </div>
                 <CardTitle>{props.Card?.title}</CardTitle>
                 <CardFooter>
                     {props.Card?.date && (

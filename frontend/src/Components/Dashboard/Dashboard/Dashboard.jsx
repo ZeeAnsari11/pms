@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import Board from '../Board/Board';
 import Toast from "../../../Shared/Components/Toast"
-import { displayErrorMessage, displaySuccessMessage } from "../../../Shared/notify"
+import {displayErrorMessage, displaySuccessMessage} from "../../../Shared/notify"
 import ProjectSidebar from '../Sidebar/ProjectSidebar';
 import NavBar from "../Navbar/index";
 import styled from 'styled-components';
@@ -32,22 +32,21 @@ const DashboardBoards = styled.div`
 `;
 
 
-
 function Dashboard(props) {
 
     const [issuesData, setIssuesData] = useState({});
     const [issuesStatues, setIssuesStatues] = useState({});
-    const [target, setTarget] = useState({ cid: "", bid: "", })
+    const [target, setTarget] = useState({cid: "", bid: "",})
     const [boards, setboards] = useState([]);
 
     const {projectId} = useParams()
 
     let authToken = localStorage.getItem('auth_token')
-    const deleteIssue =  (issueId) => {
+    const deleteIssue = (issueId) => {
         axios
             .delete(`${process.env.REACT_APP_HOST}/api/projects/${projectId}/issues/${issueId}/`, {
-                headers: { Authorization: `Token ${authToken}`},
-            } )
+                headers: {Authorization: `Token ${authToken}`},
+            })
             .then(response => {
                 displaySuccessMessage(`Successfully delete the task.`)
             })
@@ -66,8 +65,8 @@ function Dashboard(props) {
             });
 
             const projectIssuesStatusesPromise = axios.get(`${process.env.REACT_APP_HOST}/api/project_status`, {
-                params: { project: projectId },
-                headers: { Authorization: `Token ${authToken}` },
+                params: {project: projectId},
+                headers: {Authorization: `Token ${authToken}`},
             });
 
             const [projectIssuesResponse, projectIssuesStatusesResponse] = await Promise.all([
@@ -92,12 +91,11 @@ function Dashboard(props) {
                 id: issue?.id,
                 title: issue?.name,
                 tasks: [],
-                labels: [
-                    {
-                        text: issue?.label?.name,
-                        color: issue?.label?.color,
-                    },
-                ],
+                labels: issue?.label?.map((label) => ({
+                    id:label?.id,
+                    name: label?.name,
+                    color: label?.color,
+                })),
                 desc: issue?.description,
                 date: "",
                 slug: issue?.slug,
@@ -132,27 +130,27 @@ function Dashboard(props) {
             return statusMap;
         };
 
-        if(issuesData && Array.isArray(issuesStatues)){
+        if (issuesData && Array.isArray(issuesStatues)) {
             const cardsData = prepareIssuesData(issuesData);
             const newBoardData = issuesStatues.map((status) => {
-            return {
-                id: Date.now() + Math.random() * 2,
-                title: status.status,
-                priority: status.priority,
-                cards: cardsData.hasOwnProperty(status.status) ? cardsData[status.status] : []
-            };
-        })
-            .sort((a, b) => a.priority - b.priority);
+                return {
+                    id: Date.now() + Math.random() * 2,
+                    title: status.status,
+                    priority: status.priority,
+                    cards: cardsData.hasOwnProperty(status.status) ? cardsData[status.status] : []
+                };
+            })
+                .sort((a, b) => a.priority - b.priority);
 
-        if(cardsData.hasOwnProperty('Unknown Status')) {
-            newBoardData.push({
-                id: Date.now() + Math.random() * 2,
-                title: 'Unknown Status',
-                cards: cardsData['Unknown Status']
-            });
-        }
+            if (cardsData.hasOwnProperty('Unknown Status')) {
+                newBoardData.push({
+                    id: Date.now() + Math.random() * 2,
+                    title: 'Unknown Status',
+                    cards: cardsData['Unknown Status']
+                });
+            }
 
-        setboards(newBoardData);
+            setboards(newBoardData);
         }
     }, [issuesData, issuesStatues]);
 
@@ -244,7 +242,7 @@ function Dashboard(props) {
         <DashboardContainer>
             <ProjectSidebar/>
             <NavBar/>
-            <Toast />
+            <Toast/>
             <DashboardOuter>
                 <DashboardBoards>
                     {

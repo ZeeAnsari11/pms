@@ -235,9 +235,8 @@ class Issue(models.Model):
         null=True,
         related_name='project_status'
     )
-    label = models.ForeignKey(
+    label = models.ManyToManyField(
         ProjectLabels,
-        on_delete=models.CASCADE,
         blank=True,
         null=True,
         related_name='project_label'
