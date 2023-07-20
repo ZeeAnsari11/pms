@@ -1,26 +1,25 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import styled from 'styled-components';
 import NavBar from '../../Dashboard/Navbar/index';
 import apiRequest from '../../../Utils/apiRequest';
 import Toast from "../../../Shared/Components/Toast"
 import {displaySuccessMessage, displayErrorMessage} from "../../../Shared/notify"
-import { Table, Input, Button, Modal, Pagination, Space, Form, Switch } from 'antd';
-import { AiOutlineEdit, AiOutlineDelete } from 'react-icons/ai';
+import {Table, Input, Button, Modal, Pagination, Space, Form, Switch} from 'antd';
+import {AiOutlineEdit, AiOutlineDelete} from 'react-icons/ai';
 import UserSidebar from "../../Dashboard/Sidebar/UserSidebar";
 
 
-
 const UserContainer = styled.div`
-    margin-left: 16%;
-    margin-top: 0%;
-    padding-top: 50px;
-    padding-left: 20px;
-    margin-right: 20px;
+  margin-left: 16%;
+  margin-top: 0%;
+  padding-top: 50px;
+  padding-left: 20px;
+  margin-right: 20px;
 `;
 
 
 const PermissionsTable = styled(Table)`
-    margin-top: 20px;
+  margin-top: 20px;
 `;
 
 const PaginationWrapper = styled.div`
@@ -33,10 +32,14 @@ const StyledFormItem = styled(Form.Item)`
   align-items: center;
   margin-bottom: 10px;
   justify-content: space-between;
+
+  .ant-form-item-label {
+    font-weight: bold;
+  }
 `;
 
 
-const ManageUsers = ( ) => {
+const ManageUsers = () => {
     const [data, setData] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
@@ -51,7 +54,7 @@ const ManageUsers = ( ) => {
 
     let authToken = localStorage.getItem('auth_token');
 
-    const  updateTable = ( responseData, id ) => {
+    const updateTable = (responseData, id) => {
         const updatedData = data.map(item => {
             if (item.id === responseData.id) {
                 return {
@@ -75,21 +78,21 @@ const ManageUsers = ( ) => {
 
     const handleDelete = (id) => {
         Modal.confirm({
-        title: 'Confirm Delete',
-        content: 'Are you sure you want to delete this user?',
-        onOk: () => {
-            deleteUser(id);
-            const updatedData = data.filter((item) => item.id !== id);
-            setData(updatedData);
-            setFilteredData(updatedData);
-            setTotalItems(updatedData.length);
+            title: 'Confirm Delete',
+            content: 'Are you sure you want to delete this user?',
+            onOk: () => {
+                deleteUser(id);
+                const updatedData = data.filter((item) => item.id !== id);
+                setData(updatedData);
+                setFilteredData(updatedData);
+                setTotalItems(updatedData.length);
             },
         });
     };
 
     const fetchUsers = () => {
         apiRequest
-            .get(`/api/users_list/`, { headers: {"Authorization": `Token ${authToken}`} } )
+            .get(`/api/users_list/`, {headers: {"Authorization": `Token ${authToken}`}})
             .then(response => {
                 const mappedValues = response.data.map(item => {
                     return {
@@ -112,29 +115,29 @@ const ManageUsers = ( ) => {
     };
 
     const updateUser = (values) => {
-        if(modalData.id){
+        if (modalData.id) {
             apiRequest
-            .patch(`/api/users_list/${modalData.id}/`,
-                {
-                    "username": values.username,
-                    "email": values.email,
-                    "is_superuser": values.isSuperUser,
-                    "is_staff": values.isStaff,
-                    "is_active": values.isActive,
-                },
-                { headers: {"Authorization": `Token ${authToken}`} } )
-            .then(response => {
-                updateTable(response.data);
-                displaySuccessMessage(`Successfully Update the user: ${values.email} `)
-            })
-            .catch(error => {
-                displayErrorMessage(error.message)
-            });
+                .patch(`/api/users_list/${modalData.id}/`,
+                    {
+                        "username": values.username,
+                        "email": values.email,
+                        "is_superuser": values.isSuperUser,
+                        "is_staff": values.isStaff,
+                        "is_active": values.isActive,
+                    },
+                    {headers: {"Authorization": `Token ${authToken}`}})
+                .then(response => {
+                    updateTable(response.data);
+                    displaySuccessMessage(`Successfully Update the user: ${values.email} `)
+                })
+                .catch(error => {
+                    displayErrorMessage(error.message)
+                });
         }
     };
     const deleteUser = (id) => {
         apiRequest
-            .delete(`/api/users_list/${id}`, { headers: {"Authorization": `Token ${authToken}`} } )
+            .delete(`/api/users_list/${id}`, {headers: {"Authorization": `Token ${authToken}`}})
             .then(response => {
                 displaySuccessMessage('Successfully delete the requested user!')
             })
@@ -185,24 +188,24 @@ const ManageUsers = ( ) => {
     };
 
     const columns = [
-    { title: 'ID', dataIndex: 'id' },
-    { title: 'Username', dataIndex: 'username' },
-    { title: 'Email', dataIndex: 'email' },
-    { title: 'Admin Status', dataIndex: 'isSuperUser', render: (isSuperUser) => (isSuperUser ? 'Yes' : 'No') },
-    { title: 'Active Status', dataIndex: 'isActive', render: (isActive) => (isActive ? 'Yes' : 'No') },
-    { title: 'Staff Status', dataIndex: 'isStaff', render: (isStaff) => (isStaff ? 'Yes' : 'No') },
-    { title: 'Last LogIn', dataIndex: 'lastLogIn' },
-    {
-        title: 'Actions',
+        {title: 'ID', dataIndex: 'id'},
+        {title: 'Username', dataIndex: 'username'},
+        {title: 'Email', dataIndex: 'email'},
+        {title: 'Admin Status', dataIndex: 'isSuperUser', render: (isSuperUser) => (isSuperUser ? 'Yes' : 'No')},
+        {title: 'Active Status', dataIndex: 'isActive', render: (isActive) => (isActive ? 'Yes' : 'No')},
+        {title: 'Staff Status', dataIndex: 'isStaff', render: (isStaff) => (isStaff ? 'Yes' : 'No')},
+        {title: 'Last LogIn', dataIndex: 'lastLogIn'},
+        {
+            title: 'Actions',
             render: (_, record) => (
-            <Space>
-                <Button type="link" onClick={() => handleEdit(record)}>
-                    <AiOutlineEdit /> Edit
-                </Button>
-                <Button type="link" onClick={() => handleDelete(record.id)}>
-                    <AiOutlineDelete /> Delete
-                </Button>
-            </Space>
+                <Space>
+                    <Button type="link" onClick={() => handleEdit(record)}>
+                        <AiOutlineEdit/> Edit
+                    </Button>
+                    <Button type="link" onClick={() => handleDelete(record.id)}>
+                        <AiOutlineDelete/> Delete
+                    </Button>
+                </Space>
             ),
         },
     ];
@@ -212,7 +215,6 @@ const ManageUsers = ( ) => {
     const paginatedData = filteredData.slice(startIndex, endIndex);
 
 
-
     return (
         <>
             <UserSidebar/>
@@ -220,13 +222,14 @@ const ManageUsers = ( ) => {
             <Toast/>
             <UserContainer>
                 <h2>Users List</h2>
-                <Input.Search placeholder="Search by Username or Email" value={searchQuery} onChange={handleSearch} style={{ marginBottom: 16 }} />
+                <Input.Search placeholder="Search by Username or Email" value={searchQuery} onChange={handleSearch}
+                              style={{marginBottom: 16}}/>
                 <PermissionsTable
                     dataSource={paginatedData}
                     columns={columns}
                     pagination={false}
                     rowKey="id"
-                    />
+                />
                 <PaginationWrapper>
                     <Pagination
                         current={currentPage}
@@ -235,8 +238,8 @@ const ManageUsers = ( ) => {
                         onChange={handlePageChange}
                         showSizeChanger
                         onShowSizeChange={handlePageSizeChange}
-                        style={{ marginBottom: 16 }}
-                />
+                        style={{marginBottom: 16}}
+                    />
                 </PaginationWrapper>
             </UserContainer>
 
@@ -250,28 +253,29 @@ const ManageUsers = ( ) => {
                     </Button>,
                 ]}
             >
-            {modalData && (
-                <Form form={form} onFinish={handleModalSave} initialValues={modalData}>
-                    <StyledFormItem label="Username" name="username" rules={[{ message: 'Please enter a username' }]}>
-                        <Input />
-                    </StyledFormItem>
-                    <StyledFormItem label="Email" name="email" rules={[{ message: 'Please enter an email' }]}>
-                        <Input />
-                    </StyledFormItem>
-                    <StyledFormItem label="Admin Status" name="isSuperUser" valuePropName="checked">
-                        <Switch />
-                    </StyledFormItem>
-                    <StyledFormItem label="Active Status" name="isActive" valuePropName="checked">
-                        <Switch />
-                    </StyledFormItem>
-                    <StyledFormItem label="Is Staff" name="isStaff" valuePropName="checked">
-                        <Switch />
-                    </StyledFormItem>
-                    <StyledFormItem label="Last LogIn" name="lastLogIn" rules={[{message: 'Please enter an email' }]}>
-                        <Input disabled />
-                    </StyledFormItem>
-                </Form>
-            )}
+                {modalData && (
+                    <Form layout="vertical" form={form} onFinish={handleModalSave} initialValues={modalData}>
+                        <StyledFormItem label="Username" name="username" rules={[{message: 'Please enter a username'}]}>
+                            <Input/>
+                        </StyledFormItem>
+                        <StyledFormItem label="Email" name="email" rules={[{message: 'Please enter an email'}]}>
+                            <Input/>
+                        </StyledFormItem>
+                        <StyledFormItem label="Admin Status" name="isSuperUser" valuePropName="checked">
+                            <Switch/>
+                        </StyledFormItem>
+                        <StyledFormItem label="Active Status" name="isActive" valuePropName="checked">
+                            <Switch/>
+                        </StyledFormItem>
+                        <StyledFormItem label="Is Staff" name="isStaff" valuePropName="checked">
+                            <Switch/>
+                        </StyledFormItem>
+                        <StyledFormItem label="Last LogIn" name="lastLogIn"
+                                        rules={[{message: 'Please enter an email'}]}>
+                            <Input disabled/>
+                        </StyledFormItem>
+                    </Form>
+                )}
             </Modal>
         </>
     );

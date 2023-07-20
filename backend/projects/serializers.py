@@ -119,7 +119,7 @@ class ProjectIssuesSerializer(serializers.ModelSerializer):
     reporter = SummarizedUserSerializer(read_only=True)
     created_by = SummarizedUserSerializer(read_only=True)
     updated_by = SummarizedUserSerializer(read_only=True)
-    label = ProjectLabelsSerializer(read_only=True)
+    label = ProjectLabelsSerializer(read_only=True, many=True)
     type = ProjectTypeSerializer(read_only=True)
     status = ProjectStatusSerializer(read_only=True)
 
@@ -205,7 +205,7 @@ class CreateIssueSerializer(serializers.ModelSerializer):
 class IssueSerializer(serializers.ModelSerializer):
     assignee = ComprehensiveUserSerializer(read_only=True)
     reporter = ComprehensiveUserSerializer(read_only=True)
-    label = ProjectLabelsSerializer(read_only=True)
+    label = ProjectLabelsSerializer(read_only=True, many=True)
     type = ProjectTypeSerializer(read_only=True)
     status = ProjectStatusSerializer(read_only=True)
 

@@ -44,11 +44,11 @@ class ProjectAdmin(admin.ModelAdmin):
 
 
 class IssueAdmin(admin.ModelAdmin):
-    list_display = ['name', 'project', 'assignee', 'summary', 'status', 'type', 'label', 'reporter', 'priority',
+    list_display = ['name', 'project', 'assignee', 'summary', 'status', 'type', 'reporter', 'priority',
                     'created_by', 'updated_by']
     search_fields = ['name', 'project__name']
     autocomplete_fields = ['project', 'assignee', 'reporter', 'created_by', 'updated_by', 'status', 'type', 'label']
-    list_editable = ['priority', 'assignee', 'status', 'type', 'label']
+    list_editable = ['priority', 'assignee', 'status', 'type']
 
 
 class CommentAdmin(admin.ModelAdmin):
