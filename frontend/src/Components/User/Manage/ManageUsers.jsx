@@ -170,18 +170,21 @@ const ManageUsers = ( ) => {
 
     const handleEdit = (record) => {
         setModalData(record);
+        form.setFieldsValue(record);
         setModalVisible(true);
     };
 
     const handleModalClose = () => {
-        setModalVisible(false);
         setModalData(null);
+        form.resetFields();
+        setModalVisible(false);
     };
 
     const handleModalSave = (values) => {
         updateUser(values);
-        setModalVisible(false);
         setModalData(null);
+        form.resetFields();
+        setModalVisible(false);
     };
 
     const columns = [
