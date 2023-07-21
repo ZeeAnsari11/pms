@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import * as ProjectViewComponents from './style'
+import * as ProjectViewComponents from './Style'
 import ProjectListing from '../ProjectListing/ProjectListing';
 import NavBar from '../../Dashboard/Navbar';
 

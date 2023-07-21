@@ -1,6 +1,6 @@
 import {Upload} from 'antd';
 import React, {useState} from 'react';
-import * as PhotoUploadComponents from './style';
+import * as PhotoUploadComponents from './Style';
 
 
 const FileUploaderButton = ({handleUpload}) => {

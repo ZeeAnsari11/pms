@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import * as ForgetPasswordComponents from './style';
+import * as ForgetPasswordComponents from './Style';
 import apiRequest from '../../../Utils/apiRequest';
 import { StatusCodes } from 'http-status-codes';
 import '../../../Configurations/colors';
