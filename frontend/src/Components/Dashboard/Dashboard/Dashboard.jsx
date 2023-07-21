@@ -4,32 +4,9 @@ import Toast from "../../../Shared/Components/Toast"
 import {displayErrorMessage, displaySuccessMessage} from "../../../Shared/notify"
 import ProjectSidebar from '../Sidebar/ProjectSidebar';
 import NavBar from "../Navbar/index";
-import styled from 'styled-components';
 import {useParams} from 'react-router-dom';
 import axios from "axios";
-
-const DashboardContainer = styled.div`
-  height: 100vh;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-`;
-
-const DashboardOuter = styled.div`
-  flex: 1;
-  overflow-x: auto;
-  padding: 0px 20px 0px 20px;
-  margin-left: 200px;
-  margin-bottom: -10px;
-`;
-
-const DashboardBoards = styled.div`
-  min-width: fit-content;
-  display: flex;
-  gap: 30px;
-  height: 100%;
-  margin-top: 50px;
-`;
+import * as DashboardComponents from "./Style"
 
 
 function Dashboard(props) {
@@ -92,7 +69,7 @@ function Dashboard(props) {
                 title: issue?.name,
                 tasks: [],
                 labels: issue?.label?.map((label) => ({
-                    id:label?.id,
+                    id: label?.id,
                     name: label?.name,
                     color: label?.color,
                 })),
@@ -239,12 +216,12 @@ function Dashboard(props) {
     }
 
     return (
-        <DashboardContainer>
+        <DashboardComponents.DashboardContainer>
             <ProjectSidebar/>
             <NavBar/>
             <Toast/>
-            <DashboardOuter>
-                <DashboardBoards>
+            <DashboardComponents.DashboardOuter>
+                <DashboardComponents.DashboardBoards>
                     {
                         boards.map((item) => (<Board
                                 key={item.id} board={item}
@@ -257,9 +234,9 @@ function Dashboard(props) {
                             />
                         ))
                     }
-                </DashboardBoards>
-            </DashboardOuter>
-        </DashboardContainer>
+                </DashboardComponents.DashboardBoards>
+            </DashboardComponents.DashboardOuter>
+        </DashboardComponents.DashboardContainer>
     );
 };
 export default Dashboard;

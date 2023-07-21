@@ -1,18 +1,6 @@
 import React from "react";
 import Select from "react-select";
-import styled from "styled-components";
-import makeAnimated from 'react-select/animated';
-
-
-const animatedComponents = makeAnimated();
-
-const Tag = styled.span`
-  background-color: ${(props) => props.color};
-  color: #fff;
-  padding: 3px 6px;
-  border-radius: 3px;
-  margin-right: 5px;
-`;
+import * as MultiSelectFieldComponents from './MultiSelectFieldStyle';
 
 const MultiSelectField = ({
                               options,
@@ -43,14 +31,14 @@ const MultiSelectField = ({
                     marginTop: "5px"
                 })
             }}
-            components={animatedComponents}
+            components={MultiSelectFieldComponents.animatedComponents}
             placeholder={placeholder}
             options={options}
             defaultValue={defaultValues}
             getOptionLabel={(option) => (
-                <Tag color={option.color}>
+                <MultiSelectFieldComponents.Tag color={option.color}>
                     {option.name}
-                </Tag>
+                </MultiSelectFieldComponents.Tag>
             )}
             getOptionValue={(option) => option.id}
         />

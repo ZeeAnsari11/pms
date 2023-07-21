@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from "react";
-import {Tooltip, Input} from "antd";
 import {InfoCircleOutlined} from "@ant-design/icons";
+import * as EstimateTimerComponents from "./Style"
 
 const TimeEstimationField = ({onHoursChange, defaultValue}) => {
     const [input, setInput] = useState("");
@@ -13,20 +13,6 @@ const TimeEstimationField = ({onHoursChange, defaultValue}) => {
         }
     }, [defaultValue]);
 
-    const inputStyles = {
-        fontSize: "16px",
-        padding: "8px",
-        borderRadius: "4px",
-        border: "2px solid #D9D9D9",
-        marginBottom: "16px",
-        width: "96%",
-
-    };
-
-    const errorStyles = {
-        color: "red",
-        marginTop: "8px",
-    };
 
     const tooltipContent = (
         <div style={{color: "black"}}>
@@ -88,17 +74,16 @@ const TimeEstimationField = ({onHoursChange, defaultValue}) => {
     return (
         <div>
 
-            <Input
+            <EstimateTimerComponents.StyledInput
                 type="text"
                 value={input}
                 onChange={handleInputChange}
-                style={inputStyles}
                 placeholder={"2w 0d 6h 30m"}
-                suffix={<Tooltip color={"white"} title={tooltipContent} placement="right"><InfoCircleOutlined
-                    style={{color: "#888888"}}/></Tooltip>}
+                suffix={<EstimateTimerComponents.StyledTooltip color={"white"} title={tooltipContent} placement="right"><InfoCircleOutlined
+                    style={{color: "#888888"}}/></EstimateTimerComponents.StyledTooltip>}
             />
 
-            {error && <p style={errorStyles}>{error}</p>}
+            {error && <EstimateTimerComponents.StyledErrorText>{error}</EstimateTimerComponents.StyledErrorText>}
         </div>
     );
 };

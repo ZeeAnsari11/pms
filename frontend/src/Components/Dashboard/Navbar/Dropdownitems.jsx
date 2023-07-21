@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { RiExternalLinkLine, RiFeedbackFill } from "react-icons/ri";
 import { VscProject } from "react-icons/vsc";
 import { BiPlus } from "react-icons/bi";

@@ -1,31 +1,6 @@
 import React, {useState, useEffect} from "react";
 import {Select} from "antd";
-import styled from "styled-components";
-import {FaUserCircle} from "react-icons/fa";
-
-const {Option} = Select;
-
-const UserSelectContainer = styled.div`
-  display: flex;
-  align-items: center;
-
-  .ant-select {
-    border-radius: 9999px; /* set border-radius to a large value */
-  }
-`;
-
-const UserIcon = ({user}) => {
-    const defaultIcon = <FaUserCircle/>;
-    const iconUrl = user && user.iconUrl;
-
-    const userIcon = iconUrl ? (
-        <img src={iconUrl} alt="User icon" style={{width: "10px", height: "10px"}}/>
-    ) : (
-        defaultIcon
-    );
-
-    return <span style={{marginRight: "8px"}}>{userIcon}</span>;
-};
+import * as UserSelectFieldComponents from "./UserSelectFieldStyle"
 
 const UserSelect = ({
                         users,
@@ -72,12 +47,12 @@ const UserSelect = ({
             {...rest}
         >
             {users.map((user) => (
-                <Option key={user.id} value={user.id}>
-                    <UserSelectContainer>
-                        <UserIcon user={user}/>
+                <UserSelectFieldComponents.Option key={user.id} value={user.id}>
+                    <UserSelectFieldComponents.UserSelectContainer>
+                        <UserSelectFieldComponents.UserIcon user={user}/>
                         {user.username}
-                    </UserSelectContainer>
-                </Option>
+                    </UserSelectFieldComponents.UserSelectContainer>
+                </UserSelectFieldComponents.Option>
             ))}
         </Select>
     );

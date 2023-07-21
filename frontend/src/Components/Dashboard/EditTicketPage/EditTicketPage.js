@@ -1,267 +1,26 @@
 import React, {useEffect, useState} from 'react';
 import styled from 'styled-components';
-import {useNavigate, useParams} from "react-router-dom";
+import {useParams} from "react-router-dom";
 import NavBar from "../../Dashboard/Navbar";
 import Sidebar from "../../Dashboard/Sidebar/ProjectSidebar";
 import FileUpload from "../FileAttachement/FileUpload";
 import axios from "axios";
-import ImageUploader from "../../User/ImageUploader";
 import {Input} from "antd";
 import UserSelectField from "../SelectFields/UserSelectField";
-import {Collapse} from 'antd';
-import GenericSelectField from "../SelectFields/GenericSelectField";
 import TrackingField from "../TimeTracking";
 import Editable from "../Editable/Editable";
-import Description from "../TextEditor/TextEditor"
 import Comment from "../Comment/Comment";
 import Worklog from "../Worklog/Worklog";
 import ReactQuill from "react-quill";
 import MultiSelectField from "../SelectFields/MultiSelectField";
+import * as EditTicketPageComponents from "./Style"
 
 const {TextArea} = Input;
 
-const {Panel} = Collapse;
-
-const PageWrapper = styled.div`
-  background-color: #fff;
-  height: 100vh;
-  padding: 0 0 0 18%;
-`;
-
-const Header = styled.header`
-  display: flex;
-  align-items: flex-start;
-  padding: 0.5rem;
-`;
-
-const Details = styled.h1`
-  margin-top: 50px;
-  margin-bottom: 20px;
-  margin-left: 1px;
-`;
-
-const NameInput = styled.input`
-  border: 2px solid #ccc;
-  border-radius: 5px;
-  padding: 0.5rem;
-  font-size: 1rem;
-  margin-bottom: 2%;
-  background-color: #FAFBFC;
-  width: 359px;
-
-  :hover {
-    background-color: #EBECF0;
-  }
-`;
-
-const RightSideWrapper = styled.div`
-  margin-left: auto;
-  margin-right: 10px;
-  width: 40%;
-  padding-left: 20px;
-`;
-
-const RightSideContent = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 10px;
-`;
-
-const LeftSideWrapper = styled.div`
-  margin-right: auto;
-  margin-left: 10px;
-  width: 60%;
-  padding-right: 20px;
-`;
-
-const LeftSideContent = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-`;
-
-
-const StyledCollapse = styled(Collapse)`
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  overflow: hidden;
-  width: 100%;
-`;
-
-const StyledPanel = styled(Panel)`
-  background-color: #F4F5F7;
-  border-bottom: 1px solid #ddd;
-
-  &:last-child {
-    border-bottom: none;
-  }
-`;
-
-const FormWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const Label = styled.label`
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-  margin-right: 325px;
-`;
-
-const LabelForKey = styled.label`
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-  margin-right: 342px;
-`;
-
-
-const Labelforlead = styled.label`
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-  margin-top: 10px;
-  margin-right: 278px;
-`;
-
-
-const ContentInfoTitle = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: 10px;
-  font-weight: 600;
-  font-size: 1rem;
-
-  span {
-    display: inline-block;
-    width: 100px;
-  }
-`;
-
-const Title = styled.div`
-  width: fit-content;
-  font-weight: 700;
-  margin-bottom: 10px;
-  margin-top: 5px;
-  color: #727F94;
-`;
-
-
-const IssueTitle = styled.div`
-  font-weight: 700;
-  margin-bottom: 10px;
-  margin-top: 5px;
-`;
-
-
-const Container = styled.div`
-  display: flex;
-`;
-
-const LeftSide = styled.div`
-  width: 65%;
-  padding-top: 70px;
-  margin-left: 220px;
-`;
-
-const RightSide = styled.div`
-  width: 35%;
-  padding-top: 80px;
-  margin-right: 10px;
-  margin-left: 10px;
-`;
-
-const CardInfoBoxCustom = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding-bottom: 10px;
-`;
-
-const FileAttachmentsContent = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding-bottom: 10px;
-`;
-
-const CardInfoBoxTitle = styled.div`
-  font-weight: bold;
-  font-size: 1.3rem;
-  display: flex;
-  gap: 10px;
-  align-items: center;
-`;
-
-const CardInfoBox = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-`;
-
-const ActivityButton = styled.button`
-  cursor: pointer;
-  border-radius: 5px;
-  background-color: #F4F5F7;
-  color: black;
-  border: none;
-  transition: 100ms ease;
-  padding: 10px;
-  font-size: inherit;
-`;
-
-const CommentInput = styled.input`
-  flex: 1;
-  margin-right: 8px;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 3px;
-`;
-
-const CommentButton = styled.button`
-  padding: 8px 12px;
-  background-color: #0052cc;
-  color: #fff;
-  border: none;
-  border-radius: 3px;
-`;
-
-const FormContainer = styled.form`
-  display: flex;
-  align-items: center;
-  margin-bottom: 16px;
-`;
-
-const SaveButton = styled.button`
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background-color: #0062FF;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  font-size: 1rem;
-  font-weight: bold;
-  padding: 0.5rem 1rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease-in-out;
-  z-index: 999;
-
-  &:hover {
-    background-color: #3e81ed;
-    cursor: pointer;
-  }
-`;
 
 function EditTicketPage({props}) {
     let authToken = localStorage.getItem('auth_token')
 
-
-    const initialworklogs = [
-        {username: 'John', timeTracked: '2', description: 'Worklog 1'},
-        {username: 'Jane', timeTracked: '3', description: 'Worklog 2'},
-        {username: 'Bob', timeTracked: '1', description: 'Worklog 3'},
-    ];
 
     const handleWorklogDelete = (index) => {
         const newWorklogs = [...worklogs];
@@ -303,10 +62,6 @@ function EditTicketPage({props}) {
     const [IssuesData, setIssuesData] = useState([]);
     const [IssueType, setIssueType] = useState('');
     const [IssueLabels, setIssueLabels] = useState('');
-
-    const [selectedIssueStatus, setSelectedIssueStatus] = useState('');
-    const [selectedIssueType, setSelectedIssueType] = useState('');
-    const [selectedPriority, setSelectedPriority] = useState('');
 
 
     const [Users, setUsers] = useState('');
@@ -653,10 +408,10 @@ function EditTicketPage({props}) {
 
             <NavBar/>
             <Sidebar/>
-            <FormWrapper>
-                <Container>
-                    <LeftSide>
-                        <IssueTitle>
+            <EditTicketPageComponents.FormWrapper>
+                <EditTicketPageComponents.Container>
+                    <EditTicketPageComponents.LeftSide>
+                        <EditTicketPageComponents.IssueTitle>
                             <Editable
                                 text={IssueName}
                                 placeholder={IssueName}
@@ -665,59 +420,61 @@ function EditTicketPage({props}) {
                                 hoverBackgroundColor={"#EBECF0"}
                                 onSubmit={(value) => handleNameChange(value)}
                             />
-                        </IssueTitle>
-                        <Title>
+                        </EditTicketPageComponents.IssueTitle>
+                        <EditTicketPageComponents.Title>
                             Summary
-                        </Title>
-                        <TextArea rows={2} value={IssueSummary} onChange={handleSummaryChange}/>
-                        <Title>
+                        </EditTicketPageComponents.Title>
+                        <TextArea rows={2} value={IssueSummary}
+                                  onChange={handleSummaryChange}/>
+                        <EditTicketPageComponents.Title>
                             Description
-                        </Title>
+                        </EditTicketPageComponents.Title>
                         <div style={{marginBottom: "15px"}}>
                             <ReactQuill value={IssueDesc} onChange={handleDescChange}/>
                         </div>
-                        <Title>
+                        <EditTicketPageComponents.Title>
                             File Attachments
-                        </Title>
-                        <FileAttachmentsContent>
+                        </EditTicketPageComponents.Title>
+                        <EditTicketPageComponents.FileAttachmentsContent>
                             <FileUpload onFilesChange={handleFilesChange} fileAttachmentArray={combinedArray}/>
-                        </FileAttachmentsContent>
+                        </EditTicketPageComponents.FileAttachmentsContent>
 
 
-                        <CardInfoBox style={{marginTop: '15px'}}>
+                        <EditTicketPageComponents.CardInfoBox style={{marginTop: '15px'}}>
 
                             <>
-                                <CardInfoBoxCustom>
-                                    <Title>Activity</Title>
+                                <EditTicketPageComponents.CardInfoBoxCustom>
+                                    <EditTicketPageComponents.Title>Activity</EditTicketPageComponents.Title>
                                     <div style={{display: 'flex', gap: '8px', borderRadius: '4px'}}>
-                                        <ActivityButton active={showComments} onClick={() => {
+                                        <EditTicketPageComponents.ActivityButton active={showComments} onClick={() => {
                                             setShowComments(true);
                                             setShowWorklog(false);
                                             setSelectedWorklog(null);
                                         }}>
                                             Comments
-                                        </ActivityButton>
-                                        <ActivityButton active={showWorklog} onClick={() => {
+                                        </EditTicketPageComponents.ActivityButton>
+                                        <EditTicketPageComponents.ActivityButton active={showWorklog} onClick={() => {
                                             setShowWorklog(true);
                                             setShowComments(false);
                                             setSelectedComment(null);
                                         }}>
                                             Work log
-                                        </ActivityButton>
+                                        </EditTicketPageComponents.ActivityButton>
                                     </div>
-                                </CardInfoBoxCustom>
+                                </EditTicketPageComponents.CardInfoBoxCustom>
                                 {showComments && (
-                                    <CardInfoBoxCustom>
-                                        <Title>Comments</Title>
-                                        <FormContainer onSubmit={handleCommentSubmit}>
-                                            <CommentInput
+                                    <EditTicketPageComponents.CardInfoBoxCustom>
+                                        <EditTicketPageComponents.Title>Comments</EditTicketPageComponents.Title>
+                                        <EditTicketPageComponents.FormContainer onSubmit={handleCommentSubmit}>
+                                            <EditTicketPageComponents.CommentInput
                                                 type="text"
                                                 placeholder="Add a comment..."
                                                 value={newComment}
                                                 onChange={handleNewCommentChange}
                                             />
-                                            <CommentButton type="submit">Send</CommentButton>
-                                        </FormContainer>
+                                            <EditTicketPageComponents.CommentButton
+                                                type="submit">Send</EditTicketPageComponents.CommentButton>
+                                        </EditTicketPageComponents.FormContainer>
                                         <ul>
                                             {comments.map((comment, index) => (
                                                 <Comment
@@ -734,11 +491,11 @@ function EditTicketPage({props}) {
                                                 />
                                             ))}
                                         </ul>
-                                    </CardInfoBoxCustom>
+                                    </EditTicketPageComponents.CardInfoBoxCustom>
                                 )}
                                 {showWorklog && (
-                                    <CardInfoBoxCustom>
-                                        <Title>Worklog</Title>
+                                    <EditTicketPageComponents.CardInfoBoxCustom>
+                                        <EditTicketPageComponents.Title>Worklog</EditTicketPageComponents.Title>
                                         <ul style={{marginTop: "-30px"}}>
                                             {worklogs.map((worklog, index) => (
                                                 <Worklog
@@ -757,17 +514,17 @@ function EditTicketPage({props}) {
                                                 />
                                             ))}
                                         </ul>
-                                    </CardInfoBoxCustom>
+                                    </EditTicketPageComponents.CardInfoBoxCustom>
                                 )}
                             </>
-                        </CardInfoBox>
+                        </EditTicketPageComponents.CardInfoBox>
 
-                    </LeftSide>
-                    <RightSide>
-                        <StyledCollapse defaultActiveKey={['1']}>
-                            <StyledPanel header="Details" key="1">
-                                <RightSideContent>
-                                    <ContentInfoTitle>
+                    </EditTicketPageComponents.LeftSide>
+                    <EditTicketPageComponents.RightSide>
+                        <EditTicketPageComponents.StyledCollapse defaultActiveKey={['1']}>
+                            <EditTicketPageComponents.StyledPanel header="Details" key="1">
+                                <EditTicketPageComponents.RightSideContent>
+                                    <EditTicketPageComponents.ContentInfoTitle>
                                         <span>Assignee</span>
                                         <UserSelectField
                                             onSelectChange={handleAssigneeChange}
@@ -776,23 +533,23 @@ function EditTicketPage({props}) {
                                             placeholder={"Unassigned"}
                                             defaultValue={currentAssignee}
                                         />
-                                    </ContentInfoTitle>
+                                    </EditTicketPageComponents.ContentInfoTitle>
 
-                                    <ContentInfoTitle>
+                                    <EditTicketPageComponents.ContentInfoTitle>
                                         <span>Time Tracking</span>
                                         <TrackingField OriginalEstimate={IssueEstimate}/>
-                                    </ContentInfoTitle>
+                                    </EditTicketPageComponents.ContentInfoTitle>
 
-                                    <ContentInfoTitle>
+                                    <EditTicketPageComponents.ContentInfoTitle>
                                         <span>Labels</span>
                                         <MultiSelectField options={IssueLabeloptions}
                                                           onSelectChange={handleLabelChange}
                                                           placeholder="Select Labels"
 
                                         />
-                                    </ContentInfoTitle>
+                                    </EditTicketPageComponents.ContentInfoTitle>
 
-                                    <ContentInfoTitle>
+                                    <EditTicketPageComponents.ContentInfoTitle>
                                         <span>Reporter</span>
                                         <UserSelectField
                                             onSelectChange={handleReporterChange}
@@ -801,16 +558,17 @@ function EditTicketPage({props}) {
                                             placeholder={"Unassigned"}
                                             defaultValue={currentReporter}
                                         />
-                                    </ContentInfoTitle>
+                                    </EditTicketPageComponents.ContentInfoTitle>
 
-                                </RightSideContent>
-                            </StyledPanel>
+                                </EditTicketPageComponents.RightSideContent>
+                            </EditTicketPageComponents.StyledPanel>
                             {/* Add more Panel components as needed */}
-                        </StyledCollapse>
-                    </RightSide>
-                </Container>
-            </FormWrapper>
-            <SaveButton onClick={handleFormSubmit}>Save Changes</SaveButton>
+                        </EditTicketPageComponents.StyledCollapse>
+                    </EditTicketPageComponents.RightSide>
+                </EditTicketPageComponents.Container>
+            </EditTicketPageComponents.FormWrapper>
+            <EditTicketPageComponents.SaveButton onClick={handleFormSubmit}>Save
+                Changes</EditTicketPageComponents.SaveButton>
 
         </div>
     );

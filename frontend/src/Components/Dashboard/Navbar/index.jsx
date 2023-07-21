@@ -6,15 +6,14 @@ import {
     NavbarExtendedContainer,
     NavbarInnerContainer,
     NavbarLinkContainer,
-    NavbarLink,
     Logo,
     OpenLinksButton,
     Button,
     NavbarLinkExtended,
-} from "./styles";
-import Dropdown from '../Dropdown/index'
+} from "./Styles";
+import Dropdown from './NavBarDropdown'
 import {projectItems, yourWorkItems, teamItems, notificationsItems, helpItems} from "./Dropdownitems";
-import { accountItems } from "../../User/Logout/index"
+import {accountItems} from "../../User/Logout/index"
 import {MdKeyboardArrowDown} from 'react-icons/md'
 import {IoMdNotifications} from 'react-icons/io'
 import {RxAvatar} from 'react-icons/rx'
@@ -54,10 +53,10 @@ function NavBar() {
                                 {extendNavbar ? <>&#10005;</> : <> &#8801;</>}
                             </OpenLinksButton>
                             <Dropdown items={yourWorkItems} name="Your Work"
-                                        icon={<MdKeyboardArrowDown size={20} style={{
-                                            marginRight: "10px", cursor: 'pointer',
-                                            marginLeft: "-7px"
-                                        }}/>}/>
+                                      icon={<MdKeyboardArrowDown size={20} style={{
+                                          marginRight: "10px", cursor: 'pointer',
+                                          marginLeft: "-7px"
+                                      }}/>}/>
 
                             <Dropdown items={projectItems} name='Projects' icon={<MdKeyboardArrowDown size={20} style={{
                                 marginRight: "10px", cursor: 'pointer',

@@ -3,14 +3,9 @@ import {NavLink, useParams} from 'react-router-dom';
 import Modal from "../Modal/Modal";
 import FileUpload from "../FileAttachement/FileUpload";
 import {
-    Calendar,
-    CheckSquare, Clock, File,
+    CheckSquare, File,
     List,
-    Tag,
-    Trash,
-    Type,
-    User,
-    Users,
+    Trash
 } from "react-feather";
 import Editable from "../Editable/Editable";
 import Description from "../TextEditor/TextEditor"
@@ -25,112 +20,10 @@ import {TbStatusChange} from 'react-icons/tb'
 import {FiUser, FiUsers} from 'react-icons/fi'
 import {CgOptions} from 'react-icons/cg'
 import {RxStopwatch} from 'react-icons/rx'
-import styled from 'styled-components';
 import axios from "axios";
 import MultiSelectField from "../SelectFields/MultiSelectField";
+import * as CardInfoComponents from "./Style"
 
-const ModalTitleStyling = styled.div`
-  width: 100%;
-`;
-
-const CardInfoBoxCustom = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  padding-bottom: 25px;
-`;
-
-const CardInfoBoxTitle = styled.div`
-  font-weight: bold;
-  font-size: 1.3rem;
-  display: flex;
-  gap: 10px;
-  align-items: center;
-`;
-
-const CardInfoBox = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-`;
-
-const TaskList = styled.div`
-  margin: 8px 0 25px;
-`;
-
-
-const StyledSlug = styled.div`
-  color: #0847A6;
-  text-decoration: none;
-  cursor: pointer;
-
-  &:hover {
-    text-decoration: underline;
-  }
-`;
-
-const ModalTitle = styled.div`
-  width: fit-content;
-`;
-
-const Task = styled.div`
-  display: flex;
-  gap: 10px;
-  align-items: center;
-`;
-
-
-const ActivityButton = styled.button`
-  cursor: pointer;
-  border-radius: 5px;
-  background-color: #F4F5F7;
-  color: black;
-  border: none;
-  transition: 100ms ease;
-  padding: 10px;
-  font-size: inherit;
-`;
-
-const CommentInput = styled.input`
-  flex: 1;
-  margin-right: 8px;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 3px;
-`;
-
-const CommentButton = styled.button`
-  padding: 8px 12px;
-  background-color: #0052cc;
-  color: #fff;
-  border: none;
-  border-radius: 3px;
-`;
-
-const FormContainer = styled.form`
-  display: flex;
-  align-items: center;
-  margin-bottom: 16px;
-`;
-
-
-const CardInfoClose = styled.div`
-  gap: 10px;
-  padding-bottom: 50px;
-`;
-
-const CardInfoBoxClose = styled.div`
-  float: right;
-`;
-
-
-const SelectedLabelsDemo = [
-    {label: 'Prima', value: 1, color: '#2531b9'},
-    {label: 'Nexius', value: 4, color: '#31a5e4'},
-];
-console.log("SelectedLabelsDemo:",
-    SelectedLabelsDemo
-)
 
 function CardInfo(props) {
     let authToken = localStorage.getItem('auth_token')
@@ -607,13 +500,13 @@ function CardInfo(props) {
         <Modal onClose={() => handleCloseModalSubmit()}>
             <div style={{width: "55%"}}>
                 <div className="modal-header">
-                    <StyledSlug>
+                    <CardInfoComponents.StyledSlug>
                         <NavLink to={`/project/${projectId}/browse/issue/${props.card?.id}`} target="_blank">
                             <b>{props.card?.slug.toUpperCase()}</b>
                         </NavLink>
-                    </StyledSlug>
+                    </CardInfoComponents.StyledSlug>
                 </div>
-                <ModalTitleStyling>
+                <CardInfoComponents.ModalTitleStyling>
                     <Editable
                         text={values.title}
                         default={values.title}
@@ -623,31 +516,31 @@ function CardInfo(props) {
                         onSubmit={(value) => setValues({...values, title: value})}
                         bold={props.bold}
                     />
-                </ModalTitleStyling>
+                </CardInfoComponents.ModalTitleStyling>
                 <div>
-                    <CardInfoBoxCustom>
-                        <CardInfoBoxTitle>
+                    <CardInfoComponents.CardInfoBoxCustom>
+                        <CardInfoComponents.CardInfoBoxTitle>
                             <List/>
                             Card Description
-                        </CardInfoBoxTitle>
+                        </CardInfoComponents.CardInfoBoxTitle>
                         <Description initialValue={values.desc} onSave={handleDescChange}/>
-                    </CardInfoBoxCustom>
-                    <CardInfoBoxCustom>
-                        <CardInfoBoxTitle>
+                    </CardInfoComponents.CardInfoBoxCustom>
+                    <CardInfoComponents.CardInfoBoxCustom>
+                        <CardInfoComponents.CardInfoBoxTitle>
                             <File/>
                             File Attachments
-                        </CardInfoBoxTitle>
+                        </CardInfoComponents.CardInfoBoxTitle>
                         <FileUpload onFilesChange={handleFilesChange} fileAttachmentArray={combinedArray}/>
-                    </CardInfoBoxCustom>
+                    </CardInfoComponents.CardInfoBoxCustom>
                 </div>
-                <CardInfoBox>
-                    <CardInfoBoxTitle>
+                <CardInfoComponents.CardInfoBox>
+                    <CardInfoComponents.CardInfoBoxTitle>
                         <CheckSquare/>
                         Tasks
-                    </CardInfoBoxTitle>
-                    <TaskList>
+                    </CardInfoComponents.CardInfoBoxTitle>
+                    <CardInfoComponents.TaskList>
                         {values.tasks?.map((item) => (
-                            <Task key={item.id}>
+                            <CardInfoComponents.Task key={item.id}>
                                 <input type="checkbox"
                                        defaultChecked={item.complete}
                                        onChange={(event) =>
@@ -655,10 +548,10 @@ function CardInfo(props) {
                                 />
                                 <p>{item.text}</p>
                                 <Trash onClick={() => removeTask(item.id)}/>
-                            </Task>
+                            </CardInfoComponents.Task>
                         ))}
-                    </TaskList>
-                    <ModalTitle>
+                    </CardInfoComponents.TaskList>
+                    <CardInfoComponents.ModalTitle>
                         <Editable
                             text={"Add New Task"}
                             placeholder={"Enter New Task"}
@@ -667,42 +560,43 @@ function CardInfo(props) {
                             hoverBackgroundColor={"#EBECF0"}
                             onSubmit={(value) => addTask(value)}
                         />
-                    </ModalTitle>
-                </CardInfoBox>
-                <CardInfoBox style={{marginTop: '15px'}}>
+                    </CardInfoComponents.ModalTitle>
+                </CardInfoComponents.CardInfoBox>
+                <CardInfoComponents.CardInfoBox style={{marginTop: '15px'}}>
 
                     <>
-                        <CardInfoBoxCustom>
-                            <CardInfoBoxTitle>Activity</CardInfoBoxTitle>
+                        <CardInfoComponents.CardInfoBoxCustom>
+                            <CardInfoComponents.CardInfoBoxTitle>Activity</CardInfoComponents.CardInfoBoxTitle>
                             <div style={{display: 'flex', gap: '8px', borderRadius: '4px'}}>
-                                <ActivityButton active={showComments} onClick={() => {
+                                <CardInfoComponents.ActivityButton active={showComments} onClick={() => {
                                     setShowComments(true);
                                     setShowWorklog(false);
                                     setSelectedWorklog(null);
                                 }}>
                                     Comments
-                                </ActivityButton>
-                                <ActivityButton active={showWorklog} onClick={() => {
+                                </CardInfoComponents.ActivityButton>
+                                <CardInfoComponents.ActivityButton active={showWorklog} onClick={() => {
                                     setShowWorklog(true);
                                     setShowComments(false);
                                     setSelectedComment(null);
                                 }}>
                                     Work log
-                                </ActivityButton>
+                                </CardInfoComponents.ActivityButton>
                             </div>
-                        </CardInfoBoxCustom>
+                        </CardInfoComponents.CardInfoBoxCustom>
                         {showComments && (
-                            <CardInfoBoxCustom>
-                                <CardInfoBoxTitle>Comments</CardInfoBoxTitle>
-                                <FormContainer onSubmit={handleCommentSubmit}>
-                                    <CommentInput
+                            <CardInfoComponents.CardInfoBoxCustom>
+                                <CardInfoComponents.CardInfoBoxTitle>Comments</CardInfoComponents.CardInfoBoxTitle>
+                                <CardInfoComponents.FormContainer onSubmit={handleCommentSubmit}>
+                                    <CardInfoComponents.CommentInput
                                         type="text"
                                         placeholder="Leave a comment"
                                         value={newComment}
                                         onChange={handleNewCommentChange}
                                     />
-                                    <CommentButton type="submit">Send</CommentButton>
-                                </FormContainer>
+                                    <CardInfoComponents.CommentButton
+                                        type="submit">Send</CardInfoComponents.CommentButton>
+                                </CardInfoComponents.FormContainer>
                                 <ul>
                                     {comments.map((comment, index) => (
                                         <Comment
@@ -719,11 +613,11 @@ function CardInfo(props) {
                                         />
                                     ))}
                                 </ul>
-                            </CardInfoBoxCustom>
+                            </CardInfoComponents.CardInfoBoxCustom>
                         )}
                         {showWorklog && (
-                            <CardInfoBoxCustom>
-                                <CardInfoBoxTitle>Worklog</CardInfoBoxTitle>
+                            <CardInfoComponents.CardInfoBoxCustom>
+                                <CardInfoComponents.CardInfoBoxTitle>Worklog</CardInfoComponents.CardInfoBoxTitle>
                                 <ul style={{marginTop: "-30px"}}>
                                     {worklogs.map((worklog, index) => (
                                         <Worklog
@@ -742,28 +636,28 @@ function CardInfo(props) {
                                         />
                                     ))}
                                 </ul>
-                            </CardInfoBoxCustom>
+                            </CardInfoComponents.CardInfoBoxCustom>
                         )}
                     </>
-                </CardInfoBox>
+                </CardInfoComponents.CardInfoBox>
             </div>
             <div style={{width: "35%", float: "right"}}>
 
-                <CardInfoClose>
-                    <CardInfoBoxClose>
+                <CardInfoComponents.CardInfoClose>
+                    <CardInfoComponents.CardInfoBoxClose>
                         <AiFillCloseCircle
                             size={30}
                             onClick={handleCloseModalSubmit}
                             style={{cursor: "pointer"}}
                         />
-                    </CardInfoBoxClose>
-                </CardInfoClose>
-                <CardInfoBox>
-                    <CardInfoBoxTitle>
+                    </CardInfoComponents.CardInfoBoxClose>
+                </CardInfoComponents.CardInfoClose>
+                <CardInfoComponents.CardInfoBox>
+                    <CardInfoComponents.CardInfoBoxTitle>
                         <TbStatusChange/>
                         Type
-                    </CardInfoBoxTitle>
-                    <TaskList>
+                    </CardInfoComponents.CardInfoBoxTitle>
+                    <CardInfoComponents.TaskList>
                         <GenericSelectField
                             options={IssueTypeoptions}
                             isMultiple={false}
@@ -771,16 +665,16 @@ function CardInfo(props) {
                             defaultValue={props.card?.type?.type}
                             onSelectChange={handleIssueTypeChange}
                         />
-                    </TaskList>
+                    </CardInfoComponents.TaskList>
 
-                </CardInfoBox>
+                </CardInfoComponents.CardInfoBox>
 
-                <CardInfoBox>
-                    <CardInfoBoxTitle>
+                <CardInfoComponents.CardInfoBox>
+                    <CardInfoComponents.CardInfoBoxTitle>
                         <TbStatusChange/>
                         Status
-                    </CardInfoBoxTitle>
-                    <TaskList>
+                    </CardInfoComponents.CardInfoBoxTitle>
+                    <CardInfoComponents.TaskList>
                         <GenericSelectField
                             options={statusOptions}
                             isMultiple={false}
@@ -788,71 +682,71 @@ function CardInfo(props) {
                             defaultValue={props.card?.status?.status}
                             onSelectChange={handleIssueStatusChange}
                         />
-                    </TaskList>
+                    </CardInfoComponents.TaskList>
 
-                </CardInfoBox>
-                <CardInfoBox>
-                    <CardInfoBoxTitle>
+                </CardInfoComponents.CardInfoBox>
+                <CardInfoComponents.CardInfoBox>
+                    <CardInfoComponents.CardInfoBoxTitle>
                         <FiUsers/>
                         Assignee
-                    </CardInfoBoxTitle>
-                    <TaskList>
+                    </CardInfoComponents.CardInfoBoxTitle>
+                    <CardInfoComponents.TaskList>
                         <UserSelectField defaultValue={props.card?.assignee?.username} users={Useroptions}
                                          isMultiple={false}
                                          placeholder={"Unassigned"}
                                          onSelectChange={handleAssigneeChange}
                         />
-                    </TaskList>
-                </CardInfoBox>
-                <CardInfoBox>
-                    <CardInfoBoxTitle>
+                    </CardInfoComponents.TaskList>
+                </CardInfoComponents.CardInfoBox>
+                <CardInfoComponents.CardInfoBox>
+                    <CardInfoComponents.CardInfoBoxTitle>
                         <FiUser/>
                         Reporter
-                    </CardInfoBoxTitle>
-                    <TaskList>
+                    </CardInfoComponents.CardInfoBoxTitle>
+                    <CardInfoComponents.TaskList>
                         <UserSelectField defaultValue={props.card?.reporter?.username} users={Useroptions}
                                          isMultiple={false}
                                          placeholder={"Unassigned"}
                                          onSelectChange={handleReporterChange}
                         />
-                    </TaskList>
-                </CardInfoBox>
+                    </CardInfoComponents.TaskList>
+                </CardInfoComponents.CardInfoBox>
 
-                <CardInfoBox>
-                    <CardInfoBoxTitle>
+                <CardInfoComponents.CardInfoBox>
+                    <CardInfoComponents.CardInfoBoxTitle>
                         <CgOptions/>
                         Priority
-                    </CardInfoBoxTitle>
-                    <TaskList>
+                    </CardInfoComponents.CardInfoBoxTitle>
+                    <CardInfoComponents.TaskList>
                         <GenericSelectField options={priorityOptions} defaultValue={props.card?.priority}
                                             isMultiple={false} placeholder={"Unassigned"}
                                             onSelectChange={handlePriorityChange}
                         />
-                    </TaskList>
-                </CardInfoBox>
+                    </CardInfoComponents.TaskList>
+                </CardInfoComponents.CardInfoBox>
 
-                <CardInfoBox>
-                    <CardInfoBoxTitle>
+                <CardInfoComponents.CardInfoBox>
+                    <CardInfoComponents.CardInfoBoxTitle>
                         <CgOptions/>
                         Labels
-                    </CardInfoBoxTitle>
-                    <TaskList>
+                    </CardInfoComponents.CardInfoBoxTitle>
+                    <CardInfoComponents.TaskList>
                         <MultiSelectField options={Labeloptions} onSelectChange={handleLabelsChange}
                                           defaultValue={props.card?.labels}
                                           placeholder="Select Labels"
                         />
-                    </TaskList>
-                </CardInfoBox>
+                    </CardInfoComponents.TaskList>
+                </CardInfoComponents.CardInfoBox>
 
-                <CardInfoBox>
-                    <CardInfoBoxTitle>
+                <CardInfoComponents.CardInfoBox>
+                    <CardInfoComponents.CardInfoBoxTitle>
                         <RxStopwatch/>
                         Time Tracking
-                    </CardInfoBoxTitle>
+                    </CardInfoComponents.CardInfoBoxTitle>
                     <div>
                         <TrackingField OriginalEstimate={props.card?.estimate}/>
                     </div>
-                </CardInfoBox>
+                </CardInfoComponents.CardInfoBox>
             </div>
         </Modal>
     )
