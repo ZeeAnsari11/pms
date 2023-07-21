@@ -10,7 +10,7 @@ from django.db.models import Q
 from django.contrib.auth.models import User
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import MultiPartParser, FormParser
-from .permissions import IsAdminOrReadOnly, IsAdminUser
+from .permissions import IsAdminOrReadOnly, IsAdminUser, IsAdminOrStaffUser
 from .models import *
 from . import serializers
 from rest_framework.decorators import action
@@ -18,7 +18,7 @@ from rest_framework.decorators import action
 
 # Create your views here.
 class UserViewSet(ModelViewSet):
-    http_method_names = ['get', 'post', 'patch', 'delete']
+    http_method_names = ['get', 'patch', 'delete']
     serializer_class = serializers.ComprehensiveUserSerializer
     permission_classes = [IsAdminUser]
     filter_backends = [DjangoFilterBackend]
@@ -105,7 +105,7 @@ class ProjectViewSet(ModelViewSet):
 
     def get_permissions(self):
         if self.request.method in ['POST', 'PATCH', 'DELETE']:
-            return [IsAuthenticated()]
+            return [IsAdminOrStaffUser()]
         return [IsAuthenticated()]
 
     def get_serializer_context(self):
