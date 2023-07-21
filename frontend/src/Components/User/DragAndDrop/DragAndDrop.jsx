@@ -36,7 +36,7 @@ const PhotoUploader = ({handleUploadfForDragAndDrop}) => {
             </p>
 
             <p style={{fontSize: '12px'}}>
-              Drag and drop here
+                Drag and drop here
             </p>
         </Dragger>
     );

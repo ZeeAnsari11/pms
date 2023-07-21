@@ -1,21 +1,8 @@
-import styled from "styled-components";
-
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import apiRequest from '../../../Utils/apiRequest';
 import Avatar from "react-avatar";
 import { useNavigate } from "react-router-dom";
-
-
-const Username = styled.div`
-  margin-left: 40px;
-  margin-top: -35px;
-  color: black;
-`;
-
-const Email = styled.div`
-  margin-left: 40px;
-  margin-top: -5px;
-`;
+import * as AccountComponents from "./style"
 
 
 const AccountDropdown = () => {
@@ -49,14 +36,14 @@ return (
     <strong>ACCOUNT</strong>
     <div>
         <Avatar
-                    name={userData?.username}
-                    size={30}
-                    round={true}
-                    color="#DE350B"
-                    style={{marginRight: '10px', marginTop: '8px'}}
-                />
-    <Username>{userData?.username}</Username>
-    <Email>{userData?.email}</Email>
+            name={userData?.username}
+            size={30}
+            round={true}
+            color="#DE350B"
+            style={{marginRight: '10px', marginTop: '8px'}}
+        />
+    <AccountComponents.Username>{userData?.username}</AccountComponents.Username>
+    <AccountComponents.Email>{userData?.email}</AccountComponents.Email>
     </div>
 </>
 );
