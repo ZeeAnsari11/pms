@@ -30,8 +30,9 @@ function Login() {
 
         dispatch(login({username: usernameForSignIn, password: passwordForSignIn})).unwrap()
             .then((response) => {
-                if (response.data.auth_token) {
-                    localStorage.setItem('auth_token', response.data.auth_token); // @temporarily Store auth token in local storage
+                if (response.authToken.auth_token && response.userData) {
+                    localStorage.setItem('auth_token', response.authToken.auth_token); // @temporarily Store auth token in local storage
+                    localStorage.setItem('user_data', response.userData); // @temporarily Store User in local storage
                     navigate('/project');
                 }
             })
