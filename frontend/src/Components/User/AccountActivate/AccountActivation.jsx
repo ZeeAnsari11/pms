@@ -1,51 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {useNavigate, useLocation} from 'react-router-dom';
 import apiRequest from '../../../Utils/apiRequest';
-import styled from 'styled-components';
-
-const ForgotPasswordContainer = styled.div`
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--primary-color);
-  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-  border-radius: 10px;
-  border: 2px solid var(--primary-color);
-  padding: 20px;
-  width: 510px;
-  height: 300px;
-`;
-
-const Button = styled.button`
-  width: 255px;
-  border: none;
-  border-radius: 20px;
-  background-color: var(--primary-color);
-  cursor: pointer;
-  transition: all 0.3s ease-in-out 0s;
-  font-size: 13px;
-  font-weight: bolder;
-  padding: 12px 49px;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  margin-right: 55px;
-
-  &:last-child {
-    margin-left: 54px;
-  }
-
-  &:hover {
-    background-color: #000000;
-    color: #ffffff;
-    border-color: whitesmoke;
-  }
-`;
+import * as AccountActivationComponents from "./style"
 
 const AccountActivation = () => {
     const [activated, setActivated] = useState(false);
@@ -88,7 +44,7 @@ const AccountActivation = () => {
     };
 
     return (
-        <ForgotPasswordContainer>
+        <AccountActivationComponents.ForgotPasswordContainer>
             {!activated && (
                 <span style={{color: 'white', fontWeight: 'bold'}}>
                     Please wait, your account is activating.
@@ -99,10 +55,10 @@ const AccountActivation = () => {
             <span style={{color: 'white', fontWeight: 'bold', marginBottom: '20px'}}>
                 Congratulations! Your account has been activated.
             </span>
-                    <Button onClick={handleSignInClick}>Go to Sign In Page</Button>
+                    <AccountActivationComponents.Button onClick={handleSignInClick}>Go to Sign In Page</AccountActivationComponents.Button>
                 </React.Fragment>
             )}
-        </ForgotPasswordContainer>
+        </AccountActivationComponents.ForgotPasswordContainer>
     );
 };
 

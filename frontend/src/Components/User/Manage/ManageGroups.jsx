@@ -1,46 +1,12 @@
 import React, {useEffect, useState} from 'react';
-import {useParams} from 'react-router-dom';
-import styled from 'styled-components';
+import * as ManageGroupComponents from './ManageGroupStyle'
 import NavBar from "../../Dashboard/Navbar/index";
 import UserSidebar from "../../Dashboard/Sidebar/UserSidebar";
 import {AiOutlineDelete, AiOutlineEdit, AiOutlinePlus} from 'react-icons/ai';
 import Toast from "../../../Shared/Components/Toast"
 import {displayErrorMessage, displaySuccessMessage} from "../../../Shared/notify"
 import apiRequest from '../../../Utils/apiRequest';
-import {Button, Form as EditForm, Form as AddForm, Input, Modal, Space, Table, Transfer, Form} from 'antd';
-
-
-const UserGroupContainer = styled.div`
-  margin-left: 16%;
-  margin-top: 0%;
-  padding-top: 50px;
-  padding-left: 20px;
-  margin-right: 20px;
-`;
-
-
-const StyledEditFormItem = styled(EditForm.Item)`
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-  justify-content: space-between;
-
-  .ant-form-item-label {
-    font-weight: bold;
-  }
-`;
-
-const StyledAddFormItem = styled(AddForm.Item)`
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-  justify-content: space-between;
-
-  .ant-form-item-label {
-    font-weight: bold;
-  }
-`;
-
+import {Button, Form as EditForm, Form as AddForm, Input, Modal, Space, Table, Transfer} from 'antd';
 
 function ManageGroups() {
 
@@ -295,11 +261,11 @@ function ManageGroups() {
                     {selectedItem ? (
                         <>
                             <EditForm layout="vertical" form={editTypeForm} onFinish={handleEditModal}>
-                                <StyledAddFormItem label="Group" name="name"
+                                <ManageGroupComponents.StyledAddFormItem label="Group" name="name"
                                                    rules={[{required: true, message: 'Please enter Group name'}]}>
                                     <Input placeholder="Enter Group name"/>
-                                </StyledAddFormItem>
-                                <StyledEditFormItem label="Permissions" name="targetKeys">
+                                </ManageGroupComponents.StyledAddFormItem>
+                                <ManageGroupComponents.StyledEditFormItem label="Permissions" name="targetKeys">
                                     <Transfer
                                         dataSource={availablePermissions}
                                         titles={['Available Permissions', 'Selected Permissions']}
@@ -311,17 +277,17 @@ function ManageGroups() {
                                         listStyle={{height: 300, width: 300}}
                                         showSearch
                                     />
-                                </StyledEditFormItem>
+                                </ManageGroupComponents.StyledEditFormItem>
                             </EditForm>
                         </>
                     ) : (
                         <>
                             <AddForm layout="vertical" form={addTypeForm} onFinish={handleAddModal}>
-                                <StyledAddFormItem label="Group" name="name"
-                                                   rules={[{required: true, message: 'Please enter Group name'}]}>
+                                <ManageGroupComponents.StyledAddFormItem label="Group" name="name"
+                                                    rules={[{required: true, message: 'Please enter Group name'}]}>
                                     <Input placeholder="Enter Group name"/>
-                                </StyledAddFormItem>
-                                <StyledEditFormItem label="Permissions" name="targetKeys">
+                                </ManageGroupComponents.StyledAddFormItem>
+                                <ManageGroupComponents.StyledEditFormItem label="Permissions" name="targetKeys">
                                     <Transfer
                                         dataSource={availablePermissions}
                                         titles={['Available Permissions', 'Selected Permissions']}
@@ -333,7 +299,7 @@ function ManageGroups() {
                                         listStyle={{height: 300, width: 300}}
                                         showSearch
                                     />
-                                </StyledEditFormItem>
+                                </ManageGroupComponents.StyledEditFormItem>
                             </AddForm>
                         </>
                     )}
