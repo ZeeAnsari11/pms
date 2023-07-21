@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import * as ImageUploaderComponents from "./style";
+import * as ImageUploaderComponents from "./Style";
 
 
 const ImageUploader = ({imagePath, onImageChange}) => {

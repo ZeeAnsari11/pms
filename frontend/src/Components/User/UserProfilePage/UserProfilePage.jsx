@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import * as UserProfileComponents from './style';
+import * as UserProfileComponents from './Style';
 import {faBriefcase, faCalendar, faEdit, faSitemap} from '@fortawesome/free-solid-svg-icons';
 import { displayErrorMessage } from '../../../Shared/notify'
 import Toast from '../../../Shared/Components/Toast'

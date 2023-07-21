@@ -1,41 +1,12 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import {useParams, useNavigate} from "react-router-dom";
 import apiRequest from '../../../Utils/apiRequest';
-
-import styled from "styled-components";
-import {ToastContainer, toast} from 'react-toastify';
+import * as CloseProjectComponents from "./Style";
 import {Modal} from 'antd';
 import NavBar from "../../Dashboard/Navbar";
 import ProjectSidebar from "../../Dashboard/Sidebar/ProjectSidebar";
-
-
-
-const PermissionsContainer = styled.div`
-  margin-left: 16%;
-  margin-top: 0%;
-  padding-top: 85px;
-  padding-left: 80px;
-  margin-right: 90px;
-`;
-
-const AddTagButton = styled.button`
-  background-color: #0062FF;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  font-size: 1rem;
-  font-weight: bold;
-  padding: 0.5rem 1rem;
-  margin-top: 1rem;
-  margin-bottom: 10px;
-  cursor: pointer;
-  transition: background-color 0.3s ease-in-out;
-  margin-right: 310px;
-
-  &:hover {
-    background-color: #3e81ed;
-  }
-`;
+import ToastContainer from '../../../Shared/Components/Toast'
+import {displayInfoMessage} from '../../../Shared/notify'
 
 const CloseProject = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -55,7 +26,7 @@ const CloseProject = () => {
             })
             .then(response => {
                 setIsModalVisible(false);
-                showInfoOnConfirmations();
+                displayInfoMessage('The project has been deleted. \n  You will be redirected to the project within 2 seconds');
                 setTimeout(() => {
                     navigate('/project');
                     }, 2000);
@@ -64,19 +35,6 @@ const CloseProject = () => {
                 console.error('Error deleting data', error);
             });
         }
-    }
-
-    const showInfoOnConfirmations = () => {
-        toast.info('The project has been deleted. \n  You will be redirected to the project within 2 seconds', {
-        position: "top-right",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-        });
     }
 
     const handleButtonClick = () => {
@@ -96,9 +54,10 @@ const CloseProject = () => {
         <>
             <ProjectSidebar/>
             <NavBar/>
-            <PermissionsContainer>
+            <ToastContainer/>
+            <CloseProjectComponents.PermissionsContainer>
 
-                <AddTagButton onClick={handleButtonClick}>Close project</AddTagButton>
+                <CloseProjectComponents.AddTagButton onClick={handleButtonClick}>Close project</CloseProjectComponents.AddTagButton>
                 <Modal
                     title="Confirm Closure"
                     open={isModalVisible}
@@ -107,19 +66,7 @@ const CloseProject = () => {
                 >
                     <p>Are you sure you want to close the project?</p>
                 </Modal>
-            </PermissionsContainer>
-            <ToastContainer
-                position="top-right"
-                autoClose={2000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                theme="colored"
-            />
+            </CloseProjectComponents.PermissionsContainer>
         </>
     )
         ;

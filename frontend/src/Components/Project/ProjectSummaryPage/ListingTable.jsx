@@ -1,149 +1,84 @@
 import React from 'react';
-import styled from 'styled-components';
-import {color} from "../Sidebar/utils/styles";
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 24px;
-`;
-
-const TableContainer = styled.div`
-  width: 100%;
-  overflow-x: auto;
-  border-collapse: collapse;
-  margin-top: 24px;
-
-  ::-webkit-scrollbar {
-    height: 8px;
-    width: 8px;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background-color: #c9c9c9;
-    border-radius: 8px;
-  }
-
-  ::-webkit-scrollbar-track {
-    background-color: #f0f0f0;
-    border-radius: 8px;
-  }
-`;
-
-const Table = styled.table`
-  width: 100%;
-  border-spacing: 0;
-`;
-
-const TableHeader = styled.th`
-  text-align: left;
-  padding: 16px;
-  font-weight: bold;
-`;
-
-export const Divider = styled.div`
-  margin-top: 17px;
-  padding-top: 18px;
-  border-top: 1px solid ${color.borderLight};
-`;
-
-const TableRow = styled.tr`
-  &:not(:last-child) {
-    border-bottom: 1px solid #dcdcdc;
-  }
-  &:hover {
-    background-color: #EBECF0;
-  }
-`;
-
-const TableData = styled.td`
-  text-align: left;
-  padding: 16px;
-`;
-
-const ColumnTitle = styled.div`
-  font-weight: bold;
-`;
+import * as ListingTableComponents from './ListingTableStyle';
 
 const Listing = ({ columns }) => {
   return (
-    <Container>
-      <TableContainer>
-        <Table>
+    <ListingTableComponents.Container>
+      <ListingTableComponents.TableContainer>
+        <ListingTableComponents.Table>
           <thead>
-            <TableRow>
+            <ListingTableComponents.TableRow>
               {
                 columns.map((column) => (
-                <TableHeader key={column}>
-                  <ColumnTitle>{column}</ColumnTitle>
-                </TableHeader>
+                <ListingTableComponents.TableHeader key={column}>
+                  <ListingTableComponents.ColumnTitle>{column}</ListingTableComponents.ColumnTitle>
+                </ListingTableComponents.TableHeader>
               ))
               }
-            </TableRow>
+            </ListingTableComponents.TableRow>
           </thead>
           <tbody>
-            <TableRow>
-              <TableData>BACKLOG</TableData>
-              <TableData>Task limit value</TableData>
-              <TableData>Visible on dashboard value</TableData>
-              <TableData>Open tasks value</TableData>
-              <TableData>Closed tasks value</TableData>
-            </TableRow>
-            <TableRow>
-              <TableData>READY FOR DEV/REFACTOR</TableData>
-              <TableData>Task limit value</TableData>
-              <TableData>Visible on dashboard value</TableData>
-              <TableData>Open tasks value</TableData>
-              <TableData>Closed tasks value</TableData>
-            </TableRow>
-            <TableRow>
+            <ListingTableComponents.TableRow>
+              <ListingTableComponents.TableData>BACKLOG</ListingTableComponents.TableData>
+              <ListingTableComponents.TableData>Task limit value</ListingTableComponents.TableData>
+              <ListingTableComponents.TableData>Visible on dashboard value</ListingTableComponents.TableData>
+              <ListingTableComponents.TableData>Open tasks value</ListingTableComponents.TableData>
+              <ListingTableComponents.TableData>Closed tasks value</ListingTableComponents.TableData>
+            </ListingTableComponents.TableRow>
+            <ListingTableComponents.TableRow>
+              <ListingTableComponents.TableData>READY FOR DEV/REFACTOR</ListingTableComponents.TableData>
+              <ListingTableComponents.TableData>Task limit value</ListingTableComponents.TableData>
+              <ListingTableComponents.TableData>Visible on dashboard value</ListingTableComponents.TableData>
+              <ListingTableComponents.TableData>Open tasks value</ListingTableComponents.TableData>
+              <ListingTableComponents.TableData>Closed tasks value</ListingTableComponents.TableData>
+            </ListingTableComponents.TableRow>
+            <ListingTableComponents.TableRow>
+              <ListingTableComponents.TableData>IN PROGRESS</ListingTableComponents.TableData>
+              <ListingTableComponents.TableData>Task limit value</ListingTableComponents.TableData>
+              <ListingTableComponents.TableData>Visible on dashboard value</ListingTableComponents.TableData>
+              <ListingTableComponents.TableData>Open tasks value</ListingTableComponents.TableData>
+              <ListingTableComponents.TableData>Closed tasks value</ListingTableComponents.TableData>
+            </ListingTableComponents.TableRow>
+            <ListingTableComponents.TableRow>
+              <ListingTableComponents.TableData>IN CODE REVIEW</ListingTableComponents.TableData>
+              <ListingTableComponents.TableData>Task limit value</ListingTableComponents.TableData>
+              <ListingTableComponents.TableData>Visible on dashboard value</ListingTableComponents.TableData>
+              <ListingTableComponents.TableData>Open tasks value</ListingTableComponents.TableData>
+              <ListingTableComponents.TableData>Closed tasks value</ListingTableComponents.TableData>
+            </ListingTableComponents.TableRow>
+          <ListingTableComponents.TableRow>
               <TableData>IN PROGRESS</TableData>
               <TableData>Task limit value</TableData>
               <TableData>Visible on dashboard value</TableData>
               <TableData>Open tasks value</TableData>
               <TableData>Closed tasks value</TableData>
-            </TableRow>
+            </ListingTableComponents.TableRow>
             <TableRow>
-              <TableData>IN CODE REVIEW</TableData>
-              <TableData>Task limit value</TableData>
-              <TableData>Visible on dashboard value</TableData>
-              <TableData>Open tasks value</TableData>
-              <TableData>Closed tasks value</TableData>
+              <ListingTableComponents.TableData>IN CODE REVIEW</ListingTableComponents.TableData>
+              <ListingTableComponents.TableData>Task limit value</ListingTableComponents.TableData>
+              <ListingTableComponents.TableData>Visible on dashboard value</ListingTableComponents.TableData>
+              <ListingTableComponents.TableData>Open tasks value</ListingTableComponents.TableData>
+              <ListingTableComponents.TableData>Closed tasks value</ListingTableComponents.TableData>
             </TableRow>
-          <TableRow>
-              <TableData>IN PROGRESS</TableData>
-              <TableData>Task limit value</TableData>
-              <TableData>Visible on dashboard value</TableData>
-              <TableData>Open tasks value</TableData>
-              <TableData>Closed tasks value</TableData>
-            </TableRow>
-            <TableRow>
-              <TableData>IN CODE REVIEW</TableData>
-              <TableData>Task limit value</TableData>
-              <TableData>Visible on dashboard value</TableData>
-              <TableData>Open tasks value</TableData>
-              <TableData>Closed tasks value</TableData>
-            </TableRow>
-          <TableRow>
-              <TableData>IN PROGRESS</TableData>
-              <TableData>Task limit value</TableData>
-              <TableData>Visible on dashboard value</TableData>
-              <TableData>Open tasks value</TableData>
-              <TableData>Closed tasks value</TableData>
-            </TableRow>
-            <TableRow>
-              <TableData>IN CODE REVIEW</TableData>
-              <TableData>Task limit value</TableData>
-              <TableData>Visible on dashboard value</TableData>
-              <TableData>Open tasks value</TableData>
-              <TableData>Closed tasks value</TableData>
-            </TableRow>
+          <ListingTableComponents.TableRow>
+              <ListingTableComponents.TableData>IN PROGRESS</ListingTableComponents.TableData>
+              <ListingTableComponents.TableData>Task limit value</ListingTableComponents.TableData>
+              <ListingTableComponents.TableData>Visible on dashboard value</ListingTableComponents.TableData>
+              <ListingTableComponents.TableData>Open tasks value</ListingTableComponents.TableData>
+              <ListingTableComponents.TableData>Closed tasks value</ListingTableComponents.TableData>
+            </ListingTableComponents.TableRow>
+            <ListingTableComponents.TableRow>
+              <ListingTableComponents.TableData>IN CODE REVIEW</ListingTableComponents.TableData>
+              <ListingTableComponents.TableData>Task limit value</ListingTableComponents.TableData>
+              <ListingTableComponents.TableData>Visible on dashboard value</ListingTableComponents.TableData>
+              <ListingTableComponents.TableData>Open tasks value</ListingTableComponents.TableData>
+              <ListingTableComponents.TableData>Closed tasks value</ListingTableComponents.TableData>
+            </ListingTableComponents.TableRow>
           </tbody>
-        </Table>
-        <Divider/>
-      </TableContainer>
-    </Container>
+        </ListingTableComponents.Table>
+        <ListingTableComponents.Divider/>
+      </ListingTableComponents.TableContainer>
+    </ListingTableComponents.Container>
   );
 };
 

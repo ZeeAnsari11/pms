@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import apiRequest from '../../../Utils/apiRequest';
 import Avatar from "react-avatar";
 import { useNavigate } from "react-router-dom";
-import * as AccountComponents from "./style"
+import * as AccountComponents from "./Style"
 
 
 const AccountDropdown = () => {
