@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import PropTypes from "prop-types";
 import {faCheck, faXmark} from '@fortawesome/free-solid-svg-icons';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import * as EditableComponents from "./style"
+import * as EditableComponents from './Style'
 
 function Editable(props) {
     const [isEditable, setIsEditable] = useState(false);

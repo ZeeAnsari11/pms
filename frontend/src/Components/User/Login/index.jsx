@@ -6,7 +6,7 @@ import {Link, useNavigate} from "react-router-dom";
 import 'react-toastify/dist/ReactToastify.css';
 import Toast from "../../../Shared/Components/Toast"
 import Loader from "../../../Utils/Loader"
-import * as LoginStyleComponents  from "./style"
+import * as LoginStyleComponents  from "./Style"
 import {displayErrorMessage, displaySuccessMessage} from "../../../Shared/notify"
 import { AxiosError } from "axios";
 import { StatusCodes } from "http-status-codes";

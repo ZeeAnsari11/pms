@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import styled from 'styled-components';
+import * as TagComponents from './Style';
 import NavBar from "../../Dashboard/Navbar/index";
 import ProjectSidebar from "../../Dashboard/Sidebar/ProjectSidebar";
 import { AiOutlineDelete, AiOutlineEdit, AiOutlinePlus } from 'react-icons/ai';
@@ -9,44 +9,6 @@ import { displayErrorMessage, displaySuccessMessage } from "../../../Shared/noti
 import apiRequest from '../../../Utils/apiRequest';
 import { Button, Form as EditForm, Form as AddForm, Input, Modal, Space, Table  } from 'antd';
 import { ChromePicker } from 'react-color';
-
-
-const TypesContainer = styled.div`
-    margin-left: 16%;
-    margin-top: 0%;
-    padding-top: 50px;
-    padding-left: 20px;
-    margin-right: 20px;
-`;
-
-
-const StyledEditFormItem = styled(EditForm.Item)`
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-  justify-content: space-between;
-
-  .ant-form-item-label {
-    font-weight: bold;
-  }
-`;
-
-const StyledAddFormItem = styled(AddForm.Item)`
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-  justify-content: space-between;
-
-  .ant-form-item-label {
-    font-weight: bold;
-  }
-`;
-
-const ColorBox = styled.div`
-  width: 40px;
-  height: 20px;
-  background-color: ${(props) => props.color};
-`;
 
 function Tags() {
 
@@ -242,7 +204,7 @@ function Tags() {
             <ProjectSidebar />
             <NavBar/>
             <Toast />
-            <TypesContainer>
+            <TagComponents.TagContainer>
                 <h2>Project Issues Tags</h2>
                 <Input.Search placeholder="Search by tag name" value={searchQuery} onChange={handleSearch} style={{ marginBottom: 16 }} />
                 <div style={{ marginBottom: 16 }}>
@@ -276,28 +238,28 @@ function Tags() {
                     {selectedItem ? (
                         <>
                             <EditForm layout="vertical" form={editTagForm} onFinish={handleEditModal}>
-                                <StyledEditFormItem label="Name" name="name" rules={[{ required:true}]}>
+                                <TagComponents.StyledEditFormItem label="Name" name="name" rules={[{ required:true}]}>
                                     <Input />
-                                </StyledEditFormItem>
-                                <StyledEditFormItem label="Color" name="color" rules={[{ required:true,}]}>
+                                </TagComponents.StyledEditFormItem>
+                                <TagComponents.StyledEditFormItem label="Color" name="color" rules={[{ required:true,}]}>
                                     <ChromePicker color={pickedColor} onChange={(color) => setPickedColor(color)} />
-                                </StyledEditFormItem>
+                                </TagComponents.StyledEditFormItem>
                             </EditForm>
                         </>
                     ) : (
                         <>
                             <AddForm layout="vertical" form={addTagForm} onFinish={handleAddModal} >
-                                <StyledAddFormItem label="Name" name="name" value={null} rules={[{required:true, message: 'Please enter the Tag Name' }]}>
+                                <TagComponents.StyledAddFormItem label="Name" name="name" value={null} rules={[{required:true, message: 'Please enter the Tag Name' }]}>
                                     <Input />
-                                </StyledAddFormItem>
-                                <StyledEditFormItem label="Color" name="color" rules={[{ required: true }]}>
+                                </TagComponents.StyledAddFormItem>
+                                <TagComponents.StyledEditFormItem label="Color" name="color" rules={[{ required: true }]}>
                                     <ChromePicker color={pickedColor} onChange={(color) => setPickedColor(color)} />
-                                </StyledEditFormItem>
+                                </TagComponents.StyledEditFormItem>
                             </AddForm>
                         </>
                     )}
                 </Modal>
-            </TypesContainer>
+            </TagComponents.TagContainer>
         </div>
     );
 }

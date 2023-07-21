@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import apiRequest from '../../../Utils/apiRequest';
-import * as ProjectListingComponents from './style';
+import * as ProjectListingComponents from './Style';
 import {Link} from 'react-router-dom';
 import {Modal} from 'antd';
 import {GrAlert} from 'react-icons/gr';

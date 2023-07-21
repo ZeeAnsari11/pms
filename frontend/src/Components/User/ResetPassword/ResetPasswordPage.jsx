@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {useNavigate, useLocation} from 'react-router-dom';
 import { displayErrorMessage } from "../../../Shared/notify"
 import Toast from '../../../Shared/Components/Toast'
-import * as ResetPasswordComponents from './style';
+import * as ResetPasswordComponents from './Style';
 import apiRequest from '../../../Utils/apiRequest';
 import { AxiosError } from "axios";
 
