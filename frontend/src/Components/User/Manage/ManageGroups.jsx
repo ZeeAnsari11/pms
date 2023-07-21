@@ -223,7 +223,7 @@ function ManageGroups() {
             <UserSidebar/>
             <NavBar/>
             <Toast/>
-            <UserGroupContainer>
+            <ManageGroupComponents.UserGroupContainer>
                 <h2>User Groups</h2>
                 <Input.Search placeholder="Search by group name" value={searchQuery} onChange={handleSearch}
                               style={{marginBottom: 16}}/>
@@ -304,7 +304,7 @@ function ManageGroups() {
                         </>
                     )}
                 </Modal>
-            </UserGroupContainer>
+            </ManageGroupComponents.UserGroupContainer>
         </div>
     );
 }

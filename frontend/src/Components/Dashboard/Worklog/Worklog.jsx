@@ -1,104 +1,30 @@
 import React, {useState} from "react";
-import styled from "styled-components";
 import Avatar from "react-avatar";
 import {Modal, Button} from "antd";
-import dayjs, { Dayjs } from 'dayjs';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { TimePicker } from '@mui/x-date-pickers/TimePicker';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import dayjs from 'dayjs';
+import {DatePicker} from '@mui/x-date-pickers/DatePicker';
+import {TimePicker} from '@mui/x-date-pickers/TimePicker';
+import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
+import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
 import {ImWarning} from 'react-icons/im'
 import moment from 'moment';
 import EstimateTimer from "../EstimateTimer/EstimateTimer";
 import ReactQuill from "react-quill";
 import axios from "axios";
-
-const CommentContainer = styled.div`
-  display: block;
-  align-items: center;
-`;
-
-const EditModalContent = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-row-gap: 24px;
-  grid-column-gap: 16px;
-
-  .ql-toolbar {
-    border-top-left-radius: 3px;
-    border-top-right-radius: 3px;
-    background-color: #f0f2f5;
-  }
-
-  .ql-container {
-    height: 150px;
-    border-bottom-left-radius: 3px;
-    border-bottom-right-radius: 3px;
-    border: 1px solid #ccc;
-  }
-
-  .ql-editor {
-    padding: 8px;
-    font-size: 14px;
-  }
-`;
-
-
-const InputHeading = styled.div`
-  font-size: 15px;
-  font-weight: bold;
-  margin-bottom: 5px;
-`;
-
-const StyledSpan = styled.span`
-  display: inline-block;
-  background-color: #DFE1E6;
-  color: black;
-  font-size: 0.8rem;
-  padding: 0.1rem 0.5rem;
-  border-radius: 40px;
-`;
-
-const CommentButtons = styled.div`
-  display: flex;
-`;
-
-const CommentAuthor = styled.p`
-  font-weight: bold;
-  margin-right: 5px;
-`;
-
-const CommentText = styled.p`
-  margin-top: -20px;
-  font-size: 14px;
-`;
-
-const CommentActionButton = styled.button`
-  background: none;
-  border: none;
-  color: gray;
-  font-weight: bold;
-  cursor: pointer;
-  position: relative;
-  padding-right: 10px;
-
-  &:hover {
-    text-decoration: underline;
-  }
-`;
+import * as WorklogComponents from "./Style"
 
 function Worklog({
-                        created_at,
-                        created_by,
-                        worklogUserId,
-                        currentUser,
-                        worklogDate,
-                        worklogTime,
-                        worklog,
-                        index,
-                        onDelete,
-                        onEdit
-}) {
+                     created_at,
+                     created_by,
+                     worklogUserId,
+                     currentUser,
+                     worklogDate,
+                     worklogTime,
+                     worklog,
+                     index,
+                     onDelete,
+                     onEdit
+                 }) {
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [timeSpent, setTimeSpent] = useState(worklog.time_spent);
@@ -206,14 +132,15 @@ function Worklog({
         }
         return timeFormat.trim();
     }
+
     const formatDate = (dateString) => {
-        return  moment(dateString).format('D MMMM YYYY');
+        return moment(dateString).format('D MMMM YYYY');
     };
 
     const formatTime = (timeString) => {
         console.log('time is ', timeString);
-        console.log('formated time is' , moment(timeString, 'HH:mm:ss'))
-        return  moment(timeString, 'HH:mm:ss').format('hh:mm a');
+        console.log('formated time is', moment(timeString, 'HH:mm:ss'))
+        return moment(timeString, 'HH:mm:ss').format('hh:mm a');
     };
 
     const sanitizeComment = (comment) => {
@@ -224,7 +151,7 @@ function Worklog({
 
     return (
         <li key={index} style={{listStyle: "none"}}>
-            <CommentContainer>
+            <WorklogComponents.CommentContainer>
                 <Avatar
                     name={created_by}
                     size={30}
@@ -232,17 +159,17 @@ function Worklog({
                     color="Grey"
                     style={{marginRight: "10px", marginBottom: "-75px", marginLeft: "-40px"}}
                 />
-                <CommentButtons>
-                    <CommentAuthor>{created_by}</CommentAuthor>
-                    <p style={{ fontWeight: '500', color: '#42526E' }}>
-                        logged <StyledSpan>{convertToTimeFormat(worklog.time_spent)}</StyledSpan>
-                        <span style={{ marginLeft: '10px', fontWeight: '500', color: '#42526E' }} >
+                <WorklogComponents.CommentButtons>
+                    <WorklogComponents.CommentAuthor>{created_by}</WorklogComponents.CommentAuthor>
+                    <p style={{fontWeight: '500', color: '#42526E'}}>
+                        logged <WorklogComponents.StyledSpan>{convertToTimeFormat(worklog.time_spent)}</WorklogComponents.StyledSpan>
+                        <span style={{marginLeft: '10px', fontWeight: '500', color: '#42526E'}}>
                             {formatDate(worklogDate)} at {formatTime(worklogTime)}
                         </span>
                     </p>
-                </CommentButtons>
-                <CommentText>{sanitizeComment(worklog.comment)}</CommentText>
-                <CommentActionButton onClick={handleEdit}>Edit</CommentActionButton>
+                </WorklogComponents.CommentButtons>
+                <WorklogComponents.CommentText>{sanitizeComment(worklog.comment)}</WorklogComponents.CommentText>
+                <WorklogComponents.CommentActionButton onClick={handleEdit}>Edit</WorklogComponents.CommentActionButton>
                 {showEditModal && (
                     <Modal
                         title={<>Edit work log - worklog id: {worklog.id} </>}
@@ -254,36 +181,37 @@ function Worklog({
                             </Button>
                         ]}
                     >
-                        <EditModalContent style={{marginTop: "20px"}}>
+                        <WorklogComponents.EditModalContent style={{marginTop: "20px"}}>
                             <div>
-                                <InputHeading>Time spent</InputHeading>
+                                <WorklogComponents.InputHeading>Time spent</WorklogComponents.InputHeading>
                                 <EstimateTimer defaultValue={convertToTimeFormat(timeSpent)}
-                                                onHoursChange={handleTimeSpentChange}/>
+                                               onHoursChange={handleTimeSpentChange}/>
                             </div>
                             <br></br>
                             <div>
-                                <InputHeading>Date:</InputHeading>
-                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                        <DatePicker value={startDate} onChange={handleDateChange}/>
-                                    </LocalizationProvider>
+                                <WorklogComponents.InputHeading>Date:</WorklogComponents.InputHeading>
+                                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                    <DatePicker value={startDate} onChange={handleDateChange}/>
+                                </LocalizationProvider>
                             </div>
                             <div>
-                                <InputHeading>Time:</InputHeading>
+                                <WorklogComponents.InputHeading>Time:</WorklogComponents.InputHeading>
                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                                     <TimePicker value={startTime} onChange={handleTimeChange}/>
                                 </LocalizationProvider>
                             </div>
-                        </EditModalContent>
+                        </WorklogComponents.EditModalContent>
                         <div style={{marginTop: "10px", marginBottom: "10px"}}>
-                            <InputHeading>Work Description:</InputHeading>
+                            <WorklogComponents.InputHeading>Work Description:</WorklogComponents.InputHeading>
                             <ReactQuill value={workDescription} onChange={handleWorklogDescription}
                             />
                         </div>
                     </Modal>
                 )}
 
-                <CommentActionButton onClick={() => setShowDeleteDialog(true)}>Delete</CommentActionButton>
-            </CommentContainer>
+                <WorklogComponents.CommentActionButton
+                    onClick={() => setShowDeleteDialog(true)}>Delete</WorklogComponents.CommentActionButton>
+            </WorklogComponents.CommentContainer>
             <Modal
                 title={<><ImWarning color="red" size={24} style={{marginRight: "5px"}}/> Delete worklog entry?</>}
                 open={showDeleteDialog}
