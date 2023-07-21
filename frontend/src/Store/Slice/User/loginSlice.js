@@ -6,6 +6,7 @@ const initialState = {
     loading: false,
     error: null,
     authToken: null,
+    userData: null,
 };
 
 export const login = createAsyncThunk(
@@ -13,10 +14,16 @@ export const login = createAsyncThunk(
     async ({username, password}, {rejectWithValue, dispatch}) => {
         try {
             dispatch(setLoading(true));
-            return await apiRequest.post( `/api/auth/token/login/`, {
-                username,
-                password,
+            const loginResponse =  await apiRequest.post( `/api/auth/token/login/`, {
+                username, password,
             } );
+            const authToken = loginResponse.data;
+
+            const userDataResponse = await apiRequest.get('/api/userprofile/me/', {
+                headers: { 'Authorization': `Token ${authToken.auth_token}`},
+            } );
+            const userData = userDataResponse.data;
+            return { authToken, userData };
         } catch (error) {
             return rejectWithValue(error)
         } finally {
@@ -34,6 +41,7 @@ const loginSlice = createSlice({
             state.isAuthenticated = false;
             state.error = null;
             state.authToken = null;
+            state.userData = null;
         },
         setLoading: (state, action) => {
             state.loading = action.payload;
@@ -44,12 +52,14 @@ const loginSlice = createSlice({
             .addCase(login.fulfilled, (state, action) => {
                 state.isAuthenticated = true;
                 state.error = null;
-                state.authToken = action.payload.auth_token;
+                state.authToken = action.payload.authToken;
+                state.userData = action.payload.userData;
             })
             .addCase(login.rejected, (state, action) => {
                 state.isAuthenticated = false;
                 state.error = action.payload;
                 state.authToken = null;
+                state.userData = null;
             });
     },
 });
