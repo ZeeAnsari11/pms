@@ -2,6 +2,7 @@ import React, {useState, useEffect, useRef} from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import DOMPurify from 'dompurify';
+import * as TextEditorComponents from "./Style"
 
 
 const Description = ({initialValue, onSave}) => {
@@ -39,18 +40,9 @@ const Description = ({initialValue, onSave}) => {
             {isEditing ? (
                 <div ref={editorRef}>
                     <ReactQuill value={value} onChange={handleEditorChange}/>
-                    <button onClick={handleSave} style={{
-                        marginTop: '5px',
-                        padding: '10px',
-                        color: 'white',
-                        cursor: 'pointer',
-                        borderRadius: '5px',
-                        outline: 'none',
-                        backgroundColor: '#0065ff',
-                        border: 'none',
-                        transition: '100ms ease',
-                    }}>Save
-                    </button>
+                    <TextEditorComponents.SaveButton onClick={handleSave}>
+                        Save
+                    </TextEditorComponents.SaveButton>
                 </div>
             ) : (
                 <div

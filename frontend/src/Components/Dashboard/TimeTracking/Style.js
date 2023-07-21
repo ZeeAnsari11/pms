@@ -10,14 +10,15 @@ export const TimeTrackingContainer = styled.div`
 `;
 
 export const ProgressBarContainer = styled.div`
-    width: 100%;
-    cursor: pointer;
-    .ant-progress {
-        border-radius: 5px;
-        transition: background-color 0.5s;
+  width: 100%;
+  cursor: pointer;
+
+  .ant-progress {
+    border-radius: 5px;
+    transition: background-color 0.5s;
 
     &:hover {
-        background-color: #f0f0f0;
+      background-color: #f0f0f0;
     }
 `;
 
@@ -31,22 +32,22 @@ export const TimeEstimate = styled.span`
 `;
 
 export const TimeTextDisplayContainer = styled.span`
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
 `;
 
 export const ModalTimeTextContainer = styled.div`
-    margin-top: 0;
-    font-weight: bold;
-    font-size: small;
+  margin-top: 0;
+  font-weight: bold;
+  font-size: small;
 `;
 
 export const TapTimeTextContainer = styled.div`
-    margin-top: 0;
-    font-weight: bold;
-    font-size: small;
+  margin-top: 0;
+  font-weight: bold;
+  font-size: small;
 `;
 
 
@@ -86,31 +87,32 @@ export const WorkLogModalContent = styled.div`
 
 
 export const StyledProgressBarContainer = styled.div`
-    width: 100%;
-    .progress-bar {
-        height: 10px;
-        background-color: #f0f0f0;
-        border-radius: 5px;
-        position: relative;
-        overflow: hidden;
-        transition: background-color 0.3s;
-        cursor: pointer;
+  width: 100%;
+
+  .progress-bar {
+    height: 10px;
+    background-color: #f0f0f0;
+    border-radius: 5px;
+    position: relative;
+    overflow: hidden;
+    transition: background-color 0.3s;
+    cursor: pointer;
 
     &:hover {
-        background-color: #e0e0e0;
-        transition: background-color 0.3s;
-    } 
+      background-color: #e0e0e0;
+      transition: background-color 0.3s;
     }
+  }
 
-    .progress-bar-fill {
-        height: 100%;
-        background-color: #108ee9;
-        transition: width 0.3s;
-    }
+  .progress-bar-fill {
+    height: 100%;
+    background-color: #108ee9;
+    transition: width 0.3s;
+  }
 `;
 
 
 export const WorklogDescription = styled.div`
-    margin-top: 5px;
-    margin-bottom: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px;
 `;

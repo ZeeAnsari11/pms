@@ -1,82 +1,12 @@
 import React, {useState} from "react";
-import {Delete, Clock, MoreHorizontal} from "react-feather";
+import {Delete, Clock} from "react-feather";
 import {Modal} from 'antd';
 import Chip from "../Chip/Chip";
-import Dropdown from "../Dropdown/Dropdown";
 import CardInfo from "../CardInfo/CardInfo";
 import Avatar from 'react-avatar';
-import styled from 'styled-components';
 import {useNavigate} from "react-router-dom";
+import * as CardComponents from "./Style"
 
-const CardContainer = styled.div`
-  position: relative;
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  background-color: #fff;
-  border-radius: 10px;
-`;
-
-const CardTop = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-`;
-
-const CardTopMore = styled.div`
-  width: 30px;
-  height: 20px;
-  transform: translateX(15px);
-  flex: 1;
-  float: right;
-  cursor: pointer;
-  opacity: 0;
-  transition: 200ms;
-  text-align: right;
-  margin-right: 10px;
-
-  &:hover {
-    opacity: 1;
-  }
-`;
-
-
-const CardTitle = styled.div`
-  flex: 1;
-  font-weight: bold;
-  font-size: 1rem;
-  line-height: 1.4rem;
-`;
-
-const CardFooter = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  p {
-    font-weight: 700;
-    font-size: 1rem;
-    color: gray;
-    text-transform: uppercase;
-    cursor: pointer;
-  }
-`;
-
-export const CardProfile = styled.div`
-  text-align: end;
-  z-index: 1;
-  margin-left: 175px;
-  margin-top: -60px;
-
-  &:hover .card_profile_name {
-    opacity: 1;
-  }
-`;
-
-export const CardProfileName = styled.div`
-  opacity: 0;
-`;
 
 function Card(props) {
     const [displayDeleteTaskModal, setDisplayDeleteTaskModal] = useState(false);
@@ -112,14 +42,14 @@ function Card(props) {
                     onClose={handleModalClose}
                 />
             )}
-            <CardContainer
+            <CardComponents.CardContainer
                 draggable
                 onDragEnd={() => props.handleDragEnd(props.Card?.id, props.boardId)}
                 onDragEnter={() => props.handleDragEnter(props.Card?.id, props.boardId)}
                 onClick={handleCardClick}
             >
                 <div>
-                    <CardTopMore
+                    <CardComponents.CardTopMore
                         onClick={(e) => {
                             e.stopPropagation();
                             setDisplayDeleteTaskModal(!displayDeleteTaskModal)
@@ -144,17 +74,17 @@ function Card(props) {
 
                             </Modal>
                         )}
-                    </CardTopMore>
-                    <CardTop>
+                    </CardComponents.CardTopMore>
+                    <CardComponents.CardTop>
                         {props.Card?.labels?.map((item, index) => {
                             if (item.color) {
                                 return <Chip key={index} text={item.name} color={item.color}/>;
                             }
                         })}
-                    </CardTop>
+                    </CardComponents.CardTop>
                 </div>
-                <CardTitle>{props.Card?.title}</CardTitle>
-                <CardFooter>
+                <CardComponents.CardTitle>{props.Card?.title}</CardComponents.CardTitle>
+                <CardComponents.CardFooter>
                     {props.Card?.date && (
                         <p>
                             <Clock/>
@@ -166,8 +96,8 @@ function Card(props) {
                             {props.Card?.slug}
                         </p>
                     )}
-                </CardFooter>
-                <CardProfile>
+                </CardComponents.CardFooter>
+                <CardComponents.CardProfile>
                     <Avatar
                         name={"User"}
                         size={30}
@@ -176,11 +106,12 @@ function Card(props) {
                         title={"User"}
                         style={{marginRight: '10px'}}
                     />
-                    <CardProfileName onMouseEnter={() => setshowName(true)} onMouseLeave={() => setshowName(false)}>
+                    <CardComponents.CardProfileName onMouseEnter={() => setshowName(true)}
+                                                    onMouseLeave={() => setshowName(false)}>
                         {props.Card?.assignedTo?.name}
-                    </CardProfileName>
-                </CardProfile>
-            </CardContainer>
+                    </CardComponents.CardProfileName>
+                </CardComponents.CardProfile>
+            </CardComponents.CardContainer>
         </>
     );
 }
