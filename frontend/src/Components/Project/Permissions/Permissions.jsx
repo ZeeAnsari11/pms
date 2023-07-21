@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Table } from 'antd';
-import styled from 'styled-components';
+import { Button } from 'antd';
+import * as PermissionsComponents from './Style';
 import NavBar from '../../Dashboard/Navbar/index';
 import ProjectSidebar from "../../Dashboard/Sidebar/ProjectSidebar";
 import apiRequest from '../../../Utils/apiRequest';
@@ -9,36 +9,6 @@ import { displayErrorMessage, displaySuccessMessage } from "../../../Shared/noti
 import GenericSelectField from "../../Dashboard/SelectFields/GenericSelectField";
 import { useParams } from "react-router-dom";
 import { StatusCodes } from "http-status-codes";
-
-
-const PermissionsContainer = styled.div`
-  margin-left: 16%;
-  margin-top: 0%;
-  padding-top: 61px;
-  padding-left: 80px;
-  margin-right: 90px;
-`;
-
-const Heading = styled.h2`
-  margin-left: 10px;
-`;
-
-const AddPermissionContainer = styled.div`
-  display: flex;
-  align-items: center;
-  margin-top: 20px;
-`;
-
-
-const PermissionsTable = styled( Table )`
-  margin-top: 20px;
-`;
-
-const CustomButton = styled( Button )`
-  background-color: rgb(30, 100, 209);
-  margin-top: 5px;
-  margin-left: 10px;
-`;
 
 
 const Permissions = () => {
@@ -228,9 +198,9 @@ const Permissions = () => {
             <ProjectSidebar/>
             <NavBar/>
             <Toast/>
-            <PermissionsContainer>
-                <Heading>Allowed Users</Heading>
-                <AddPermissionContainer>
+            <PermissionsComponents.PermissionsContainer>
+                <PermissionsComponents.Heading>Allowed Users</PermissionsComponents.Heading>
+                <PermissionsComponents.AddPermissionContainer>
                     <GenericSelectField
                         onSelectChange={ handleUserName }
                         options={ userNameList }
@@ -243,16 +213,16 @@ const Permissions = () => {
                         isMultiple={ false }
                         placeholder={ "Select User Group" }
                         width="25%"/>
-                    <CustomButton type="primary" onClick={ handleAddPermission }>
+                    <PermissionsComponents.CustomButton type="primary" onClick={ handleAddPermission }>
                         Add
-                    </CustomButton>
-                </AddPermissionContainer>
-                <PermissionsTable
+                    </PermissionsComponents.CustomButton>
+                </PermissionsComponents.AddPermissionContainer>
+                <PermissionsComponents.PermissionsTable
                     dataSource={ dataSource }
                     columns={ columns }
                     pagination={ false }
                 />
-            </PermissionsContainer>
+            </PermissionsComponents.PermissionsContainer>
         </>
     );
 };

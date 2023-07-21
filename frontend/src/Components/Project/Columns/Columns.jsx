@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import styled from 'styled-components';
+import * as ColumnsComponents from './Style';
 import NavBar from "../../Dashboard/Navbar/index";
 import ProjectSidebar from "../../Dashboard/Sidebar/ProjectSidebar";
 import { AiOutlineDelete, AiOutlineEdit, AiOutlinePlus } from 'react-icons/ai';
@@ -8,38 +8,6 @@ import Toast from "../../../Shared/Components/Toast"
 import { displayErrorMessage, displaySuccessMessage } from "../../../Shared/notify"
 import apiRequest from '../../../Utils/apiRequest';
 import { Button, Form as EditForm, Form as AddForm, Input, Modal, Space, Table } from 'antd';
-
-
-const TypesContainer = styled.div`
-    margin-left: 16%;
-    margin-top: 0%;
-    padding-top: 50px;
-    padding-left: 20px;
-    margin-right: 20px;
-`;
-
-
-const StyledEditFormItem = styled(EditForm.Item)`
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-  justify-content: space-between;
-
-  .ant-form-item-label {
-    font-weight: bold;
-  }
-`;
-
-const StyledAddFormItem = styled(AddForm.Item)`
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-  justify-content: space-between;
-
-  .ant-form-item-label {
-    font-weight: bold;
-  }
-`;
 
 function Columns() {
 
@@ -230,7 +198,7 @@ function Columns() {
             <ProjectSidebar />
             <NavBar/>
             <Toast />
-            <TypesContainer>
+            <ColumnsComponents.ColumnContainer>
                 <h2>Project Issues Status</h2>
                 <Input.Search placeholder="Search by label name" value={searchQuery} onChange={handleSearch} style={{ marginBottom: 16 }} />
                 <div style={{ marginBottom: 16 }}>
@@ -264,28 +232,28 @@ function Columns() {
                     {selectedItem ? (
                         <>
                             <EditForm layout="vertical" form={editStatusForm} onFinish={handleEditModal}>
-                                <StyledEditFormItem label="Status" name="status" rules={[{ required:true}]}>
+                                <ColumnsComponents.StyledEditFormItem label="Status" name="status" rules={[{ required:true}]}>
                                     <Input />
-                                </StyledEditFormItem>
-                                <StyledEditFormItem label="Priority" name="priority" rules={[{ required:true,}]}>
+                                </ColumnsComponents.StyledEditFormItem>
+                                <ColumnsComponents.StyledEditFormItem label="Priority" name="priority" rules={[{ required:true,}]}>
                                     <Input />
-                                </StyledEditFormItem>
+                                </ColumnsComponents.StyledEditFormItem>
                             </EditForm>
                         </>
                     ) : (
                         <>
                             <AddForm layout="vertical" form={addStatusForm} onFinish={handleAddModal} >
-                                <StyledAddFormItem label="Status" name="status" value={null} rules={[{required:true, message: 'Please enter the Status Name' }]}>
+                                <ColumnsComponents.StyledAddFormItem label="Status" name="status" value={null} rules={[{required:true, message: 'Please enter the Status Name' }]}>
                                     <Input />
-                                </StyledAddFormItem>
-                                <StyledAddFormItem label="Priority" name="priority" value={null} rules={[{required:true, message: 'Integer value is required' }]}>
+                                </ColumnsComponents.StyledAddFormItem>
+                                <ColumnsComponents.StyledAddFormItem label="Priority" name="priority" value={null} rules={[{required:true, message: 'Integer value is required' }]}>
                                     <Input />
-                                </StyledAddFormItem>
+                                </ColumnsComponents.StyledAddFormItem>
                             </AddForm>
                         </>
                     )}
                 </Modal>
-            </TypesContainer>
+            </ColumnsComponents.ColumnContainer>
         </div>
     );
 }

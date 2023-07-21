@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import styled from 'styled-components';
+import * as TypeComponents from './Style';
 import NavBar from "../../Dashboard/Navbar/index";
 import ProjectSidebar from "../../Dashboard/Sidebar/ProjectSidebar";
 import { AiOutlineDelete, AiOutlineEdit, AiOutlinePlus } from 'react-icons/ai';
@@ -8,38 +8,6 @@ import Toast from "../../../Shared/Components/Toast"
 import { displayErrorMessage, displaySuccessMessage } from "../../../Shared/notify"
 import apiRequest from '../../../Utils/apiRequest';
 import { Button, Form as EditForm, Form as AddForm, Input, Modal, Space, Table } from 'antd';
-
-
-const TypesContainer = styled.div`
-    margin-left: 16%;
-    margin-top: 0%;
-    padding-top: 50px;
-    padding-left: 20px;
-    margin-right: 20px;
-`;
-
-
-const StyledEditFormItem = styled(EditForm.Item)`
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-  justify-content: space-between;
-
-  .ant-form-item-label {
-    font-weight: bold;
-  }
-`;
-
-const StyledAddFormItem = styled(AddForm.Item)`
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-  justify-content: space-between;
-  
-  .ant-form-item-label {
-    font-weight: bold;
-  }
-`;
 
 function Types() {
 
@@ -225,7 +193,7 @@ function Types() {
             <ProjectSidebar />
             <NavBar/>
             <Toast />
-            <TypesContainer>
+            <TypeComponents.TypesContainer>
                 <h2>Project Issues Types</h2>
                 <Input.Search placeholder="Search by label name" value={searchQuery} onChange={handleSearch} style={{ marginBottom: 16 }} />
                 <div style={{ marginBottom: 16 }}>
@@ -259,22 +227,22 @@ function Types() {
                     {selectedItem ? (
                         <>
                             <EditForm layout="vertical" form={editTypeForm} onFinish={handleEditModal}>
-                                <StyledEditFormItem label="Type" name="type" rules={[{ required:true}]}>
+                                <TypeComponents.StyledEditFormItem label="Type" name="type" rules={[{ required:true}]}>
                                     <Input />
-                                </StyledEditFormItem>
+                                </TypeComponents.StyledEditFormItem>
                             </EditForm>
                         </>
                     ) : (
                         <>
                             <AddForm layout="vertical" form={addTypeForm} onFinish={handleAddModal} >
-                                <StyledAddFormItem label="Type" name="type" value={null} rules={[{required:true, message: 'Please enter the new Type' }]}>
+                                <TypeComponents.StyledAddFormItem label="Type" name="type" value={null} rules={[{required:true, message: 'Please enter the new Type' }]}>
                                     <Input />
-                                </StyledAddFormItem>
+                                </TypeComponents.StyledAddFormItem>
                             </AddForm>
                         </>
                     )}
                 </Modal>
-            </TypesContainer>
+            </TypeComponents.TypesContainer>
         </div>
     );
 }
