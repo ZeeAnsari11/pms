@@ -1,42 +1,12 @@
 import React, {useEffect, useState} from 'react';
-import styled from 'styled-components';
+import * as ManageUsersComponents from './ManageUserStyle';
 import NavBar from '../../Dashboard/Navbar/index';
 import apiRequest from '../../../Utils/apiRequest';
 import Toast from "../../../Shared/Components/Toast"
 import {displaySuccessMessage, displayErrorMessage} from "../../../Shared/notify"
-import {Table, Input, Button, Modal, Pagination, Space, Form, Switch} from 'antd';
+import {Input, Button, Modal, Pagination, Space, Form, Switch} from 'antd';
 import {AiOutlineEdit, AiOutlineDelete} from 'react-icons/ai';
 import UserSidebar from "../../Dashboard/Sidebar/UserSidebar";
-
-
-const UserContainer = styled.div`
-  margin-left: 16%;
-  margin-top: 0%;
-  padding-top: 50px;
-  padding-left: 20px;
-  margin-right: 20px;
-`;
-
-
-const PermissionsTable = styled(Table)`
-  margin-top: 20px;
-`;
-
-const PaginationWrapper = styled.div`
-  float: right;
-  margin-top: 15px;
-`;
-
-const StyledFormItem = styled(Form.Item)`
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-  justify-content: space-between;
-
-  .ant-form-item-label {
-    font-weight: bold;
-  }
-`;
 
 
 const ManageUsers = () => {
@@ -223,17 +193,17 @@ const ManageUsers = () => {
             <UserSidebar/>
             <NavBar/>
             <Toast/>
-            <UserContainer>
+            <ManageUsersComponents.UserContainer>
                 <h2>Users List</h2>
                 <Input.Search placeholder="Search by Username or Email" value={searchQuery} onChange={handleSearch}
-                              style={{marginBottom: 16}}/>
-                <PermissionsTable
+                                style={{marginBottom: 16}}/>
+                <ManageUsersComponents.PermissionsTable
                     dataSource={paginatedData}
                     columns={columns}
                     pagination={false}
                     rowKey="id"
                 />
-                <PaginationWrapper>
+                <ManageUsersComponents.PaginationWrapper>
                     <Pagination
                         current={currentPage}
                         pageSize={pageSize}
@@ -243,8 +213,8 @@ const ManageUsers = () => {
                         onShowSizeChange={handlePageSizeChange}
                         style={{marginBottom: 16}}
                     />
-                </PaginationWrapper>
-            </UserContainer>
+                </ManageUsersComponents.PaginationWrapper>
+            </ManageUsersComponents.UserContainer>
 
             <Modal
                 title="Edit User"
@@ -258,25 +228,25 @@ const ManageUsers = () => {
             >
                 {modalData && (
                     <Form layout="vertical" form={form} onFinish={handleModalSave} initialValues={modalData}>
-                        <StyledFormItem label="Username" name="username" rules={[{message: 'Please enter a username'}]}>
+                        <ManageUsersComponents.StyledFormItem label="Username" name="username" rules={[{message: 'Please enter a username'}]}>
                             <Input/>
-                        </StyledFormItem>
-                        <StyledFormItem label="Email" name="email" rules={[{message: 'Please enter an email'}]}>
+                        </ManageUsersComponents.StyledFormItem>
+                        <ManageUsersComponents.StyledFormItem label="Email" name="email" rules={[{message: 'Please enter an email'}]}>
                             <Input/>
-                        </StyledFormItem>
-                        <StyledFormItem label="Admin Status" name="isSuperUser" valuePropName="checked">
+                        </ManageUsersComponents.StyledFormItem>
+                        <ManageUsersComponents.StyledFormItem label="Admin Status" name="isSuperUser" valuePropName="checked">
                             <Switch/>
-                        </StyledFormItem>
-                        <StyledFormItem label="Active Status" name="isActive" valuePropName="checked">
+                        </ManageUsersComponents.StyledFormItem>
+                        <ManageUsersComponents.StyledFormItem label="Active Status" name="isActive" valuePropName="checked">
                             <Switch/>
-                        </StyledFormItem>
-                        <StyledFormItem label="Is Staff" name="isStaff" valuePropName="checked">
+                        </ManageUsersComponents.StyledFormItem>
+                        <ManageUsersComponents.StyledFormItem label="Is Staff" name="isStaff" valuePropName="checked">
                             <Switch/>
-                        </StyledFormItem>
-                        <StyledFormItem label="Last LogIn" name="lastLogIn"
+                        </ManageUsersComponents.StyledFormItem>
+                        <ManageUsersComponents.StyledFormItem label="Last LogIn" name="lastLogIn"
                                         rules={[{message: 'Please enter an email'}]}>
                             <Input disabled/>
-                        </StyledFormItem>
+                        </ManageUsersComponents.StyledFormItem>
                     </Form>
                 )}
             </Modal>
