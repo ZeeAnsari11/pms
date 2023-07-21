@@ -1,21 +1,21 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import React, {useEffect, useState} from 'react';
+import {useParams} from 'react-router-dom';
 import styled from 'styled-components';
 import NavBar from "../../Dashboard/Navbar/index";
 import UserSidebar from "../../Dashboard/Sidebar/UserSidebar";
-import { AiOutlineDelete, AiOutlineEdit, AiOutlinePlus } from 'react-icons/ai';
+import {AiOutlineDelete, AiOutlineEdit, AiOutlinePlus} from 'react-icons/ai';
 import Toast from "../../../Shared/Components/Toast"
-import { displayErrorMessage, displaySuccessMessage } from "../../../Shared/notify"
+import {displayErrorMessage, displaySuccessMessage} from "../../../Shared/notify"
 import apiRequest from '../../../Utils/apiRequest';
-import { Button, Form as EditForm, Form as AddForm, Input, Modal, Space, Table, Transfer, Form } from 'antd';
+import {Button, Form as EditForm, Form as AddForm, Input, Modal, Space, Table, Transfer, Form} from 'antd';
 
 
 const UserGroupContainer = styled.div`
-    margin-left: 16%;
-    margin-top: 0%;
-    padding-top: 50px;
-    padding-left: 20px;
-    margin-right: 20px;
+  margin-left: 16%;
+  margin-top: 0%;
+  padding-top: 50px;
+  padding-left: 20px;
+  margin-right: 20px;
 `;
 
 
@@ -24,6 +24,10 @@ const StyledEditFormItem = styled(EditForm.Item)`
   align-items: center;
   margin-bottom: 10px;
   justify-content: space-between;
+
+  .ant-form-item-label {
+    font-weight: bold;
+  }
 `;
 
 const StyledAddFormItem = styled(AddForm.Item)`
@@ -31,6 +35,10 @@ const StyledAddFormItem = styled(AddForm.Item)`
   align-items: center;
   margin-bottom: 10px;
   justify-content: space-between;
+
+  .ant-form-item-label {
+    font-weight: bold;
+  }
 `;
 
 
@@ -53,13 +61,13 @@ function ManageGroups() {
 
     let authToken = localStorage.getItem('auth_token');
 
-    const  updateTable = ( responseData ) => {
+    const updateTable = (responseData) => {
         const updatedData = data.map(item => {
             if (item.id === responseData.id) {
                 return {
                     id: responseData.id,
                     name: responseData.name,
-                    permissions : responseData.permissions
+                    permissions: responseData.permissions
                 }
             }
             return {
@@ -75,9 +83,10 @@ function ManageGroups() {
     const updateUserGroup = (values) => {
         apiRequest
             .patch(`/api/user_groups/${selectedItem.id}/`,
-                {"name": values.name, "permissions": values.targetKeys  },
-                { headers: { "Authorization": `Token ${authToken}` }
-            })
+                {"name": values.name, "permissions": values.targetKeys},
+                {
+                    headers: {"Authorization": `Token ${authToken}`}
+                })
             .then(response => {
                 updateTable(response.data)
                 displaySuccessMessage('Successfully update the requested Type!');
@@ -89,7 +98,7 @@ function ManageGroups() {
 
     const deleteIssueType = (id) => {
         apiRequest
-            .delete(`/api/user_groups/${id}`,{ headers: { "Authorization": `Token ${authToken}` } })
+            .delete(`/api/user_groups/${id}`, {headers: {"Authorization": `Token ${authToken}`}})
             .then(response => {
                 displaySuccessMessage('Successfully delete the requested User Group!');
             })
@@ -105,10 +114,15 @@ function ManageGroups() {
                     name: values.name,
                     permissions: values.targetKeys,
                 }, {
-                headers: { "Authorization": `Token ${authToken}` } })
+                    headers: {"Authorization": `Token ${authToken}`}
+                })
             .then(response => {
                 displaySuccessMessage('Successfully create the requested User Group!');
-                const result = { "id": response.data.id, "name": response.data.name, "permissions": response.data.permissions};
+                const result = {
+                    "id": response.data.id,
+                    "name": response.data.name,
+                    "permissions": response.data.permissions
+                };
                 setData((data) => [...data, result]);
                 setFilteredData((filteredData) => [...filteredData, result]);
                 setTotalItems((totalItems) => totalItems + 1);
@@ -130,8 +144,8 @@ function ManageGroups() {
     const fetchData = async () => {
         try {
             const [groupsResponse, permissionsResponse] = await Promise.all([
-                apiRequest.get(`/api/user_groups/`, { headers: { "Authorization": `Token ${authToken}` } }),
-                apiRequest.get(`/api/user_permissions/`, { headers: { "Authorization": `Token ${authToken}` } })
+                apiRequest.get(`/api/user_groups/`, {headers: {"Authorization": `Token ${authToken}`}}),
+                apiRequest.get(`/api/user_permissions/`, {headers: {"Authorization": `Token ${authToken}`}})
             ]);
 
             const groupsData = groupsResponse.data.map(item => ({
@@ -172,13 +186,13 @@ function ManageGroups() {
         });
     };
 
-    const handleEditLink = ( record ) => {
+    const handleEditLink = (record) => {
         editTypeForm.setFieldValue('name', record.name);
         if (record.permissions && record.permissions.length > 0) {
             setTargetKeys(record.permissions.map(permission => permission.id));
         }
         setSelectedItem(record);
-        setModalVisible( true );
+        setModalVisible(true);
     };
 
     const handleAddLink = () => {
@@ -217,21 +231,21 @@ function ManageGroups() {
     };
 
     const columns = [
-        { title: 'ID', dataIndex: 'id' },
-        { title: 'Group', dataIndex: 'name' },
+        {title: 'ID', dataIndex: 'id'},
+        {title: 'Group', dataIndex: 'name'},
         {
             title: 'Actions',
-                render: (_, record) => (
+            render: (_, record) => (
                 <Space>
                     <Button type="link" onClick={() => handleEditLink(record)}>
-                        <AiOutlineEdit /> Edit
+                        <AiOutlineEdit/> Edit
                     </Button>
                     <Button type="link" onClick={() => handleDeleteLink(record)}>
-                        <AiOutlineDelete /> Delete
+                        <AiOutlineDelete/> Delete
                     </Button>
                 </Space>
-                ),
-            },
+            ),
+        },
     ];
 
     const startIndex = (currentPage - 1) * pageSize;
@@ -240,15 +254,16 @@ function ManageGroups() {
 
     return (
         <div>
-            <UserSidebar />
+            <UserSidebar/>
             <NavBar/>
-            <Toast />
+            <Toast/>
             <UserGroupContainer>
                 <h2>User Groups</h2>
-                <Input.Search placeholder="Search by group name" value={searchQuery} onChange={handleSearch} style={{ marginBottom: 16 }} />
-                <div style={{ marginBottom: 16 }}>
+                <Input.Search placeholder="Search by group name" value={searchQuery} onChange={handleSearch}
+                              style={{marginBottom: 16}}/>
+                <div style={{marginBottom: 16}}>
                     <Button type="primary" onClick={handleAddLink}>
-                        <AiOutlinePlus /> Add
+                        <AiOutlinePlus/> Add
                     </Button>
                 </div>
                 <Table
@@ -269,19 +284,22 @@ function ManageGroups() {
                     open={modalVisible}
                     onCancel={() => setModalVisible(false)}
                     footer={[
-                        <Button key="submit" type="primary" onClick={() => {selectedItem ? editTypeForm.submit() : addTypeForm.submit()}}>
-                            { selectedItem ? 'Edit Item' : 'Add Item'}
+                        <Button key="submit" type="primary" onClick={() => {
+                            selectedItem ? editTypeForm.submit() : addTypeForm.submit()
+                        }}>
+                            {selectedItem ? 'Edit Item' : 'Add Item'}
                         </Button>,
                     ]}
                     width={800}
                 >
                     {selectedItem ? (
                         <>
-                            <EditForm form={editTypeForm} onFinish={handleEditModal}>
-                                <StyledAddFormItem label="Group" name="name" rules={[{ required: true, message: 'Please enter Group name' }]}>
-                                    <Input placeholder="Enter Group name" />
+                            <EditForm layout="vertical" form={editTypeForm} onFinish={handleEditModal}>
+                                <StyledAddFormItem label="Group" name="name"
+                                                   rules={[{required: true, message: 'Please enter Group name'}]}>
+                                    <Input placeholder="Enter Group name"/>
                                 </StyledAddFormItem>
-                                <StyledEditFormItem label="Permissions" name="targetKeys" >
+                                <StyledEditFormItem label="Permissions" name="targetKeys">
                                     <Transfer
                                         dataSource={availablePermissions}
                                         titles={['Available Permissions', 'Selected Permissions']}
@@ -290,7 +308,7 @@ function ManageGroups() {
                                         onChange={onPermissionChange}
                                         onSelectChange={onPermissionSelectionChange}
                                         render={(item) => item.formatted_name}
-                                        listStyle={{ height: 300, width: 300 }}
+                                        listStyle={{height: 300, width: 300}}
                                         showSearch
                                     />
                                 </StyledEditFormItem>
@@ -298,11 +316,12 @@ function ManageGroups() {
                         </>
                     ) : (
                         <>
-                            <AddForm form={addTypeForm} onFinish={handleAddModal} >
-                                <StyledAddFormItem label="Group" name="name" rules={[{ required: true, message: 'Please enter Group name' }]}>
-                                    <Input placeholder="Enter Group name" />
+                            <AddForm layout="vertical" form={addTypeForm} onFinish={handleAddModal}>
+                                <StyledAddFormItem label="Group" name="name"
+                                                   rules={[{required: true, message: 'Please enter Group name'}]}>
+                                    <Input placeholder="Enter Group name"/>
                                 </StyledAddFormItem>
-                                <StyledEditFormItem label="Permissions" name="targetKeys" >
+                                <StyledEditFormItem label="Permissions" name="targetKeys">
                                     <Transfer
                                         dataSource={availablePermissions}
                                         titles={['Available Permissions', 'Selected Permissions']}
@@ -311,7 +330,7 @@ function ManageGroups() {
                                         onChange={onPermissionChange}
                                         onSelectChange={onPermissionSelectionChange}
                                         render={(item) => item.formatted_name}
-                                        listStyle={{ height: 300, width: 300 }}
+                                        listStyle={{height: 300, width: 300}}
                                         showSearch
                                     />
                                 </StyledEditFormItem>
@@ -323,4 +342,5 @@ function ManageGroups() {
         </div>
     );
 }
+
 export default ManageGroups;

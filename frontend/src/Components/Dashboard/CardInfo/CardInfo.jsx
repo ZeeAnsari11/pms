@@ -16,7 +16,6 @@ import Editable from "../Editable/Editable";
 import Description from "../TextEditor/TextEditor"
 import Comment from "../Comment/Comment"
 import Worklog from "../Worklog/Worklog";
-
 import 'react-quill/dist/quill.snow.css';
 import UserSelectField from '../SelectFields/UserSelectField'
 import GenericSelectField from '../SelectFields/GenericSelectField'
@@ -28,6 +27,7 @@ import {CgOptions} from 'react-icons/cg'
 import {RxStopwatch} from 'react-icons/rx'
 import styled from 'styled-components';
 import axios from "axios";
+import MultiSelectField from "../SelectFields/MultiSelectField";
 
 const ModalTitleStyling = styled.div`
   width: 100%;
@@ -124,6 +124,14 @@ const CardInfoBoxClose = styled.div`
 `;
 
 
+const SelectedLabelsDemo = [
+    {label: 'Prima', value: 1, color: '#2531b9'},
+    {label: 'Nexius', value: 4, color: '#31a5e4'},
+];
+console.log("SelectedLabelsDemo:",
+    SelectedLabelsDemo
+)
+
 function CardInfo(props) {
     let authToken = localStorage.getItem('auth_token')
 
@@ -145,12 +153,15 @@ function CardInfo(props) {
     const [selectedWorklog, setSelectedWorklog] = useState(null);
 
     const [IssuesData, setIssuesData] = useState([]);
+    const [IssueLabels, setIssueLabels] = useState('');
+
     const [IssueType, setIssueType] = useState('');
     const [IssueStatus, setIssueStatus] = useState('');
 
     const [selectedIssueStatus, setSelectedIssueStatus] = useState('');
     const [selectedIssueType, setSelectedIssueType] = useState('');
     const [selectedPriority, setSelectedPriority] = useState('');
+    const [selectedLabels, setSelectedLabels] = useState([]);
 
     const [selectedAssignee, setSelectedAssignee] = useState('');
     const [selectedReporter, setSelectedReporter] = useState('');
@@ -259,6 +270,15 @@ function CardInfo(props) {
             setIssueStatus(response.data);
         };
 
+        const fetchDependentProjectLabels = async () => {
+            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/project_labels/?project=${projectId}`, {
+                headers: {
+                    Authorization: `Token ${authToken}`,
+                },
+            });
+            setIssueLabels(response.data);
+        };
+
         const fetchCurrentUserDataFromUserList = async () => {
             try {
                 const response = await axios.get(`${process.env.REACT_APP_HOST}/api/userprofile/?user__email__iexact=${currentUserEmail}`, {
@@ -270,7 +290,7 @@ function CardInfo(props) {
             }
         }
         fetchIssueData();
-        // fetchCurrentUserDataFromUserList();
+        fetchDependentProjectLabels();
         fetchDependentUserOptions();
         fetchDependentProjectStatuses();
         fetchDependentProjectTypes();
@@ -279,6 +299,8 @@ function CardInfo(props) {
 
     }, []);
     console.log("currentUserEmail:", currentUserEmail)
+    console.log("selectedLabels:", selectedLabels)
+
 
     useEffect(() => {
         if (currentUserEmail) {
@@ -304,9 +326,20 @@ function CardInfo(props) {
             setSelectedIssueType(IssuesData?.type?.id)
             setSelectedIssueStatus(IssuesData?.status?.id)
             setSelectedPriority(IssuesData?.priority)
+            setSelectedLabels(IssuesData?.label?.map((label) => label.id) || []);
         }
     }, [IssuesData]);
 
+    useEffect(() => {
+    }, [])
+    const selectedLabelsOptions = selectedLabels.map((label) => ({
+        label: label.label,
+        value: label.value,
+        color: label.color,
+    }));
+
+
+    console.log("selectedLabelsOptions:", selectedLabelsOptions)
 
     const handleCommentSubmit = (event) => {
         event.preventDefault();
@@ -415,6 +448,10 @@ function CardInfo(props) {
         setSelectedPriority(value)
     }
 
+    const handleLabelsChange = (values) => {
+        setSelectedLabels(values);
+    };
+
     const handleAssigneeChange = (value) => {
         setSelectedAssignee(parseInt(value));
     };
@@ -497,6 +534,17 @@ function CardInfo(props) {
         }))
         : [];
 
+    const Labeloptions = IssueLabels
+        ? IssueLabels.map((Labels) => ({
+            id: Labels.id,
+            name: Labels.name,
+            color: Labels.color,
+        }))
+        : [];
+
+    console.log("Labeloptions:", Labeloptions)
+
+
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (descriptionBoxRef.current && !descriptionBoxRef.current.contains(event.target)) {
@@ -528,6 +576,9 @@ function CardInfo(props) {
         formData.append("name", values.title);
         files.forEach((file) => {
             formData.append("file", file);
+        });
+        selectedLabels.forEach((label) => {
+            formData.append("label", label);
         });
 
 
@@ -747,9 +798,9 @@ function CardInfo(props) {
                     </CardInfoBoxTitle>
                     <TaskList>
                         <UserSelectField defaultValue={props.card?.assignee?.username} users={Useroptions}
-                                            isMultiple={false}
-                                            placeholder={"Unassigned"}
-                                            onSelectChange={handleAssigneeChange}
+                                         isMultiple={false}
+                                         placeholder={"Unassigned"}
+                                         onSelectChange={handleAssigneeChange}
                         />
                     </TaskList>
                 </CardInfoBox>
@@ -760,9 +811,9 @@ function CardInfo(props) {
                     </CardInfoBoxTitle>
                     <TaskList>
                         <UserSelectField defaultValue={props.card?.reporter?.username} users={Useroptions}
-                                            isMultiple={false}
-                                            placeholder={"Unassigned"}
-                                            onSelectChange={handleReporterChange}
+                                         isMultiple={false}
+                                         placeholder={"Unassigned"}
+                                         onSelectChange={handleReporterChange}
                         />
                     </TaskList>
                 </CardInfoBox>
@@ -776,6 +827,19 @@ function CardInfo(props) {
                         <GenericSelectField options={priorityOptions} defaultValue={props.card?.priority}
                                             isMultiple={false} placeholder={"Unassigned"}
                                             onSelectChange={handlePriorityChange}
+                        />
+                    </TaskList>
+                </CardInfoBox>
+
+                <CardInfoBox>
+                    <CardInfoBoxTitle>
+                        <CgOptions/>
+                        Labels
+                    </CardInfoBoxTitle>
+                    <TaskList>
+                        <MultiSelectField options={Labeloptions} onSelectChange={handleLabelsChange}
+                                          defaultValue={props.card?.labels}
+                                          placeholder="Select Labels"
                         />
                     </TaskList>
                 </CardInfoBox>

@@ -24,6 +24,10 @@ const StyledEditFormItem = styled(EditForm.Item)`
   align-items: center;
   margin-bottom: 10px;
   justify-content: space-between;
+
+  .ant-form-item-label {
+    font-weight: bold;
+  }
 `;
 
 const StyledAddFormItem = styled(AddForm.Item)`
@@ -31,6 +35,10 @@ const StyledAddFormItem = styled(AddForm.Item)`
   align-items: center;
   margin-bottom: 10px;
   justify-content: space-between;
+
+  .ant-form-item-label {
+    font-weight: bold;
+  }
 `;
 
 function Columns() {
@@ -255,7 +263,7 @@ function Columns() {
                 >
                     {selectedItem ? (
                         <>
-                            <EditForm form={editStatusForm} onFinish={handleEditModal}>
+                            <EditForm layout="vertical" form={editStatusForm} onFinish={handleEditModal}>
                                 <StyledEditFormItem label="Status" name="status" rules={[{ required:true}]}>
                                     <Input />
                                 </StyledEditFormItem>
@@ -266,7 +274,7 @@ function Columns() {
                         </>
                     ) : (
                         <>
-                            <AddForm form={addStatusForm} onFinish={handleAddModal} >
+                            <AddForm layout="vertical" form={addStatusForm} onFinish={handleAddModal} >
                                 <StyledAddFormItem label="Status" name="status" value={null} rules={[{required:true, message: 'Please enter the Status Name' }]}>
                                     <Input />
                                 </StyledAddFormItem>

@@ -1,10 +1,10 @@
-import React, {useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import styled from 'styled-components';
 import apiRequest from '../../../Utils/apiRequest';
 import Toast from "../../../Shared/Components/Toast"
-import { displayErrorMessage, displaySuccessMessage } from "../../../Shared/notify"
+import {displayErrorMessage, displaySuccessMessage} from "../../../Shared/notify"
 import {v4 as uuidv4} from 'uuid';
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import ReactQuill from 'react-quill';
 import NavBar from "../../Dashboard/Navbar";
 import GenericSelectField from "../../Dashboard/SelectFields/GenericSelectField";
@@ -195,11 +195,6 @@ function CreateProject() {
         setSelectedProjectLead(parseInt(value));
     };
 
-    const handleSelectedProjectAssigneesChange = (value) => {
-        setSelectedProjectAssignees(value.map((value) => parseInt(value, 10)));
-    };
-
-
 
     useEffect(() => {
         const fetchCompanies = async () => {
@@ -207,8 +202,9 @@ function CreateProject() {
                 await apiRequest
                     .get(`/api/companies/`, {
                         headers: {
-                            Authorization: `Token ${authToken}`},
-                    } );
+                            Authorization: `Token ${authToken}`
+                        },
+                    });
             setCompanyData(response.data);
         };
 
@@ -229,7 +225,7 @@ function CreateProject() {
                     headers: {
                         Authorization: `Token ${authToken}`,
                     },
-                } );
+                });
             setUsersData(response.data);
         };
         fetchCompanies().then() // @todo handle the exception on Company fetch
@@ -238,18 +234,17 @@ function CreateProject() {
     }, []);
 
     const companyOptions = companyData ? companyData.map(
-        (company) => ({ label: company.company_name, value: company.id, })
+        (company) => ({label: company.company_name, value: company.id,})
     ) : [];
 
 
     const categoriesOptions = categoryData ? categoryData.map(
-        (category) => ({ label: category.category, value: category.id, })
+        (category) => ({label: category.category, value: category.id,})
     ) : [];
 
     const userOptions = usersData ? usersData.map(
-        (user) => ({ label: user.username, value: user.id, })
+        (user) => ({label: user.username, value: user.id,})
     ) : [];
-
 
 
     function generateSlug(text) {
@@ -285,7 +280,7 @@ function CreateProject() {
                 headers: {
                     'Authorization': `Token ${authToken}`,
                 },
-            } )
+            })
             .then(response => {
                 // handle the response
                 displaySuccessMessage(`Successfully create new project!`);
@@ -299,7 +294,7 @@ function CreateProject() {
     return (
         <div>
             <NavBar/>
-            <Toast />
+            <Toast/>
             <PageWrapper>
                 <Header>
                     <Details>Details</Details>
@@ -323,13 +318,6 @@ function CreateProject() {
                         onSelectChange={handleSelectedCategoryChange}
                         options={categoriesOptions}
                         isMultiple={false}
-                        placeholder={"Unassigned"}
-                        width="50%"/>
-                    <LabelforAssignees htmlFor="assignees">Assignee:</LabelforAssignees>
-                    <GenericSelectField
-                        onSelectChange={handleSelectedProjectAssigneesChange}
-                        options={userOptions}
-                        isMultiple={true}
                         placeholder={"Unassigned"}
                         width="50%"/>
                     <LabelforLead htmlFor="category">Project Lead:</LabelforLead>
