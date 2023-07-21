@@ -6,6 +6,5 @@ export const Tag = styled.span`
   background-color: ${(props) => props.color};
   color: #fff;
   padding: 3px 6px;
-  border-radius: 3px;
-  margin-right: 5px;
+  border-radius: 10px;
 `;
