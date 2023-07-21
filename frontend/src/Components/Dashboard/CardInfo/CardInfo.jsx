@@ -15,7 +15,7 @@ import 'react-quill/dist/quill.snow.css';
 import UserSelectField from '../SelectFields/UserSelectField'
 import GenericSelectField from '../SelectFields/GenericSelectField'
 import TrackingField from '../TimeTracking/index'
-import {AiOutlineArrowDown, AiOutlineArrowUp, AiFillCloseCircle} from 'react-icons/ai'
+import {AiOutlineArrowDown, AiOutlineArrowUp, AiOutlineClose} from 'react-icons/ai'
 import {TbStatusChange} from 'react-icons/tb'
 import {FiUser, FiUsers} from 'react-icons/fi'
 import {CgOptions} from 'react-icons/cg'
@@ -27,7 +27,16 @@ import * as CardInfoComponents from "./Style"
 
 function CardInfo(props) {
     let authToken = localStorage.getItem('auth_token')
+    const [isHovered, setIsHovered] = useState(false);
 
+
+    const handleHover = () => {
+        setIsHovered(true);
+    };
+
+    const handleMouseLeave = () => {
+        setIsHovered(false);
+    };
 
     const handleWorklogDelete = () => {
         getWorklogs();
@@ -437,6 +446,12 @@ function CardInfo(props) {
 
     console.log("Labeloptions:", Labeloptions)
 
+    const CloseIconhoverStyles = {
+        backgroundColor: isHovered ? '#F0F0F0' : 'white',
+        transition: 'background-color 0.3s ease',
+        cursor: 'pointer',
+        padding: '2px',
+    };
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -645,10 +660,12 @@ function CardInfo(props) {
 
                 <CardInfoComponents.CardInfoClose>
                     <CardInfoComponents.CardInfoBoxClose>
-                        <AiFillCloseCircle
-                            size={30}
+                        <AiOutlineClose
+                            size={20}
                             onClick={handleCloseModalSubmit}
-                            style={{cursor: "pointer"}}
+                            style={CloseIconhoverStyles}
+                            onMouseEnter={handleHover}
+                            onMouseLeave={handleMouseLeave}
                         />
                     </CardInfoComponents.CardInfoBoxClose>
                 </CardInfoComponents.CardInfoClose>
