@@ -1,98 +1,11 @@
-import React, {useContext, useEffect, useState} from 'react';
-import styled from 'styled-components';
+import React, {useEffect, useState} from 'react';
+import * as ProjectSettingComponents from './style';
 import {useNavigate, useParams} from "react-router-dom";
 import NavBar from "../../Dashboard/Navbar";
 import ProjectSidebar from "../../Dashboard/Sidebar/ProjectSidebar";
 import UserSelectField from "../../Dashboard/SelectFields/UserSelectField";
 import apiRequest from '../../../Utils/apiRequest';
-
 import ImageUploader from "../ImageUploader";
-import axios from "axios";
-import {Input} from 'antd';
-
-const PageWrapper = styled.div`
-  background-color: #fff;
-  height: 100vh;
-  padding: 0 20% 0 20%;
-`;
-
-const Header = styled.header`
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 1rem;
-`;
-
-const Details = styled.h1`
-  margin: 50px;
-`;
-
-const NameInput = styled.input`
-  border: 2px solid #ccc;
-  border-radius: 5px;
-  padding: 0.5rem;
-  font-size: 1rem;
-  margin-bottom: 2%;
-  background-color: #FAFBFC;
-  width: 359px;
-
-  :hover {
-    background-color: #EBECF0;
-  }
-`;
-
-
-const FormWrapper = styled.form`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 1rem;
-`;
-
-const Label = styled.label`
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-  margin-right: 325px;
-`;
-
-const LabelForKey = styled.label`
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-  margin-right: 342px;
-`;
-
-
-const Labelforlead = styled.label`
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-  margin-top: 10px;
-  margin-right: 278px;
-`;
-
-const Description = styled.p`
-  font-size: 0.7rem;
-  color: #555;
-  margin-top: 5px;
-`;
-
-const SaveButton = styled.button`
-  background-color: #0062FF;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  font-size: 1rem;
-  font-weight: bold;
-  padding: 0.5rem 1rem;
-  margin-top: 1rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease-in-out;
-  margin-right: 310px;
-  margin-bottom: 10px;
-
-  &:hover {
-    background-color: #3e81ed;
-  }
-`;
 
 
 function ProjectSettingPage() {
@@ -231,29 +144,29 @@ function ProjectSettingPage() {
         <div>
             <NavBar/>
             <ProjectSidebar/>
-            <PageWrapper>
+            <ProjectSettingComponents.PageWrapper>
 
-                <Header>
-                    <Details>Details</Details>
-                </Header>
+                <ProjectSettingComponents.Header>
+                    <ProjectSettingComponents.Details>Details</ProjectSettingComponents.Details>
+                </ProjectSettingComponents.Header>
 
-                <FormWrapper onSubmit={handleSubmit} encType="multipart/form-data" method="POST">
+                <ProjectSettingComponents.FormWrapper onSubmit={handleSubmit} encType="multipart/form-data" method="POST">
                     <ImageUploader id="image" imagePath={IconPath} onImageChange={handleImageChange}/>
-                    <Label htmlFor="name">Name:</Label>
-                    <NameInput type="text" id="name" name="name" placeholder="Project name" value={name}
+                    <ProjectSettingComponents.Label htmlFor="name">Name:</ProjectSettingComponents.Label>
+                    <ProjectSettingComponents.NameInput type="text" id="name" name="name" placeholder="Project name" value={name}
                                         onChange={handleNameChange}/>
-                    <LabelForKey htmlFor="key">Key:</LabelForKey>
-                    <NameInput id="key" name="key" placeholder="Project key" value={key} disabled bordered
+                    <ProjectSettingComponents.LabelForKey htmlFor="key">Key:</ProjectSettingComponents.LabelForKey>
+                    <ProjectSettingComponents.NameInput id="key" name="key" placeholder="Project key" value={key} disabled bordered
                                         onChange={handleKeyChange}/>
-                    <Labelforlead htmlFor="category">Project lead:</Labelforlead>
+                    <ProjectSettingComponents.Labelforlead htmlFor="category">Project lead:</ProjectSettingComponents.Labelforlead>
                     <UserSelectField users={useroptions}
-                                     defaultValue={projectLeadData}
-                                     onSelectChange={handleSelectedProjectLeadChange}
-                                     width="50%"/>
-                    <Description>Make sure your project lead has access to issues in the project.</Description>
-                    <SaveButton>Save</SaveButton>
-                </FormWrapper>
-            </PageWrapper>
+                                        defaultValue={projectLeadData}
+                                        onSelectChange={handleSelectedProjectLeadChange}
+                                        width="50%"/>
+                    <ProjectSettingComponents.Description>Make sure your project lead has access to issues in the project.</ProjectSettingComponents.Description>
+                    <ProjectSettingComponents.SaveButton>Save</ProjectSettingComponents.SaveButton>
+                </ProjectSettingComponents.FormWrapper>
+            </ProjectSettingComponents.PageWrapper>
         </div>
     );
 }
