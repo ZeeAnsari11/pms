@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from 'react';
-import PropTypes from 'prop-types';
 import {NavLink, useLocation, useParams} from 'react-router-dom';
 import {ProjectCategoryCopy} from './constants/projects';
 import Icon from './components/Icon/index';
@@ -15,7 +14,7 @@ import {
     LinkItem,
     LinkText,
     NotImplemented,
-} from './Styles';
+} from './SidebarStyle';
 import axios from "axios";
 
 

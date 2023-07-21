@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-import { color, sizes, font, mixin, zIndexValues } from './utils/styles';
+import { color, sizes, font, mixin, zIndexValues } from './utils/Style';
 
 export const Sidebar = styled.div`
   position: fixed;
