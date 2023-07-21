@@ -1,37 +1,6 @@
 import React, {useState, useEffect} from "react";
-import {Select} from "antd";
-import styled from "styled-components";
-import {FaUserCircle} from "react-icons/fa";
+import * as GenericSelectFieldComponents from "./GenericSelectFieldStyle"
 
-const {Option} = Select;
-
-const StyledSelect = styled(Select)`
-  width: ${({width}) => width ? width : '70%'};
-  height: ${({height}) => height ? height : '32px'};
-
-`;
-
-const StyledOption = styled.div`
-  display: flex;
-  align-items: center;
-
-  .ant-select {
-    border-radius: 9999px; /* set border-radius to a large value */
-  }
-`;
-
-const UserIcon = ({user}) => {
-    const defaultIcon = <FaUserCircle/>;
-    const iconUrl = user && user.iconUrl;
-
-    const userIcon = iconUrl ? (
-        <img src={iconUrl} alt="User icon" style={{width: "10px", height: "10px"}}/>
-    ) : (
-        defaultIcon
-    );
-
-    return <span style={{marginRight: "8px"}}>{userIcon}</span>;
-};
 
 const GenericSelectField = ({
                                 options,
@@ -63,7 +32,7 @@ const GenericSelectField = ({
     };
 
     return (
-        <StyledSelect
+        <GenericSelectFieldComponents.StyledSelect
             mode={isMultiple ? 'multiple' : undefined}
             style={{
                 width: width,
@@ -77,11 +46,11 @@ const GenericSelectField = ({
             onChange={handleSelectChange}
         >
             {options.map((option) => (
-                <StyledOption key={option.value} value={option.id} icon={option.icon}>
+                <GenericSelectFieldComponents.StyledOption key={option.value} value={option.id} icon={option.icon}>
                     {option.icon} {option.label}
-                </StyledOption>
+                </GenericSelectFieldComponents.StyledOption>
             ))}
-        </StyledSelect>
+        </GenericSelectFieldComponents.StyledSelect>
     );
 };
 

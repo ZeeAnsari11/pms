@@ -1,4 +1,4 @@
-import { NavLink, Route, useLocation } from 'react-router-dom';
+import {NavLink, useLocation} from 'react-router-dom';
 import Icon from './components/Icon/index';
 
 import {
@@ -7,7 +7,7 @@ import {
     LinkItem,
     LinkText,
     NotImplemented,
-} from './Styles';
+} from './SidebarStyle';
 import React from "react";
 
 
