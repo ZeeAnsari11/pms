@@ -1,5 +1,5 @@
 import {BrowserRouter, Routes, Route, Navigate} from "react-router-dom";
-import React, {useContext} from 'react';
+import React from 'react';
 import Login from "../Components/User/Login"
 import ResetPasswordPage from "../Components/User/ResetPassword/ResetPasswordPage"
 import ForgotPassword from "../Components/User/ForgetPassword/ForgetPassword"
@@ -41,10 +41,10 @@ function Url() {
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={<Login/>}/>
+                <Route index element={<Login/>}/>
+                <Route path="/user-activate" element={<AccountActivation/>}/>
                 <Route path="/forgot-password" element={<ForgotPassword/>}/>
                 <Route path="/reset-password" element={<ResetPasswordPage/>}/>
-                <Route index element={<Login/>}/>
-                {/* Private routes */}PersonalSettingsPage
                 <Route path="/dashboard" element={<PrivateRoute element={Dashboard}/>}/>
                 <Route path="/profile" element={<PrivateRoute element={UserProfilePage}/>}/>
                 <Route path="/project" element={<PrivateRoute element={ProjectsPage}/>}/>
@@ -60,20 +60,20 @@ function Url() {
                     path="/project/:projectId/browse/issue/:issueId"
                     element={<PrivateRoute element={EditTicketPage}/>}
                 />
-                <Route path="/project-setting" element={<ProjectSettingPage/>}/>
-                <Route path="/create-project" element={<CreateProject/>}/>
-                <Route path="/manage-account" element={<ManageAccount/>}/>
-                <Route path="/manage-users" element={<ManageUsers/>}/>
-                <Route path="/manage-groups" element={<ManageGroups/>}/>
-                <Route path="/manage-general-settings" element={<GeneralSettings/>}/>
-                <Route path="/project/:projectId/setting/summary" element={<ProjectSummary/>}/>
-                <Route path="/project/:projectId/setting/integrations" element={<Integrations/>}/>
-                <Route path="/project/:projectId/setting/tags" element={<ProjectTag/>}/>
-                <Route path="/project/:projectId/setting/types" element={<Types/>}/>
-                <Route path="/project/:projectId/setting/columns" element={<Columns/>}/>
-                <Route path="/project/:projectId/setting/permissions" element={<Permissions/>}/>
-                <Route path="/project/:projectId/close-project" element={<CloseProject/>}/>
-                <Route path="/user-activate" element={<AccountActivation/>}/>
+                <Route path="/project-setting" element={<PrivateRoute element={ProjectSettingPage}/>}/>
+                <Route path="/create-project" element={<PrivateRoute element={CreateProject}/>}/>
+                <Route path="/manage-account" element={<PrivateRoute element={ManageAccount} />}/>
+                <Route path="/manage-users" element={<PrivateRoute element={ManageUsers} />}/>
+                <Route path="/manage-groups" element={<PrivateRoute element={ManageGroups}/>}/>
+                <Route path="/manage-general-settings" element={<PrivateRoute element={GeneralSettings}/>}/>
+                <Route path="/project/:projectId/setting/summary" element={<PrivateRoute element={ProjectSummary}/>}/>
+                <Route path="/project/:projectId/setting/notification" element={<PrivateRoute element={Notification}/>}/>
+                <Route path="/project/:projectId/setting/integrations" element={<PrivateRoute element={Integrations}/>}/>
+                <Route path="/project/:projectId/setting/tags" element={<PrivateRoute element={ProjectTag}/>}/>
+                <Route path="/project/:projectId/setting/types" element={<PrivateRoute element={Types}/>}/>
+                <Route path="/project/:projectId/setting/columns" element={<PrivateRoute element={Columns}/>}/>
+                <Route path="/project/:projectId/setting/permissions" element={<PrivateRoute element={Permissions}/>}/>
+                <Route path="/project/:projectId/close-project" element={<PrivateRoute element={CloseProject}/>}/>
             </Routes>
         </BrowserRouter>
     );

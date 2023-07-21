@@ -1,12 +1,7 @@
-from rest_framework.generics import UpdateAPIView, RetrieveAPIView
-from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework.parsers import MultiPartParser, FormParser
 from django_filters.rest_framework import DjangoFilterBackend
-from register.serializers import CompanySerializer
-
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
-from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import Permission
 from .models import UserProfile
 from .filters import UserProfileFilter
@@ -30,6 +25,11 @@ class UserProfileViewSet(ModelViewSet):
         if user.is_staff:
             return UserProfile.objects.all()
         return UserProfile.objects.filter(user=self.request.user)
+
+    def get_object(self):
+        if self.kwargs.get('pk') == 'me':
+            return self.get_queryset().first()
+        return super().get_object()
 
 
 class UserGroupPermissionViewSet(ModelViewSet):
