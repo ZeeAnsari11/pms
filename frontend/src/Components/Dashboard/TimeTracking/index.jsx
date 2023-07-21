@@ -1,24 +1,13 @@
 import React, {useEffect, useState} from 'react';
 import {useParams} from "react-router-dom";
-import { Progress, Modal, Button } from 'antd';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { TimePicker } from '@mui/x-date-pickers/TimePicker';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import {Progress, Modal, Button} from 'antd';
+import {DatePicker} from '@mui/x-date-pickers/DatePicker';
+import {TimePicker} from '@mui/x-date-pickers/TimePicker';
+import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
+import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import {
-    TimeTrackingContainer,
-    ProgressBarContainer,
-    StyledProgressBarContainer,
-    InputHeading,
-    WorkLogModalContent,
-    TimeEstimate,
-    TimeTextDisplayContainer,
-    ModalTimeTextContainer,
-    TapTimeTextContainer,
-    WorklogDescription,
-} from './styles'
+import * as TimeTrackingComponents from "./Style"
 import EstimateTimer from "../EstimateTimer/EstimateTimer";
 import axios from 'axios';
 
@@ -38,7 +27,7 @@ const TimeTracking = ({OriginalEstimate}) => {
     const selectedIssueSlug = urlParams.get('selectedIssue');
     console.log("selectedIssueSlug", selectedIssueSlug);
 
-    const {issueId } = useParams();
+    const {issueId} = useParams();
     const originalEstimate = OriginalEstimate;
     let authToken = localStorage.getItem('auth_token')
 
@@ -111,8 +100,8 @@ const TimeTracking = ({OriginalEstimate}) => {
             date: startDate.format('YYYY-MM-DD'),
             time: startTime.format('HH:mm:ss'),
         };
-        console.log('New Time ', startTime );
-        console.log('New Date ', startDate );
+        console.log('New Time ', startTime);
+        console.log('New Date ', startDate);
         axios.post(`${process.env.REACT_APP_HOST}/api/worklogs/`, newTimelog, config)
 
             .then(response => {
@@ -152,15 +141,15 @@ const TimeTracking = ({OriginalEstimate}) => {
 
 
     const getTimePercentage = () => {
-        let totalTimeLog =  timeLogged + currentTimeLog;
-        if(totalTimeLog > originalEstimate){
+        let totalTimeLog = timeLogged + currentTimeLog;
+        if (totalTimeLog > originalEstimate) {
             return Math.round((originalEstimate / totalTimeLog) * 100);
         }
         return Math.round((totalTimeLog / originalEstimate) * 100);
     };
 
     const getTotalTimeLog = () => {
-        let totalTimeLog =  timeLogged + currentTimeLog;
+        let totalTimeLog = timeLogged + currentTimeLog;
         if (totalTimeLog > 0) {
             return `${convertToTimeFormat(totalTimeLog)} logged`;
         } else {
@@ -170,8 +159,8 @@ const TimeTracking = ({OriginalEstimate}) => {
 
     const getTotalTimeRemaining = () => {
         let totalTimeSpent = timeLogged + currentTimeLog;
-        if(totalTimeSpent > originalEstimate) {
-            return `${convertToTimeFormat(totalTimeSpent-originalEstimate)} over the original estimate`;
+        if (totalTimeSpent > originalEstimate) {
+            return `${convertToTimeFormat(totalTimeSpent - originalEstimate)} over the original estimate`;
         }
 
         let remainingTime = originalEstimate - totalTimeSpent;
@@ -215,105 +204,109 @@ const TimeTracking = ({OriginalEstimate}) => {
 
     return (
         <div>
-            <TimeTrackingContainer>
+            <TimeTrackingComponents.TimeTrackingContainer>
                 <div>
                 <span style={{fontWeight: "bold", marginRight: "10px"}}>
                     Original Estimate
                 </span>
-                    <TimeEstimate>{originalEstimate > 0 ? convertToTimeFormat(originalEstimate) : '0m' }</TimeEstimate>
+                    <TimeTrackingComponents.TimeEstimate>{originalEstimate > 0 ? convertToTimeFormat(originalEstimate) : '0m'}</TimeTrackingComponents.TimeEstimate>
                     {/*<InputNumber size={"small"} min={0} value={originalEstimate}*/}
                     {/*             onChange={handleOriginalEstimateTimeChange}/>*/}
                 </div>
-                <ProgressBarContainer>
+                <TimeTrackingComponents.ProgressBarContainer>
                     {timeLogged > originalEstimate ? (
                         <Progress
-                            style={{marginTop: "5px" , cursor: 'pointer' }}
-                            strokeColor={ '#1e64d1'} trailColor={"#d2193b"}
+                            style={{marginTop: "5px", cursor: 'pointer'}}
+                            strokeColor={'#1e64d1'} trailColor={"#d2193b"}
                             showInfo={false} percent={getTimePercentage()}
                             onClick={() => setIsModalVisible(true)}
                         />
                     ) : (
                         <Progress
-                            style={{marginTop: "5px" , cursor: 'pointer' }}
-                            strokeColor={ '#1e64d1'} trailColor={"#ccc6c6"}
+                            style={{marginTop: "5px", cursor: 'pointer'}}
+                            strokeColor={'#1e64d1'} trailColor={"#ccc6c6"}
                             showInfo={false} percent={getTimePercentage()}
                             onClick={() => setIsModalVisible(true)}
                         />
-                    ) }
-                </ProgressBarContainer>
-                <TimeTextDisplayContainer>
-                    <TapTimeTextContainer><p>{getTotalTimeLog()}</p></TapTimeTextContainer>
-                    <TapTimeTextContainer><p>{getTotalTimeRemaining()}</p></TapTimeTextContainer>
-                </TimeTextDisplayContainer>
+                    )}
+                </TimeTrackingComponents.ProgressBarContainer>
+                <TimeTrackingComponents.TimeTextDisplayContainer>
+                    <TimeTrackingComponents.TapTimeTextContainer><p>{getTotalTimeLog()}</p>
+                    </TimeTrackingComponents.TapTimeTextContainer>
+                    <TimeTrackingComponents.TapTimeTextContainer><p>{getTotalTimeRemaining()}</p>
+                    </TimeTrackingComponents.TapTimeTextContainer>
+                </TimeTrackingComponents.TimeTextDisplayContainer>
                 <Modal
                     title="Time Tracking"
                     open={isModalVisible}
                     onCancel={handleModalCancel}
                     footer={[
-                            <Button key="save" type="primary" onClick={handleModalOk}>
-                                Save
-                            </Button>
+                        <Button key="save" type="primary" onClick={handleModalOk}>
+                            Save
+                        </Button>
                     ]}
                 >
-                    <StyledProgressBarContainer>
+                    <TimeTrackingComponents.StyledProgressBarContainer>
                         {(timeLogged + currentTimeLog) > originalEstimate ? (
-                        <Progress
-                            style={{marginTop: "5px"  }}
-                            strokeColor={ '#1e64d1'} trailColor={"#d2193b"}
-                            showInfo={false} percent={getTimePercentage()}
-                        />
-                    ) : (
-                        <Progress
-                            style={{marginTop: "5px"}}
-                            strokeColor={ '#1e64d1'} trailColor={"#ccc6c6"}
-                            showInfo={false} percent={getTimePercentage()}
-                        />
-                    ) }
-                    </StyledProgressBarContainer>
-                    <TimeTextDisplayContainer>
-                        <ModalTimeTextContainer><p>{getTotalTimeLog()}</p></ModalTimeTextContainer>
-                        <ModalTimeTextContainer><p>{getTotalTimeRemaining()}</p></ModalTimeTextContainer>
-                    </TimeTextDisplayContainer>
+                            <Progress
+                                style={{marginTop: "5px"}}
+                                strokeColor={'#1e64d1'} trailColor={"#d2193b"}
+                                showInfo={false} percent={getTimePercentage()}
+                            />
+                        ) : (
+                            <Progress
+                                style={{marginTop: "5px"}}
+                                strokeColor={'#1e64d1'} trailColor={"#ccc6c6"}
+                                showInfo={false} percent={getTimePercentage()}
+                            />
+                        )}
+                    </TimeTrackingComponents.StyledProgressBarContainer>
+                    <TimeTrackingComponents.TimeTextDisplayContainer>
+                        <TimeTrackingComponents.ModalTimeTextContainer><p>{getTotalTimeLog()}</p>
+                        </TimeTrackingComponents.ModalTimeTextContainer>
+                        <TimeTrackingComponents.ModalTimeTextContainer><p>{getTotalTimeRemaining()}</p>
+                        </TimeTrackingComponents.ModalTimeTextContainer>
+                    </TimeTrackingComponents.TimeTextDisplayContainer>
 
-                    <TimeTextDisplayContainer>
+                    <TimeTrackingComponents.TimeTextDisplayContainer>
                         <div><p
                             style={{alignSelf: "center", fontSize: "1rem", marginTop: 0, fontWeight: "500"}}>The
                             original estimate for
                             this issue was
-                            <TimeEstimate>{originalEstimate > 0 ? convertToTimeFormat(originalEstimate) : '0m' }</TimeEstimate>
+                            <TimeTrackingComponents.TimeEstimate>{originalEstimate > 0 ? convertToTimeFormat(originalEstimate) : '0m'}</TimeTrackingComponents.TimeEstimate>
                         </p></div>
-                    </TimeTextDisplayContainer>
+                    </TimeTrackingComponents.TimeTextDisplayContainer>
 
-                    <WorkLogModalContent>
+                    <TimeTrackingComponents.WorkLogModalContent>
 
                         <div>
-                            <InputHeading>Time spent</InputHeading>
+                            <TimeTrackingComponents.InputHeading>Time spent</TimeTrackingComponents.InputHeading>
                             <EstimateTimer onHoursChange={handleTimeSpentChange}/>
                         </div>
                         <br/>
                         <div>
-                            <InputHeading>Date:</InputHeading>
-                                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                    <DatePicker value={startDate} onChange={handleDateChange}/>
-                                </LocalizationProvider>
+                            <TimeTrackingComponents.InputHeading>Date:</TimeTrackingComponents.InputHeading>
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                <DatePicker value={startDate} onChange={handleDateChange}/>
+                            </LocalizationProvider>
                         </div>
                         <div>
-                            <InputHeading>Time:</InputHeading>
+                            <TimeTrackingComponents.InputHeading>Time:</TimeTrackingComponents.InputHeading>
                             <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <TimePicker label="Controlled picker" value={startTime}
-                                        onChange={handleTimeChange}/>
+                                <TimePicker label="Controlled picker" value={startTime}
+                                            onChange={handleTimeChange}/>
                             </LocalizationProvider>
                         </div>
 
-                    </WorkLogModalContent>
+                    </TimeTrackingComponents.WorkLogModalContent>
                     {currentTimeLog ? (
-                        <WorklogDescription>
-                            <InputHeading>Work Description:</InputHeading>
+                        <TimeTrackingComponents.WorklogDescription>
+                            <TimeTrackingComponents.InputHeading>Work Description:</TimeTrackingComponents.InputHeading>
                             <ReactQuill value={workDescription} onChange={handleWorklogDescription}/>
-                        </WorklogDescription>
+                        </TimeTrackingComponents.WorklogDescription>
                     ) : null}
                 </Modal>
-            </TimeTrackingContainer>
+            </TimeTrackingComponents.TimeTrackingContainer>
         </div>
     );
 };
