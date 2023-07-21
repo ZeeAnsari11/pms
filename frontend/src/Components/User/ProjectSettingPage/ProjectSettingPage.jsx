@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import * as ProjectSettingComponents from './style';
+import * as ProjectSettingComponents from './Style';
 import {useNavigate, useParams} from "react-router-dom";
 import NavBar from "../../Dashboard/Navbar";
 import ProjectSidebar from "../../Dashboard/Sidebar/ProjectSidebar";

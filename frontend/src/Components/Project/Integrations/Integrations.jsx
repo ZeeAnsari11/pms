@@ -1,138 +1,14 @@
-import React, {useContext, useEffect, useState} from 'react';
-import styled from 'styled-components';
+import React, {useEffect, useState} from 'react';
+import * as IntegrationsComponents from './Style';
 import NavBar from "../../Dashboard/Navbar/index";
 import ProjectSidebar from "../../Dashboard/Sidebar/ProjectSidebar";
 import {AiFillSlackCircle} from 'react-icons/ai';
 import {FcGoogle} from 'react-icons/fc';
-import {color} from "../../Dashboard/Sidebar/utils/styles";
-import {ToastContainer, toast} from 'react-toastify';
 import {Input, Button, Form, Switch} from 'antd';
 import {useParams} from "react-router-dom";
 import apiRequest from '../../../Utils/apiRequest';
-
-
-const PageContainer = styled.div`
-  height: 100vh;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-`;
-
-const SummaryHeading = styled.p`
-  font-size: 26px;
-  color: black;
-  margin-left: 40px;
-  font-weight: bolder;
-  margin-top: 70px;
-
-  @media (max-width: 768px) {
-    margin: 5px 0;
-  }
-`;
-
-const SubHeadingForNotificationMethods = styled.p`
-  margin-left: 10px;
-  font-size: 16px;
-  color: black;
-  font-weight: bolder;
-  width: 250px;
-
-  @media (max-width: 768px) {
-    margin: 5px 0;
-  }
-`;
-
-const ContentWrapper = styled.div`
-  flex: 1;
-  overflow-x: auto;
-  padding: 0px 20px 0px 20px;
-  margin-left: 200px;
-  margin-bottom: -10px;
-
-  @media (max-width: 768px) {
-    margin-left: 0;
-  }
-`;
-
-const HeadingWrapper = styled.div`
-  width: 100%;
-`;
-
-const IconWrapperDiv = styled.div`
-  width: 40px;
-  height: 40px;
-  margin-left: 10px;
-`;
-
-const IconName = styled.p`
-  margin-left: 43px;
-  margin-top: -40px;
-  font-size: 21px;
-  width: 200px;
-`;
-
-const NotificationContainerForSlack = styled.div`
-  margin-top: 25px;
-  background-color: #EBEBEB;
-  border-radius: 5px;
-  height: 420px;
-  width: 100%;
-  box-shadow: var(--ds-shadow-raised, 0 1px 1px rgba(9, 30, 66, 0.25), 0 0 1px 1px rgba(9, 30, 66, 0.13));
-
-  &:hover {
-    transform: scale(1.005);
-    transition: transform 0.5s ease;
-  }
-`;
-
-const NotificationContainerForGmail = styled.div`
-  margin-top: 25px;
-  background-color: #EBEBEB;
-  border-radius: 5px;
-  height: 600px;
-  width: 100%;
-  box-shadow: var(--ds-shadow-raised, 0 1px 1px rgba(9, 30, 66, 0.25), 0 0 1px 1px rgba(9, 30, 66, 0.13));
-
-  &:hover {
-    transform: scale(1.005);
-    transition: transform 0.5s ease;
-  }
-`;
-
-const NotificationWrapper = styled.div`
-  width: 100%;
-  height: 100%;
-  padding: 10px;
-`;
-
-const StyledFormItem = styled(Form.Item)`
-  float: right;
-  margin-top: -56px;
-  margin-right: 230px;
-`;
-
-const Divider = styled.div`
-  margin-top: 17px;
-  border-top: 1px solid ${color.borderLight};
-`;
-
-const InnerNotificationWrapper = styled.div`
-  margin: 10px;
-  border-radius: 5px;
-  width: 98%;
-  height: 80%;
-`;
-
-const FormWrapper = styled.div`
-  width: 500px;
-`;
-
-const ParagraphNote = styled.p`
-  font-size: 10px;
-  margin-top: -25px;
-  margin-left: 140px
-`;
-
+import ToastContainer from '../../../Shared/Components/Toast';
+import {displayErrorMessage, displaySuccessMessage, displayInfoMessage} from '../../../Shared/notify';
 
 function Integrations() {
 
@@ -146,7 +22,7 @@ function Integrations() {
 
     const updateSlackIntegrationForm = (response) => {
         if (response.status === 200) {
-            displaySuccessMessage();
+            displaySuccessMessage(<><AiFillSlackCircle/> Slack Webhook is Integrated</>);
             let responseData;
             responseData = response.data;
             if (typeof responseData === 'object') {
@@ -211,7 +87,7 @@ function Integrations() {
     const patchSlackIntegrationsData = (values) => {
         const {id} = initialSlackValues
         if (id === undefined) {
-            displayInfoMessage();
+            displayErrorMessage(`Please save the configuration first!'`);
             return;
         }
         const {slackNotificationStatus, slackChannelGroupUser, slackWebhookUrl} = values
@@ -234,43 +110,11 @@ function Integrations() {
             });
     }
 
-    const displayInfoMessage = () => {
-        toast.info('Please save the configuration first!', {
-            position: "bottom-left",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "colored",
-        });
-    }
-
-    const displaySuccessMessage = () => {
-        toast.success(<><AiFillSlackCircle/> Slack Webhook is Integrated</>, {
-            position: "bottom-left",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "colored",
-        });
-    }
-
-
     useEffect(() => {
         if (projectId !== undefined) {
             fetchSlackIntegrationsData();
         }
     }, []);
-
-    const items = [
-        {icon: <><AiFillSlackCircle style={{fontSize: '15px'}}/> </>, label: 'Slack', value: 'Slack'},
-        {icon: <><FcGoogle/></>, label: 'Gmail', value: 'Gmail'},
-    ];
 
     const handleSlackSaveOrUpdateForm = (values) => {
         const {id} = initialSlackValues;
@@ -282,44 +126,32 @@ function Integrations() {
 
     };
 
-    const handleGmailSaveOrUpdateForm = () => {
-        toast.success(<><FcGoogle/> Gmail is Integrated</>, {
-            position: "bottom-left",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "colored",
-        });
-    };
-
 
     return (
         <div>
-            <PageContainer>
+            <IntegrationsComponents.PageContainer>
                 <ProjectSidebar/>
                 <NavBar/>
-                <ContentWrapper>
-                    <HeadingWrapper>
-                        <SummaryHeading>Integrations</SummaryHeading>
-                    </HeadingWrapper>
-                    <Divider/>
-                    <NotificationContainerForSlack>
-                        <NotificationWrapper>
-                            <InnerNotificationWrapper>
-                                <HeadingWrapper>
-                                    <SubHeadingForNotificationMethods>Integration
-                                        Method</SubHeadingForNotificationMethods>
-                                </HeadingWrapper>
+                <ToastContainer></ToastContainer>
+                <IntegrationsComponents.ContentWrapper>
+                    <IntegrationsComponents.HeadingWrapper>
+                        <IntegrationsComponents.SummaryHeading>Integrations</IntegrationsComponents.SummaryHeading>
+                    </IntegrationsComponents.HeadingWrapper>
+                    <IntegrationsComponents.Divider/>
+                    <IntegrationsComponents.NotificationContainerForSlack>
+                        <IntegrationsComponents.NotificationWrapper>
+                            <IntegrationsComponents.InnerNotificationWrapper>
+                                <IntegrationsComponents.HeadingWrapper>
+                                    <IntegrationsComponents.SubHeadingForNotificationMethods>Integration
+                                        Method</IntegrationsComponents.SubHeadingForNotificationMethods>
+                                </IntegrationsComponents.HeadingWrapper>
 
-                                <HeadingWrapper>
-                                    <IconWrapperDiv>
+                                <IntegrationsComponents.HeadingWrapper>
+                                    <IntegrationsComponents.IconWrapperDiv>
                                         <AiFillSlackCircle fontSize={"28px"}/>
-                                    </IconWrapperDiv>
-                                    <IconName>Slack Configuration</IconName>
-                                    <FormWrapper>
+                                    </IntegrationsComponents.IconWrapperDiv>
+                                    <IntegrationsComponents.IconName>Slack Configuration</IntegrationsComponents.IconName>
+                                    <IntegrationsComponents.FormWrapper>
                                         <Form layout="vertical" form={slackForm} onFinish={handleSlackSaveOrUpdateForm}>
                                             <Form.Item
                                                 name="slackWebhookUrl"
@@ -348,31 +180,31 @@ function Integrations() {
                                                 <Button type="primary" htmlType="submit"
                                                         onClick={() => setSlackIsUpdating(false)}>Save</Button>
                                             </Form.Item>
-                                            <StyledFormItem>
+                                            <IntegrationsComponents.StyledFormItem>
                                                 <Button type="primary" htmlType="update"
                                                         onClick={() => setSlackIsUpdating(true)}>Update</Button>
-                                            </StyledFormItem>
+                                            </IntegrationsComponents.StyledFormItem>
                                         </Form>
-                                    </FormWrapper>
-                                </HeadingWrapper>
-                            </InnerNotificationWrapper>
-                        </NotificationWrapper>
-                    </NotificationContainerForSlack>
-                    <NotificationContainerForGmail>
-                        <NotificationWrapper>
-                            <InnerNotificationWrapper>
-                                <HeadingWrapper>
-                                    <SubHeadingForNotificationMethods>Integration
-                                        Method</SubHeadingForNotificationMethods>
-                                </HeadingWrapper>
+                                    </IntegrationsComponents.FormWrapper>
+                                </IntegrationsComponents.HeadingWrapper>
+                            </IntegrationsComponents.InnerNotificationWrapper>
+                        </IntegrationsComponents.NotificationWrapper>
+                    </IntegrationsComponents.NotificationContainerForSlack>
+                    <IntegrationsComponents.NotificationContainerForGmail>
+                        <IntegrationsComponents.NotificationWrapper>
+                            <IntegrationsComponents.InnerNotificationWrapper>
+                                <IntegrationsComponents.HeadingWrapper>
+                                    <IntegrationsComponents.SubHeadingForNotificationMethods>Integration
+                                        Method</IntegrationsComponents.SubHeadingForNotificationMethods>
+                                </IntegrationsComponents.HeadingWrapper>
 
-                                <HeadingWrapper>
-                                    <IconWrapperDiv>
+                                <IntegrationsComponents.HeadingWrapper>
+                                    <IntegrationsComponents.IconWrapperDiv>
                                         <FcGoogle fontSize={"28px"}/>
-                                    </IconWrapperDiv>
-                                    <IconName>Gmail Configuration</IconName>
-                                    <FormWrapper>
-                                        <Form layout="vertical" onFinish={handleGmailSaveOrUpdateForm}>
+                                    </IntegrationsComponents.IconWrapperDiv>
+                                    <IntegrationsComponents.IconName>Gmail Configuration</IntegrationsComponents.IconName>
+                                    <IntegrationsComponents.FormWrapper>
+                                        <Form layout="vertical" onFinish={displayInfoMessage(<><FcGoogle/> Gmail SMTP is Integrated</>)}>
                                             <Form.Item
                                                 name="hostName"
                                                 label="Hostname"
@@ -416,35 +248,23 @@ function Integrations() {
                                             >
                                                 <Input/>
                                             </Form.Item>
-                                            <ParagraphNote>Please enter security protocol SSL or TLS </ParagraphNote>
+                                            <IntegrationsComponents.ParagraphNote>Please enter security protocol SSL or TLS </IntegrationsComponents.ParagraphNote>
                                             <Form.Item>
                                                 <Button type="primary" htmlType="submit"
                                                         onClick={() => setSMTPIsUpdating(false)}>Save</Button>
                                             </Form.Item>
-                                            <StyledFormItem>
+                                            <IntegrationsComponents.StyledFormItem>
                                                 <Button type="primary" htmlType="update"
                                                         onClick={() => setSMTPIsUpdating(true)}>Update</Button>
-                                            </StyledFormItem>
+                                            </IntegrationsComponents.StyledFormItem>
                                         </Form>
-                                    </FormWrapper>
-                                </HeadingWrapper>
-                            </InnerNotificationWrapper>
-                        </NotificationWrapper>
-                    </NotificationContainerForGmail>
-                </ContentWrapper>
-            </PageContainer>
-            <ToastContainer
-                position="bottom-left"
-                autoClose={5000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                theme="colored"
-            />
+                                    </IntegrationsComponents.FormWrapper>
+                                </IntegrationsComponents.HeadingWrapper>
+                            </IntegrationsComponents.InnerNotificationWrapper>
+                        </IntegrationsComponents.NotificationWrapper>
+                    </IntegrationsComponents.NotificationContainerForGmail>
+                </IntegrationsComponents.ContentWrapper>
+            </IntegrationsComponents.PageContainer>
         </div>
     );
 }
