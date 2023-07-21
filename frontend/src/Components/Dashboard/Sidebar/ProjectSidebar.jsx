@@ -92,7 +92,6 @@ const ProjectSidebar = () => {
             {renderLinkItem(match, 'Project Settings', 'settings', `/project/${projectId}/project-setting`)}
             <Divider/>
             {renderLinkItem(match, 'Summary', 'Summary', `/project/${projectId}/setting/summary`)}
-            {renderLinkItem(match, 'Notifications', 'Notifications', `/project/${projectId}/setting/notification`)}
             {renderLinkItem(match, 'Integrations', 'Integrations', `/project/${projectId}/setting/integrations`)}
             {renderLinkItem(match, 'Tags', 'Tags', `/project/${projectId}/setting/tags`)}
             {renderLinkItem(match, 'Types', 'Types', `/project/${projectId}/setting/types`)}

@@ -33,16 +33,16 @@ const UserIcon = ({user}) => {
     return <span style={{marginRight: "8px"}}>{userIcon}</span>;
 };
 
-const UserSelect = ({
-                        options,
-                        isMultiple,
-                        placeholder,
-                        isDisabled,
-                        defaultValue,
-                        width = "100%",
-                        onSelectChange,
-                        ...rest
-                    }) => {
+const GenericSelectField = ({
+                                options,
+                                isMultiple,
+                                placeholder,
+                                isDisabled,
+                                defaultValue,
+                                width = "100%",
+                                onSelectChange,
+                                ...rest
+                            }) => {
     const [value, setValue] = useState(defaultValue);
 
     useEffect(() => {
@@ -85,4 +85,4 @@ const UserSelect = ({
     );
 };
 
-export default UserSelect;
+export default GenericSelectField;

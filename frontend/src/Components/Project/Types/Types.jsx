@@ -24,6 +24,10 @@ const StyledEditFormItem = styled(EditForm.Item)`
   align-items: center;
   margin-bottom: 10px;
   justify-content: space-between;
+
+  .ant-form-item-label {
+    font-weight: bold;
+  }
 `;
 
 const StyledAddFormItem = styled(AddForm.Item)`
@@ -31,6 +35,10 @@ const StyledAddFormItem = styled(AddForm.Item)`
   align-items: center;
   margin-bottom: 10px;
   justify-content: space-between;
+  
+  .ant-form-item-label {
+    font-weight: bold;
+  }
 `;
 
 function Types() {
@@ -250,7 +258,7 @@ function Types() {
                 >
                     {selectedItem ? (
                         <>
-                            <EditForm form={editTypeForm} onFinish={handleEditModal}>
+                            <EditForm layout="vertical" form={editTypeForm} onFinish={handleEditModal}>
                                 <StyledEditFormItem label="Type" name="type" rules={[{ required:true}]}>
                                     <Input />
                                 </StyledEditFormItem>
@@ -258,7 +266,7 @@ function Types() {
                         </>
                     ) : (
                         <>
-                            <AddForm form={addTypeForm} onFinish={handleAddModal} >
+                            <AddForm layout="vertical" form={addTypeForm} onFinish={handleAddModal} >
                                 <StyledAddFormItem label="Type" name="type" value={null} rules={[{required:true, message: 'Please enter the new Type' }]}>
                                     <Input />
                                 </StyledAddFormItem>

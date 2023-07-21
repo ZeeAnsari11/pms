@@ -16,6 +16,7 @@ import Description from "../TextEditor/TextEditor"
 import Comment from "../Comment/Comment";
 import Worklog from "../Worklog/Worklog";
 import ReactQuill from "react-quill";
+import MultiSelectField from "../SelectFields/MultiSelectField";
 
 const {TextArea} = Input;
 
@@ -297,7 +298,7 @@ function EditTicketPage({props}) {
 
     const [selectedAssignee, setSelectedAssignee] = useState('');
     const [selectedReporter, setSelectedReporter] = useState('');
-    const [selectedLabel, setSelectedLabel] = useState('');
+    const [selectedLabel, setSelectedLabel] = useState([]);
 
     const [IssuesData, setIssuesData] = useState([]);
     const [IssueType, setIssueType] = useState('');
@@ -368,8 +369,8 @@ function EditTicketPage({props}) {
         setSelectedReporter(parseInt(value));
     };
 
-    const handleLabelChange = (value) => {
-        setSelectedLabel(parseInt(value));
+    const handleLabelChange = (values) => {
+        setSelectedLabel(values);
     };
 
     const {issueId, projectId} = useParams()
@@ -443,16 +444,6 @@ function EditTicketPage({props}) {
             setIssueLabels(response.data);
         };
 
-        // const fetchCurrentUserDataFromUserList = async () => {
-        //     try {
-        //         const response = await axios.get(`${process.env.REACT_APP_HOST}/api/userprofile/?user__email__iexact=${currentUserEmail}`, {
-        //             headers: {"Authorization": `Token ${authToken}`}
-        //         });
-        //         setCurrentUserData(response.data[0]);
-        //     } catch (error) {
-        //         console.error(error);
-        //     }
-        // }
         fetchDependentUserOptions();
         fetchDependentProjectLabels();
         fetchComments();
@@ -486,7 +477,7 @@ function EditTicketPage({props}) {
             setFiles(currentIssueData?.file)
             setSelectedAssignee(currentIssueData?.assignee?.id)
             setSelectedReporter(currentIssueData?.reporter?.id)
-            setSelectedLabel(currentIssueData?.label?.id)
+            setSelectedLabel(currentIssueData?.label?.map(label => label.id) || []);
             setCurrentAssignee(currentIssueData?.assignee?.username)
             setCurrentReporter(currentIssueData?.reporter?.username)
             setCurrentLabels(currentIssueData?.label?.name)
@@ -499,6 +490,7 @@ function EditTicketPage({props}) {
     console.log("IssueSummary:", IssueSummary)
     console.log("files:", files)
 
+    console.log("selectedLabel", selectedLabel)
     console.log("currentIssueData:", currentIssueData)
     console.log("IssueEstimate:", IssueEstimate)
 
@@ -518,8 +510,9 @@ function EditTicketPage({props}) {
 
     const IssueLabeloptions = IssueLabels
         ? IssueLabels.map((IssueType) => ({
-            label: IssueType.name,
-            value: IssueType.id,
+            id: IssueType.id,
+            name: IssueType.name,
+            color: IssueType.color,
         }))
         : [];
 
@@ -529,7 +522,9 @@ function EditTicketPage({props}) {
 
         formData.append("assignee", selectedAssignee);
         formData.append("reporter", selectedReporter);
-        formData.append("label", selectedLabel);
+        selectedLabel.forEach((label) => {
+            formData.append("label", label);
+        });
         formData.append("summary", IssueSummary);
         formData.append("description", IssueSummary);
         formData.append("name", IssueName);
@@ -790,12 +785,10 @@ function EditTicketPage({props}) {
 
                                     <ContentInfoTitle>
                                         <span>Labels</span>
-                                        <GenericSelectField
-                                            onSelectChange={handleLabelChange}
-                                            options={IssueLabeloptions}
-                                            isMultiple={false}
-                                            placeholder={"Unassigned"}
-                                            defaultValue={currentLabels}
+                                        <MultiSelectField options={IssueLabeloptions}
+                                                          onSelectChange={handleLabelChange}
+                                                          placeholder="Select Labels"
+
                                         />
                                     </ContentInfoTitle>
 
