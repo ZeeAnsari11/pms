@@ -1,32 +1,5 @@
 import React, {useState, useRef} from "react";
-import styled from "styled-components";
-
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
-
-const ImageContainer = styled.div`
-  width: 175px;
-  height: 175px;
-  margin-bottom: 1rem;
-  position: relative;
-  cursor: pointer;
-`;
-
-
-const Input = styled.input`
-  display: none;
-`;
-
-const Image = styled.img`
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 50%;
-`;
+import * as ProfilePhotoUploaderComponents from './ProfilePhotoUploaderStyle';
 
 const ProfilePhotouploader = ({imagePath, onImageChange}) => {
     const [selectedImage, setSelectedImage] = useState(null);
@@ -48,28 +21,28 @@ const ProfilePhotouploader = ({imagePath, onImageChange}) => {
     };
 
     return (
-        <Container>
-            <ImageContainer onClick={handleImageClick}>
+        <ProfilePhotoUploaderComponents.Container>
+            <ProfilePhotoUploaderComponents.ImageContainer onClick={handleImageClick}>
                 {selectedImage || imagePath ? (
-                    <Image
+                    <ProfilePhotoUploaderComponents.Image
                         src={selectedImage || imagePath}
                         alt="Selected Image"
                     />
                 ) : (
-                    <Image
+                    <ProfilePhotoUploaderComponents.Image
                         src="http://localhost:3000/Images/NoImage.jpeg"
                         alt="Default Image"
                     />
                 )}
-            </ImageContainer>
-            <Input
+            </ProfilePhotoUploaderComponents.ImageContainer>
+            <ProfilePhotoUploaderComponents.Input
                 type="file"
                 accept="image/*"
                 id="file-input"
                 ref={fileInputRef}
                 onChange={handleImageChange}
             />
-        </Container>
+        </ProfilePhotoUploaderComponents.Container>
     );
 };
 
