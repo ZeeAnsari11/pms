@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import apiRequest from '../../../Utils/apiRequest';
-import * as CreateProjectComponents from "./style"
+import * as CreateProjectComponents from "./Style"
 import Toast from "../../../Shared/Components/Toast"
 import {displayErrorMessage, displaySuccessMessage} from "../../../Shared/notify"
 import {v4 as uuidv4} from 'uuid';
