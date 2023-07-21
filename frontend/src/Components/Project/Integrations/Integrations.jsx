@@ -1,10 +1,10 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import styled from 'styled-components';
 import NavBar from "../../Dashboard/Navbar/index";
 import ProjectSidebar from "../../Dashboard/Sidebar/ProjectSidebar";
 import {AiFillSlackCircle} from 'react-icons/ai';
 import {FcGoogle} from 'react-icons/fc';
-import {color} from "../../Dashboard/Sidebar/utils/styles";
+import {color} from "../../Dashboard/Sidebar/utils/Style";
 import {ToastContainer, toast} from 'react-toastify';
 import {Input, Button, Form, Switch} from 'antd';
 import {useParams} from "react-router-dom";
