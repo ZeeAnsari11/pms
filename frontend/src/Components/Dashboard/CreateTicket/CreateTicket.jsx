@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {AiFillCloseCircle, AiOutlineArrowDown, AiOutlineArrowUp} from "react-icons/ai";
+import {AiOutlineClose, AiOutlineArrowDown, AiOutlineArrowUp} from "react-icons/ai";
 import {TbStatusChange} from "react-icons/tb";
 import GenericSelectField from "../SelectFields/GenericSelectField";
 import ReactQuill from "react-quill";
@@ -33,6 +33,9 @@ const LinkedIssue2 = [
 
 const MyModalComponent = ({onClose}) => {
     let authToken = localStorage.getItem('auth_token')
+
+    const [isHovered, setIsHovered] = useState(false);
+
     const [summary, setSummary] = useState("");
     const [name, setName] = useState("");
     const [description, setDescription] = useState('');
@@ -242,6 +245,22 @@ const MyModalComponent = ({onClose}) => {
         setEstimateHours(totalHours);
     };
 
+    const handleHover = () => {
+        setIsHovered(true);
+    };
+
+    const handleMouseLeave = () => {
+        setIsHovered(false);
+    };
+
+    const CloseIconhoverStyles = {
+        backgroundColor: isHovered ? '#F0F0F0' : 'white',
+        transition: 'background-color 0.3s ease',
+        cursor: 'pointer',
+        marginRight: "5px",
+        marginTop: "10px",
+        padding: '2px',
+    };
 
     function handleSubmit(event) {
         event.preventDefault();
@@ -288,10 +307,12 @@ const MyModalComponent = ({onClose}) => {
         <CreateTicketComponents.ModalOverlay>
             <CreateTicketComponents.ModalContainer>
                 <CreateTicketComponents.CardInfoBoxClose>
-                    <AiFillCloseCircle
-                        size={30}
+                    <AiOutlineClose
+                        size={20}
                         onClick={onClose}
-                        style={{cursor: "pointer"}}
+                        style={CloseIconhoverStyles}
+                        onMouseEnter={handleHover}
+                        onMouseLeave={handleMouseLeave}
                     />
                 </CreateTicketComponents.CardInfoBoxClose>
                 <CreateTicketComponents.ModalTitle>Create Issue</CreateTicketComponents.ModalTitle>
