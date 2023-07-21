@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { Form } from "antd";
-import { color } from "../../Dashboard/Sidebar/utils/styles";
+import { color } from "../../Dashboard/Sidebar/utils/Style";
 
 export const PageContainer = styled.div`
   height: 100vh;

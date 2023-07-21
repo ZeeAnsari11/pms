@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import React, {useEffect, useState} from 'react';
+import {useParams} from 'react-router-dom';
 import * as TagComponents from './Style';
 import NavBar from "../../Dashboard/Navbar/index";
 import ProjectSidebar from "../../Dashboard/Sidebar/ProjectSidebar";
-import { AiOutlineDelete, AiOutlineEdit, AiOutlinePlus } from 'react-icons/ai';
+import {AiOutlineDelete, AiOutlineEdit, AiOutlinePlus} from 'react-icons/ai';
 import Toast from "../../../Shared/Components/Toast"
-import { displayErrorMessage, displaySuccessMessage } from "../../../Shared/notify"
+import {displayErrorMessage, displaySuccessMessage} from "../../../Shared/notify"
 import apiRequest from '../../../Utils/apiRequest';
-import { Button, Form as EditForm, Form as AddForm, Input, Modal, Space, Table  } from 'antd';
-import { ChromePicker } from 'react-color';
+import {Button, Form as EditForm, Form as AddForm, Input, Modal, Space, Table} from 'antd';
+import {ChromePicker} from 'react-color';
 
 function Tags() {
 
@@ -27,10 +27,10 @@ function Tags() {
 
     let authToken = localStorage.getItem('auth_token');
 
-    const { projectId } = useParams();
+    const {projectId} = useParams();
 
 
-    const  updateTable = ( responseData ) => {
+    const updateTable = (responseData) => {
         const updatedData = data.map(item => {
             if (item.id === responseData.id) {
                 return {
@@ -53,8 +53,9 @@ function Tags() {
         apiRequest
             .patch(`/api/project_labels/${selectedItem.id}/`,
                 {"name": values.name, "color": values.color?.hex},
-                { headers: { "Authorization": `Token ${authToken}` }
-            })
+                {
+                    headers: {"Authorization": `Token ${authToken}`}
+                })
             .then(response => {
                 displaySuccessMessage('Successfully update the requested Tag!');
                 updateTable(response.data)
@@ -65,7 +66,8 @@ function Tags() {
     };
     const deleteIssueStatus = (id) => {
         apiRequest
-            .delete(`/api/project_labels/${id}`,{ headers: { "Authorization": `Token ${authToken}` }
+            .delete(`/api/project_labels/${id}`, {
+                headers: {"Authorization": `Token ${authToken}`}
             })
             .then(response => {
                 displaySuccessMessage('Successfully delete the requested Tag!');
@@ -78,9 +80,10 @@ function Tags() {
     const createIssueType = (values) => {
         apiRequest
             .post(`/api/project_labels/`,
-                { "project" : projectId, "name" : values.name, "color" : values.color.hex },
-                { headers: { "Authorization": `Token ${authToken}` }
-            })
+                {"project": projectId, "name": values.name, "color": values.color.hex},
+                {
+                    headers: {"Authorization": `Token ${authToken}`}
+                })
             .then(response => {
                 const result = {
                     "id": response.data.id, "name": response.data.name, "color": response.data.color
@@ -99,13 +102,13 @@ function Tags() {
         apiRequest
             .get(`/api/project_labels/`,
                 {
-                    params: { project: projectId, },
-                    headers: { "Authorization": `Token ${authToken}` }
-                } )
+                    params: {project: projectId,},
+                    headers: {"Authorization": `Token ${authToken}`}
+                })
             .then(response => {
                 const dataArray = response.data.map(item => {
-                    const { id, name, color } = item;
-                    return { id, name, color };
+                    const {id, name, color} = item;
+                    return {id, name, color};
                 })
                 setData(dataArray);
                 setFilteredData(dataArray);
@@ -130,15 +133,15 @@ function Tags() {
         });
     };
 
-    const handleEditLink = ( record ) => {
+    const handleEditLink = (record) => {
         setSelectedItem(record);
         editTagForm.setFieldValue('name', record.name);
         setPickedColor(record.color);
-        setModalVisible( true );
+        setModalVisible(true);
     };
 
     const handleAddLink = () => {
-        addTagForm.setFieldValue('name',null);
+        addTagForm.setFieldValue('name', null);
         setPickedColor('#1677ff');
         setSelectedItem(null);
         setModalVisible(true);
@@ -173,26 +176,26 @@ function Tags() {
     };
 
     const columns = [
-        { title: 'ID', dataIndex: 'id' },
-        { title: 'Name', dataIndex: 'name' },
+        {title: 'ID', dataIndex: 'id'},
+        {title: 'Name', dataIndex: 'name'},
         {
             title: 'Color',
             dataIndex: 'color',
-            render: (color) => <ColorBox color={color} />,
+            render: (color) => <TagComponents.ColorBox color={color}/>,
         },
         {
             title: 'Actions',
-                render: (_, record) => (
+            render: (_, record) => (
                 <Space>
                     <Button type="link" onClick={() => handleEditLink(record)}>
-                        <AiOutlineEdit /> Edit
+                        <AiOutlineEdit/> Edit
                     </Button>
                     <Button type="link" onClick={() => handleDeleteLink(record)}>
-                        <AiOutlineDelete /> Delete
+                        <AiOutlineDelete/> Delete
                     </Button>
                 </Space>
-                ),
-            },
+            ),
+        },
     ];
 
     const startIndex = (currentPage - 1) * pageSize;
@@ -201,15 +204,16 @@ function Tags() {
 
     return (
         <div>
-            <ProjectSidebar />
+            <ProjectSidebar/>
             <NavBar/>
-            <Toast />
+            <Toast/>
             <TagComponents.TagContainer>
                 <h2>Project Issues Tags</h2>
-                <Input.Search placeholder="Search by tag name" value={searchQuery} onChange={handleSearch} style={{ marginBottom: 16 }} />
-                <div style={{ marginBottom: 16 }}>
+                <Input.Search placeholder="Search by tag name" value={searchQuery} onChange={handleSearch}
+                              style={{marginBottom: 16}}/>
+                <div style={{marginBottom: 16}}>
                     <Button type="primary" onClick={handleAddLink}>
-                        <AiOutlinePlus /> Add
+                        <AiOutlinePlus/> Add
                     </Button>
                 </div>
                 <Table
@@ -230,30 +234,36 @@ function Tags() {
                     open={modalVisible}
                     onCancel={() => setModalVisible(false)}
                     footer={[
-                        <Button key="submit" type="primary" onClick={() => {selectedItem ? editTagForm.submit() : addTagForm.submit()}}>
-                            { selectedItem ? 'Edit Item' : 'Add Item'}
+                        <Button key="submit" type="primary" onClick={() => {
+                            selectedItem ? editTagForm.submit() : addTagForm.submit()
+                        }}>
+                            {selectedItem ? 'Edit Item' : 'Add Item'}
                         </Button>,
                     ]}
                 >
                     {selectedItem ? (
                         <>
                             <EditForm layout="vertical" form={editTagForm} onFinish={handleEditModal}>
-                                <TagComponents.StyledEditFormItem label="Name" name="name" rules={[{ required:true}]}>
-                                    <Input />
+                                <TagComponents.StyledEditFormItem label="Name" name="name" rules={[{required: true}]}>
+                                    <Input/>
                                 </TagComponents.StyledEditFormItem>
-                                <TagComponents.StyledEditFormItem label="Color" name="color" rules={[{ required:true,}]}>
-                                    <ChromePicker color={pickedColor} onChange={(color) => setPickedColor(color)} />
+                                <TagComponents.StyledEditFormItem label="Color" name="color"
+                                                                  rules={[{required: true,}]}>
+                                    <ChromePicker color={pickedColor} onChange={(color) => setPickedColor(color)}/>
                                 </TagComponents.StyledEditFormItem>
                             </EditForm>
                         </>
                     ) : (
                         <>
-                            <AddForm layout="vertical" form={addTagForm} onFinish={handleAddModal} >
-                                <TagComponents.StyledAddFormItem label="Name" name="name" value={null} rules={[{required:true, message: 'Please enter the Tag Name' }]}>
-                                    <Input />
+                            <AddForm layout="vertical" form={addTagForm} onFinish={handleAddModal}>
+                                <TagComponents.StyledAddFormItem label="Name" name="name" value={null} rules={[{
+                                    required: true,
+                                    message: 'Please enter the Tag Name'
+                                }]}>
+                                    <Input/>
                                 </TagComponents.StyledAddFormItem>
-                                <TagComponents.StyledEditFormItem label="Color" name="color" rules={[{ required: true }]}>
-                                    <ChromePicker color={pickedColor} onChange={(color) => setPickedColor(color)} />
+                                <TagComponents.StyledEditFormItem label="Color" name="color" rules={[{required: true}]}>
+                                    <ChromePicker color={pickedColor} onChange={(color) => setPickedColor(color)}/>
                                 </TagComponents.StyledEditFormItem>
                             </AddForm>
                         </>
@@ -263,4 +273,5 @@ function Tags() {
         </div>
     );
 }
+
 export default Tags;
