@@ -319,8 +319,6 @@ const ProfileVisibility = () => {
     const navigate = useNavigate();
 
 
-    let IconPath = userData?.image
-
     const titleMessageWhenDisable = "This field is disabled. Enabled for Admin User Only";
 
     const fetchData = async () => {
@@ -462,7 +460,7 @@ const ProfileVisibility = () => {
                     <ImageWrapper>
                         <CoverPictureWrapper>
                             <CircleImage>
-                                <ProfilePhotouploader onImageChange={handleImageChange} id="image" imagePath={IconPath}/>
+                                <ProfilePhotouploader onImageChange={handleImageChange} id="image" imagePath={`${process.env.REACT_APP_HOST}/${userData?.image}`}/>
                                 <UpdateProfile className="update-cover">
                                     <FontAwesomeIcon icon={faImage} fontSize={"30px"} onClick={() => {
                                     }}/>
