@@ -1,86 +1,7 @@
 import React, {useState} from 'react';
-import styled from 'styled-components';
 import Avatar from 'react-avatar';
+import * as CommentComponents from "./Style"
 
-const CommentContainer = styled.div`
-  display: flex;
-  align-items: center;
-  margin-left: -35px;
-  margin-top: -20px;
-  margin-bottom: 30px;
-`;
-
-const CommentInfo = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const CommentAuthor = styled.p`
-  font-weight: bold;
-  margin-right: 5px;
-  margin-top: 5px;
-`;
-
-const CommentText = styled.p`
-  margin-top: -20px;
-  font-size: 14px;
-`;
-
-const CommentButtons = styled.div`
-  display: flex;
-`;
-
-const CommentActionButton = styled.button`
-  background: none;
-  border: none;
-  color: gray;
-  font-weight: bold;
-  cursor: pointer;
-  position: relative;
-  padding-right: 10px;
-
-  &:hover {
-    text-decoration: underline;
-  }
-`;
-
-const InputField = styled.input`
-  width: 456px;
-  height: 29px;
-  margin-top: 5px; /* Adjust the top margin */
-  border: 1px solid #ccc;
-  border-radius: 3px;
-`;
-
-const ButtonForEditComment = styled.button`
-  background-color: rgb(0, 82, 204);
-  color: rgb(255, 255, 255);
-  border: none;
-  border-radius: 3px;
-  margin-top: 5px; /* Adjust the top margin */
-  padding: 8px 13px;
-`;
-
-const DeleteConfirmation = styled.div`
-  background-color: #f8f8f8;
-  border: 1px solid #ccc;
-  padding: 10px;
-  margin-top: 10px;
-`;
-
-const DeleteConfirmationText = styled.p`
-  margin-bottom: 10px;
-`;
-
-const DeleteConfirmationButton = styled.button`
-  background-color: #0052CC;
-  color: #fff;
-  border: none;
-  border-radius: 3px;
-  padding: 8px 13px;
-  margin-right: 5px;
-  cursor: pointer;
-`;
 
 function Comment({
                      comment,
@@ -136,7 +57,7 @@ function Comment({
 
     return (
         <li key={index} style={{listStyle: 'none'}}>
-            <CommentContainer>
+            <CommentComponents.CommentContainer>
                 <Avatar
                     name={created_by}
                     size={30}
@@ -145,8 +66,8 @@ function Comment({
                     style={{marginRight: '10px', marginTop: '-40px'}}
                 />
 
-                <CommentInfo>
-                    <CommentAuthor>
+                <CommentComponents.CommentInfo>
+                    <CommentComponents.CommentAuthor>
                         {created_by}
                         <span
                             style={{
@@ -157,43 +78,46 @@ function Comment({
                         >
               {formatCreatedAt(created_at)}
             </span>
-                    </CommentAuthor>
-                    <CommentText>{comment}</CommentText>
+                    </CommentComponents.CommentAuthor>
+                    <CommentComponents.CommentText>{comment}</CommentComponents.CommentText>
                     {selectedComment === index ? (
                         <>
-                            <InputField
+                            <CommentComponents.InputField
                                 type="text"
                                 placeholder="Edit comment"
                                 value={editComment}
                                 onChange={(e) => setEditComment(e.target.value)}
                             />
-                            <ButtonForEditComment onClick={handleSave}>Save</ButtonForEditComment>
+                            <CommentComponents.ButtonForEditComment
+                                onClick={handleSave}>Save</CommentComponents.ButtonForEditComment>
                         </>
                     ) : (
                         <>
                             {(commentUserId === currentUser?.id || currentUser?.user?.is_staff) && ( // Added conditional rendering
-                                <CommentButtons>
-                                    <CommentActionButton onClick={handleEdit}>Edit</CommentActionButton>
-                                    <CommentActionButton onClick={handleDelete}>Delete</CommentActionButton>
-                                </CommentButtons>
+                                <CommentComponents.CommentButtons>
+                                    <CommentComponents.CommentActionButton
+                                        onClick={handleEdit}>Edit</CommentComponents.CommentActionButton>
+                                    <CommentComponents.CommentActionButton
+                                        onClick={handleDelete}>Delete</CommentComponents.CommentActionButton>
+                                </CommentComponents.CommentButtons>
                             )}
                         </>
                     )}
                     {showDeleteConfirmation && (
-                        <DeleteConfirmation>
-                            <DeleteConfirmationText>
+                        <CommentComponents.DeleteConfirmation>
+                            <CommentComponents.DeleteConfirmationText>
                                 Are you sure you want to delete this comment?
-                            </DeleteConfirmationText>
-                            <DeleteConfirmationButton onClick={confirmDelete}>
+                            </CommentComponents.DeleteConfirmationText>
+                            <CommentComponents.DeleteConfirmationButton onClick={confirmDelete}>
                                 Yes
-                            </DeleteConfirmationButton>
-                            <DeleteConfirmationButton onClick={cancelDelete}>
+                            </CommentComponents.DeleteConfirmationButton>
+                            <CommentComponents.DeleteConfirmationButton onClick={cancelDelete}>
                                 No
-                            </DeleteConfirmationButton>
-                        </DeleteConfirmation>
+                            </CommentComponents.DeleteConfirmationButton>
+                        </CommentComponents.DeleteConfirmation>
                     )}
-                </CommentInfo>
-            </CommentContainer>
+                </CommentComponents.CommentInfo>
+            </CommentComponents.CommentContainer>
         </li>
     );
 }

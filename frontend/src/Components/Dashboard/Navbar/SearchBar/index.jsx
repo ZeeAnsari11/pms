@@ -1,6 +1,6 @@
 import React, {useState, useRef, useEffect} from 'react';
 import {useNavigate} from 'react-router-dom';
-import {SearchInput, SearchIcon, SearchContainer, CloseIcon} from './styles'
+import {SearchInput, SearchIcon, SearchContainer, CloseIcon} from './Styles'
 
 const SearchBar = () => {
     const [expanded, setExpanded] = useState(false);
