@@ -6,11 +6,12 @@ export const StyledModal = styled.div`
   left: 0;
   height: 100vh;
   width: 100%;
-  background-color: rgba(121, 120, 120, 0.5);
+  background-color: rgba(0, 0, 0, 0.3);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 100;
+  padding-top: 50px;
 `;
 
 export const ModalContent = styled.div`
@@ -19,7 +20,7 @@ export const ModalContent = styled.div`
   width: 75%;
   padding: 20px;
   background-color: #fff;
-  border-radius: 3px;
+  border-radius: 4px;
   max-height: 95vh;
   overflow-y: auto;
 `;
