@@ -22,13 +22,6 @@ const ProjectsPage = () => {
                     <ProjectViewComponents.ProjectsHeader>Projects</ProjectViewComponents.ProjectsHeader>
                     <ProjectViewComponents.ProjectButton onClick={submit}>Create Project</ProjectViewComponents.ProjectButton>
                 </ProjectViewComponents.ProjectsHeaderContainer>
-                <ProjectViewComponents.SearchContainer>
-                    <ProjectViewComponents.SearchInputContainer>
-                        <ProjectViewComponents.SearchIcon/>
-                        <ProjectViewComponents.SearchInput type="text" placeholder="Search Projects" value={searchValue}
-                                        onChange={handleSearchChange}/>
-                    </ProjectViewComponents.SearchInputContainer>
-                </ProjectViewComponents.SearchContainer>
                 <ProjectListing/>
                 <hr></hr>
             </ProjectViewComponents.ProjectsPageContainer>
