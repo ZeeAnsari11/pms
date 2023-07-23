@@ -1,15 +1,61 @@
 import React, {useState, useEffect} from 'react';
 import apiRequest from '../../../Utils/apiRequest';
+import { Space, Table, Tag } from 'antd';
 import * as ProjectListingComponents from './Style';
-import {Link} from 'react-router-dom';
 import {Modal} from 'antd';
 import {GrAlert} from 'react-icons/gr';
-import {CiSettings} from 'react-icons/ci'
-import ProjectSettingPage from "../ProjectSettingPage/ProjectSettingPage";
+import ToastContainer from "../../../Shared/Components/Toast";
+import { displayErrorMessage } from "../../../Shared/notify";
 
 const ProjectListing = () => {
+    const columns = [
+        { title: 'ID', dataIndex: 'id' },
+        {
+            title: 'Name',
+            dataIndex: 'name',
+            key: 'name',
+            render: (text, record) => (
+                <ProjectListingComponents.ProjectLink to={`/project/${ record.id }/dashboard`}>
+                    <ProjectListingComponents.ProjectIcon>
+                        <ProjectListingComponents.ProjectAvatar src={`${process.env.REACT_APP_HOST}/${record.icon}`} alt={record.name} />
+                    </ProjectListingComponents.ProjectIcon>
+                    {text}
+                </ProjectListingComponents.ProjectLink>
+            ),
+        }, {
+            title: 'Key',
+            dataIndex: 'slug',
+            key: 'slug',
+        }, {
+            title: 'Project Lead',
+            dataIndex: 'lead',
+            key: 'lead',
+        }, {
+        title: 'Category',
+        key: 'category',
+        dataIndex: 'tag',
+        render: (_, { category }) => (
+            <Tag color='geekblue' key={category}>
+            {category.toUpperCase()}
+            </Tag>
+        ),
+        }, {
+        title: 'Action',
+        key: 'action',
+        render: (_, record) => (
+            <Space size="middle">
+                    <a>Invite {record.name}</a>
+                    <a>Delete</a>
+            </Space>
+        ),
+    },
+];
+
     const [visible, setVisible] = useState(false);
     const [projects, setProjects] = useState([]);
+    const [searchText, setSearchText] = useState('');
+    const [filteredData, setFilteredData] = useState([]);
+
     let authToken = localStorage.getItem('auth_token')
 
     useEffect(() => {
@@ -19,12 +65,36 @@ const ProjectListing = () => {
                     headers: {
                         Authorization: `Token ${authToken}`,
                     },
-                });
+                })
+            .then(response => {
+                const dataArray = response.data.map(project => ({
+                    id: project.id,
+                    name: project.name,
+                    slug: project.key,
+                    lead: project.project_lead.username,
+                    icon: project.icon,
+                    category: typeof project.category === 'string' ? project.category : project.category.category
+                }));
+                setFilteredData(dataArray);
+                setProjects(dataArray);
+            })
+            .catch(error => {
+                displayErrorMessage(`Error occurred while fetching data: ${error}`);
+            });
             setProjects(response.data);
         };
         fetchProjects()
     }, []);
-    console.log("Projects Data:", projects)
+
+    const handleSearch = (value) => {
+        const filteredProjects = projects.filter(
+            (project) => project.name.toLowerCase().includes(value.toLowerCase())  ||
+                project.slug.toLowerCase().includes(value.toLowerCase()) ||
+                project.lead.toLowerCase().includes(value.toLowerCase()) ||
+                project.category.toLowerCase().includes(value.toLowerCase())
+        );
+        setFilteredData(filteredProjects);
+    };
 
 
     const handleOk = () => {
@@ -39,7 +109,8 @@ const ProjectListing = () => {
     const userIcon = <GrAlert/>;
 
     return (
-        <ProjectListingComponents.ProjectListingTable>
+        <>
+            <ToastContainer/>
             <Modal
                 title={`Welcome, ${userIcon}!`}
                 open={visible}
@@ -53,65 +124,21 @@ const ProjectListing = () => {
                 </p>
                 <p>Only Jira admins can restore the project from the trash.</p>
             </Modal>
-            <thead>
-            <tr>
-                <th>
-                    <ProjectListingComponents.StarColumn>★</ProjectListingComponents.StarColumn>
-                </th>
-                <th>Name</th>
-                <th>Key</th>
-                <th>Type</th>
-                <th>Lead</th>
-                <ProjectListingComponents.OptionsColumn></ProjectListingComponents.OptionsColumn>
-            </tr>
-            </thead>
-            <tbody>
-            {projects.length === 0 ? (
-                <ProjectListingComponents.NoProjectsMessage>
-                    <td colSpan="6">No Projects to show</td>
-                </ProjectListingComponents.NoProjectsMessage>
-            ) : (
-
-                projects.map((project) => (
-                    <tr key={project.id}>
-
-                        <ProjectListingComponents.StarSelect>
-                            <ProjectListingComponents.StarColumn>★</ProjectListingComponents.StarColumn>
-                        </ProjectListingComponents.StarSelect>
-                        <td>
-                            <ProjectListingComponents.NameColumn>
-                                <ProjectListingComponents.ProjectAvatarWrapper>
-                                    <ProjectListingComponents.ProjectAvatar
-                                        src={
-                                            project.icon
-                                                ? `${process.env.REACT_APP_HOST}/${project.icon}`
-                                                : `${process.env.REACT_APP_HOST}/Images/NoImage.jpeg`
-                                        }
-                                        alt='Project Avatar'
-                                    />
-                                </ProjectListingComponents.ProjectAvatarWrapper>
-                                <ProjectListingComponents.ProjectName>
-                                    <Link to={`/project/${project.id}/dashboard`}>{project.name}</Link>
-                                </ProjectListingComponents.ProjectName>
-                            </ProjectListingComponents.NameColumn>
-                        </td>
-                        <td>{project.key.toUpperCase()}</td>
-                        <td>{project.category?.category}</td>
-                        <ProjectListingComponents.LeadColumn>
-                            <p>{project.project_lead.username}</p>
-                        </ProjectListingComponents.LeadColumn>
-                        <ProjectListingComponents.OptionsColumns>
-                            <Link to={`/project/${project.id}/project-setting`}>
-                                {project && (
-                                    <CiSettings size={24} component={<ProjectSettingPage/>}/>
-                                )}
-                            </Link>
-                        </ProjectListingComponents.OptionsColumns>
-                    </tr>
-                ))
-            )}
-            </tbody>
-        </ProjectListingComponents.ProjectListingTable>
+            <ProjectListingComponents.SearchContainer>
+                <ProjectListingComponents.SearchInputContainer>
+                    <ProjectListingComponents.SearchIcon/>
+                    <ProjectListingComponents.SearchInput type="text" placeholder="Search Projects" value={null}
+                                    onChange={(e) => handleSearch(e.target.value)}/>
+                    </ProjectListingComponents.SearchInputContainer>
+                </ProjectListingComponents.SearchContainer>
+            <ProjectListingComponents.ProjectListingTable>
+                <Table
+                    columns={columns}
+                    dataSource={filteredData}
+                    pagination={{ defaultPageSize: 10, showSizeChanger: true }}
+                />
+            </ProjectListingComponents.ProjectListingTable>
+        </>
     );
 };
 
