@@ -8,6 +8,7 @@ import {useNavigate} from "react-router-dom";
 import NavBar from "../../Dashboard/Navbar";
 import GenericSelectField from "../../Dashboard/SelectFields/GenericSelectField";
 import ImageUploader from "../ImageUploader";
+import UserSelectField from "../../Dashboard/SelectFields/UserSelectField";
 
 function CreateProject() {
 
@@ -92,7 +93,9 @@ function CreateProject() {
     ) : [];
 
     const userOptions = usersData ? usersData.map(
-        (user) => ({label: user.username, value: user.id,})
+        (user) => ({
+            username: user.username, id: user.id, iconUrl: user.userprofile?.image,
+        })
     ) : [];
 
 
@@ -150,29 +153,37 @@ function CreateProject() {
                 </CreateProjectComponents.Header>
                 <CreateProjectComponents.FormWrapper onSubmit={handleSubmit} method="POST">
                     <ImageUploader onImageChange={handleImageChange}/>
-                    <CreateProjectComponents.LabelForProject htmlFor="project">Project:</CreateProjectComponents.LabelForProject>
-                    <CreateProjectComponents.Input type="text" id="project" name="project" placeholder="Enter project name"/>
-                    <CreateProjectComponents.LabelForDescriptionBoc htmlFor="key">Description:</CreateProjectComponents.LabelForDescriptionBoc>
-                    <CreateProjectComponents.StyledReactQuill id="exampleEditor" value={text} onChange={handleTextChange}/>
-                    <CreateProjectComponents.LabelForCompany htmlFor="category">Company:</CreateProjectComponents.LabelForCompany>
+                    <CreateProjectComponents.LabelForProject
+                        htmlFor="project">Project:</CreateProjectComponents.LabelForProject>
+                    <CreateProjectComponents.Input type="text" id="project" name="project"
+                                                   placeholder="Enter project name"/>
+                    <CreateProjectComponents.LabelForDescriptionBoc
+                        htmlFor="key">Description:</CreateProjectComponents.LabelForDescriptionBoc>
+                    <CreateProjectComponents.StyledReactQuill id="exampleEditor" value={text}
+                                                              onChange={handleTextChange}/>
+                    <CreateProjectComponents.LabelForCompany
+                        htmlFor="category">Company:</CreateProjectComponents.LabelForCompany>
                     <GenericSelectField
                         onSelectChange={handleSelectedCompanyChange}
                         options={companyOptions}
                         isMultiple={false}
                         placeholder={"Unassigned"}
                         width="50%"/>
-                    <CreateProjectComponents.Description>Make sure your project lead has access to issues in the project.</CreateProjectComponents.Description>
-                    <CreateProjectComponents.LabelforCategory htmlFor="category">Category:</CreateProjectComponents.LabelforCategory>
+                    <CreateProjectComponents.Description>Make sure your project lead has access to issues in the
+                        project.</CreateProjectComponents.Description>
+                    <CreateProjectComponents.LabelforCategory
+                        htmlFor="category">Category:</CreateProjectComponents.LabelforCategory>
                     <GenericSelectField
                         onSelectChange={handleSelectedCategoryChange}
                         options={categoriesOptions}
                         isMultiple={false}
                         placeholder={"Unassigned"}
                         width="50%"/>
-                    <CreateProjectComponents.LabelforLead htmlFor="category">Project Lead:</CreateProjectComponents.LabelforLead>
-                    <GenericSelectField
+                    <CreateProjectComponents.LabelforLead htmlFor="category">Project
+                        Lead:</CreateProjectComponents.LabelforLead>
+                    <UserSelectField
                         onSelectChange={handleSelectedProjectLeadChange}
-                        options={userOptions}
+                        users={userOptions}
                         isMultiple={false}
                         placeholder={"Unassigned"}
                         width="50%"/>

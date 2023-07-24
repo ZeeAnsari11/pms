@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {
     NavbarContainer,
     LeftContainer,
@@ -19,16 +19,71 @@ import {IoMdNotifications} from 'react-icons/io'
 import {RxAvatar} from 'react-icons/rx'
 import {AiFillQuestionCircle} from 'react-icons/ai'
 import SearchBar from './SearchBar/index'
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import CreateTicket from "../CreateTicket/CreateTicket";
+import apiRequest from "../../../Utils/apiRequest";
+import Avatar from "react-avatar";
 
 function NavBar() {
     const [extendNavbar, setExtendNavbar] = useState(false);
     const [showModal, setshowModal] = useState(false);
 
+    let authToken = localStorage.getItem('auth_token');
+    const navigate = useNavigate();
+
+    const [userData, setUserData] = useState(null);
+    const [currentUserProfileData, setcurrentUserProfileData] = useState(null);
+    const [loading, setLoading] = useState(true); // Track loading state
+
     const handleCreateButtonClick = () => {
         setshowModal(true);
     }
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            setLoading(true);
+            apiRequest
+                .get(`/api/auth/users/me/`,
+                    {
+                        headers:
+                            {"Authorization": `Token ${authToken}`}
+                    })
+                .then(response => {
+                    setUserData(response.data);
+                })
+                .catch(error => {
+                    navigate('/');
+                    console.error(error);
+                });
+        };
+
+        fetchUserData();
+    }, []);
+
+
+    useEffect(() => {
+        const fetchCurrentUserProfileData = async () => {
+            setLoading(true);
+            apiRequest
+                .get(`/api/userprofile/?user__username__iexact=${userData?.username}&&user__email__iexact=${userData?.email}`,
+                    {
+                        headers:
+                            {"Authorization": `Token ${authToken}`}
+                    })
+                .then(response => {
+                    setcurrentUserProfileData(response.data[0]);
+                    setLoading(false);
+
+                })
+                .catch(error => {
+                    setLoading(false)
+                    navigate('/');
+                    console.error(error);
+                });
+        };
+
+        fetchCurrentUserProfileData();
+    }, [userData]);
 
     return (
         <>
@@ -76,7 +131,25 @@ function NavBar() {
                                   name={<IoMdNotifications size={24} style={{marginLeft: "10px"}}/>}/>
                         <Dropdown minWidth="350px" items={helpItems}
                                   name={<AiFillQuestionCircle size={24} style={{marginLeft: "10px"}}/>}/>
-                        <Dropdown items={accountItems} name={<RxAvatar size={24} style={{marginLeft: "10px"}}/>}/>
+                        <Dropdown
+                            items={accountItems}
+                            name={
+                                loading ? (
+                                    <RxAvatar size={24} style={{marginLeft: "10px"}}/>
+                                ) : (
+                                    <Avatar
+                                        name={userData?.username}
+                                        src={`${process.env.REACT_APP_HOST}/${currentUserProfileData?.image}`}
+                                        size={28}
+                                        round={true}
+                                        title={userData?.email}
+                                        color="#DE350B"
+                                        style={{marginLeft: "10px"}}
+                                    />
+                                )
+                            }
+                        />
+
                     </RightContainer>
                 </NavbarInnerContainer>
                 {extendNavbar && (
