@@ -93,6 +93,7 @@ function ProjectSettingPage() {
         ? usersData.map((user) => ({
             username: user.username,
             id: user.id,
+            iconUrl: user.userprofile?.image,
         }))
         : [];
 
@@ -150,20 +151,25 @@ function ProjectSettingPage() {
                     <ProjectSettingComponents.Details>Details</ProjectSettingComponents.Details>
                 </ProjectSettingComponents.Header>
 
-                <ProjectSettingComponents.FormWrapper onSubmit={handleSubmit} encType="multipart/form-data" method="POST">
+                <ProjectSettingComponents.FormWrapper onSubmit={handleSubmit} encType="multipart/form-data"
+                                                      method="POST">
                     <ImageUploader id="image" imagePath={IconPath} onImageChange={handleImageChange}/>
                     <ProjectSettingComponents.Label htmlFor="name">Name:</ProjectSettingComponents.Label>
-                    <ProjectSettingComponents.NameInput type="text" id="name" name="name" placeholder="Project name" value={name}
-                                        onChange={handleNameChange}/>
+                    <ProjectSettingComponents.NameInput type="text" id="name" name="name" placeholder="Project name"
+                                                        value={name}
+                                                        onChange={handleNameChange}/>
                     <ProjectSettingComponents.LabelForKey htmlFor="key">Key:</ProjectSettingComponents.LabelForKey>
-                    <ProjectSettingComponents.NameInput id="key" name="key" placeholder="Project key" value={key} disabled bordered
-                                        onChange={handleKeyChange}/>
-                    <ProjectSettingComponents.Labelforlead htmlFor="category">Project lead:</ProjectSettingComponents.Labelforlead>
+                    <ProjectSettingComponents.NameInput id="key" name="key" placeholder="Project key" value={key}
+                                                        disabled bordered
+                                                        onChange={handleKeyChange}/>
+                    <ProjectSettingComponents.Labelforlead htmlFor="category">Project
+                        lead:</ProjectSettingComponents.Labelforlead>
                     <UserSelectField users={useroptions}
-                                        defaultValue={projectLeadData}
-                                        onSelectChange={handleSelectedProjectLeadChange}
-                                        width="50%"/>
-                    <ProjectSettingComponents.Description>Make sure your project lead has access to issues in the project.</ProjectSettingComponents.Description>
+                                     defaultValue={projectLeadData}
+                                     onSelectChange={handleSelectedProjectLeadChange}
+                                     width="50%"/>
+                    <ProjectSettingComponents.Description>Make sure your project lead has access to issues in the
+                        project.</ProjectSettingComponents.Description>
                     <ProjectSettingComponents.SaveButton>Save</ProjectSettingComponents.SaveButton>
                 </ProjectSettingComponents.FormWrapper>
             </ProjectSettingComponents.PageWrapper>

@@ -7,7 +7,7 @@ function Dropdown(props) {
 
     const handleClickOutside = (event) => {
         if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-            // props.onClose();
+            props.onClose();
             console.log("handleClickOutside Clicked")
         }
     };

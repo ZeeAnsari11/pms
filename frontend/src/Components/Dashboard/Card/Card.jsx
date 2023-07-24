@@ -99,11 +99,12 @@ function Card(props) {
                 </CardComponents.CardFooter>
                 <CardComponents.CardProfile>
                     <Avatar
-                        name={"User"}
-                        size={30}
+                        name={`${props.Card?.assignee?.username}`}
+                        size={35}
                         round={true}
                         color="#DE350B"
-                        title={"User"}
+                        src={`${process.env.REACT_APP_HOST}/${props.Card?.assignee?.userprofile?.image}`}
+                        title={`Assignee: ${props.Card?.assignee?.username}`}
                         style={{marginRight: '10px'}}
                     />
                     <CardComponents.CardProfileName onMouseEnter={() => setshowName(true)}
