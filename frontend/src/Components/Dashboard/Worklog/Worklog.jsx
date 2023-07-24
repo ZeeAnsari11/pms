@@ -153,14 +153,16 @@ function Worklog({
         <li key={index} style={{listStyle: "none"}}>
             <WorklogComponents.CommentContainer>
                 <Avatar
-                    name={created_by}
-                    size={30}
+                    name={created_by?.username}
+                    size={35}
                     round={true}
-                    color="Grey"
+                    color="#DE350B"
+                    src={`${created_by?.userprofile?.image}`}
+                    title={created_by?.username}
                     style={{marginRight: "10px", marginBottom: "-75px", marginLeft: "-40px"}}
                 />
                 <WorklogComponents.CommentButtons>
-                    <WorklogComponents.CommentAuthor>{created_by}</WorklogComponents.CommentAuthor>
+                    <WorklogComponents.CommentAuthor>{created_by?.username}</WorklogComponents.CommentAuthor>
                     <p style={{fontWeight: '500', color: '#42526E'}}>
                         logged <WorklogComponents.StyledSpan>{convertToTimeFormat(worklog.time_spent)}</WorklogComponents.StyledSpan>
                         <span style={{marginLeft: '10px', fontWeight: '500', color: '#42526E'}}>

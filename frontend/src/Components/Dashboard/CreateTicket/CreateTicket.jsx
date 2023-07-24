@@ -227,6 +227,8 @@ const MyModalComponent = ({onClose}) => {
         ? Users.map((Users) => ({
             username: Users.username,
             id: Users.id,
+            iconUrl: Users.userprofile?.image,
+
         }))
         : [];
 
@@ -236,6 +238,7 @@ const MyModalComponent = ({onClose}) => {
         ? Users.map((Users) => ({
             username: Users.username,
             id: Users.id,
+            iconUrl: Users.userprofile?.image,
         }))
         : [];
 
