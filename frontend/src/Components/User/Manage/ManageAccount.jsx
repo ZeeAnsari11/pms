@@ -1,15 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import NavBar from "../../Dashboard/Navbar";
 import ProfilePhotouploader from "../Manage/ProfilePhotouploader";
 import GenericSelectField from "../../Dashboard/SelectFields/GenericSelectField";
 import UserSidebar from "../../Dashboard/Sidebar/UserSidebar";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import Toast from "../../../Shared/Components/Toast"
-import { displayErrorMessage, displaySuccessMessage } from "../../../Shared/notify"
+import {displayErrorMessage, displaySuccessMessage} from "../../../Shared/notify"
 import {faImage} from '@fortawesome/free-solid-svg-icons';
-import { Link, useNavigate } from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import * as ManageAccountComponents from './ManageAccountStyle';
 import apiRequest from '../../../Utils/apiRequest';
+import {useSelector} from "react-redux";
 
 
 const emailOptions = [
@@ -25,7 +26,8 @@ const notificationFormatOptions = [
 
 const ProfileVisibility = () => {
     const [isImageChanged, setIsImageChanged] = useState(false);
-    const [userData, setUserData] = useState({});
+    const userData = useSelector((state) => state.DataSyncer.userProfileData);
+
     const [userId, setUserId] = useState({});
     const [userName, setUserName] = useState('');
     const [userjobTitle, setUserJobTitle] = useState('');
@@ -51,16 +53,11 @@ const ProfileVisibility = () => {
     const fetchData = async () => {
         try {
 
-            const [userDataResponse, companiesListResponse] = await Promise.all([
-                apiRequest.get(`/api/userprofile/`, {
-                    headers: { Authorization: `Token ${authToken}` }
-                }),
+            const [companiesListResponse] = await Promise.all([
                 apiRequest.get(`/api/companies`, {
-                    headers: { Authorization: `Token ${authToken}` }
+                    headers: {Authorization: `Token ${authToken}`}
                 })
             ]);
-            setUserData(userDataResponse.data[0]);
-            setUserId(userDataResponse.data[0].id);
             setCompanies(companiesListResponse.data);
         } catch (error) {
             displayErrorMessage(error);
@@ -74,6 +71,7 @@ const ProfileVisibility = () => {
 
     useEffect(() => {
         if (userData != null) {
+            setUserId(userData?.id)
             setUserImage(userData?.image)
             setUserName(userData?.user?.username)
             setUserEmail(userData?.user?.email)
@@ -129,10 +127,10 @@ const ProfileVisibility = () => {
     };
 
     const companiesOptions = companies ? companies.map((company) => ({
-        label: company.company_name,
-        value: company.id,
-    }))
-    : [];
+            label: company.company_name,
+            value: company.id,
+        }))
+        : [];
 
     const handleImageChange = (image) => {
         setUserImage(image);
@@ -154,7 +152,7 @@ const ProfileVisibility = () => {
         if (isImageChanged) {
             manageAccountData.image = userImage;
         }
-        if (isUserOrganizationChanged){
+        if (isUserOrganizationChanged) {
             manageAccountData.company = userOrganization
         }
 
@@ -166,13 +164,13 @@ const ProfileVisibility = () => {
                         'Content-Type': 'multipart/form-data',
                         'Authorization': `Token ${authToken}`,
                     }
-                } )
+                })
             .then(response => {
                 displaySuccessMessage(`Successfully update the user profile!`);
                 navigate('/manage-account');
             })
             .catch(error => {
-            displayErrorMessage(error);
+                displayErrorMessage(error);
             });
     }
 
@@ -180,14 +178,16 @@ const ProfileVisibility = () => {
         <div>
             <NavBar/>
             <UserSidebar/>
-            <Toast />
+            <Toast/>
             <ManageAccountComponents.Wrapper>
-                <ManageAccountComponents.FormWrapper onSubmit={handleSubmit} encType="multipart/form-data" method="POST">
+                <ManageAccountComponents.FormWrapper onSubmit={handleSubmit} encType="multipart/form-data"
+                                                     method="POST">
 
                     <ManageAccountComponents.ImageWrapper>
                         <ManageAccountComponents.CoverPictureWrapper>
                             <ManageAccountComponents.CircleImage>
-                                <ProfilePhotouploader onImageChange={handleImageChange} id="image" imagePath={`${process.env.REACT_APP_HOST}/${userData?.image}`}/>
+                                <ProfilePhotouploader onImageChange={handleImageChange} id="image"
+                                                      imagePath={`${process.env.REACT_APP_HOST}/${userData?.image}`}/>
                                 <ManageAccountComponents.UpdateProfile className="update-cover">
                                     <FontAwesomeIcon icon={faImage} fontSize={"30px"} onClick={() => {
                                     }}/>
@@ -205,46 +205,60 @@ const ProfileVisibility = () => {
                             <ManageAccountComponents.SubHeading>About you</ManageAccountComponents.SubHeading>
                             <ManageAccountComponents.ColumnsForAboutDetails>
                                 <ManageAccountComponents.Label htmlFor="name">Name:</ManageAccountComponents.Label>
-                                <ManageAccountComponents.StyledInput value={userName} disabled title={titleMessageWhenDisable} onChange={handleUserNameChange}/>
+                                <ManageAccountComponents.StyledInput value={userName} disabled
+                                                                     title={titleMessageWhenDisable}
+                                                                     onChange={handleUserNameChange}/>
                             </ManageAccountComponents.ColumnsForAboutDetails>
                             <ManageAccountComponents.ColumnsForAboutDetails>
                                 <ManageAccountComponents.Label htmlFor="email">Email:</ManageAccountComponents.Label>
-                                <ManageAccountComponents.StyledInput value={userEmail} disabled title={titleMessageWhenDisable} onChange={handleUserEmailChange}/>
+                                <ManageAccountComponents.StyledInput value={userEmail} disabled
+                                                                     title={titleMessageWhenDisable}
+                                                                     onChange={handleUserEmailChange}/>
                             </ManageAccountComponents.ColumnsForAboutDetails>
                             <ManageAccountComponents.ColumnsForAboutDetails>
-                                <ManageAccountComponents.Label htmlFor="name">Joining Date:</ManageAccountComponents.Label>
-                                <ManageAccountComponents.StyledInput value={userJoiningDate} disabled title={titleMessageWhenDisable} onChange={handleUserJoiningDateChange}/>
+                                <ManageAccountComponents.Label htmlFor="name">Joining
+                                    Date:</ManageAccountComponents.Label>
+                                <ManageAccountComponents.StyledInput value={userJoiningDate} disabled
+                                                                     title={titleMessageWhenDisable}
+                                                                     onChange={handleUserJoiningDateChange}/>
                             </ManageAccountComponents.ColumnsForAboutDetails>
                             <ManageAccountComponents.ColumnsForAboutDetails>
                                 <ManageAccountComponents.Label htmlFor="name">Job title:</ManageAccountComponents.Label>
-                                <ManageAccountComponents.StyledInput value={userjobTitle} bordered size={"large"} onChange={handleUserJobTitleChange}/>
+                                <ManageAccountComponents.StyledInput value={userjobTitle} bordered size={"large"}
+                                                                     onChange={handleUserJobTitleChange}/>
                             </ManageAccountComponents.ColumnsForAboutDetails>
                             <ManageAccountComponents.ColumnsForAboutDetails>
-                                <ManageAccountComponents.Label htmlFor="name">Department:</ManageAccountComponents.Label>
-                                <ManageAccountComponents.StyledInput value={userDepartment} onChange={handleUserDepartmentChange}/>
+                                <ManageAccountComponents.Label
+                                    htmlFor="name">Department:</ManageAccountComponents.Label>
+                                <ManageAccountComponents.StyledInput value={userDepartment}
+                                                                     onChange={handleUserDepartmentChange}/>
                             </ManageAccountComponents.ColumnsForAboutDetails>
                             <ManageAccountComponents.ColumnsForAboutDetails>
-                                <ManageAccountComponents.Label htmlFor="name">Organization:</ManageAccountComponents.Label>
+                                <ManageAccountComponents.Label
+                                    htmlFor="name">Organization:</ManageAccountComponents.Label>
                                 <GenericSelectField
-                                        options={companiesOptions}
-                                        isMultiple={false}
-                                        width={'50%'}
-                                        height={'32px'}
-                                        placeholder={"Select your Company"}
-                                        defaultValue={`${userOrganization}`}
-                                        onSelectChange={handleUserOrganizationChange}
-                                    />
+                                    options={companiesOptions}
+                                    isMultiple={false}
+                                    width={'50%'}
+                                    height={'32px'}
+                                    placeholder={"Select your Company"}
+                                    defaultValue={`${userOrganization}`}
+                                    onSelectChange={handleUserOrganizationChange}
+                                />
                             </ManageAccountComponents.ColumnsForAboutDetails>
                             <ManageAccountComponents.ColumnsForAboutDetails>
                                 <ManageAccountComponents.Label htmlFor="name">Based in:</ManageAccountComponents.Label>
-                                <ManageAccountComponents.StyledInput value={userLocation} title={titleMessageWhenDisable} onChange={handleUserLocationChange}/>
+                                <ManageAccountComponents.StyledInput value={userLocation}
+                                                                     title={titleMessageWhenDisable}
+                                                                     onChange={handleUserLocationChange}/>
                             </ManageAccountComponents.ColumnsForAboutDetails>
                         </ManageAccountComponents.AboutWrapper>
                         <ManageAccountComponents.ContentWrapper>
                             <ManageAccountComponents.SubHeading>Platform Setting</ManageAccountComponents.SubHeading>
                             <ManageAccountComponents.InsideContentWrapper>
                                 <ManageAccountComponents.LabelHeadingWrapper>
-                                    <ManageAccountComponents.HeadingLabel>Email notification for issue activity</ManageAccountComponents.HeadingLabel>
+                                    <ManageAccountComponents.HeadingLabel>Email notification for issue
+                                        activity</ManageAccountComponents.HeadingLabel>
                                 </ManageAccountComponents.LabelHeadingWrapper>
                                 <ManageAccountComponents.TaskList>
                                     <GenericSelectField
@@ -255,31 +269,36 @@ const ProfileVisibility = () => {
                                         onSelectChange={handleEmailIssueNotification}
                                     />
                                 </ManageAccountComponents.TaskList>
-                                <ManageAccountComponents.ConfigureMessage>Get email updates for issue activity when:</ManageAccountComponents.ConfigureMessage>
+                                <ManageAccountComponents.ConfigureMessage>Get email updates for issue activity
+                                    when:</ManageAccountComponents.ConfigureMessage>
                                 <ManageAccountComponents.CheckboxWrapper>
                                     <ManageAccountComponents.CheckboxLabel htmlFor="reporter">
-                                        <input type="checkbox" defaultChecked={userData?.is_reporter} id="reporter" onClick={handleIsReporterChange}/>
+                                        <input type="checkbox" defaultChecked={userData?.is_reporter} id="reporter"
+                                               onClick={handleIsReporterChange}/>
                                         You're the <strong>reporter</strong>
                                     </ManageAccountComponents.CheckboxLabel>
 
                                     <ManageAccountComponents.CheckboxLabel htmlFor="assignees">
                                         <input type="checkbox" defaultChecked={userData?.is_assignee} id="assignee"
-                                                onClick={handleIsassigneeChange}/>
+                                               onClick={handleIsassigneeChange}/>
                                         You're the <strong>assignee</strong> for the issue
                                     </ManageAccountComponents.CheckboxLabel>
                                 </ManageAccountComponents.CheckboxWrapper>
-                                <ManageAccountComponents.ConfigureMessage>You may also receive other email notifications like those configured
+                                <ManageAccountComponents.ConfigureMessage>You may also receive other email notifications
+                                    like those configured
                                     by
                                     your
                                     Jira
-                                    admin and updates for filter subscriptions.</ManageAccountComponents.ConfigureMessage>
+                                    admin and updates for filter
+                                    subscriptions.</ManageAccountComponents.ConfigureMessage>
                                 <ManageAccountComponents.ConfigureMessage><Link to="/profile">Learn more about email
                                     notifications</Link></ManageAccountComponents.ConfigureMessage>
                             </ManageAccountComponents.InsideContentWrapper>
 
                             <ManageAccountComponents.InsideContentWrapper>
                                 <ManageAccountComponents.LabelHeadingWrapper>
-                                    <ManageAccountComponents.HeadingLabel>Email notifications format</ManageAccountComponents.HeadingLabel>
+                                    <ManageAccountComponents.HeadingLabel>Email notifications
+                                        format</ManageAccountComponents.HeadingLabel>
                                 </ManageAccountComponents.LabelHeadingWrapper>
                                 <ManageAccountComponents.TaskList>
                                     <GenericSelectField
