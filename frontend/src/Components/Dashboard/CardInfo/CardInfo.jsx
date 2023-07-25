@@ -433,6 +433,7 @@ function CardInfo(props) {
         ? Users.map((Users) => ({
             username: Users.username,
             id: Users.id,
+            iconUrl: Users.userprofile?.image,
         }))
         : [];
 
@@ -619,7 +620,7 @@ function CardInfo(props) {
                                             comment={comment?.body}
                                             created_at={comment?.created_at}
                                             index={comment?.id}
-                                            created_by={comment?.user?.username}
+                                            created_by={comment?.user}
                                             commentUserId={comment?.user?.id}
                                             currentUser={currentUserData}
                                             onDelete={handleCommentDelete}
@@ -633,13 +634,13 @@ function CardInfo(props) {
                         {showWorklog && (
                             <CardInfoComponents.CardInfoBoxCustom>
                                 <CardInfoComponents.CardInfoBoxTitle>Worklog</CardInfoComponents.CardInfoBoxTitle>
-                                <ul style={{marginTop: "-30px"}}>
+                                <ul style={{marginTop: "-30px", marginBottom: "50px"}}>
                                     {worklogs.map((worklog, index) => (
                                         <Worklog
                                             created_at={worklog?.created_at}
                                             worklogDate={worklog.date}
                                             worklogTime={worklog.time}
-                                            created_by={worklog?.user?.username}
+                                            created_by={worklog?.user}
                                             worklogUserId={worklog?.user?.id}
                                             currentUser={currentUserData}
                                             key={index}

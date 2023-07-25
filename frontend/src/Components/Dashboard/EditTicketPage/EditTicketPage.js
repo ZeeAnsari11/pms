@@ -482,7 +482,7 @@ function EditTicketPage({props}) {
                                                     comment={comment?.body}
                                                     created_at={comment?.created_at}
                                                     index={comment?.id}
-                                                    created_by={comment?.user?.username}
+                                                    created_by={comment?.user}
                                                     commentUserId={comment?.user?.id}
                                                     currentUser={currentUserData}
                                                     onDelete={handleCommentDelete}
@@ -502,7 +502,7 @@ function EditTicketPage({props}) {
                                                     created_at={worklog?.created_at}
                                                     worklogDate={worklog.date}
                                                     worklogTime={worklog.time}
-                                                    created_by={worklog?.user?.username}
+                                                    created_by={worklog?.user}
                                                     worklogUserId={worklog?.user?.id}
                                                     currentUser={currentUserData}
                                                     key={index}
