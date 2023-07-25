@@ -6,44 +6,23 @@ import * as AccountComponents from "./Style"
 
 
 const AccountDropdown = () => {
-    const [userData, setUserData] = useState(null);
     const [currentUserProfileData, setcurrentUserProfileData] = useState(null);
 
     let authToken = localStorage.getItem('auth_token');
 
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const fetchUserData = async () => {
-            apiRequest
-                .get(`/api/auth/users/me/`,
-                    {
-                        headers:
-                            {"Authorization": `Token ${authToken}`}
-                    })
-                .then(response => {
-                    setUserData(response.data);
-                })
-                .catch(error => {
-                    navigate('/');
-                    console.error(error);
-                });
-        };
-
-        fetchUserData();
-    }, []);
-
 
     useEffect(() => {
         const fetchCurrentUserProfileData = async () => {
             apiRequest
-                .get(`/api/userprofile/?user__username__iexact=${userData?.username}&&user__email__iexact=${userData?.email}`,
+                .get(`/api/userprofile/me/`,
                     {
                         headers:
                             {"Authorization": `Token ${authToken}`}
                     })
                 .then(response => {
-                    setcurrentUserProfileData(response.data[0]);
+                    setcurrentUserProfileData(response.data);
                 })
                 .catch(error => {
                     navigate('/');
@@ -52,23 +31,25 @@ const AccountDropdown = () => {
         };
 
         fetchCurrentUserProfileData();
-    }, [userData]);
+    }, []);
 
     return (
         <>
             <strong>ACCOUNT</strong>
             <div>
                 <Avatar
-                    name={userData?.username}
+                    name={currentUserProfileData?.user?.username}
                     src={`${process.env.REACT_APP_HOST}/${currentUserProfileData?.image}`}
                     size={30}
                     round={true}
-                    title={userData?.username}
+                    title={currentUserProfileData?.user?.username}
                     color="#DE350B"
                     style={{marginRight: '10px', marginTop: '8px'}}
                 />
-                <AccountComponents.Username>{userData?.username}</AccountComponents.Username>
-                <AccountComponents.Email>{userData?.email}</AccountComponents.Email>
+                <AccountComponents.Username>{currentUserProfileData?.user?.username}</AccountComponents.Username>
+                {currentUserProfileData?.user?.email && (
+                    <AccountComponents.Email>{currentUserProfileData?.user?.email}</AccountComponents.Email>
+                )}
             </div>
         </>
     );
