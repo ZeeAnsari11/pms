@@ -31,7 +31,6 @@ function NavBar() {
     let authToken = localStorage.getItem('auth_token');
     const navigate = useNavigate();
 
-    const [userData, setUserData] = useState(null);
     const [currentUserProfileData, setcurrentUserProfileData] = useState(null);
     const [loading, setLoading] = useState(true); // Track loading state
 
@@ -39,39 +38,18 @@ function NavBar() {
         setshowModal(true);
     }
 
-    useEffect(() => {
-        const fetchUserData = async () => {
-            setLoading(true);
-            apiRequest
-                .get(`/api/auth/users/me/`,
-                    {
-                        headers:
-                            {"Authorization": `Token ${authToken}`}
-                    })
-                .then(response => {
-                    setUserData(response.data);
-                })
-                .catch(error => {
-                    navigate('/');
-                    console.error(error);
-                });
-        };
-
-        fetchUserData();
-    }, []);
-
 
     useEffect(() => {
         const fetchCurrentUserProfileData = async () => {
             setLoading(true);
             apiRequest
-                .get(`/api/userprofile/?user__username__iexact=${userData?.username}&&user__email__iexact=${userData?.email}`,
+                .get(`/api/userprofile/me/`,
                     {
                         headers:
                             {"Authorization": `Token ${authToken}`}
                     })
                 .then(response => {
-                    setcurrentUserProfileData(response.data[0]);
+                    setcurrentUserProfileData(response.data);
                     setLoading(false);
 
                 })
@@ -83,7 +61,7 @@ function NavBar() {
         };
 
         fetchCurrentUserProfileData();
-    }, [userData]);
+    }, []);
 
     return (
         <>
@@ -138,11 +116,11 @@ function NavBar() {
                                     <RxAvatar size={24} style={{marginLeft: "10px"}}/>
                                 ) : (
                                     <Avatar
-                                        name={userData?.username}
+                                        name={currentUserProfileData?.user?.username}
                                         src={`${process.env.REACT_APP_HOST}/${currentUserProfileData?.image}`}
                                         size={28}
                                         round={true}
-                                        title={userData?.email}
+                                        title={currentUserProfileData?.user?.email}
                                         color="#DE350B"
                                         style={{marginLeft: "10px"}}
                                     />
