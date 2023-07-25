@@ -59,16 +59,18 @@ function Comment({
         <li key={index} style={{listStyle: 'none'}}>
             <CommentComponents.CommentContainer>
                 <Avatar
-                    name={created_by}
-                    size={30}
+                    name={created_by?.username}
+                    size={35}
+                    color="#DE350B"
                     round={true}
-                    color="Grey"
+                    src={`${process.env.REACT_APP_HOST}/${created_by?.userprofile?.image}`}
+                    title={created_by?.username}
                     style={{marginRight: '10px', marginTop: '-40px'}}
                 />
 
                 <CommentComponents.CommentInfo>
                     <CommentComponents.CommentAuthor>
-                        {created_by}
+                        {created_by?.username}
                         <span
                             style={{
                                 marginLeft: '10px',
