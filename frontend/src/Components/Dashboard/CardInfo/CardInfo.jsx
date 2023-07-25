@@ -17,13 +17,15 @@ import GenericSelectField from '../SelectFields/GenericSelectField'
 import TrackingField from '../TimeTracking/index'
 import {AiOutlineArrowDown, AiOutlineArrowUp, AiOutlineClose} from 'react-icons/ai'
 import {TbStatusChange} from 'react-icons/tb'
-import {FiUser, FiUsers} from 'react-icons/fi'
+import {FiUser} from 'react-icons/fi'
 import {CgOptions} from 'react-icons/cg'
 import {RxStopwatch} from 'react-icons/rx'
+import {TiTags} from "react-icons/ti";
+import {IoIosTimer} from 'react-icons/io'
 import axios from "axios";
 import MultiSelectField from "../SelectFields/MultiSelectField";
 import * as CardInfoComponents from "./Style"
-
+import EstimateTimer from "../EstimateTimer/EstimateTimer";
 
 function CardInfo(props) {
     let authToken = localStorage.getItem('auth_token')
@@ -67,6 +69,8 @@ function CardInfo(props) {
 
     const [selectedAssignee, setSelectedAssignee] = useState('');
     const [selectedReporter, setSelectedReporter] = useState('');
+
+    const [estimateHours, setEstimateHours] = useState("");
 
     const [Users, setUsers] = useState('');
     const [currentUserData, setCurrentUserData] = useState({});
@@ -228,6 +232,7 @@ function CardInfo(props) {
             setSelectedIssueType(IssuesData?.type?.id)
             setSelectedIssueStatus(IssuesData?.status?.id)
             setSelectedPriority(IssuesData?.priority)
+            setEstimateHours(IssuesData?.estimate)
             setSelectedLabels(IssuesData?.label?.map((label) => label.id) || []);
         }
     }, [IssuesData]);
@@ -367,6 +372,10 @@ function CardInfo(props) {
         setFiles(newFiles);
     };
 
+    const handleHoursChange = (totalHours) => {
+        setEstimateHours(totalHours);
+    };
+
 //Description
     const [description, setDescription] = useState(props.card?.desc);
     const handleDescChange = (newDesc) => {
@@ -482,6 +491,7 @@ function CardInfo(props) {
         formData.append("reporter", selectedReporter);
         formData.append("priority", selectedPriority);
         formData.append("description", description);
+        formData.append("estimate", estimateHours);
         formData.append("name", values.title);
         files.forEach((file) => {
             formData.append("file", file);
@@ -705,7 +715,7 @@ function CardInfo(props) {
                 </CardInfoComponents.CardInfoBox>
                 <CardInfoComponents.CardInfoBox>
                     <CardInfoComponents.CardInfoBoxTitle>
-                        <FiUsers/>
+                        <FiUser/>
                         Assignee
                     </CardInfoComponents.CardInfoBoxTitle>
                     <CardInfoComponents.TaskList>
@@ -745,7 +755,7 @@ function CardInfo(props) {
 
                 <CardInfoComponents.CardInfoBox>
                     <CardInfoComponents.CardInfoBoxTitle>
-                        <CgOptions/>
+                        <TiTags/>
                         Labels
                     </CardInfoComponents.CardInfoBoxTitle>
                     <CardInfoComponents.TaskList>
@@ -755,6 +765,17 @@ function CardInfo(props) {
                         />
                     </CardInfoComponents.TaskList>
                 </CardInfoComponents.CardInfoBox>
+                <CardInfoComponents.CardInfoBox>
+                    <CardInfoComponents.CardInfoBoxTitle>
+                        <IoIosTimer/>
+                        Original Estimate
+                    </CardInfoComponents.CardInfoBoxTitle>
+                    <div>
+                        <EstimateTimer defaultValue={props.card?.estimate}
+                                       onHoursChange={handleHoursChange}/>
+                    </div>
+                </CardInfoComponents.CardInfoBox>
+
 
                 <CardInfoComponents.CardInfoBox>
                     <CardInfoComponents.CardInfoBoxTitle>
@@ -765,6 +786,8 @@ function CardInfo(props) {
                         <TrackingField OriginalEstimate={props.card?.estimate}/>
                     </div>
                 </CardInfoComponents.CardInfoBox>
+
+
             </div>
         </Modal>
     )
