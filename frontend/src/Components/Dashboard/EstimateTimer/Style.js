@@ -8,7 +8,7 @@ export const StyledInput = styled(Input)`
   border-radius: 4px;
   border: 2px solid #D9D9D9;
   margin-bottom: 16px;
-  width: 96%;
+  width: 100%;
 `;
 
 export const StyledErrorText = styled.p`
