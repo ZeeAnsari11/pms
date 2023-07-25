@@ -17,10 +17,12 @@ export const StyledModal = styled.div`
 export const ModalContent = styled.div`
   display: flex;
   justify-content: space-between;
-  width: 75%;
+  width: 80%;
   padding: 20px;
   background-color: #fff;
   border-radius: 4px;
   max-height: 95vh;
   overflow-y: auto;
+  margin-bottom: 100px;
+
 `;
