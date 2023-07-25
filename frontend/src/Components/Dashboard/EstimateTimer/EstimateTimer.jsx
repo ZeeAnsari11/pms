@@ -2,14 +2,43 @@ import React, {useState, useEffect} from "react";
 import {InfoCircleOutlined} from "@ant-design/icons";
 import * as EstimateTimerComponents from "./Style"
 
+function convertToTimeFormat(hours) {
+    if (typeof hours === 'string') {
+        return hours;
+    }
+    const weeks = Math.floor(hours / 40);
+    hours %= 40;
+    const days = Math.floor(hours / 8);
+    hours %= 8;
+    const minutes = Math.ceil((hours - Math.floor(hours)) * 60);
+    hours = Math.floor(hours);
+
+    let timeFormat = '';
+    if (weeks > 0) {
+        timeFormat += `${weeks}w `;
+    }
+    if (days > 0) {
+        timeFormat += `${days}d `;
+    }
+    if (hours > 0) {
+        timeFormat += `${hours}h `;
+    }
+    if (minutes > 0) {
+        timeFormat += `${minutes}m`;
+    }
+
+    return timeFormat.trim();
+}
+
 const TimeEstimationField = ({onHoursChange, defaultValue}) => {
     const [input, setInput] = useState("");
     const [error, setError] = useState(null);
 
     useEffect(() => {
         if (defaultValue) {
-            setInput(defaultValue);
-            handleInputChange({target: {value: defaultValue}});
+            const formattedTime = convertToTimeFormat(defaultValue);
+            setInput(formattedTime);
+            handleInputChange({target: {value: formattedTime}});
         }
     }, [defaultValue]);
 

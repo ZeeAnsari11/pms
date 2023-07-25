@@ -6,10 +6,10 @@ import {Link, useNavigate} from "react-router-dom";
 import 'react-toastify/dist/ReactToastify.css';
 import Toast from "../../../Shared/Components/Toast"
 import Loader from "../../../Utils/Loader"
-import * as LoginStyleComponents  from "./Style"
+import * as LoginStyleComponents from "./Style"
 import {displayErrorMessage, displaySuccessMessage} from "../../../Shared/notify"
-import { AxiosError } from "axios";
-import { StatusCodes } from "http-status-codes";
+import {AxiosError} from "axios";
+import {StatusCodes} from "http-status-codes";
 
 function Login() {
     const dispatch = useDispatch();
@@ -30,24 +30,23 @@ function Login() {
 
         dispatch(login({username: usernameForSignIn, password: passwordForSignIn})).unwrap()
             .then((response) => {
-                if (response.authToken.auth_token && response.userData) {
+                if (response.authToken.auth_token) {
                     localStorage.setItem('auth_token', response.authToken.auth_token); // @temporarily Store auth token in local storage
-                    localStorage.setItem('user_data', response.userData); // @temporarily Store User in local storage
                     navigate('/project');
                 }
             })
             .catch((error) => {
-                if(error.code === AxiosError.ERR_NETWORK){
+                if (error.code === AxiosError.ERR_NETWORK) {
                     return displayErrorMessage(`${error.message}`)
                 }
-                if(error.response.status === StatusCodes.UNAUTHORIZED){
-                    return displayErrorMessage( `${ error.response.data.detail }` );
+                if (error.response.status === StatusCodes.UNAUTHORIZED) {
+                    return displayErrorMessage(`${error.response.data.detail}`);
                 }
-                if(error.response.status === StatusCodes.BAD_REQUEST && error.response.data.non_field_errors){
+                if (error.response.status === StatusCodes.BAD_REQUEST && error.response.data.non_field_errors) {
                     let nonFieldError = error.response.data.non_field_errors;
-                        for (let i = 0; i < nonFieldError.length; i++) {
-                            displayErrorMessage(nonFieldError[i]);
-                        }
+                    for (let i = 0; i < nonFieldError.length; i++) {
+                        displayErrorMessage(nonFieldError[i]);
+                    }
                 }
 
             });
@@ -65,11 +64,11 @@ function Login() {
         dispatch(signUp({name, email, password})).unwrap()
             .then((response) => {
                 if (response.status === StatusCodes.CREATED) {
-                    displaySuccessMessage(`Thanks for registration! Check your email and click the link to activate your account. If you need help, contact us. We appreciate your business!` );
+                    displaySuccessMessage(`Thanks for registration! Check your email and click the link to activate your account. If you need help, contact us. We appreciate your business!`);
                 }
             })
             .catch((error) => {
-                if(error.code === AxiosError.ERR_NETWORK){
+                if (error.code === AxiosError.ERR_NETWORK) {
                     return displayErrorMessage(`${error.message}`)
                 }
                 if (error.response && error.response.data) {
@@ -101,8 +100,8 @@ function Login() {
 
     return (
         <LoginStyleComponents.ParentContainer>
-                <Toast/>
-            {isLogInPending || isSingUpPending? (
+            <Toast/>
+            {isLogInPending || isSingUpPending ? (
                 <Loader/>
             ) : (
                 <LoginStyleComponents.Container>
@@ -110,11 +109,11 @@ function Login() {
                         <LoginStyleComponents.Form onSubmit={handleSubmitSignUp}>
                             <LoginStyleComponents.Title>Create Account</LoginStyleComponents.Title>
                             <LoginStyleComponents.Input type="text" placeholder="Name" value={name}
-                                    onChange={(e) => setName(e.target.value)}/>
+                                                        onChange={(e) => setName(e.target.value)}/>
                             <LoginStyleComponents.Input type="email" placeholder="Email" value={email}
-                                    onChange={(e) => setEmail(e.target.value)}/>
+                                                        onChange={(e) => setEmail(e.target.value)}/>
                             <LoginStyleComponents.Input type="password" placeholder="Password" value={password}
-                                    onChange={(e) => setPassword(e.target.value)}/>
+                                                        onChange={(e) => setPassword(e.target.value)}/>
                             <LoginStyleComponents.Button>Sign Up</LoginStyleComponents.Button>
                         </LoginStyleComponents.Form>
                     </LoginStyleComponents.SignUpContainer>
@@ -122,9 +121,9 @@ function Login() {
                         <LoginStyleComponents.Form onSubmit={handleSubmitSignIn}>
                             <LoginStyleComponents.Title>Sign In</LoginStyleComponents.Title>
                             <LoginStyleComponents.Input type="text" placeholder="Name" value={usernameForSignIn}
-                                    onChange={(e) => setUsernameForSignIn(e.target.value)}/>
+                                                        onChange={(e) => setUsernameForSignIn(e.target.value)}/>
                             <LoginStyleComponents.Input type="password" placeholder="Password" value={passwordForSignIn}
-                                    onChange={(e) => setPasswordForSignIn(e.target.value)}/>
+                                                        onChange={(e) => setPasswordForSignIn(e.target.value)}/>
                             <LoginStyleComponents.Anchor>
                                 <Link to="/forgot-password">Forgot Password?</Link>
                                 <br></br>

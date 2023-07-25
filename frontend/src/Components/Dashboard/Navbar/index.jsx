@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import {
     NavbarContainer,
     LeftContainer,
@@ -19,49 +19,20 @@ import {IoMdNotifications} from 'react-icons/io'
 import {RxAvatar} from 'react-icons/rx'
 import {AiFillQuestionCircle} from 'react-icons/ai'
 import SearchBar from './SearchBar/index'
-import {Link, useNavigate} from "react-router-dom";
+import {Link} from "react-router-dom";
 import CreateTicket from "../CreateTicket/CreateTicket";
-import apiRequest from "../../../Utils/apiRequest";
 import Avatar from "react-avatar";
+import {useSelector} from "react-redux";
 
 function NavBar() {
     const [extendNavbar, setExtendNavbar] = useState(false);
     const [showModal, setshowModal] = useState(false);
 
-    let authToken = localStorage.getItem('auth_token');
-    const navigate = useNavigate();
-
-    const [currentUserProfileData, setcurrentUserProfileData] = useState(null);
-    const [loading, setLoading] = useState(true); // Track loading state
-
+    const currentUserProfileData = useSelector((state) => state.DataSyncer.userProfileData);
     const handleCreateButtonClick = () => {
         setshowModal(true);
     }
 
-
-    useEffect(() => {
-        const fetchCurrentUserProfileData = async () => {
-            setLoading(true);
-            apiRequest
-                .get(`/api/userprofile/me/`,
-                    {
-                        headers:
-                            {"Authorization": `Token ${authToken}`}
-                    })
-                .then(response => {
-                    setcurrentUserProfileData(response.data);
-                    setLoading(false);
-
-                })
-                .catch(error => {
-                    setLoading(false)
-                    navigate('/');
-                    console.error(error);
-                });
-        };
-
-        fetchCurrentUserProfileData();
-    }, []);
 
     return (
         <>
@@ -112,9 +83,7 @@ function NavBar() {
                         <Dropdown
                             items={accountItems}
                             name={
-                                loading ? (
-                                    <RxAvatar size={24} style={{marginLeft: "10px"}}/>
-                                ) : (
+                                currentUserProfileData ? (
                                     <Avatar
                                         name={currentUserProfileData?.user?.username}
                                         src={`${process.env.REACT_APP_HOST}/${currentUserProfileData?.image}`}
@@ -124,6 +93,8 @@ function NavBar() {
                                         color="#DE350B"
                                         style={{marginLeft: "10px"}}
                                     />
+                                ) : (
+                                    <RxAvatar size={24} style={{marginLeft: "10px"}}/>
                                 )
                             }
                         />
