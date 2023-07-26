@@ -10,6 +10,7 @@ import * as LoginStyleComponents from "./Style"
 import {displayErrorMessage, displaySuccessMessage} from "../../../Shared/notify"
 import {AxiosError} from "axios";
 import {StatusCodes} from "http-status-codes";
+import {DataSyncer} from "../../../Store/Slice/DataSyncerSlice";
 
 function Login() {
     const dispatch = useDispatch();
@@ -31,8 +32,9 @@ function Login() {
         dispatch(login({username: usernameForSignIn, password: passwordForSignIn})).unwrap()
             .then((response) => {
                 if (response.authToken.auth_token) {
-                    localStorage.setItem('auth_token', response.authToken.auth_token); // @temporarily Store auth token in local storage
+                    localStorage.setItem('auth_token', response.authToken.auth_token);
                     navigate('/project');
+                    dispatch(DataSyncer());
                 }
             })
             .catch((error) => {
@@ -48,7 +50,6 @@ function Login() {
                         displayErrorMessage(nonFieldError[i]);
                     }
                 }
-
             });
     };
 
