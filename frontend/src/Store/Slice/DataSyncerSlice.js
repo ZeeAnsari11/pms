@@ -7,10 +7,10 @@ const initialState = {
     userProfileData: null,
 };
 
-let authToken = localStorage.getItem('auth_token')
 export const DataSyncer = createAsyncThunk(
     'DataSyncer',
     async () => {
+        let authToken = localStorage.getItem('auth_token')
         const userDataResponse = await apiRequest.get('/api/userprofile/me/', {
             headers: {'Authorization': `Token ${authToken}`},
         });
