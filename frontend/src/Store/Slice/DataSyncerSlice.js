@@ -5,17 +5,22 @@ const initialState = {
     loading: false,
     error: null,
     userProfileData: null,
+    projectsData: null,
 };
 
-let authToken = localStorage.getItem('auth_token')
 export const DataSyncer = createAsyncThunk(
     'DataSyncer',
     async () => {
+        let authToken = localStorage.getItem('auth_token')
         const userDataResponse = await apiRequest.get('/api/userprofile/me/', {
             headers: {'Authorization': `Token ${authToken}`},
         });
         const userData = userDataResponse.data;
-        return {userData};
+        const ProjectsDataResponse = await apiRequest.get('/api/projects/', {
+            headers: {'Authorization': `Token ${authToken}`},
+        });
+        const projectsData = ProjectsDataResponse.data;
+        return {userData, projectsData};
     }
 );
 
@@ -34,6 +39,7 @@ const DataSyncerSlice = createSlice({
                 state.loading = false;
                 state.error = null;
                 state.userProfileData = action.payload?.userData;
+                state.projectsData = action.payload.projectsData;
             })
             .addCase(DataSyncer.rejected, (state, action) => {
                 state.loading = false;

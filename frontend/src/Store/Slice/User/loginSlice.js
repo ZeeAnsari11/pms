@@ -17,7 +17,7 @@ export const login = createAsyncThunk(
                 username, password,
             });
             const authToken = loginResponse.data;
-
+            localStorage.setItem('auth_token', authToken.auth_token);
             return {authToken};
         } catch (error) {
             return rejectWithValue(error)
