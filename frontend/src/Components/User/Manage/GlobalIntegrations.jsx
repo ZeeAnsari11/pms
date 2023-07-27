@@ -32,13 +32,13 @@ function GlobalIntegrations() {
         if (Array.isArray(response.data)) {
             responseData = response.data[0];
         }
-        const {id, webhook_url, webhook_channel, global_status} = responseData;
+        const {id, webhook_url, webhook_channel, is_active} = responseData;
         setSlackIsUpdating(true);
         setSlackConfigId(id);
 
         slackForm.setFieldsValue({
             slackChannelGroupUser : webhook_channel,
-            slackNotificationStatus : global_status,
+            slackNotificationStatus : is_active,
             slackWebhookUrl : webhook_url,
         });
     }
@@ -54,7 +54,7 @@ function GlobalIntegrations() {
         const {slackNotificationStatus, slackChannelGroupUser, slackWebhookUrl} = values
         return await apiRequest
             .post(`/api/global_slack_webhook/`, {
-                global_status: slackNotificationStatus,
+                is_active: slackNotificationStatus,
                 webhook_channel: slackChannelGroupUser,
                 webhook_url: slackWebhookUrl,
             }, {
@@ -68,7 +68,7 @@ function GlobalIntegrations() {
         const {slackNotificationStatus, slackChannelGroupUser, slackWebhookUrl} = values
         return await apiRequest
             .patch(`/api/global_slack_webhook/${slackConfigId}/`, {
-                global_status : slackNotificationStatus,
+                is_active : slackNotificationStatus,
                 webhook_channel : slackChannelGroupUser,
                 webhook_url : slackWebhookUrl,
             }, {
