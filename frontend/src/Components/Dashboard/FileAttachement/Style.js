@@ -40,6 +40,7 @@ export const PreviewContainer = styled.div`
   flex-wrap: nowrap; // this will prevent wrapping of preview items
   overflow-x: auto; // this will enable horizontal scrolling
   padding: 10px 0; // optional: add some padding for better spacing
+  width: ${(props) => (props.width ? props.width : "557px")};
   border: 2px solid lightgrey;
   border-radius: 10px;
   margin-top: 10px;

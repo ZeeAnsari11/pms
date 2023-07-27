@@ -16,7 +16,7 @@ import UserSelectField from '../SelectFields/UserSelectField'
 import GenericSelectField from '../SelectFields/GenericSelectField'
 import TrackingField from '../TimeTracking/index'
 import {AiOutlineArrowDown, AiOutlineArrowUp, AiOutlineClose} from 'react-icons/ai'
-import {TbStatusChange} from 'react-icons/tb'
+import {TbStatusChange,TbExchange} from 'react-icons/tb'
 import {FiUser} from 'react-icons/fi'
 import {CgOptions} from 'react-icons/cg'
 import {RxStopwatch} from 'react-icons/rx'
@@ -682,7 +682,7 @@ function CardInfo(props) {
                 </CardInfoComponents.CardInfoClose>
                 <CardInfoComponents.CardInfoBox>
                     <CardInfoComponents.CardInfoBoxTitle>
-                        <TbStatusChange/>
+                        <TbExchange/>
                         Type
                     </CardInfoComponents.CardInfoBoxTitle>
                     <CardInfoComponents.TaskList>

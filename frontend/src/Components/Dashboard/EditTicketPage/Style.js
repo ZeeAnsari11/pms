@@ -3,18 +3,19 @@ import {Collapse} from "antd";
 
 const {Panel} = Collapse;
 
-
 export const RightSideContent = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10px;
   padding: 10px;
+  width: 100%; /* Set the width to 100% to prevent overflowing */
 `;
 
 
 export const StyledCollapse = styled(Collapse)`
   border: 1px solid #ddd;
   border-radius: 5px;
+  margin-top: 10px;
   overflow: hidden;
   width: 100%;
 `;
@@ -35,17 +36,18 @@ export const FormWrapper = styled.div`
 
 
 export const ContentInfoTitle = styled.div`
-  display: flex;
   align-items: center;
   gap: 10px;
   margin-top: 10px;
   font-weight: 600;
   font-size: 1rem;
+  display: inline-block;
 
   span {
-    display: inline-block;
+    margin-left: 5px;
     width: 100px;
   }
+
 `;
 
 export const Title = styled.div`
@@ -77,8 +79,8 @@ export const LeftSide = styled.div`
 export const RightSide = styled.div`
   width: 35%;
   padding-top: 80px;
-  margin-right: 10px;
-  margin-left: 10px;
+  margin-right: 15px;
+  margin-left: 15px;
 `;
 
 export const CardInfoBoxCustom = styled.div`
@@ -136,9 +138,10 @@ export const FormContainer = styled.form`
 `;
 
 export const SaveButton = styled.button`
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  float: right;
+  cursor: pointer;
   background-color: #0062FF;
   color: #fff;
   border: none;
@@ -146,12 +149,11 @@ export const SaveButton = styled.button`
   font-size: 1rem;
   font-weight: bold;
   padding: 0.5rem 1rem;
-  cursor: pointer;
   transition: background-color 0.3s ease-in-out;
-  z-index: 999;
 
   &:hover {
     background-color: #3e81ed;
     cursor: pointer;
   }
 `;
+
