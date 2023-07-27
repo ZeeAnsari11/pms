@@ -20,6 +20,7 @@ const UserSidebar = () => {
             {renderLinkItem(match, 'Manage Users', 'Manage Users', `/manage-users`)}
             {renderLinkItem(match, 'Manage Groups', 'Manage Groups', `/manage-groups`)}
             {renderLinkItem(match, 'General Setting', 'General Setting', `/manage-general-settings`)}
+            {renderLinkItem(match, 'Global Integration', 'Integrations', `/global-integrations-setting`)}
             <Divider/>
             {renderLinkItem(match, 'Roadmap', 'roadmap')}
             {renderLinkItem(match, 'Releases', 'release')}

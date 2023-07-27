@@ -12,6 +12,7 @@ import ManageAccount from "../Components/User/Manage/ManageAccount";
 import ManageUsers from "../Components/User/Manage/ManageUsers";
 import ManageGroups from "../Components/User/Manage/ManageGroups";
 import GeneralSettings from "../Components/User/Manage/GeneralSettings";
+import GlobalIntegrations from "../Components/User/Manage/GlobalIntegrations";
 import ProjectSummary from "../Components/Project/ProjectSummaryPage/ProjectSummary";
 import Integrations from "../Components/Project/Integrations/Integrations";
 import ProjectTag from "../Components/Project/ProjectTag/ProjectTag";
@@ -66,6 +67,7 @@ function Url() {
                 <Route path="/manage-users" element={<PrivateRoute element={ManageUsers} />}/>
                 <Route path="/manage-groups" element={<PrivateRoute element={ManageGroups}/>}/>
                 <Route path="/manage-general-settings" element={<PrivateRoute element={GeneralSettings}/>}/>
+                <Route path="/global-integrations-setting" element={<PrivateRoute element={GlobalIntegrations}/>}/>
                 <Route path="/project/:projectId/setting/summary" element={<PrivateRoute element={ProjectSummary}/>}/>
                 <Route path="/project/:projectId/setting/notification" element={<PrivateRoute element={Notification}/>}/>
                 <Route path="/project/:projectId/setting/integrations" element={<PrivateRoute element={Integrations}/>}/>

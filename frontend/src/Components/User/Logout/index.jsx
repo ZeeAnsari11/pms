@@ -7,6 +7,7 @@ import {RiExternalLinkLine} from "react-icons/ri";
 import {FaUsersCog} from "react-icons/fa";
 import {MdGroups} from "react-icons/md";
 import {GrSettingsOption} from "react-icons/gr";
+import { FiSettings } from "react-icons/fi";
 import {displayErrorMessage, displaySuccessMessage} from "../../../Shared/notify"
 import {AxiosError} from "axios";
 import {StatusCodes} from "http-status-codes";
@@ -75,7 +76,12 @@ const accountItems = [
             {
                 key: "1-5",
                 label: <Link to="/manage-general-settings">Manage General Settings</Link>,
-                icon: <GrSettingsOption size={iconSize}/>,
+                icon: <FiSettings size={iconSize} />,
+            },
+            {
+                key: "1-6",
+                label: <Link to="/global-integrations-setting">Global Integration Settings</Link>,
+                icon: <GrSettingsOption size={iconSize} />,
             },
         ],
     }, {
