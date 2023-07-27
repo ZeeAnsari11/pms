@@ -1,58 +1,58 @@
 from datetime import datetime
 from .models import ProjectSlackWebhook
-from celery import shared_task
+from .models import GlobalSlackConfig
 import requests
 import os
 
 
 def send_new_task_notification(instance):
-    url = fetch_slack_webhook_url(instance.project_id)
-    if not url:
+    slack_config = fetch_slack_config(instance.project_id)
+    if not slack_config['url']:
         return
     issue_priority = instance.priority or 'High'
     issue_status = instance.status or 'In Progress'
     issue_type = instance.type or 'Bug'
     message = {
-        "text": f"*{instance.created_by} created a {issue_type}*",
-        "attachments": [
+        "blocks": [
             {
-                "title": f"*{instance.name}*",
-                "title_link": f"{os.environ.get('APP_NAME')}browse/ABC-123",  # @todo update the issue id
-                "text": f"{instance.summary}",
-                "color": "#ffcc00",
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": f"*{instance.created_by} created a {issue_type}*\n*<{os.environ.get('APP_NAME')}project/{instance.project_id}/browse/issue/{instance.id}|{instance.name}>*"
+                }
+            },
+            {
+                "type": "section",
                 "fields": [
                     {
-                        "title": "*Status:*",
-                        "value": f"{issue_status}",
-                        "short": f"{True}"
+                        "type": "mrkdwn",
+                        "text": f"Status:\n *{issue_status}*"
                     },
                     {
-                        "title": "*Type:*",
-                        "value": f"{issue_type}",
-                        "short": f"{True}"
+                        "type": "mrkdwn",
+                        "text": f"Type:\n *{issue_type}*"
                     },
                     {
-                        "title": "*Priority:*",
-                        "value": f"{issue_priority}",
-                        "short": f"{True}"
+                        "type": "mrkdwn",
+                        "text": f"Assignee:\n *{instance.created_by}*"
                     },
                     {
-                        "title": "*Assignee:*",
-                        "value": f"{instance.created_by}",
-                        "short": f"{True}"
+                        "type": "mrkdwn",
+                        "text": f"Priority:\n *{issue_priority}*"
                     }
                 ]
             }
         ]
     }
-    send_slack_notification(url, message)
+
+    send_slack_notification(slack_config, message)
 
 
 def send_task_status_notification(instance, old_status, new_status):
-    url = fetch_slack_webhook_url(instance.project_id)
-    if not url:
+    slack_config = fetch_slack_config(instance.project_id)
+    if not slack_config['url']:
         return
-    issue_type = instance.type or 'Bug'
+    issue_type = instance.type.__str__().upper() or 'BUG'
     message = {
         "blocks": [
             {
@@ -66,19 +66,19 @@ def send_task_status_notification(instance, old_status, new_status):
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": f"*<{os.environ.get('APP_NAME')}|{instance.name}>*"
+                    "text": f"*<{os.environ.get('APP_NAME')}project/{instance.project_id}/browse/issue/{instance.id}|{instance.name}>*"
                 }
             }
         ]
     }
-    send_slack_notification(url, message)
+    send_slack_notification(slack_config, message)
 
 
 def send_task_assignee_notification(instance, old_assignee, new_assignee):
-    url = fetch_slack_webhook_url(instance.project_id)
-    if not url:
+    slack_config = fetch_slack_config(instance.project_id)
+    if not slack_config['url']:
         return
-    issue_type = instance.type or 'Bug'
+    issue_type = instance.type.__str__().upper() or 'BUG'
     message = {
         "blocks": [
             {
@@ -92,29 +92,59 @@ def send_task_assignee_notification(instance, old_assignee, new_assignee):
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": f"*<{os.environ.get('APP_NAME')}|{instance.name}>*"
+                    "text": f"*<{os.environ.get('APP_NAME')}project/{instance.project_id}/browse/issue/{instance.id}|{instance.name}>*"
                 }
             }
         ]
     }
-    send_slack_notification(url, message)
+    send_slack_notification(slack_config, message)
 
 
-def fetch_slack_webhook_url(product_id):
+def fetch_slack_config(product_id):
+    url = ''
+    channel = ''
     try:
-        webhook_url = ProjectSlackWebhook.objects.get(project=product_id)
+        local_instance = ProjectSlackWebhook.objects.get(project=product_id)
     except ProjectSlackWebhook.DoesNotExist:
-        return
-    if not webhook_url.slack_notification_status:
-        return
-    if not webhook_url.slack_webhook_url:
-        return
-    return webhook_url.slack_webhook_url
+        local_instance = None
+    try:
+        global_instance = GlobalSlackConfig.objects.get()
+    except GlobalSlackConfig.DoesNotExist:
+        global_instance = None
+
+    if local_instance and local_instance.is_active:
+        if local_instance.webhook_url:
+            url = local_instance.webhook_url
+        elif global_instance and global_instance.is_active:
+            url = global_instance.webhook_url
+        if local_instance.webhook_channel:
+            channel = local_instance.webhook_url
+        elif global_instance and global_instance.is_active:
+            channel = global_instance.webhook_channel
+        return {
+            'url': url,
+            'channel': channel
+        }
+    if global_instance and global_instance.is_active:
+        url = global_instance.webhook_url
+        channel = global_instance.webhook_channel
+    return {
+        'url': url,
+        'channel': channel
+    }
 
 
-def send_slack_notification(url, data):
+def send_slack_notification(slack_config, message):
+    channel = slack_config['channel']
+    headers = {
+        "Content-Type": "application/json"
+    }
+
+    if isinstance(channel, str) and channel.strip():
+        message['channel'] = channel
+
     s = requests.Session()
-    response = s.post(url, json=data)
+    response = s.post(slack_config['url'], headers=headers, json=message)
     if response.status_code == 200:
         return
     else:

@@ -3,6 +3,7 @@ from rest_framework.viewsets import ModelViewSet
 from django_filters.rest_framework import DjangoFilterBackend
 from django.contrib.auth.models import Group
 from rest_framework.filters import SearchFilter, OrderingFilter
+from .pagination import StandardResultsSetPagination
 from .filters import IssueFilter
 from rest_framework.response import Response
 from rest_framework import status
@@ -32,7 +33,7 @@ class ProjectCategoryViewSet(ModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_fields = "__all__"
     serializer_class = serializers.ProjectCategorySerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAdminUser]
 
     queryset = ProjectCategory.objects.all()
 
@@ -43,7 +44,7 @@ class ProjectTypeViewSet(ModelViewSet):
     filterset_fields = "__all__"
 
     serializer_class = serializers.ProjectTypeSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAdminOrStaffUser]
 
     queryset = ProjectType.objects.all()
 
@@ -54,7 +55,7 @@ class ProjectStatusViewSet(ModelViewSet):
     filterset_fields = "__all__"
 
     serializer_class = serializers.ProjectStatusSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAdminOrStaffUser]
 
     queryset = ProjectStatus.objects.all()
 
@@ -65,7 +66,7 @@ class ProjectLabelsViewSet(ModelViewSet):
     filterset_fields = "__all__"
 
     serializer_class = serializers.ProjectLabelsSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAdminOrStaffUser]
 
     queryset = ProjectLabels.objects.all()
 
@@ -76,20 +77,16 @@ class ProjectSlackWebhookViewSet(ModelViewSet):
     filterset_fields = "__all__"
 
     serializer_class = serializers.ProjectSlackWebhookSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAdminOrStaffUser]
 
     queryset = ProjectSlackWebhook.objects.all()
 
 
-class ProjectSMTPWebhookViewSet(ModelViewSet):
+class GlobalSlackConfigViewSet(ModelViewSet):
     http_method_names = ['get', 'post', 'patch', 'delete']
-    filter_backends = [DjangoFilterBackend]
-    filterset_fields = "__all__"
-
-    serializer_class = serializers.ProjectSMTPWebhookSerializer
-    permission_classes = [IsAuthenticated]
-
-    queryset = ProjectSMTPWebhook.objects.all()
+    serializer_class = serializers.GlobalSlackConfigSerializer
+    permission_classes = [IsAdminOrStaffUser]
+    queryset = GlobalSlackConfig.objects.all()
 
 
 class ProjectViewSet(ModelViewSet):
@@ -115,7 +112,7 @@ class ProjectViewSet(ModelViewSet):
         user = self.request.user
         if user.is_staff:
             return Project.objects.prefetch_related('assignees').prefetch_related('project_lead').select_related(
-                'slack_webhook_url').select_related(
+                'slack_webhook').select_related(
                 'company').select_related('category').distinct()
         return Project.objects.filter(
             Q(project_lead=self.request.user) | Q(assignees__in=[self.request.user])).distinct()
@@ -138,7 +135,7 @@ class ProjectMembershipViewSet(ModelViewSet):
             return serializers.CreateProjectMembershipSerializer
         return serializers.ProjectMembershipSerializer
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAdminOrStaffUser]
 
     queryset = ProjectMembership.objects.all()
 
@@ -153,7 +150,7 @@ class GroupPermissionsViewSet(ModelViewSet):
             return serializers.GroupPermissionsSerializer
         return serializers.DetailedGroupPermissionsSerializer
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAdminUser]
 
     queryset = Group.objects.all()
 

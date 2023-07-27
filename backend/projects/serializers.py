@@ -91,10 +91,10 @@ class ProjectSlackWebhookSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class ProjectSMTPWebhookSerializer(serializers.ModelSerializer):
+class GlobalSlackConfigSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.ProjectSMTPWebhook
-        fields = "__all__"
+        model = models.GlobalSlackConfig
+        fields = '__all__'
 
 
 class ProjectSerializer(serializers.ModelSerializer):

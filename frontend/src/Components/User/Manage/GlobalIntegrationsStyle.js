@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { Form } from "antd";
 import { color } from "../../Dashboard/Sidebar/utils/Style";
 
 export const PageContainer = styled.div`
@@ -64,10 +65,30 @@ export const NotificationContainerForSlack = styled.div`
   }
 `;
 
+export const NotificationContainerForGmail = styled.div`
+  margin-top: 25px;
+  background-color: #EBEBEB;
+  border-radius: 5px;
+  height: 650px;
+  width: 100%;
+  box-shadow: var(--ds-shadow-raised, 0 1px 1px rgba(9, 30, 66, 0.25), 0 0 1px 1px rgba(9, 30, 66, 0.13));
+
+  &:hover {
+    transform: scale(1.005);
+    transition: transform 0.5s ease;
+  }
+`;
+
 export const NotificationWrapper = styled.div`
   width: 100%;
   height: 100%;
   padding: 10px;
+`;
+
+export const StyledFormItem = styled(Form.Item)`
+  float: right;
+  margin-top: -56px;
+  margin-right: 350px;
 `;
 
 export const StyledStatusDev = styled.div`
@@ -91,3 +112,8 @@ export const FormWrapper = styled.div`
   width: 500px;
 `;
 
+export const ParagraphNote = styled.p`
+  font-size: 10px;
+  margin-top: -25px;
+  margin-left: 140px
+`;
