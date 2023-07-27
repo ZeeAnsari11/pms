@@ -29,7 +29,7 @@ const Icon = ({type, size}) => {
             return <RiPagesLine size={size}/>;
         case 'reports':
             return <BsGraphUpArrow size={size}/>;
-            case 'Project Settings':
+        case 'Project Settings':
             return <FiSettings size={size} color={"black"}/>;
         case 'Summary':
             return <MdOutlineSummarize size={size} color={"black"}/>;
@@ -40,7 +40,7 @@ const Icon = ({type, size}) => {
         case 'Manage Groups':
             return <MdGroups size={size} color={"black"}/>;
         case 'General Setting':
-            return <GrSettingsOption size={size} color={"black"}/>;
+            return <FiSettings size={size} color={"black"}/>;
         case 'Notifications':
             return <MdNotificationsNone size={size} color={"black"}/>;
         case 'Integrations':

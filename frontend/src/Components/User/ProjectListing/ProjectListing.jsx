@@ -6,11 +6,21 @@ import {Modal} from 'antd';
 import {GrAlert} from 'react-icons/gr';
 import ToastContainer from "../../../Shared/Components/Toast";
 import {displayErrorMessage} from "../../../Shared/notify";
-import {useSelector} from "react-redux";
 
 const ProjectListing = () => {
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pageSize, setPageSize] = useState(10);
+    const [totalItems, setTotalItems] = useState(0);
+    const [loading, setLoading] = useState(false)
+    const [visible, setVisible] = useState(false);
+    const [projects, setProjects] = useState([]);
+    const [filteredData, setFilteredData] = useState([]);
+
+    let authToken = localStorage.getItem('auth_token')
+
     const columns = [
-        {title: 'ID', dataIndex: 'id'},
+        { title: 'ID', dataIndex: 'id', sorter: (record1, record2) => (record1.id > record2.id) },
         {
             title: 'Name',
             dataIndex: 'name',
@@ -24,14 +34,11 @@ const ProjectListing = () => {
                     {text}
                 </ProjectListingComponents.ProjectLink>
             ),
+            sorter: (record1, record2) => record1.name.localeCompare(record2.name)
         }, {
-            title: 'Key',
-            dataIndex: 'slug',
-            key: 'slug',
+            title: 'Key', dataIndex: 'key', key: 'key',
         }, {
-            title: 'Project Lead',
-            dataIndex: 'lead',
-            key: 'lead',
+            title: 'Project Lead', dataIndex: 'lead', key: 'lead',
         }, {
             title: 'Category',
             key: 'category',
@@ -42,10 +49,9 @@ const ProjectListing = () => {
                 </Tag>
             ),
         }, {
-            title: 'Action',
-            key: 'action',
-            render: (_, record) => (
-                <Space size="middle">
+        title: 'Action', key: 'action',
+        render: (_, record) => (
+            <Space size="middle">
                     <a>Invite {record.name}</a>
                     <a>Delete</a>
                 </Space>
@@ -53,36 +59,47 @@ const ProjectListing = () => {
         },
     ];
 
-    const [visible, setVisible] = useState(false);
-    const [projects, setProjects] = useState([]);
-    const [filteredData, setFilteredData] = useState([]);
-    const projectsData = useSelector((state) => state.DataSyncer.projectsData);
-
-
     useEffect(() => {
         const fetchProjects = async () => {
-            const dataArray = projectsData.map(project => ({
-                id: project.id,
-                name: project.name,
-                slug: project.key,
-                lead: project.project_lead.username,
-                icon: project.icon,
-                category: typeof project.category === 'string' ? project.category : project.category.category
-            }));
-            setFilteredData(dataArray);
-            setProjects(dataArray);
+            setLoading(true);
+            await apiRequest
+                .get(`/api/projects/`, {
+                    headers: {
+                        Authorization: `Token ${authToken}`,
+                    },
+                })
+            .then(response => {
+                const dataArray = response.data.map(project => ({
+                    id: project.id,
+                    name: project.name,
+                    key: project.key,
+                    lead: project.project_lead.username,
+                    icon: project.icon,
+                    category: typeof project.category === 'string' ? project.category : project.category.category
+                }));
+                setFilteredData(dataArray);
+                setProjects(dataArray);
+                setTotalItems(dataArray.length);
+                setLoading(false);
+            })
+            .catch(error => {
+                displayErrorMessage(`Error occurred while fetching data: ${error}`);
+                setLoading(false);
+            });
         };
         fetchProjects()
     }, []);
 
     const handleSearch = (value) => {
         const filteredProjects = projects.filter(
-            (project) => project.name.toLowerCase().includes(value.toLowerCase()) ||
-                project.slug.toLowerCase().includes(value.toLowerCase()) ||
+            (project) => project.name.toLowerCase().includes(value.toLowerCase())  ||
+                project.key.toLowerCase().includes(value.toLowerCase()) ||
                 project.lead.toLowerCase().includes(value.toLowerCase()) ||
                 project.category.toLowerCase().includes(value.toLowerCase())
         );
         setFilteredData(filteredProjects);
+        setTotalItems(filteredProjects.length);
+        setCurrentPage(1);
     };
 
 
@@ -94,6 +111,13 @@ const ProjectListing = () => {
         setVisible(false);
     };
 
+    const handlePageChange = page => {
+        setCurrentPage(page);
+    };
+    const handlePageSizeChange = (current, size) => {
+        setPageSize(size);
+        setCurrentPage(1);
+    };
 
     const userIcon = <GrAlert/>;
 
@@ -117,14 +141,23 @@ const ProjectListing = () => {
                 <ProjectListingComponents.SearchInputContainer>
                     <ProjectListingComponents.SearchIcon/>
                     <ProjectListingComponents.SearchInput type="text" placeholder="Search Projects" value={null}
-                                                          onChange={(e) => handleSearch(e.target.value)}/>
+                                                        onChange={(e) => handleSearch(e.target.value)}/>
                 </ProjectListingComponents.SearchInputContainer>
             </ProjectListingComponents.SearchContainer>
             <ProjectListingComponents.ProjectListingTable>
                 <Table
                     columns={columns}
                     dataSource={filteredData}
-                    pagination={{defaultPageSize: 10, showSizeChanger: true}}
+                    loading={loading}
+                    rowKey="id"
+                    pagination={{
+                        current: currentPage,
+                        pageSize: pageSize,
+                        total: totalItems,
+                        onChange: handlePageChange,
+                        showSizeChanger: true,
+                        onShowSizeChange: handlePageSizeChange
+                    }}
                 />
             </ProjectListingComponents.ProjectListingTable>
         </>
