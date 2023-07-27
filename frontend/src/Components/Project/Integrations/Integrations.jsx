@@ -35,7 +35,7 @@ function Integrations() {
         if (Array.isArray(response.data)) {
             responseData = response.data[0];
         }
-        const {id, project, local_status, global_status, webhook_url, webhook_channel} = responseData;
+        const {id, project, is_active, global_status, webhook_url, webhook_channel} = responseData;
         setInitialSlackValues({
             id: id,
             project: project,
@@ -43,7 +43,7 @@ function Integrations() {
         setSlackIsUpdating(true);
         slackForm.setFieldsValue({
             slackChannelGroupUser : webhook_channel,
-            slackNotificationStatus : local_status,
+            slackNotificationStatus : is_active,
             slackWebhookUrl : webhook_url,
             slackGlobalConfigStatus : global_status
         });
@@ -62,7 +62,7 @@ function Integrations() {
         return await apiRequest
             .post(`/api/project_slack_webhook/`, {
                 project: projectId,
-                local_status : slackNotificationStatus,
+                is_active : slackNotificationStatus,
                 global_status : slackGlobalConfigStatus,
                 webhook_channel : slackChannelGroupUser,
                 webhook_url : slackWebhookUrl,
@@ -79,7 +79,7 @@ function Integrations() {
         return await apiRequest
             .patch(`/api/project_slack_webhook/${id}/`, {
                 project: projectId,
-                local_status : slackNotificationStatus,
+                is_active : slackNotificationStatus,
                 global_status : slackGlobalConfigStatus,
                 webhook_channel : slackChannelGroupUser,
                 webhook_url : slackWebhookUrl,
