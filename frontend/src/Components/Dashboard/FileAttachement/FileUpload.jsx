@@ -1,4 +1,4 @@
-import React, {useState,useEffect} from "react";
+import React, {useState, useEffect} from "react";
 import * as FileUploadComponents from "./Style";
 import {Card} from 'antd';
 import {VscFileCode} from "react-icons/vsc";
@@ -6,15 +6,15 @@ import {AiOutlineFileZip, AiOutlineFilePdf, AiOutlineFileUnknown} from 'react-ic
 
 function FileUpload(props) {
     const [files, setFiles] = useState([]);
-const openFileWindow = (src) => {
-    window.open(src, '_blank');
-}
-
-useEffect(() => {
-    if (props.fileAttachmentArray) {
-      setFiles(props.fileAttachmentArray);
+    const openFileWindow = (src) => {
+        window.open(src, '_blank');
     }
-  }, []);
+
+    useEffect(() => {
+        if (props.fileAttachmentArray) {
+            setFiles(props.fileAttachmentArray);
+        }
+    }, []);
 
     const handleDragOver = (event) => {
         event.preventDefault();
@@ -37,7 +37,6 @@ useEffect(() => {
 
         props.onFilesChange([...files, ...fileList]);
     };
-
 
 
     const handleRemoveFile = (index) => {
@@ -168,8 +167,9 @@ useEffect(() => {
             </FileUploadComponents.UploadContainer>
             {files.length > 0 ? (
                 <div>
-                    <FileUploadComponents.AttachmentsBoxTitle>Attachements ({files.length})</FileUploadComponents.AttachmentsBoxTitle>
-                    <FileUploadComponents.PreviewContainer>
+                    <FileUploadComponents.AttachmentsBoxTitle>Attachements
+                        ({files.length})</FileUploadComponents.AttachmentsBoxTitle>
+                    <FileUploadComponents.PreviewContainer width={props.width}>
                         {files.map((file, index) => (
                             <FileUploadComponents.PreviewItem key={index}>
                                 <FileUploadComponents.CardContainer>
