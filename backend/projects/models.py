@@ -1,4 +1,5 @@
 from django.db import models
+from solo.models import SingletonModel
 from django.contrib.auth.models import User, Group
 from django.core.validators import URLValidator
 from .validators import validate_file_size
@@ -49,47 +50,27 @@ class ProjectSlackWebhook(models.Model):
     project = models.OneToOneField(
         'Project',
         on_delete=models.CASCADE,
-        related_name='slack_webhook'
+        related_name='project_slack_hook'
     )
-    slack_webhook_url = models.URLField(validators=[URLValidator(schemes=['https'])])
-    slack_webhook_channel = models.CharField(max_length=50)
-    slack_notification_status = models.BooleanField()
+    webhook_url = models.URLField(validators=[URLValidator(schemes=['https'])])
+    webhook_channel = models.CharField(max_length=50, blank=True)
+    is_active = models.BooleanField(default=False)
+    global_status = models.BooleanField(default=True)
 
     def __str__(self):
-        return self.slack_webhook_url
-
-    class Meta:
-        ordering = ['slack_notification_status']
+        return self.webhook_url
 
 
-class ProjectSMTPWebhook(models.Model):
-    SSL = "SSL"
-    TLS = "TLS"
-    SMTP_TYPE = [
-        (SSL, "SSL"),
-        (TLS, "TLS"),
-    ]
-
-    project = models.OneToOneField(
-        'Project',
-        on_delete=models.CASCADE,
-        related_name='smtp_webhook'
-    )
-    hostname = models.CharField(max_length=255)
-    port = models.IntegerField()
-    username = models.CharField(max_length=255)
-    password = models.CharField(max_length=255)
-    security_protocol = models.CharField(
-        max_length=3,
-        choices=SMTP_TYPE,
-        default=SSL,
-    )
+class GlobalSlackConfig(SingletonModel):
+    webhook_url = models.URLField(validators=[URLValidator(schemes=['https'])])
+    webhook_channel = models.CharField(max_length=50, blank=True)
+    is_active = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.hostname
+        return "Site Configuration"
 
     class Meta:
-        ordering = ['hostname']
+        verbose_name = "Site Configuration"
 
 
 class ProjectLabels(models.Model):
@@ -138,19 +119,12 @@ class Project(models.Model):
         null=True,
         related_name='project_category'
     )
-    slack_webhook_url = models.OneToOneField(
+    slack_webhook = models.OneToOneField(
         ProjectSlackWebhook,
         on_delete=models.CASCADE,
         blank=True,
         null=True,
-        related_name='project_slack_webhook_url'
-    )
-    smtp_webhook_url = models.OneToOneField(
-        ProjectSMTPWebhook,
-        on_delete=models.CASCADE,
-        blank=True,
-        null=True,
-        related_name='project_smtp_webhook_url'
+        related_name='project_slack_webhook'
     )
     project_lead = models.ForeignKey(
         User,
@@ -238,7 +212,6 @@ class Issue(models.Model):
     label = models.ManyToManyField(
         ProjectLabels,
         blank=True,
-        null=True,
         related_name='project_label'
     )
     created_by = models.ForeignKey(

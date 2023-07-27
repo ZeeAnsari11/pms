@@ -1,4 +1,6 @@
 from django.contrib import admin
+from solo.admin import SingletonModelAdmin
+from .models import GlobalSlackConfig
 from . import models
 from django.db.models.aggregates import Count
 from django.utils.html import format_html, urlencode
@@ -22,11 +24,11 @@ class ProjectLabelAdmin(admin.ModelAdmin):
 
 
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ['name', 'company', 'category', 'project_lead', 'issues', 'slack_webhook_url']
+    list_display = ['name', 'company', 'category', 'project_lead', 'issues', 'slack_webhook']
     prepopulated_fields = {'slug': ['name']}
-    autocomplete_fields = ['company', 'category', 'assignees', 'project_lead', 'slack_webhook_url']
+    autocomplete_fields = ['company', 'category', 'assignees', 'project_lead', 'slack_webhook']
     search_fields = ['name']
-    list_editable = ['category', 'project_lead', 'slack_webhook_url']
+    list_editable = ['category', 'project_lead', 'slack_webhook']
 
     def issues(self, project):
         url = (
@@ -88,13 +90,10 @@ class ProjectTypeAdmin(admin.ModelAdmin):
 
 
 class ProjectSlackWebhookAdmin(admin.ModelAdmin):
-    list_display = ['project', 'slack_webhook_url', 'slack_webhook_channel', 'slack_notification_status']
-    search_fields = ['slack_webhook_url', 'slack_webhook_channel', 'slack_notification_status']
-
-
-class ProjectSMTPWebhookAdmin(admin.ModelAdmin):
-    list_display = ['project', 'hostname', 'port', 'username', 'password', 'security_protocol']
-    search_fields = ['project', 'hostname', 'port', 'username', 'password', 'security_protocol']
+    list_display = ['project', 'webhook_url', 'webhook_channel', 'is_active',
+                    'global_status']
+    search_fields = ['webhook_url', 'webhook_channel', 'is_active',
+                    'global_status']
 
 
 class ProjectStatusAdmin(admin.ModelAdmin):
@@ -116,7 +115,7 @@ admin.site.register(models.ProjectLabels, ProjectLabelAdmin)
 admin.site.register(models.ProjectType, ProjectTypeAdmin)
 admin.site.register(models.ProjectStatus, ProjectStatusAdmin)
 admin.site.register(models.ProjectSlackWebhook, ProjectSlackWebhookAdmin)
-admin.site.register(models.ProjectSMTPWebhook, ProjectSMTPWebhookAdmin)
+admin.site.register(GlobalSlackConfig, SingletonModelAdmin)
 admin.site.register(models.ProjectMembership, ProjectMembershipAdmin)
 
 admin.site.register(models.Issue, IssueAdmin)
