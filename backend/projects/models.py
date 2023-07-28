@@ -168,7 +168,7 @@ class Issue(models.Model):
     slug = models.SlugField(
         max_length=255,
         unique=True,
-        blank=True
+        editable=False
     )
     file = models.JSONField(
         blank=True,
@@ -233,9 +233,14 @@ class Issue(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        if not self.slug or self.project.name not in self.slug:
-            self.slug = slugify(f"{self.project.name} - {self.pk}")
+        if not self.slug:
+            self.slug = self._generate_unique_slug()
         super().save(*args, **kwargs)
+
+    def _generate_unique_slug(self):
+        base_slug = slugify(self.project.name)
+        issue_count = Issue.objects.filter(project_id=self.project.id).count()
+        return f"{base_slug}-{issue_count+1}"
 
 
 class Meta:
