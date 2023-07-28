@@ -27,13 +27,3 @@ def update_issues_notifications_handler(sender, instance, **kwargs):
             send_task_assignee_notification(instance, old_assignee, new_assignee)
     except Issue.DoesNotExist:
         return
-
-
-@receiver(post_save, sender=Issue)
-def post_save_issue(sender, instance, created, **kwargs):
-    if created:
-        @transaction.on_commit
-        def update_slug():
-            if not instance.slug or instance.project.name not in instance.slug:
-                instance.slug = slugify(f"{instance.project.name} - {instance.pk}")
-                instance.save()
