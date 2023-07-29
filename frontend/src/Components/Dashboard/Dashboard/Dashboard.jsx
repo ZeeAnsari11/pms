@@ -7,14 +7,16 @@ import NavBar from "../Navbar/index";
 import {useParams} from 'react-router-dom';
 import axios from "axios";
 import * as DashboardComponents from "./Style"
+import Skeleton from './Skeleton';
 
 
 function Dashboard(props) {
 
-    const [issuesData, setIssuesData] = useState({});
-    const [issuesStatues, setIssuesStatues] = useState({});
-    const [target, setTarget] = useState({cid: "", bid: "",})
-    const [boards, setboards] = useState([]);
+    const [ issuesData, setIssuesData] = useState({});
+    const [ issuesStatues, setIssuesStatues] = useState({});
+    const [ target, setTarget] = useState({cid: "", bid: "",})
+    const [ boards, setboards] = useState([]);
+    const [ loading, setLoading ] = useState( false );
 
     const {projectId} = useParams()
 
@@ -35,6 +37,7 @@ function Dashboard(props) {
 
     const fetchData = async () => {
         try {
+            setLoading(true);
             const projectIssuesPromise = axios.get(`${process.env.REACT_APP_HOST}/api/projects/${projectId}/issues`, {
                 headers: {
                     Authorization: `Token ${authToken}`,
@@ -55,6 +58,7 @@ function Dashboard(props) {
             setIssuesStatues(projectIssuesStatusesResponse.data);
         } catch (error) {
             displayErrorMessage(error);
+            setLoading(false);
         }
     };
 
@@ -103,7 +107,6 @@ function Dashboard(props) {
                 }
                 statusMap[statusTitle].push(issuesValueMapper(issue));
             });
-            console.log('Status Mapped is', statusMap);
             return statusMap;
         };
 
@@ -128,6 +131,7 @@ function Dashboard(props) {
             }
 
             setboards(newBoardData);
+            setLoading(false);
         }
     }, [issuesData, issuesStatues]);
 
@@ -213,6 +217,16 @@ function Dashboard(props) {
         const tempBoards = [...boards];
         tempBoards[bIndex].cards[cIndex] = card;
         setboards(tempBoards);
+    }
+
+    if (loading) {
+        return(
+            <>
+                <ProjectSidebar/>
+                <NavBar/>
+                <Skeleton />
+            </>
+        );
     }
 
     return (
