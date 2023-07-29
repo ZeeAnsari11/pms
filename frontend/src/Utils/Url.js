@@ -22,18 +22,14 @@ import Permissions from "../Components/Project/Permissions/Permissions";
 import CloseProject from "../Components/Project/CloseProject/CloseProject";
 import AccountActivation from "../Components/User/AccountActivate/AccountActivation";
 import EditTicketPage from "../Components/Dashboard/EditTicketPage/EditTicketPage";
+import ErrorPage from "../Components/Error/ErrorPage";
+import SessionAlertPage from "../Components/Error/SessionAlertPage";
 
-// Custom Route component for authentication check
 function PrivateRoute({element: Component, ...rest}) {
-    // const { authToken } = useContext(AuthContext);
-
     let authToken = localStorage.getItem('auth_token')
-
     if (!authToken) {
-        return <Navigate to="/"/>;
+        return <SessionAlertPage hasAuthToken={true}/>
     }
-
-    // Render the component if the user is logged in
     return <Component {...rest} />;
 }
 
@@ -41,12 +37,36 @@ function Url() {
     return (
         <BrowserRouter>
             <Routes>
-                <Route path="/" element={<Login/>}/>
-                <Route index element={<Login/>}/>
+                {/* General routes */}
+
+                <Route exact path="/" element={<Login />} />
+                <Route exact path="/login" element={<Login />} />
                 <Route path="/user-activate" element={<AccountActivation/>}/>
                 <Route path="/forgot-password" element={<ForgotPassword/>}/>
                 <Route path="/reset-password" element={<ResetPasswordPage/>}/>
-                <Route path="/dashboard" element={<PrivateRoute element={Dashboard}/>}/>
+
+                {/* Project Manager routes */}
+
+                <Route path="/create-project" element={<PrivateRoute element={CreateProject}/>}/>
+                <Route path="/project/:projectId/setting/summary" element={<PrivateRoute element={ProjectSummary}/>}/>
+                <Route path="/project/:projectId/setting/notification" element={<PrivateRoute element={Notification}/>}/>
+                <Route path="/project/:projectId/setting/integrations" element={<PrivateRoute element={Integrations}/>}/>
+                <Route path="/project/:projectId/setting/tags" element={<PrivateRoute element={ProjectTag}/>}/>
+                <Route path="/project/:projectId/setting/types" element={<PrivateRoute element={Types}/>}/>
+                <Route path="/project/:projectId/setting/columns" element={<PrivateRoute element={Columns}/>}/>
+                <Route path="/project/:projectId/setting/permissions" element={<PrivateRoute element={Permissions}/>}/>
+                <Route path="/project/:projectId/close-project" element={<PrivateRoute element={CloseProject}/>}/>
+
+                {/* Admin (Super User) routes */}
+
+                <Route path="/manage-account" element={<PrivateRoute element={ManageAccount} />}/>
+                <Route path="/manage-users" element={<PrivateRoute element={ManageUsers} />}/>
+                <Route path="/manage-groups" element={<PrivateRoute element={ManageGroups}/>}/>
+                <Route path="/manage-general-settings" element={<PrivateRoute element={GeneralSettings}/>}/>
+                <Route path="/global-integrations-setting" element={<PrivateRoute element={GlobalIntegrations}/>}/>
+
+                {/* User Specific routes */}
+
                 <Route path="/profile" element={<PrivateRoute element={UserProfilePage}/>}/>
                 <Route path="/project" element={<PrivateRoute element={ProjectsPage}/>}/>
                 <Route
@@ -61,21 +81,13 @@ function Url() {
                     path="/project/:projectId/browse/issue/:issueId"
                     element={<PrivateRoute element={EditTicketPage}/>}
                 />
-                <Route path="/project-setting" element={<PrivateRoute element={ProjectSettingPage}/>}/>
-                <Route path="/create-project" element={<PrivateRoute element={CreateProject}/>}/>
-                <Route path="/manage-account" element={<PrivateRoute element={ManageAccount} />}/>
-                <Route path="/manage-users" element={<PrivateRoute element={ManageUsers} />}/>
-                <Route path="/manage-groups" element={<PrivateRoute element={ManageGroups}/>}/>
-                <Route path="/manage-general-settings" element={<PrivateRoute element={GeneralSettings}/>}/>
-                <Route path="/global-integrations-setting" element={<PrivateRoute element={GlobalIntegrations}/>}/>
-                <Route path="/project/:projectId/setting/summary" element={<PrivateRoute element={ProjectSummary}/>}/>
-                <Route path="/project/:projectId/setting/notification" element={<PrivateRoute element={Notification}/>}/>
-                <Route path="/project/:projectId/setting/integrations" element={<PrivateRoute element={Integrations}/>}/>
-                <Route path="/project/:projectId/setting/tags" element={<PrivateRoute element={ProjectTag}/>}/>
-                <Route path="/project/:projectId/setting/types" element={<PrivateRoute element={Types}/>}/>
-                <Route path="/project/:projectId/setting/columns" element={<PrivateRoute element={Columns}/>}/>
-                <Route path="/project/:projectId/setting/permissions" element={<PrivateRoute element={Permissions}/>}/>
-                <Route path="/project/:projectId/close-project" element={<PrivateRoute element={CloseProject}/>}/>
+
+                {/* Error routes */}
+
+                <Route path="error" element={<ErrorPage status={500} />} />
+                <Route path="forbidden" element={<ErrorPage status={403} />} />
+                <Route path="*" element={<ErrorPage status={404} />} />
+
             </Routes>
         </BrowserRouter>
     );
