@@ -23,11 +23,12 @@ import CloseProject from "../Components/Project/CloseProject/CloseProject";
 import AccountActivation from "../Components/User/AccountActivate/AccountActivation";
 import EditTicketPage from "../Components/Dashboard/EditTicketPage/EditTicketPage";
 import ErrorPage from "../Components/Error/ErrorPage";
+import SessionAlertPage from "../Components/Error/SessionAlertPage";
 
 function PrivateRoute({element: Component, ...rest}) {
     let authToken = localStorage.getItem('auth_token')
     if (!authToken) {
-        return <Navigate to="/"/>;
+        return <SessionAlertPage hasAuthToken={true}/>
     }
     return <Component {...rest} />;
 }
