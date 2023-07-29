@@ -467,13 +467,18 @@ function EditTicketPage({props}) {
 
     const BreadcrumbitemsStyles = {cursor: 'pointer', fontWeight: "500"}
 
-    if (loading) {
-        return <Loader/>;
+    if(loading){
+        return (
+            <div>
+                <NavBar/>
+                <Sidebar/>
+                <Loader/>
+            </div>
+        );
     }
 
     return (
         <div>
-
             <NavBar/>
             <Sidebar/>
             <EditTicketPageComponents.FormWrapper>
@@ -709,14 +714,12 @@ function EditTicketPage({props}) {
 
                                 </EditTicketPageComponents.RightSideContent>
                             </EditTicketPageComponents.StyledPanel>
-                            {/* Add more Panel components as needed */}
                         </EditTicketPageComponents.StyledCollapse>
                         <EditTicketPageComponents.SaveButton onClick={handleFormSubmit}>Save
                             Changes</EditTicketPageComponents.SaveButton>
                     </EditTicketPageComponents.RightSide>
                 </EditTicketPageComponents.Container>
             </EditTicketPageComponents.FormWrapper>
-
         </div>
     );
 }
