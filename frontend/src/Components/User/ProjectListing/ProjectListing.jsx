@@ -135,7 +135,7 @@ const ProjectListing = () => {
                     <GrAlert/> The project along with its issues, components, attachments, and versions will be
                     available in the trash for 60 days after which it will be permanently deleted.
                 </p>
-                <p>Only Jira admins can restore the project from the trash.</p>
+                <p>Only ProjeX admins can restore the project from the trash.</p>
             </Modal>
             <ProjectListingComponents.SearchContainer>
                 <ProjectListingComponents.SearchInputContainer>
