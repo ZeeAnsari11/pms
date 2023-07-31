@@ -2,11 +2,7 @@ import React, {useEffect, useRef, useState} from "react";
 import {NavLink, useParams} from 'react-router-dom';
 import Modal from "../Modal/Modal";
 import FileUpload from "../FileAttachement/FileUpload";
-import {
-    CheckSquare, File,
-    List,
-    Trash
-} from "react-feather";
+import { CheckSquare, File, List, Trash } from "react-feather";
 import Editable from "../Editable/Editable";
 import Description from "../TextEditor/TextEditor"
 import Comment from "../Comment/Comment"
@@ -15,7 +11,8 @@ import 'react-quill/dist/quill.snow.css';
 import UserSelectField from '../SelectFields/UserSelectField'
 import GenericSelectField from '../SelectFields/GenericSelectField'
 import TrackingField from '../TimeTracking/index'
-import {AiOutlineArrowDown, AiOutlineArrowUp, AiOutlineClose} from 'react-icons/ai'
+import {AiOutlineClose} from 'react-icons/ai'
+import {priorityOptions} from '../../../Shared/Const/Issues'
 import {TbStatusChange,TbExchange} from 'react-icons/tb'
 import {FiUser} from 'react-icons/fi'
 import {CgOptions} from 'react-icons/cg'
@@ -23,30 +20,22 @@ import {RxStopwatch} from 'react-icons/rx'
 import {TiTags} from "react-icons/ti";
 import {IoIosTimer} from 'react-icons/io'
 import axios from "axios";
-import MultiSelectField from "../SelectFields/MultiSelectField";
 import * as CardInfoComponents from "./Style"
 import EstimateTimer from "../EstimateTimer/EstimateTimer";
+import tagRender from "../../../Shared/Components/tagRender";
+import { Select } from "antd";
 
 function CardInfo(props) {
     let authToken = localStorage.getItem('auth_token')
+    const DefaultIssueLabel = props.card?.labels
+        ? props.card?.labels.map((IssueType) => ({
+            key: IssueType.id,
+            label: IssueType.name,
+            value: IssueType.color,
+        }))
+        : [];
+
     const [isHovered, setIsHovered] = useState(false);
-
-
-    const handleHover = () => {
-        setIsHovered(true);
-    };
-
-    const handleMouseLeave = () => {
-        setIsHovered(false);
-    };
-
-    const handleWorklogDelete = () => {
-        getWorklogs();
-    };
-
-    const handleWorklogEdit = () => {
-        getWorklogs();
-    };
 
     const [comments, setComments] = useState([]);
     const [newComment, setNewComment] = useState('');
@@ -78,6 +67,12 @@ function CardInfo(props) {
 
     const [files, setFiles] = useState([]);
 
+    const handleLabelChange = (values) => {
+        const labelKeys = values.map((value) => {
+                return parseInt( value.key, 10 );
+            });
+        setSelectedLabels(labelKeys);
+    };
 
     const getComments = async () => {
         try {
@@ -200,6 +195,7 @@ function CardInfo(props) {
         fetchDependentUserOptions();
         fetchDependentProjectStatuses();
         fetchDependentProjectTypes();
+        fetchCurrentUserDataFromUserList();
         fetchComments();
         fetchWorklogs();
 
@@ -264,7 +260,6 @@ function CardInfo(props) {
                 },
             })
             .then((response) => {
-                // Handle successful response
                 console.log(response.data);
                 setComments([...comments, response.data]);
                 getComments();
@@ -296,7 +291,6 @@ function CardInfo(props) {
                 getComments();
             })
             .catch((error) => {
-                // Handle the error appropriately
                 console.log(error);
             });
     };
@@ -336,47 +330,11 @@ function CardInfo(props) {
                     getComments();
                 })
                 .catch((error) => {
-                    // Handle error
                     console.log(error);
                 });
         }
     };
 
-
-    const handleIssueTypeChange = (value) => {
-        setSelectedIssueType(parseInt(value))
-    };
-
-    const handleIssueStatusChange = (value) => {
-        setSelectedIssueStatus(parseInt(value))
-    };
-
-    const handlePriorityChange = (value) => {
-        setSelectedPriority(value)
-    }
-
-    const handleLabelsChange = (values) => {
-        setSelectedLabels(values);
-    };
-
-    const handleAssigneeChange = (value) => {
-        setSelectedAssignee(parseInt(value));
-    };
-
-    const handleReporterChange = (value) => {
-        setSelectedReporter(parseInt(value));
-    };
-
-
-    const handleFilesChange = (newFiles) => {
-        setFiles(newFiles);
-    };
-
-    const handleHoursChange = (totalHours) => {
-        setEstimateHours(totalHours);
-    };
-
-//Description
     const [description, setDescription] = useState(props.card?.desc);
     const handleDescChange = (newDesc) => {
         setDescription(newDesc);
@@ -425,13 +383,6 @@ function CardInfo(props) {
         }))
         : [];
 
-
-    const priorityOptions = [
-        {label: "Low", value: "Low", icon: <AiOutlineArrowDown color={"#2E8738"}/>},
-        {label: "Medium", value: "Medium", icon: <AiOutlineArrowUp color={"#E97F33"}/>},
-        {label: "High", value: "High", icon: <AiOutlineArrowUp color={"#E9494B"}/>},
-    ]
-
     const fileArray = props.card?.file
     const prefix = "http://localhost:8000";
     const combinedArray = fileArray.map((file) => `${prefix}${file}`);
@@ -446,15 +397,15 @@ function CardInfo(props) {
         }))
         : [];
 
-    const Labeloptions = IssueLabels
+    const labelOptions = IssueLabels
         ? IssueLabels.map((Labels) => ({
-            id: Labels.id,
-            name: Labels.name,
-            color: Labels.color,
+            key: Labels.id,
+            label: Labels.name,
+            value: Labels.color,
         }))
         : [];
 
-    console.log("Labeloptions:", Labeloptions)
+    console.log("labelOptions:", labelOptions)
 
     const CloseIconhoverStyles = {
         backgroundColor: isHovered ? '#F0F0F0' : 'white',
@@ -556,7 +507,7 @@ function CardInfo(props) {
                             <File/>
                             File Attachments
                         </CardInfoComponents.CardInfoBoxTitle>
-                        <FileUpload onFilesChange={handleFilesChange} fileAttachmentArray={combinedArray}/>
+                        <FileUpload onFilesChange={(value) => setFiles(value)} fileAttachmentArray={combinedArray}/>
                     </CardInfoComponents.CardInfoBoxCustom>
                 </div>
                 <CardInfoComponents.CardInfoBox>
@@ -656,8 +607,8 @@ function CardInfo(props) {
                                             key={index}
                                             index={worklog?.id}
                                             worklog={worklog}
-                                            onDelete={handleWorklogDelete}
-                                            onEdit={handleWorklogEdit}
+                                            onDelete={() => getWorklogs()}
+                                            onEdit={() => getWorklogs()}
                                             selectedWorklog={selectedWorklog}
                                         />
                                     ))}
@@ -675,8 +626,8 @@ function CardInfo(props) {
                             size={20}
                             onClick={handleCloseModalSubmit}
                             style={CloseIconhoverStyles}
-                            onMouseEnter={handleHover}
-                            onMouseLeave={handleMouseLeave}
+                            onMouseEnter={() => setIsHovered(true)}
+                            onMouseLeave={() => setIsHovered(false)}
                         />
                     </CardInfoComponents.CardInfoBoxClose>
                 </CardInfoComponents.CardInfoClose>
@@ -691,7 +642,7 @@ function CardInfo(props) {
                             isMultiple={false}
                             placeholder={"Unassigned"}
                             defaultValue={props.card?.type?.type}
-                            onSelectChange={handleIssueTypeChange}
+                            onSelectChange={(value) => setSelectedIssueType(parseInt(value))}
                         />
                     </CardInfoComponents.TaskList>
 
@@ -708,7 +659,7 @@ function CardInfo(props) {
                             isMultiple={false}
                             placeholder={"Unassigned"}
                             defaultValue={props.card?.status?.status}
-                            onSelectChange={handleIssueStatusChange}
+                            onSelectChange={(value) => setSelectedIssueStatus(parseInt(value))}
                         />
                     </CardInfoComponents.TaskList>
 
@@ -722,7 +673,7 @@ function CardInfo(props) {
                         <UserSelectField defaultValue={props.card?.assignee?.username} users={Useroptions}
                                          isMultiple={false}
                                          placeholder={"Unassigned"}
-                                         onSelectChange={handleAssigneeChange}
+                                         onSelectChange={(value) => setSelectedAssignee(parseInt(value))}
                         />
                     </CardInfoComponents.TaskList>
                 </CardInfoComponents.CardInfoBox>
@@ -733,9 +684,9 @@ function CardInfo(props) {
                     </CardInfoComponents.CardInfoBoxTitle>
                     <CardInfoComponents.TaskList>
                         <UserSelectField defaultValue={props.card?.reporter?.username} users={Useroptions}
-                                         isMultiple={false}
-                                         placeholder={"Unassigned"}
-                                         onSelectChange={handleReporterChange}
+                                            isMultiple={false}
+                                            placeholder={"Unassigned"}
+                                            onSelectChange={(value) => setSelectedReporter(parseInt(value))}
                         />
                     </CardInfoComponents.TaskList>
                 </CardInfoComponents.CardInfoBox>
@@ -748,7 +699,7 @@ function CardInfo(props) {
                     <CardInfoComponents.TaskList>
                         <GenericSelectField options={priorityOptions} defaultValue={props.card?.priority}
                                             isMultiple={false} placeholder={"Unassigned"}
-                                            onSelectChange={handlePriorityChange}
+                                            onSelectChange={(value) => setSelectedPriority(value)}
                         />
                     </CardInfoComponents.TaskList>
                 </CardInfoComponents.CardInfoBox>
@@ -758,12 +709,19 @@ function CardInfo(props) {
                         <TiTags/>
                         Labels
                     </CardInfoComponents.CardInfoBoxTitle>
-                    <CardInfoComponents.TaskList>
-                        <MultiSelectField options={Labeloptions} onSelectChange={handleLabelsChange}
-                                          defaultValue={props.card?.labels}
-                                          placeholder="Select Labels"
-                        />
-                    </CardInfoComponents.TaskList>
+                    <Select
+                        mode="multiple"
+                        showArrow
+                        tagRender={tagRender}
+                        style={{
+                            width: '100%',
+                        }}
+                        defaultValue={DefaultIssueLabel}
+                        options={labelOptions}
+                        optionFilterProp="label"
+                        onChange={(value,key)=> {handleLabelChange(key)}}
+                        placeholder="Select Labels"
+                    />
                 </CardInfoComponents.CardInfoBox>
                 <CardInfoComponents.CardInfoBox>
                     <CardInfoComponents.CardInfoBoxTitle>
@@ -772,7 +730,7 @@ function CardInfo(props) {
                     </CardInfoComponents.CardInfoBoxTitle>
                     <div>
                         <EstimateTimer defaultValue={props.card?.estimate}
-                                       onHoursChange={handleHoursChange}/>
+                                        onHoursChange={(value) => setEstimateHours(value)}/>
                     </div>
                 </CardInfoComponents.CardInfoBox>
 
