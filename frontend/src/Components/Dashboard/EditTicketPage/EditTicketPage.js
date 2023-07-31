@@ -1,44 +1,40 @@
-import React, {useEffect, useState} from 'react';
-import {Link, useParams} from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import { Link, useParams } from "react-router-dom";
 import NavBar from "../../Dashboard/Navbar";
 import Sidebar from "../../Dashboard/Sidebar/ProjectSidebar";
 import FileUpload from "../FileAttachement/FileUpload";
 import axios from "axios";
-import {Input} from "antd";
-import {Breadcrumb} from 'antd';
+import { Breadcrumb, Input, Select } from "antd";
 import UserSelectField from "../SelectFields/UserSelectField";
 import TrackingField from "../TimeTracking";
 import Editable from "../Editable/Editable";
 import Comment from "../Comment/Comment";
 import Worklog from "../Worklog/Worklog";
 import ReactQuill from "react-quill";
-import MultiSelectField from "../SelectFields/MultiSelectField";
 import * as EditTicketPageComponents from "./Style"
-import {useDispatch, useSelector} from "react-redux";
-import {fetchIssueData} from "../../../Store/Slice/Issue/IssueSlice";
 import GenericSelectField from "../SelectFields/GenericSelectField";
-import {AiOutlineArrowDown, AiOutlineArrowUp} from "react-icons/ai";
-import {TbStatusChange, TbExchange} from 'react-icons/tb'
-import {FiUser} from 'react-icons/fi'
-import {TiTags} from "react-icons/ti";
-import {RxStopwatch} from 'react-icons/rx'
-import {CgOptions} from 'react-icons/cg'
+import {priorityOptions} from '../../../Shared/Const/Issues'
+import tagRender from '../../../Shared/Components/tagRender'
+import { TbExchange, TbStatusChange } from 'react-icons/tb'
+import { FiUser } from 'react-icons/fi'
+import { TiTags } from "react-icons/ti";
+import { RxStopwatch } from 'react-icons/rx'
+import { CgOptions } from 'react-icons/cg'
 import Loader from '../../../Utils/Loader'
+import apiRequest from "../../../Utils/apiRequest";
+import { value } from "lodash/seq";
 
 const {TextArea} = Input;
 
 
 function EditTicketPage({props}) {
     let authToken = localStorage.getItem('auth_token')
-    const dispatch = useDispatch();
-
 
     const handleWorklogDelete = (index) => {
         const newWorklogs = [...worklogs];
         newWorklogs.splice(index, 1);
         setWorklogs(newWorklogs);
         getWorklogs();
-
     };
 
     const handleWorklogEdit = (index) => {
@@ -47,7 +43,6 @@ function EditTicketPage({props}) {
     };
 
 
-    //Comments
     const [comments, setComments] = useState([]);
     const [newComment, setNewComment] = useState('');
     const [selectedComment, setSelectedComment] = useState(null);
@@ -81,8 +76,24 @@ function EditTicketPage({props}) {
     const [currentUserEmail, setCurrentUserEmail] = useState({});
 
     const [files, setFiles] = useState([]);
-    // const [currentIssueData, setCurrentIssueData] = useState([]);
-    const currentIssueData = useSelector((state) => state.issueData.issueData);
+    const [currentIssueData, setCurrentIssueData] = useState([]);
+
+    useEffect(() => {
+        setLoading(true);
+        const fetchCurrentIssueData = async () => {
+            try {
+                const response = await apiRequest.get(`/api/issues/${issueId}`, {
+                headers: { 'Authorization': `Token ${authToken}` },
+            });
+                setCurrentIssueData(response.data);
+                setLoading(false);
+            } catch (error) {
+                console.error(error);
+                setLoading(false);
+            }
+        };
+        fetchCurrentIssueData();
+    }, []);
 
     const getComments = async () => {
         try {
@@ -112,44 +123,11 @@ function EditTicketPage({props}) {
         }
     };
 
-
-    const handleFilesChange = (newFiles) => {
-        setFiles(newFiles);
-    };
-
-    const handleNameChange = (value) => {
-        setIssueName(value);
-    };
-
-    const handleDescChange = (newDesc) => {
-        setIssueDesc(newDesc);
-    };
-    const handleSummaryChange = (event) => {
-        const summary = event.target.value;
-        setIssueSummary(summary);
-    };
-
-    const handleAssigneeChange = (value) => {
-        setSelectedAssignee(parseInt(value));
-    };
-
-    const handleReporterChange = (value) => {
-        setSelectedReporter(parseInt(value));
-    };
-    const handleIssueTypeChange = (value) => {
-        setSelectedIssueType(parseInt(value))
-    };
-
-    const handleIssueStatusChange = (value) => {
-        setSelectedIssueStatus(parseInt(value))
-    };
-
-    const handlePriorityChange = (value) => {
-        setSelectedPriority(value)
-    }
-
     const handleLabelChange = (values) => {
-        setSelectedLabel(values);
+        const labelKeys = values.map((value) => {
+                return parseInt( value.key, 10 );
+            });
+        setSelectedLabel(labelKeys);
     };
 
     const {issueId, projectId} = useParams()
@@ -260,20 +238,6 @@ function EditTicketPage({props}) {
 
 
     useEffect(() => {
-        const fetchCurrentIssueData = async () => {
-            try {
-                dispatch(fetchIssueData(issueId)).unwrap().then(
-                    setLoading(false)
-                )
-            } catch (error) {
-                console.error(error);
-            }
-        }
-        fetchCurrentIssueData();
-    }, []);
-
-
-    useEffect(() => {
         if (currentIssueData?.id) {
             setIssueName(currentIssueData?.name)
             setIssueDesc(currentIssueData?.description)
@@ -293,12 +257,6 @@ function EditTicketPage({props}) {
     const combinedArray = fileArray.map((file) => `${prefix}${file}`);
 
     console.log("combinedArray:", combinedArray)
-
-    const priorityOptions = [
-        {label: "Low", value: "Low", icon: <AiOutlineArrowDown color={"#2E8738"}/>},
-        {label: "Medium", value: "Medium", icon: <AiOutlineArrowUp color={"#E97F33"}/>},
-        {label: "High", value: "High", icon: <AiOutlineArrowUp color={"#E9494B"}/>},
-    ]
 
     const Useroptions = Users
         ? Users.map((Users) => ({
@@ -322,11 +280,19 @@ function EditTicketPage({props}) {
         }))
         : [];
 
-    const IssueLabeloptions = IssueLabels
+    const IssueLabelOptions = IssueLabels
         ? IssueLabels.map((IssueType) => ({
-            id: IssueType.id,
-            name: IssueType.name,
-            color: IssueType.color,
+            key: IssueType.id,
+            label: IssueType.name,
+            value: IssueType.color,
+        }))
+        : [];
+
+    const DefaultIssueLabel = currentIssueData?.label
+        ? currentIssueData.label.map((IssueType) => ({
+            key: IssueType.id,
+            label: IssueType.name,
+            value: IssueType.color,
         }))
         : [];
 
@@ -496,17 +462,8 @@ function EditTicketPage({props}) {
                                         {
                                             title: (
                                                 <>
-                                                    <img style={{
-                                                        width: '25px',
-                                                        height: '25px',
-                                                        marginRight: '8px',
-                                                        verticalAlign: 'middle',
-                                                    }}
-                                                         src={`${process.env.REACT_APP_HOST}/${currentIssueProjectData?.icon}`}
-                                                         alt="Project Icon"
-                                                    />
                                                     <Link style={BreadcrumbitemsStyles}
-                                                          to={`/project/${projectId}/dashboard`}>
+                                                            to={`/project/${projectId}/dashboard`}>
                                                         {currentIssueProjectData?.name}
                                                     </Link>
                                                 </>
@@ -529,25 +486,25 @@ function EditTicketPage({props}) {
                                 buttonText="Save Issue Name"
                                 fontWeight={"bold"}
                                 hoverBackgroundColor={"#EBECF0"}
-                                onSubmit={(value) => handleNameChange(value)}
+                                onSubmit={(value) => setIssueName(value)}
                             />
                         </EditTicketPageComponents.IssueTitle>
                         <EditTicketPageComponents.Title>
                             Summary
                         </EditTicketPageComponents.Title>
                         <TextArea rows={2} value={IssueSummary}
-                                  onChange={handleSummaryChange}/>
+                                    onChange={(event) => setIssueSummary(event.target.value)}/>
                         <EditTicketPageComponents.Title>
                             Description
                         </EditTicketPageComponents.Title>
                         <div style={{marginBottom: "15px"}}>
-                            <ReactQuill value={IssueDesc} onChange={handleDescChange}/>
+                            <ReactQuill value={IssueDesc} onChange={(value) => setIssueDesc(value)}/>
                         </div>
                         <EditTicketPageComponents.Title>
                             File Attachments
                         </EditTicketPageComponents.Title>
                         <EditTicketPageComponents.FileAttachmentsContent>
-                            <FileUpload onFilesChange={handleFilesChange} fileAttachmentArray={combinedArray}
+                            <FileUpload onFilesChange={(value) => setFiles(value)} fileAttachmentArray={combinedArray}
                                         width="670px"/>
                         </EditTicketPageComponents.FileAttachmentsContent>
 
@@ -641,7 +598,7 @@ function EditTicketPage({props}) {
                                         <span>Assignee</span>
                                     </EditTicketPageComponents.ContentInfoTitle>
                                     <UserSelectField
-                                        onSelectChange={handleAssigneeChange}
+                                        onSelectChange={(value) => setSelectedAssignee(parseInt(value))}
                                         users={Useroptions}
                                         isMultiple={false}
                                         placeholder={"Unassigned"}
@@ -657,7 +614,7 @@ function EditTicketPage({props}) {
                                         isMultiple={false}
                                         placeholder={"Unassigned"}
                                         defaultValue={currentIssueData?.status?.status}
-                                        onSelectChange={handleIssueStatusChange}
+                                        onSelectChange={(value) => setSelectedIssueStatus(parseInt(value))}
                                     />
 
                                     <EditTicketPageComponents.ContentInfoTitle>
@@ -669,19 +626,25 @@ function EditTicketPage({props}) {
                                         isMultiple={false}
                                         placeholder={"Unassigned"}
                                         defaultValue={currentIssueData?.type.type}
-                                        onSelectChange={handleIssueTypeChange}
+                                        onSelectChange={(value) =>  setSelectedIssueType(parseInt(value))}
                                     />
 
                                     <EditTicketPageComponents.ContentInfoTitle>
                                         <TiTags/>
                                         <span>Labels</span>
                                     </EditTicketPageComponents.ContentInfoTitle>
-                                    <MultiSelectField options={IssueLabeloptions}
-                                                      onSelectChange={handleLabelChange}
-                                                      placeholder="Select Labels"
-                                                      defaultValue={currentIssueData?.label}
-                                    />
-
+                                    <Select
+                                        mode="multiple"
+                                        showArrow
+                                        tagRender={tagRender}
+                                        defaultValue={DefaultIssueLabel}
+                                        style={{
+                                            width: '100%',
+                                        }}
+                                        options={IssueLabelOptions}
+                                        optionFilterProp="label"
+                                        onChange={(value,key)=> {handleLabelChange(key)}}
+                                        />
                                     <EditTicketPageComponents.ContentInfoTitle>
                                         <RxStopwatch/>
                                         <span>Time Tracking</span>
@@ -697,7 +660,7 @@ function EditTicketPage({props}) {
                                         isMultiple={false}
                                         placeholder={"Unassigned"}
                                         defaultValue={currentIssueData?.priority}
-                                        onSelectChange={handlePriorityChange}
+                                        onSelectChange={(value) =>  setSelectedPriority(value)}
                                     />
 
                                     <EditTicketPageComponents.ContentInfoTitle>
@@ -705,7 +668,7 @@ function EditTicketPage({props}) {
                                         <span>Reporter</span>
                                     </EditTicketPageComponents.ContentInfoTitle>
                                     <UserSelectField
-                                        onSelectChange={handleReporterChange}
+                                        onSelectChange={(value) => setSelectedReporter(parseInt(value))}
                                         users={Useroptions}
                                         isMultiple={false}
                                         placeholder={"Unassigned"}
