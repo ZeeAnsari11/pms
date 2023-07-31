@@ -1,16 +1,18 @@
 import React, {useEffect, useState} from "react";
-import {AiOutlineClose, AiOutlineArrowDown, AiOutlineArrowUp} from "react-icons/ai";
+import {AiOutlineClose,} from "react-icons/ai";
 import {TbStatusChange} from "react-icons/tb";
 import GenericSelectField from "../SelectFields/GenericSelectField";
+import {priorityOptions} from '../../../Shared/Const/Issues'
 import ReactQuill from "react-quill";
 import {FiUser, FiUsers} from "react-icons/fi";
 import UserSelectField from "../SelectFields/UserSelectField";
-import MutliSelectField from "../SelectFields/MultiSelectField";
 import {File} from "react-feather";
 import FileUpload from "../FileAttachement/FileUpload";
 import axios from "axios";
 import EstimateTimer from "../EstimateTimer/EstimateTimer";
 import * as CreateTicketComponents from "./Style"
+import tagRender from "../../../Shared/Components/tagRender";
+import { Select } from "antd";
 
 
 const LinkedIssue1 = [
@@ -142,7 +144,10 @@ const MyModalComponent = ({onClose}) => {
     };
 
     const handleLabelChange = (values) => {
-        setSelectedLabels(values);
+        const labelKeys = values.map((value) => {
+                return parseInt( value.key, 10 );
+            });
+        setSelectedLabels(labelKeys);
     };
     console.log("selectedLabels", selectedLabels)
 
@@ -207,19 +212,11 @@ const MyModalComponent = ({onClose}) => {
         }))
         : [];
 
-
-    const priorityOptions = [
-        {label: "Low", value: "Low", icon: <AiOutlineArrowDown color={"#2E8738"}/>},
-        {label: "Medium", value: "Medium", icon: <AiOutlineArrowUp color={"#E97F33"}/>},
-        {label: "High", value: "High", icon: <AiOutlineArrowUp color={"#E9494B"}/>},
-    ]
-
-
-    const Labeloptions = Labels
+    const labelOptions = Labels
         ? Labels.map((Labels) => ({
-            id: Labels.id,
-            name: Labels.name,
-            color: Labels.color,
+            key: Labels.id,
+            label: Labels.name,
+            value: Labels.color,
         }))
         : [];
 
@@ -434,7 +431,7 @@ const MyModalComponent = ({onClose}) => {
                             </CreateTicketComponents.CardInfoBoxTitle>
                             <CreateTicketComponents.TaskList>
                                 <UserSelectField users={Useroptions} isMultiple={false} placeholder={"Unassigned"}
-                                                 onChange={handleUserChange}/>
+                                                    onChange={handleUserChange}/>
                             </CreateTicketComponents.TaskList>
                         </CreateTicketComponents.CardInfoBox>
 
@@ -443,11 +440,17 @@ const MyModalComponent = ({onClose}) => {
                                 <FiUsers/>
                                 Labels
                             </CreateTicketComponents.CardInfoBoxTitle>
-                            <CreateTicketComponents.TaskList>
-                                <MutliSelectField
-                                    options={Labeloptions}
-                                    onSelectChange={handleLabelChange}/>
-                            </CreateTicketComponents.TaskList>
+                            <Select
+                                    mode="multiple"
+                                    showArrow
+                                    tagRender={tagRender}
+                                    style={{
+                                        width: '100%',
+                                    }}
+                                    options={labelOptions}
+                                    optionFilterProp="label"
+                                    onChange={(value,key)=> {handleLabelChange(key)}}
+                                    />
                         </CreateTicketComponents.CardInfoBox>
 
                         <CreateTicketComponents.CardInfoBox>
@@ -456,7 +459,7 @@ const MyModalComponent = ({onClose}) => {
                                 Reporter
                             </CreateTicketComponents.CardInfoBoxTitle>
                             <UserSelectField users={Reporteroptions} isMultiple={false} placeholder={"Unassigned"}
-                                             onChange={handleReporterChange}/>
+                                                onChange={handleReporterChange}/>
                             <CreateTicketComponents.TaskList>
                                 {values.reporter?.map((item) => (
                                     <CreateTicketComponents.Task key={item.id}>

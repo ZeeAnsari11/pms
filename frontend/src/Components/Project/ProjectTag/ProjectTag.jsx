@@ -248,7 +248,7 @@ function Tags() {
                                     <Input/>
                                 </TagComponents.StyledEditFormItem>
                                 <TagComponents.StyledEditFormItem label="Color" name="color"
-                                                                  rules={[{required: true,}]}>
+                                                                    rules={[{required: true,}]}>
                                     <ChromePicker color={pickedColor} onChange={(color) => setPickedColor(color)}/>
                                 </TagComponents.StyledEditFormItem>
                             </EditForm>
