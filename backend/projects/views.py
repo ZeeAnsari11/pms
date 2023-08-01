@@ -1,16 +1,12 @@
 from django.shortcuts import render
 from rest_framework.viewsets import ModelViewSet
 from django_filters.rest_framework import DjangoFilterBackend
-from django.contrib.auth.models import Group
 from rest_framework.filters import SearchFilter, OrderingFilter
-from .pagination import StandardResultsSetPagination
 from .filters import IssueFilter
 from rest_framework.response import Response
 from rest_framework import status
 from django.db.models import Q
-from django.contrib.auth.models import User
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.parsers import MultiPartParser, FormParser
 from .permissions import IsAdminOrReadOnly, IsAdminUser, IsAdminOrStaffUser
 from .models import *
 from . import serializers
@@ -33,7 +29,7 @@ class ProjectCategoryViewSet(ModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_fields = "__all__"
     serializer_class = serializers.ProjectCategorySerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAdminOrStaffUser]
 
     queryset = ProjectCategory.objects.all()
 
