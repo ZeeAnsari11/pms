@@ -146,10 +146,47 @@ function Worklog({
     };
 
     const sanitizeComment = (comment) => {
+        const sanitizedComment = DOMPurify.sanitize(comment, {
+            ADD_TAGS: ['iframe'],
+            ADD_ATTR: ['allowfullscreen', 'frameborder', 'scrolling']
+        });
+
+        const tempElement = document.createElement('div');
+        tempElement.innerHTML = sanitizedComment;
+
+        const images = tempElement.querySelectorAll('img');
+        const videos = tempElement.querySelectorAll('video');
+
+        for (const image of images) {
+            image.style.maxWidth = '100%';
+        }
+
+        for (const video of videos) {
+            video.style.maxWidth = '100%';
+        }
+
+        const quillElements = tempElement.querySelectorAll('.ql-editor');
+
+        for (const quillElement of quillElements) {
+            quillElement.style.fontFamily = 'Arial, sans-serif';
+            quillElement.style.fontSize = '16px';
+        }
+
+        // Set width and height for iframe elements
+        const iframes = tempElement.querySelectorAll('iframe');
+
+        for (const iframe of iframes) {
+            iframe.style.maxWidth = '100%';
+            iframe.style.height = 'auto';
+        }
+
+        const modifiedComment = tempElement.innerHTML;
+
         return {
-            __html: DOMPurify.sanitize(comment),
+            __html: modifiedComment,
         };
     };
+
 
     return (
         <li key={index} style={{listStyle: "none"}}>
