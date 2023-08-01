@@ -50,6 +50,7 @@ export const CommentButtons = styled.div`
   display: flex;
 `;
 
+
 export const CommentAuthor = styled.p`
   font-weight: bold;
   margin-right: 5px;
@@ -57,6 +58,7 @@ export const CommentAuthor = styled.p`
 
 export const CommentText = styled.p`
   margin-top: -20px;
+  margin-left: 5px;
   font-size: 14px;
 `;
 
@@ -65,11 +67,22 @@ export const CommentActionButton = styled.button`
   border: none;
   color: gray;
   font-weight: bold;
+  margin-top: 15px;
   cursor: pointer;
   position: relative;
   padding-right: 10px;
+  font-size: 14px;
 
   &:hover {
     text-decoration: underline;
   }
+`;
+
+export const Dot = styled.span`
+  display: inline-block;
+  margin-left: 8px;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background-color: gray;
 `;
