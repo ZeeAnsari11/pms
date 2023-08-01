@@ -23,13 +23,6 @@ const GenericSelectField = ({
         onSelectChange(value);
     };
 
-    const filterOption = (input, option) => {
-        const optionLabel = option.props.children;
-        if (typeof optionLabel === "string") {
-            return optionLabel.toLowerCase().indexOf(input.toLowerCase()) >= 0;
-        }
-        return false;
-    };
 
     return (
         <GenericSelectFieldComponents.StyledSelect
@@ -38,9 +31,9 @@ const GenericSelectField = ({
                 width: width,
                 marginTop: "5px"
             }}
+            showSearch
+            optionFilterProp="value"
             placeholder={placeholder}
-            showSearch={true}
-            filterOption={filterOption}
             value={value}
             disabled={isDisabled}
             onChange={handleSelectChange}

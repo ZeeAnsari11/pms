@@ -8,8 +8,8 @@ import {useNavigate} from "react-router-dom";
 import NavBar from "../../Dashboard/Navbar";
 import GenericSelectField from "../../Dashboard/SelectFields/GenericSelectField";
 import ImageUploader from "../ImageUploader";
-import UserSelectField from "../../Dashboard/SelectFields/UserSelectField";
 import {modules} from "../../../Shared/Const/ReactQuillToolbarOptions";
+import { Avatar, Select } from "antd";
 
 function CreateProject() {
 
@@ -18,34 +18,15 @@ function CreateProject() {
     const [companyData, setCompanyData] = useState([]);
     const [categoryData, setCategoryData] = useState([]);
     const [usersData, setUsersData] = useState([]);
-    const uniqueProjectKey = uuidv4();
     const [selectedCompany, setSelectedCompany] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState([]);
     const [selectedProjectLead, setSelectedProjectLead] = useState([]);
-    const [selectedProjectAssignees, setSelectedProjectAssignees] = useState([]);
 
     let authToken = localStorage.getItem('auth_token');
+    const { Option } = Select;
 
+    const uniqueProjectKey = uuidv4();
     const navigate = useNavigate();
-
-    const handleTextChange = (value) => {
-        setText(value);
-    }
-    const handleImageChange = (image) => {
-        setImage(image);
-    }
-    const handleSelectedCompanyChange = (value) => {
-        setSelectedCompany(parseInt(value));
-    };
-
-    const handleSelectedCategoryChange = (value) => {
-        setSelectedCategory(parseInt(value));
-    };
-
-    const handleSelectedProjectLeadChange = (value) => {
-        setSelectedProjectLead(parseInt(value));
-    };
-
 
     useEffect(() => {
         const fetchCompanies = async () => {
@@ -121,9 +102,6 @@ function CreateProject() {
         formData.append("name", form.elements.project.value);
         formData.append("slug", generateSlug(form.elements.project.value));
         formData.append("key", uniqueProjectKey);
-        selectedProjectAssignees.forEach((assignee, index) => {
-            formData.append('assignees', assignee);
-        });
         formData.append("project_lead", selectedProjectLead);
         formData.append("description", text);
         formData.append("company", selectedCompany);
@@ -153,19 +131,19 @@ function CreateProject() {
                     <CreateProjectComponents.Details>Details</CreateProjectComponents.Details>
                 </CreateProjectComponents.Header>
                 <CreateProjectComponents.FormWrapper onSubmit={handleSubmit} method="POST">
-                    <ImageUploader onImageChange={handleImageChange}/>
+                    <ImageUploader onImageChange={(image)=> setImage(image)}/>
                     <CreateProjectComponents.LabelForProject
                         htmlFor="project">Project:</CreateProjectComponents.LabelForProject>
-                    <CreateProjectComponents.Input type="text" id="project" name="project"
-                                                   placeholder="Enter project name"/>
+                    <CreateProjectComponents.StyledInput type="text" id="project" name="project"
+                                                    placeholder="Enter project name"/>
                     <CreateProjectComponents.LabelForDescriptionBoc
                         htmlFor="key">Description:</CreateProjectComponents.LabelForDescriptionBoc>
                     <CreateProjectComponents.StyledReactQuill modules={modules} id="exampleEditor" value={text}
-                                                              onChange={handleTextChange}/>
+                                                                onChange={(value=> setText(value))}/>
                     <CreateProjectComponents.LabelForCompany
                         htmlFor="category">Company:</CreateProjectComponents.LabelForCompany>
                     <GenericSelectField
-                        onSelectChange={handleSelectedCompanyChange}
+                        onSelectChange={(value) => setSelectedCompany(parseInt(value))}
                         options={companyOptions}
                         isMultiple={false}
                         placeholder={"Unassigned"}
@@ -175,19 +153,42 @@ function CreateProject() {
                     <CreateProjectComponents.LabelforCategory
                         htmlFor="category">Category:</CreateProjectComponents.LabelforCategory>
                     <GenericSelectField
-                        onSelectChange={handleSelectedCategoryChange}
+                        onSelectChange={(value) => setSelectedCategory(parseInt(value))}
                         options={categoriesOptions}
                         isMultiple={false}
                         placeholder={"Unassigned"}
                         width="50%"/>
                     <CreateProjectComponents.LabelforLead htmlFor="category">Project
                         Lead:</CreateProjectComponents.LabelforLead>
-                    <UserSelectField
-                        onSelectChange={handleSelectedProjectLeadChange}
-                        users={userOptions}
-                        isMultiple={false}
-                        placeholder={"Unassigned"}
-                        width="50%"/>
+                    <Select
+                            showArrow
+                            filterOption
+                            onChange={(value) => setSelectedProjectLead(parseInt(value))}
+                            showSearch
+                            optionFilterProp="label"
+                            placeholder="Please select User"
+                            optionLabelProp="label"
+                            value={selectedProjectLead}
+                            style={{ width: "50%" }}
+                        >
+                        {userOptions.map((item) => (
+                            <Option key={item.id} value={item.id} label={item.username}>
+                                {
+                                    item.iconUrl ?
+                                        <div>
+                                            <Avatar draggable={true} style={{ background: "#10899e" }} alt={item.username} src={`${process.env.REACT_APP_HOST}/${item.iconUrl}`} />{" "}
+                                            {item.username}
+                                        </div> :
+                                        <div>
+                                            <Avatar>
+                                                {item.username}
+                                            </Avatar> {" "}
+                                            {item.username}
+                                        </div>
+                                }
+                            </Option>
+                            ))}
+                        </Select>
                     <CreateProjectComponents.SaveButton>Save</CreateProjectComponents.SaveButton>
                 </CreateProjectComponents.FormWrapper>
             </CreateProjectComponents.PageWrapper>
