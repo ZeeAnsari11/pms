@@ -25,7 +25,7 @@ function ProjectSettingPage() {
 
     let authToken = localStorage.getItem('auth_token')
 
-    const defaultIconPath = "Images/NoImage.jpeg"
+    const defaultIconPath = "/Images/NoImage.jpeg"
 
     useEffect(() => {
         const fetchProjects = async () => {
@@ -84,7 +84,7 @@ function ProjectSettingPage() {
     if (IconPath != null) {
         IconPath = `${process.env.REACT_APP_HOST}/${icon}`
     } else {
-        IconPath = `${process.env.REACT_APP_HOST}/Images/NoImage.jpeg`
+        IconPath = `/Images/NoImage.jpeg`
     }
 
 

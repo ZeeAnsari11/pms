@@ -4,14 +4,13 @@ export const StyledModal = styled.div`
   position: fixed;
   top: 0;
   left: 0;
-  height: 100vh;
   width: 100%;
+  height: 100%;
   background-color: rgba(0, 0, 0, 0.3);
+  z-index: 100;
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 100;
-  padding-top: 50px;
 `;
 
 export const ModalContent = styled.div`
@@ -21,8 +20,9 @@ export const ModalContent = styled.div`
   padding: 20px;
   background-color: #fff;
   border-radius: 4px;
-  max-height: 95vh;
+  max-height: 82vh;
   overflow-y: auto;
-  margin-bottom: 100px;
+  margin-top: 50px;
+  margin-bottom: 50px;
 
 `;

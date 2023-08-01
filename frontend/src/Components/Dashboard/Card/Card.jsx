@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import {Delete, Clock} from "react-feather";
 import {Modal} from 'antd';
 import Chip from "../Chip/Chip";
@@ -15,6 +15,14 @@ function Card(props) {
     const navigate = useNavigate();
 
 
+    useEffect(() => {
+        const queryParams = new URLSearchParams(window.location.search);
+        const selectedIssue = queryParams.get("selectedIssue");
+        if (selectedIssue && selectedIssue === props.Card?.slug) {
+            setshowModal(true);
+        }
+    }, [props.Card?.slug]);
+
     const handleCardClick = (event) => {
         event.preventDefault();
         setshowModal(true);
@@ -27,7 +35,9 @@ function Card(props) {
 
     const handleModalClose = () => {
         setshowModal(false);
-        navigate(-1); // Go back to the previous URL
+        const currentURLWithoutQuery = window.location.origin + window.location.pathname;
+        window.history.pushState(null, null, currentURLWithoutQuery);
+        window.scrollTo(0, 0);
     };
     console.log("props.Card?.labels:", props.Card?.labels)
 

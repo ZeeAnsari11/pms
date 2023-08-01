@@ -12,11 +12,11 @@ import Skeleton from './Skeleton';
 
 function Dashboard(props) {
 
-    const [ issuesData, setIssuesData] = useState({});
-    const [ issuesStatues, setIssuesStatues] = useState({});
-    const [ target, setTarget] = useState({cid: "", bid: "",})
-    const [ boards, setboards] = useState([]);
-    const [ loading, setLoading ] = useState( false );
+    const [issuesData, setIssuesData] = useState({});
+    const [issuesStatues, setIssuesStatues] = useState({});
+    const [target, setTarget] = useState({cid: "", bid: "",})
+    const [boards, setboards] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     const {projectId} = useParams()
 
@@ -65,6 +65,38 @@ function Dashboard(props) {
     useEffect(() => {
         fetchData();
     }, []);
+
+
+    useEffect(() => {
+        const queryParams = new URLSearchParams(window.location.search);
+        const selectedIssue = queryParams.get("selectedIssue");
+        if (selectedIssue) {
+            const card = boards
+                .flatMap((board) => board.cards)
+                .find((card) => card.slug === selectedIssue);
+            if (card) {
+                const {id: cid, bid} = card;
+                setTarget({cid, bid});
+                setboards((prevBoards) => {
+                    const newBoards = [...prevBoards];
+                    const bIndex = newBoards.findIndex((board) => board.id === bid);
+                    if (bIndex >= 0) {
+                        const cIndex = newBoards[bIndex].cards.findIndex(
+                            (card) => card.id === cid
+                        );
+                        if (cIndex >= 0) {
+                            newBoards[bIndex].cards[cIndex] = {
+                                ...newBoards[bIndex].cards[cIndex],
+                                showModal: true,
+                            };
+                        }
+                    }
+                    return newBoards;
+                });
+            }
+        }
+    }, [boards]);
+
 
     useEffect(() => {
         const issuesValueMapper = (issue) => {
@@ -220,11 +252,11 @@ function Dashboard(props) {
     }
 
     if (loading) {
-        return(
+        return (
             <>
                 <ProjectSidebar/>
                 <NavBar/>
-                <Skeleton />
+                <Skeleton/>
             </>
         );
     }
