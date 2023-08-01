@@ -31,7 +31,9 @@ DATABASES = {
             "HOST": os.environ.get("SQL_HOST"),
             "PORT": os.environ.get("SQL_PORT"),
             'OPTIONS': {
-                'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
+                'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+                'charset': 'utf8mb4',
+                'use_unicode': True,
             }
         }
     }
