@@ -4,7 +4,7 @@ import NavBar from "../../Dashboard/Navbar";
 import Sidebar from "../../Dashboard/Sidebar/ProjectSidebar";
 import FileUpload from "../FileAttachement/FileUpload";
 import axios from "axios";
-import { Breadcrumb, Input, Select, Avatar } from "antd";
+import {Breadcrumb, Input, Select, Tooltip, Avatar} from "antd";
 import TrackingField from "../TimeTracking";
 import Editable from "../Editable/Editable";
 import Comment from "../Comment/Comment";
@@ -28,11 +28,15 @@ import {value} from "lodash/seq";
 import EstimateTimer from "../EstimateTimer/EstimateTimer";
 import * as CardInfoComponents from "../CardInfo/Style";
 import {modules} from "../../../Shared/Const/ReactQuillToolbarOptions";
+import {LinkOutlined} from '@ant-design/icons';
 
 const {TextArea} = Input;
 
 
 function EditTicketPage({props}) {
+
+    const [showQuill, setShowQuill] = useState(false);
+    const [tooltipMessage, setTooltipMessage] = useState('');
 
     const [comments, setComments] = useState([]);
     const [newComment, setNewComment] = useState('');
@@ -68,8 +72,6 @@ function EditTicketPage({props}) {
 
     const [files, setFiles] = useState([]);
     const currentIssueData = useSelector((state) => state.issueData.issueData);
-
-    const [showQuill, setShowQuill] = useState(false);
 
     let authToken = localStorage.getItem('auth_token')
     const { Option } = Select;
@@ -196,12 +198,20 @@ function EditTicketPage({props}) {
             setUsers(response.data);
         };
         const fetchDependentProjectTypes = async () => {
-            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/project_type/?project=${projectId}`, {
-                headers: {
-                    Authorization: `Token ${authToken}`,
-                },
-            });
-            setIssueType(response.data);
+            try {
+                setLoading(true);
+                const response = await axios.get(`${process.env.REACT_APP_HOST}/api/projects/${projectId}`, {
+                    headers: {
+                        Authorization: `Token ${authToken}`,
+                    },
+                });
+                setCurrentIssueProjectData(response.data);
+                setLoading(false);
+            } catch (error) {
+                setLoading(false);
+                console.error('Error fetching project data:', error);
+                setCurrentIssueProjectData(null);
+            }
         };
 
         const fetchCurrentIssueProjectData = async () => {
@@ -371,6 +381,13 @@ function EditTicketPage({props}) {
             });
     };
 
+    const handleCopyToClipboard = () => {
+        const currentUrl = window.location.href;
+        navigator.clipboard.writeText(currentUrl);
+        setTooltipMessage('Copied!');
+        setTimeout(() => setTooltipMessage('Copy to clipboard'), 1500);
+    };
+
 
     const handleCommentDelete = (index) => {
         axios
@@ -432,6 +449,34 @@ function EditTicketPage({props}) {
         );
     }
 
+    const projectIcon = currentIssueProjectData?.icon ? (
+        <Avatar
+            draggable={true}
+            shape={"square"}
+            style={{
+                width: "20px",
+                height: "20px",
+                marginRight: "8px",
+                verticalAlign: "middle",
+                cursor: "pointer"
+            }}
+            alt={currentIssueProjectData?.name}
+            src={`${process.env.REACT_APP_HOST}/${currentIssueProjectData?.icon}`}
+        />
+    ) : (
+        <Avatar
+            style={{
+                width: "25px",
+                height: "25px",
+                marginRight: "8px",
+                verticalAlign: "middle",
+                cursor: "pointer"
+            }}>
+            {currentIssueProjectData?.name}
+        </Avatar>
+    );
+
+
     return (
         <div>
             <NavBar/>
@@ -451,6 +496,7 @@ function EditTicketPage({props}) {
                                         {
                                             title: (
                                                 <>
+                                                    {projectIcon}
                                                     <Link style={BreadcrumbitemsStyles}
                                                             to={`/project/${projectId}/dashboard`}>
                                                         {currentIssueProjectData?.name}
@@ -460,12 +506,24 @@ function EditTicketPage({props}) {
                                         },
                                         {
                                             title:
-                                                <Link
-                                                    style={BreadcrumbitemsStyles}
-                                                    to={`/project/${projectId}/browse/issue/${currentIssueData?.id}`}
-                                                    target="_blank">
-                                                    {currentIssueData?.slug.toUpperCase()}
-                                                </Link>
+                                                (
+                                                    <>
+                                                        <Link
+                                                            style={BreadcrumbitemsStyles}
+                                                            to={`/project/${projectId}/browse/issue/${currentIssueData?.id}`}
+                                                            target="_blank">
+                                                            {currentIssueData?.slug.toUpperCase()}
+                                                        </Link>
+                                                        <Tooltip title={tooltipMessage} arrow={false}>
+                                                            <LinkOutlined
+                                                                style={{marginLeft: 8, cursor: 'pointer'}}
+                                                                onMouseEnter={() => setTooltipMessage('Copy to clipboard')}
+                                                                onMouseLeave={() => setTooltipMessage('')}
+                                                                onClick={handleCopyToClipboard}
+                                                            />
+                                                        </Tooltip>
+                                                    </>
+                                                ),
                                         },
                                     ]}/>
                         <EditTicketPageComponents.IssueTitle>
@@ -520,7 +578,8 @@ function EditTicketPage({props}) {
                                             {showQuill ? (
                                                 <>
                                                     <CardInfoComponents.StyledQuillWrapper>
-                                                        <ReactQuill modules={modules} value={newComment} onChange={handleNewCommentChange}
+                                                        <ReactQuill modules={modules} value={newComment}
+                                                                    onChange={handleNewCommentChange}
                                                                     style={{width: "648px"}}/>
                                                     </CardInfoComponents.StyledQuillWrapper>
                                                     <div style={{flex: 1}}>
