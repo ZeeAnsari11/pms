@@ -96,7 +96,7 @@ class Project(models.Model):
         null=True,
         validators=[validate_file_size]
     )
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
     description = models.TextField()
     slug = models.SlugField(
         'shortcut',
@@ -162,7 +162,7 @@ class Issue(models.Model):
         (LOW, "Low"),
     ]
 
-    name = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255)
     summary = models.CharField(max_length=100)
     description = models.TextField()
     slug = models.SlugField(

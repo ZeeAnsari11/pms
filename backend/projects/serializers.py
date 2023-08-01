@@ -149,28 +149,19 @@ class CreateProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Project
         fields = ["id", 'icon', 'name', 'slug', 'key', 'assignees', 'project_lead', 'description', 'company',
-                  'category']
+                    'category']
 
 
 def save_file_to_storage(file):
-    # Generate a unique file name
+
     file_name = default_storage.get_available_name(file.name)
-
-    # Define the folder path
     folder_path = 'issues_attachment'
-
-    # Create the folder if it doesn't exist
     folder_full_path = os.path.join(default_storage.location, folder_path)
     if not os.path.exists(folder_full_path):
         os.makedirs(folder_full_path)
-
-    # Concatenate the folder path with the file name
     file_path = os.path.join(folder_path, file_name)
-
-    # Save the file to the specified file path
     saved_file_path = default_storage.save(file_path, file)
 
-    # Return the URL of the saved file
     return default_storage.url(saved_file_path)
 
 
@@ -185,7 +176,6 @@ class CreateIssueSerializer(serializers.ModelSerializer):
         file_urls = []
         for file in files:
             if isinstance(file, str) and file.startswith('http://localhost:8000'):
-                # Remove the prefix from the file URL
                 parsed_url = urlparse(file)
                 file_path = parsed_url.path
                 file_urls.append(file_path)

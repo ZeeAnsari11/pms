@@ -10,6 +10,7 @@ import GenericSelectField from "../../Dashboard/SelectFields/GenericSelectField"
 import ImageUploader from "../ImageUploader";
 import {modules} from "../../../Shared/Const/ReactQuillToolbarOptions";
 import { Avatar, Select } from "antd";
+import { StatusCodes } from "http-status-codes";
 
 function CreateProject() {
 
@@ -113,12 +114,15 @@ function CreateProject() {
                 },
             })
             .then(response => {
-                // handle the response
                 displaySuccessMessage(`Successfully create new project!`);
                 navigate('/project');
             })
             .catch(error => {
-                displayErrorMessage(error);
+                if(error.response.status === StatusCodes.FORBIDDEN){
+                    displayErrorMessage(error.response.data.detail)
+                    return;
+                }
+                displayErrorMessage(error.message);
             });
     }
 
