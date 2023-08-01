@@ -12,6 +12,8 @@ import EstimateTimer from "../EstimateTimer/EstimateTimer";
 import ReactQuill from "react-quill";
 import axios from "axios";
 import * as WorklogComponents from "./Style"
+import DOMPurify from "dompurify";
+import {modules} from "../../../Shared/Const/ReactQuillToolbarOptions";
 
 function Worklog({
                      created_at,
@@ -144,37 +146,44 @@ function Worklog({
     };
 
     const sanitizeComment = (comment) => {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(comment, 'text/html');
-        return doc.body.textContent;
+        return {
+            __html: DOMPurify.sanitize(comment),
+        };
     };
 
     return (
         <li key={index} style={{listStyle: "none"}}>
             <WorklogComponents.CommentContainer>
-                <Avatar
-                    name={created_by?.username}
-                    size={35}
-                    round={true}
-                    color="#DE350B"
-                    src={`${created_by?.userprofile?.image}`}
-                    title={created_by?.username}
-                    style={{marginRight: "10px", marginBottom: "-75px", marginLeft: "-40px"}}
-                />
                 <WorklogComponents.CommentButtons>
-                    <WorklogComponents.CommentAuthor>{created_by?.username}</WorklogComponents.CommentAuthor>
-                    <p style={{fontWeight: '500', color: '#42526E'}}>
+                    <WorklogComponents.CommentAuthor>
+                        <Avatar
+                            name={created_by?.username}
+                            size={35}
+                            round={true}
+                            color="#DE350B"
+                            src={`${created_by?.userprofile?.image}`}
+                            title={created_by?.username}
+                            style={{marginRight: "10px", marginLeft: "-40px"}}
+                        />
+                        {created_by?.username}
+                    </WorklogComponents.CommentAuthor>
+                    <p style={{fontWeight: '500', marginBottom: "5px", color: '#42526E'}}>
                         logged <WorklogComponents.StyledSpan>{convertToTimeFormat(worklog.time_spent)}</WorklogComponents.StyledSpan>
                         <span style={{marginLeft: '10px', fontWeight: '500', color: '#42526E'}}>
                             {formatDate(worklogDate)} at {formatTime(worklogTime)}
                         </span>
                     </p>
                 </WorklogComponents.CommentButtons>
-                <WorklogComponents.CommentText>{sanitizeComment(worklog.comment)}</WorklogComponents.CommentText>
-                <WorklogComponents.CommentActionButton onClick={handleEdit}>Edit</WorklogComponents.CommentActionButton>
+                <WorklogComponents.CommentText>
+                    <div dangerouslySetInnerHTML={sanitizeComment(worklog.comment)}/>
+                </WorklogComponents.CommentText>
+                <WorklogComponents.CommentActionButton onClick={handleEdit}>
+                    Edit
+                    <WorklogComponents.Dot/>
+                </WorklogComponents.CommentActionButton>
                 {showEditModal && (
                     <Modal
-                        title={<>Edit work log - worklog id: {worklog.id} </>}
+                        title={<>Edit work log</>}
                         open={showEditModal}
                         onCancel={() => setShowEditModal(false)}
                         footer={[
@@ -205,14 +214,17 @@ function Worklog({
                         </WorklogComponents.EditModalContent>
                         <div style={{marginTop: "10px", marginBottom: "10px"}}>
                             <WorklogComponents.InputHeading>Work Description:</WorklogComponents.InputHeading>
-                            <ReactQuill value={workDescription} onChange={handleWorklogDescription}
+                            <ReactQuill modules={modules} value={workDescription} onChange={handleWorklogDescription}
                             />
                         </div>
                     </Modal>
                 )}
 
                 <WorklogComponents.CommentActionButton
-                    onClick={() => setShowDeleteDialog(true)}>Delete</WorklogComponents.CommentActionButton>
+                    onClick={() => setShowDeleteDialog(true)}>
+                    Delete
+                    <WorklogComponents.Dot/>
+                </WorklogComponents.CommentActionButton>
             </WorklogComponents.CommentContainer>
             <Modal
                 title={<><ImWarning color="red" size={24} style={{marginRight: "5px"}}/> Delete worklog entry?</>}
