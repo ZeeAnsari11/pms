@@ -32,7 +32,7 @@ const ProjectSidebar = () => {
     if (IconPath != null) {
         IconPath = `${process.env.REACT_APP_HOST}/${icon}`
     } else {
-        IconPath = 'http://localhost:3000/Images/NoImage.jpeg'
+        IconPath = '/Images/NoImage.jpeg'
     }
     const [name, setName] = useState(''); // Set initial value from project object
     const [key, setKey] = useState(''); // Set initial value from project object
