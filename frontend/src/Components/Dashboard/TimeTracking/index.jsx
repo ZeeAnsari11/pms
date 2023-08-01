@@ -10,6 +10,7 @@ import 'react-quill/dist/quill.snow.css';
 import * as TimeTrackingComponents from "./Style"
 import EstimateTimer from "../EstimateTimer/EstimateTimer";
 import axios from 'axios';
+import {modules} from '../../../Shared/Const/ReactQuillToolbarOptions'
 
 const TimeTracking = ({OriginalEstimate}) => {
 
@@ -302,7 +303,7 @@ const TimeTracking = ({OriginalEstimate}) => {
                     {currentTimeLog ? (
                         <TimeTrackingComponents.WorklogDescription>
                             <TimeTrackingComponents.InputHeading>Work Description:</TimeTrackingComponents.InputHeading>
-                            <ReactQuill value={workDescription} onChange={handleWorklogDescription}/>
+                            <ReactQuill modules={modules} value={workDescription} onChange={handleWorklogDescription}/>
                         </TimeTrackingComponents.WorklogDescription>
                     ) : null}
                 </Modal>
