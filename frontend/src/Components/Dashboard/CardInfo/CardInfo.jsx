@@ -24,13 +24,15 @@ import * as CardInfoComponents from "./Style"
 import EstimateTimer from "../EstimateTimer/EstimateTimer";
 import tagRender from "../../../Shared/Components/tagRender";
 import {modules} from '../../../Shared/Const/ReactQuillToolbarOptions'
-import { Avatar, Select } from "antd";
+import { Avatar, Select, Tooltip } from "antd";
+import {LinkOutlined} from "@ant-design/icons";
 
 function CardInfo(props) {
     let authToken = localStorage.getItem('auth_token')
 
     const [isHovered, setIsHovered] = useState(false);
     const [showQuill, setShowQuill] = useState(false);
+    const [tooltipMessage, setTooltipMessage] = useState('');
 
     const [comments, setComments] = useState([]);
     const [newComment, setNewComment] = useState('');
@@ -63,6 +65,12 @@ function CardInfo(props) {
 
     const { Option } = Select;
 
+    const handleCopyToClipboard = () => {
+        const currentUrl = window.location.href;
+        navigator.clipboard.writeText(currentUrl);
+        setTooltipMessage('Copied!');
+        setTimeout(() => setTooltipMessage('Copy to clipboard'), 1500);
+    };
 
     const handleLabelChange = (values) => {
         const labelKeys = values.map((value) => {
@@ -485,6 +493,14 @@ function CardInfo(props) {
                         <NavLink to={`/project/${projectId}/browse/issue/${props.card?.id}`} target="_blank">
                             <b>{props.card?.slug.toUpperCase()}</b>
                         </NavLink>
+                        <Tooltip title={tooltipMessage} arrow={false}>
+                            <LinkOutlined
+                                style={{marginLeft: 12, cursor: 'pointer'}}
+                                onMouseEnter={() => setTooltipMessage('Copy to clipboard')}
+                                onMouseLeave={() => setTooltipMessage('')}
+                                onClick={handleCopyToClipboard}
+                            />
+                        </Tooltip>
                     </CardInfoComponents.StyledSlug>
                 </div>
                 <CardInfoComponents.ModalTitleStyling>
