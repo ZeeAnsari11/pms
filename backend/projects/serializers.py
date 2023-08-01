@@ -11,7 +11,10 @@ from urllib.parse import urlparse
 # from rest_framework import serializers
 
 class UserProfileSerializer(serializers.ModelSerializer):
-    image = serializers.ImageField(max_length=None, use_url=True)
+    image = serializers.SerializerMethodField()
+
+    def get_image(self, userprofile):
+        return userprofile.image.url if userprofile.image else None
 
     class Meta:
         model = UserProfile
@@ -24,7 +27,7 @@ class ComprehensiveUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username', 'last_login', 'is_superuser', 'email', 'is_staff', 'is_active', 'user_permissions',
-                  'userprofile']
+                'userprofile']
 
 
 class SummarizedUserSerializer(serializers.ModelSerializer):
