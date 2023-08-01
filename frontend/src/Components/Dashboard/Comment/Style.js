@@ -21,11 +21,14 @@ export const CommentAuthor = styled.p`
 
 export const CommentText = styled.p`
   margin-top: -20px;
+  margin-left: 45px;
   font-size: 14px;
 `;
 
 export const CommentButtons = styled.div`
   display: flex;
+  margin-left: 40px;
+  align-items: center;
 `;
 
 export const CommentActionButton = styled.button`
@@ -36,46 +39,20 @@ export const CommentActionButton = styled.button`
   cursor: pointer;
   position: relative;
   padding-right: 10px;
+  font-size: 14px;
 
   &:hover {
     text-decoration: underline;
   }
 `;
 
-export const InputField = styled.input`
-  width: 456px;
-  height: 29px;
-  margin-top: 5px; /* Adjust the top margin */
-  border: 1px solid #ccc;
-  border-radius: 3px;
+export const Dot = styled.span`
+  display: inline-block;
+  margin-left: 8px;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background-color: gray;
 `;
 
-export const ButtonForEditComment = styled.button`
-  background-color: rgb(0, 82, 204);
-  color: rgb(255, 255, 255);
-  border: none;
-  border-radius: 3px;
-  margin-top: 5px; /* Adjust the top margin */
-  padding: 8px 13px;
-`;
 
-export const DeleteConfirmation = styled.div`
-  background-color: #f8f8f8;
-  border: 1px solid #ccc;
-  padding: 10px;
-  margin-top: 10px;
-`;
-
-export const DeleteConfirmationText = styled.p`
-  margin-bottom: 10px;
-`;
-
-export const DeleteConfirmationButton = styled.button`
-  background-color: #0052CC;
-  color: #fff;
-  border: none;
-  border-radius: 3px;
-  padding: 8px 13px;
-  margin-right: 5px;
-  cursor: pointer;
-`;
