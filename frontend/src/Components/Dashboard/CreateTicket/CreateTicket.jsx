@@ -5,14 +5,13 @@ import GenericSelectField from "../SelectFields/GenericSelectField";
 import {priorityOptions} from '../../../Shared/Const/Issues'
 import ReactQuill from "react-quill";
 import {FiUser, FiUsers} from "react-icons/fi";
-import UserSelectField from "../SelectFields/UserSelectField";
 import {File} from "react-feather";
 import FileUpload from "../FileAttachement/FileUpload";
 import axios from "axios";
 import EstimateTimer from "../EstimateTimer/EstimateTimer";
 import * as CreateTicketComponents from "./Style"
 import tagRender from "../../../Shared/Components/tagRender";
-import { Select } from "antd";
+import { Avatar, Select } from "antd";
 
 
 const LinkedIssue1 = [
@@ -34,8 +33,6 @@ const LinkedIssue2 = [
 
 
 const MyModalComponent = ({onClose}) => {
-    let authToken = localStorage.getItem('auth_token')
-
     const [isHovered, setIsHovered] = useState(false);
 
     const [summary, setSummary] = useState("");
@@ -64,7 +61,9 @@ const MyModalComponent = ({onClose}) => {
     const [files, setFiles] = useState([]);
     const [project, setProject] = useState('');
 
-    console.log("File", files)
+
+    let authToken = localStorage.getItem('auth_token')
+    const { Option } = Select;
 
     const handleFilesChange = (newFiles) => {
         setFiles(newFiles);
@@ -430,8 +429,32 @@ const MyModalComponent = ({onClose}) => {
                                 Assignee
                             </CreateTicketComponents.CardInfoBoxTitle>
                             <CreateTicketComponents.TaskList>
-                                <UserSelectField users={Useroptions} isMultiple={false} placeholder={"Unassigned"}
-                                                    onChange={handleUserChange}/>
+                                <Select
+                                        showArrow
+                                        filterOption
+                                        onChange={(value) => setSelectedUsers(parseInt(value))}
+                                        showSearch
+                                        optionFilterProp="label"
+                                        placeholder="Please select User"
+                                        optionLabelProp="label"
+                                        value={selectedUsers}
+                                        style={{ width: "100%" }}
+                                    >
+                                    {Useroptions.map((item) => (
+                                        <Option key={item.id} value={item.id} label={item.username}>
+                                            {
+                                                item.iconUrl ?
+                                                    <div>
+                                                        <Avatar draggable={true} style={{ background: "#10899e" }} alt={item.username} src={`${process.env.REACT_APP_HOST}/${item.iconUrl}`} />{" "}
+                                                        {item.username}
+                                                    </div> :
+                                                    <div>
+                                                        <Avatar> {item.username}</Avatar> {" "}{item.username}
+                                                    </div>
+                                            }
+                                        </Option>
+                                        ))}
+                                    </Select>
                             </CreateTicketComponents.TaskList>
                         </CreateTicketComponents.CardInfoBox>
 
@@ -458,15 +481,33 @@ const MyModalComponent = ({onClose}) => {
                                 <FiUser/>
                                 Reporter
                             </CreateTicketComponents.CardInfoBoxTitle>
-                            <UserSelectField users={Reporteroptions} isMultiple={false} placeholder={"Unassigned"}
-                                                onChange={handleReporterChange}/>
                             <CreateTicketComponents.TaskList>
-                                {values.reporter?.map((item) => (
-                                    <CreateTicketComponents.Task key={item.id}>
-                                        <p>{item.username}</p>
-                                        <p>{item.picture}</p>
-                                    </CreateTicketComponents.Task>
-                                ))}
+                                <Select
+                                        showArrow
+                                        filterOption
+                                        onChange={(value) =>  setSelectedReporter(parseInt(value))}
+                                        showSearch
+                                        optionFilterProp="label"
+                                        placeholder="Please select User"
+                                        optionLabelProp="label"
+                                        value={selectedReporter}
+                                        style={{ width: "100%" }}
+                                    >
+                                    {Reporteroptions.map((item) => (
+                                        <Option key={item.id} value={item.id} label={item.username}>
+                                            {
+                                                item.iconUrl ?
+                                                    <div>
+                                                        <Avatar draggable={true} style={{ background: "#10899e" }} alt={item.username} src={`${process.env.REACT_APP_HOST}/${item.iconUrl}`} />{" "}
+                                                        {item.username}
+                                                    </div> :
+                                                    <div>
+                                                        <Avatar> {item.username}</Avatar> {" "}{item.username}
+                                                    </div>
+                                            }
+                                        </Option>
+                                        ))}
+                                    </Select>
                             </CreateTicketComponents.TaskList>
                         </CreateTicketComponents.CardInfoBox>
 

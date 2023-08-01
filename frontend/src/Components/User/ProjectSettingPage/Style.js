@@ -48,6 +48,7 @@ export const Label = styled.label`
 export const LabelForKey = styled.label`
   font-weight: bold;
   margin-bottom: 0.5rem;
+  margin-top: 10px;
   margin-right: 342px;
 `;
 

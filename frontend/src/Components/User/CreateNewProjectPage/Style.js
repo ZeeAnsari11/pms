@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import ReactQuill from "react-quill";
+import {Input} from 'antd'
 
 export const PageWrapper = styled.div`
     background-color: #fff;
@@ -19,19 +20,9 @@ export const Details = styled.h1`
 `;
 
 
-export const Input = styled.input`
-    border: 2px solid #ccc;
-    border-radius: 5px;
-    padding: 0.5rem;
-    font-size: 1rem;
-    //width: 40%;
+export const StyledInput = styled(Input)`
+    width: 50%;
     margin-bottom: 2%;
-    background-color: #FAFBFC;
-    width: 359px;
-
-    :hover {
-        background-color: #EBECF0;
-    }
 `;
 
 
@@ -71,8 +62,6 @@ export const LabelForCompany = styled.label`
 export const Description = styled.p`
     font-size: 0.7rem;
     color: #555;
-    //margin-top: 0.5rem;
-    margin-top: 5px;
 `;
 
 export const LabelforCategory = styled.label`
@@ -110,7 +99,7 @@ export const SaveButton = styled.button`
 
 export const StyledReactQuill = styled(ReactQuill)`
     width: 55%;
-    max-width: 45%;
+    max-width: 46%;
 
     .ql-toolbar {
         //width: 100%;
