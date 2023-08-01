@@ -3,20 +3,20 @@ import * as ProjectSettingComponents from './Style';
 import {useNavigate, useParams} from "react-router-dom";
 import NavBar from "../../Dashboard/Navbar";
 import ProjectSidebar from "../../Dashboard/Sidebar/ProjectSidebar";
-import UserSelectField from "../../Dashboard/SelectFields/UserSelectField";
 import apiRequest from '../../../Utils/apiRequest';
 import ImageUploader from "../ImageUploader";
+import {Select, Avatar, Input} from 'antd'
 
+const { Option } = Select;
 
 function ProjectSettingPage() {
+
     const [usersData, setUsersData] = useState([]);
     const [projectData, setProjectData] = useState({});
-    const [projectLeadData, setProjectLeadData] = useState([]);
     const [icon, setIcon] = useState(null);
     const [selectedProjectLead, setSelectedProjectLead] = useState([]);
-    const [name, setName] = useState(''); // Set initial value from project object
-    const [key, setKey] = useState(''); // Set initial value from project object
-    const [projectCategory, setProjectCategory] = useState(''); // Set initial value from project object
+    const [name, setName] = useState('');
+    const [key, setKey] = useState('');
     const [image, setImage] = useState(null);
 
 
@@ -55,7 +55,7 @@ function ProjectSettingPage() {
 
     useEffect(() => {
         if (projectData.project_lead) {
-            setProjectLeadData(projectData.project_lead.username);
+            setSelectedProjectLead(projectData.project_lead.id);
         }
     }, [projectData]);
 
@@ -64,7 +64,6 @@ function ProjectSettingPage() {
         if (projectData.name) {
             setName(projectData.name);
             setKey(projectData.key);
-            setProjectCategory(projectData.project_category)
         }
     }, [projectData]);
 
@@ -97,9 +96,6 @@ function ProjectSettingPage() {
         }))
         : [];
 
-    const handleSelectedProjectLeadChange = (value) => {
-        setSelectedProjectLead(parseInt(value));
-    };
 
     const handleNameChange = (event) => {
         setName(event.target.value);
@@ -117,15 +113,9 @@ function ProjectSettingPage() {
 
     function handleSubmit(event) {
         event.preventDefault();
-        const projectobj = {
-            "name": name,
-            "key": key,
-            "icon": image,
-            "project_lead": selectedProjectLead,
-        };
-
+        const projectObj = { 'name': name, 'key': key, 'icon': image, 'project_lead': selectedProjectLead, };
         apiRequest.patch(`/api/projects/${projectId}/`,
-            projectobj,
+            projectObj,
             {
                 headers: {
                     'Content-Type': 'multipart/form-data',
@@ -146,28 +136,60 @@ function ProjectSettingPage() {
             <NavBar/>
             <ProjectSidebar/>
             <ProjectSettingComponents.PageWrapper>
-
                 <ProjectSettingComponents.Header>
                     <ProjectSettingComponents.Details>Details</ProjectSettingComponents.Details>
                 </ProjectSettingComponents.Header>
-
                 <ProjectSettingComponents.FormWrapper onSubmit={handleSubmit} encType="multipart/form-data"
-                                                      method="POST">
+                                                        method="POST">
                     <ImageUploader id="image" imagePath={IconPath} onImageChange={handleImageChange}/>
                     <ProjectSettingComponents.Label htmlFor="name">Name:</ProjectSettingComponents.Label>
-                    <ProjectSettingComponents.NameInput type="text" id="name" name="name" placeholder="Project name"
-                                                        value={name}
-                                                        onChange={handleNameChange}/>
+                    <Input
+                        id="name"
+                        placeholder="Project name"
+                        value={name}
+                        style={{ width: "50%" }}
+                        onChange={(event) => setName(event.target.value)}
+                    />
                     <ProjectSettingComponents.LabelForKey htmlFor="key">Key:</ProjectSettingComponents.LabelForKey>
-                    <ProjectSettingComponents.NameInput id="key" name="key" placeholder="Project key" value={key}
-                                                        disabled bordered
-                                                        onChange={handleKeyChange}/>
+                    <Input
+                        id="key"
+                        placeholder="Project key"
+                        value={key}
+                        style={{ width: "50%" }}
+                        onChange={(event) => setKey(event.target.value)}
+                        disabled={true}
+                    />
                     <ProjectSettingComponents.Labelforlead htmlFor="category">Project
                         lead:</ProjectSettingComponents.Labelforlead>
-                    <UserSelectField users={useroptions}
-                                     defaultValue={projectLeadData}
-                                     onSelectChange={handleSelectedProjectLeadChange}
-                                     width="50%"/>
+                    <Select
+                            showArrow
+                            filterOption
+                            onChange={(value) => setSelectedProjectLead(parseInt(value))}
+                            showSearch
+                            optionFilterProp="label"
+                            placeholder="Please select User"
+                            optionLabelProp="label"
+                            value={selectedProjectLead}
+                            style={{ width: "50%" }}
+                        >
+                        {useroptions.map((item) => (
+                            <Option key={item.id} value={item.id} label={item.username}>
+                                {
+                                    item.iconUrl ?
+                                        <div>
+                                            <Avatar draggable={true} style={{ background: "#10899e" }} alt={item.username} src={`${process.env.REACT_APP_HOST}/${item.iconUrl}`} />{" "}
+                                            {item.username}
+                                        </div> :
+                                        <div>
+                                            <Avatar>
+                                                {item.username}
+                                            </Avatar> {" "}
+                                            {item.username}
+                                        </div>
+                                }
+                            </Option>
+                            ))}
+                        </Select>
                     <ProjectSettingComponents.Description>Make sure your project lead has access to issues in the
                         project.</ProjectSettingComponents.Description>
                     <ProjectSettingComponents.SaveButton>Save</ProjectSettingComponents.SaveButton>

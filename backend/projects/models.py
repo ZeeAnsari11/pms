@@ -162,7 +162,7 @@ class Issue(models.Model):
         (LOW, "Low"),
     ]
 
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
     summary = models.CharField(max_length=100)
     description = models.TextField()
     slug = models.SlugField(

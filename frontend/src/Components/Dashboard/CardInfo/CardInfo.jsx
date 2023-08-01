@@ -9,7 +9,6 @@ import Comment from "../Comment/Comment"
 import Worklog from "../Worklog/Worklog";
 import 'react-quill/dist/quill.snow.css';
 import ReactQuill from 'react-quill';
-import UserSelectField from '../SelectFields/UserSelectField'
 import GenericSelectField from '../SelectFields/GenericSelectField'
 import TrackingField from '../TimeTracking/index'
 import {AiOutlineClose} from 'react-icons/ai'
@@ -24,18 +23,11 @@ import axios from "axios";
 import * as CardInfoComponents from "./Style"
 import EstimateTimer from "../EstimateTimer/EstimateTimer";
 import tagRender from "../../../Shared/Components/tagRender";
-import {Select} from "antd";
 import {modules} from '../../../Shared/Const/ReactQuillToolbarOptions'
+import { Avatar, Select } from "antd";
 
 function CardInfo(props) {
     let authToken = localStorage.getItem('auth_token')
-    const DefaultIssueLabel = props.card?.labels
-        ? props.card?.labels.map((IssueType) => ({
-            key: IssueType.id,
-            label: IssueType.name,
-            value: IssueType.color,
-        }))
-        : [];
 
     const [isHovered, setIsHovered] = useState(false);
     const [showQuill, setShowQuill] = useState(false);
@@ -68,6 +60,9 @@ function CardInfo(props) {
     const [currentUserEmail, setCurrentUserEmail] = useState({});
 
     const [files, setFiles] = useState([]);
+
+    const { Option } = Select;
+
 
     const handleLabelChange = (values) => {
         const labelKeys = values.map((value) => {
@@ -243,6 +238,14 @@ function CardInfo(props) {
         color: label.color,
     }));
 
+
+    const DefaultIssueLabel = props.card?.labels
+        ? props.card?.labels.map((IssueType) => ({
+            key: IssueType.id,
+            label: IssueType.name,
+            value: IssueType.color,
+        }))
+        : [];
 
     console.log("selectedLabelsOptions:", selectedLabelsOptions)
 
@@ -691,11 +694,32 @@ function CardInfo(props) {
                         Assignee
                     </CardInfoComponents.CardInfoBoxTitle>
                     <CardInfoComponents.TaskList>
-                        <UserSelectField defaultValue={props.card?.assignee?.username} users={Useroptions}
-                                         isMultiple={false}
-                                         placeholder={"Unassigned"}
-                                         onSelectChange={(value) => setSelectedAssignee(parseInt(value))}
-                        />
+                        <Select
+                            showArrow
+                            filterOption
+                            onChange={(value) => setSelectedAssignee(parseInt(value))}
+                            showSearch
+                            optionFilterProp="label"
+                            placeholder="Please select User"
+                            optionLabelProp="label"
+                            value={selectedAssignee}
+                            style={{ width: "100%"}}
+                        >
+                        {Useroptions.map((item) => (
+                            <Option key={item.id} value={item.id} label={item.username}>
+                                {
+                                    item.iconUrl ?
+                                        <div>
+                                            <Avatar draggable={true} style={{ background: "#10899e" }} alt={item.username} src={`${process.env.REACT_APP_HOST}/${item.iconUrl}`} />{" "}
+                                            {item.username}
+                                        </div> :
+                                        <div>
+                                            <Avatar> {item.username}</Avatar> {" "}{item.username}
+                                        </div>
+                                }
+                            </Option>
+                            ))}
+                        </Select>
                     </CardInfoComponents.TaskList>
                 </CardInfoComponents.CardInfoBox>
                 <CardInfoComponents.CardInfoBox>
@@ -704,11 +728,32 @@ function CardInfo(props) {
                         Reporter
                     </CardInfoComponents.CardInfoBoxTitle>
                     <CardInfoComponents.TaskList>
-                        <UserSelectField defaultValue={props.card?.reporter?.username} users={Useroptions}
-                                         isMultiple={false}
-                                         placeholder={"Unassigned"}
-                                         onSelectChange={(value) => setSelectedReporter(parseInt(value))}
-                        />
+                        <Select
+                            showArrow
+                            filterOption
+                            onChange={(value) => setSelectedReporter(parseInt(value))}
+                            showSearch
+                            optionFilterProp="label"
+                            placeholder="Please select User"
+                            optionLabelProp="label"
+                            value={selectedReporter}
+                            style={{ width: "100%"}}
+                        >
+                        {Useroptions.map((item) => (
+                            <Option key={item.id} value={item.id} label={item.username}>
+                                {
+                                    item.iconUrl ?
+                                        <div>
+                                            <Avatar draggable={true} style={{ background: "#10899e" }} alt={item.username} src={`${process.env.REACT_APP_HOST}/${item.iconUrl}`} />{" "}
+                                            {item.username}
+                                        </div> :
+                                        <div>
+                                            <Avatar> {item.username}</Avatar> {" "}{item.username}
+                                        </div>
+                                }
+                            </Option>
+                            ))}
+                        </Select>
                     </CardInfoComponents.TaskList>
                 </CardInfoComponents.CardInfoBox>
 
@@ -731,7 +776,6 @@ function CardInfo(props) {
                         Labels
                     </CardInfoComponents.CardInfoBoxTitle>
                     <CardInfoComponents.TaskList>
-
                         <Select
                             mode="multiple"
                             showArrow
@@ -742,9 +786,7 @@ function CardInfo(props) {
                             defaultValue={DefaultIssueLabel}
                             options={labelOptions}
                             optionFilterProp="label"
-                            onChange={(value, key) => {
-                                handleLabelChange(key)
-                            }}
+                            onChange={(value,key)=> {handleLabelChange(key)}}
                             placeholder="Select Labels"
                         />
                     </CardInfoComponents.TaskList>
@@ -754,13 +796,11 @@ function CardInfo(props) {
                         <IoIosTimer/>
                         Original Estimate
                     </CardInfoComponents.CardInfoBoxTitle>
-                    <div>
+                    <CardInfoComponents.TaskList>
                         <EstimateTimer defaultValue={props.card?.estimate}
-                                       onHoursChange={(value) => setEstimateHours(value)}/>
-                    </div>
+                                        onHoursChange={(value) => setEstimateHours(value)}/>
+                        </CardInfoComponents.TaskList>
                 </CardInfoComponents.CardInfoBox>
-
-
                 <CardInfoComponents.CardInfoBox>
                     <CardInfoComponents.CardInfoBoxTitle>
                         <RxStopwatch/>
