@@ -3,6 +3,7 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import DOMPurify from 'dompurify';
 import * as TextEditorComponents from "./Style"
+import {modules} from "../../../Shared/Const/ReactQuillToolbarOptions";
 
 
 const Description = ({initialValue, onSave}) => {
@@ -39,7 +40,7 @@ const Description = ({initialValue, onSave}) => {
         <>
             {isEditing ? (
                 <div ref={editorRef}>
-                    <ReactQuill value={value} onChange={handleEditorChange}/>
+                    <ReactQuill modules={modules} value={value} onChange={handleEditorChange}/>
                     <TextEditorComponents.SaveButton onClick={handleSave}>
                         Save
                     </TextEditorComponents.SaveButton>

@@ -102,12 +102,11 @@ const TimeEstimationField = ({onHoursChange, defaultValue}) => {
 
     return (
         <div>
-
             <EstimateTimerComponents.StyledInput
                 type="text"
                 value={input}
                 onChange={handleInputChange}
-                placeholder={"2w 0d 6h 30m"}
+                placeholder={"Use the format: 2w 0d 6h 30m"}
                 suffix={<EstimateTimerComponents.StyledTooltip color={"white"} title={tooltipContent} placement="right"><InfoCircleOutlined
                     style={{color: "#888888"}}/></EstimateTimerComponents.StyledTooltip>}
             />
