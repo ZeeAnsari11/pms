@@ -2,18 +2,19 @@ import React, {useEffect, useRef, useState} from "react";
 import {NavLink, useParams} from 'react-router-dom';
 import Modal from "../Modal/Modal";
 import FileUpload from "../FileAttachement/FileUpload";
-import { CheckSquare, File, List, Trash } from "react-feather";
+import {CheckSquare, File, List, Trash} from "react-feather";
 import Editable from "../Editable/Editable";
 import Description from "../TextEditor/TextEditor"
 import Comment from "../Comment/Comment"
 import Worklog from "../Worklog/Worklog";
 import 'react-quill/dist/quill.snow.css';
+import ReactQuill from 'react-quill';
 import UserSelectField from '../SelectFields/UserSelectField'
 import GenericSelectField from '../SelectFields/GenericSelectField'
 import TrackingField from '../TimeTracking/index'
 import {AiOutlineClose} from 'react-icons/ai'
 import {priorityOptions} from '../../../Shared/Const/Issues'
-import {TbStatusChange,TbExchange} from 'react-icons/tb'
+import {TbStatusChange, TbExchange} from 'react-icons/tb'
 import {FiUser} from 'react-icons/fi'
 import {CgOptions} from 'react-icons/cg'
 import {RxStopwatch} from 'react-icons/rx'
@@ -23,7 +24,8 @@ import axios from "axios";
 import * as CardInfoComponents from "./Style"
 import EstimateTimer from "../EstimateTimer/EstimateTimer";
 import tagRender from "../../../Shared/Components/tagRender";
-import { Select } from "antd";
+import {Select} from "antd";
+import {modules} from '../../../Shared/Const/ReactQuillToolbarOptions'
 
 function CardInfo(props) {
     let authToken = localStorage.getItem('auth_token')
@@ -36,10 +38,10 @@ function CardInfo(props) {
         : [];
 
     const [isHovered, setIsHovered] = useState(false);
+    const [showQuill, setShowQuill] = useState(false);
 
     const [comments, setComments] = useState([]);
     const [newComment, setNewComment] = useState('');
-    const [selectedComment, setSelectedComment] = useState(null);
     const [showComments, setShowComments] = useState(true);
     const [worklogs, setWorklogs] = useState([]);
     const [showWorklog, setShowWorklog] = useState(false);
@@ -69,8 +71,8 @@ function CardInfo(props) {
 
     const handleLabelChange = (values) => {
         const labelKeys = values.map((value) => {
-                return parseInt( value.key, 10 );
-            });
+            return parseInt(value.key, 10);
+        });
         setSelectedLabels(labelKeys);
     };
 
@@ -264,6 +266,7 @@ function CardInfo(props) {
                 setComments([...comments, response.data]);
                 getComments();
                 setNewComment("");
+                setShowQuill(false);
             })
             .catch((error) => {
                 // Handle error
@@ -275,6 +278,11 @@ function CardInfo(props) {
     const handleNewCommentChange = (event) => {
         setNewComment(event.target.value);
     };
+
+    const handleQuillChange = (value) => {
+        setNewComment(value);
+    };
+
 
     const handleCommentDelete = (index) => {
         axios
@@ -295,44 +303,37 @@ function CardInfo(props) {
             });
     };
 
-    const handleCommentEdit = (index, comment, key) => {
-        if (selectedComment === null) {
-            setSelectedComment(index);
-        } else if (selectedComment === index) {
-            const updatedComment = {...comment, body: comment};
+    const handleCommentEdit = (index, comment) => {
 
-            const commentData = {
-                body: updatedComment.body,
-                issue: props.card?.id,
-                user: currentUserData?.id,
-            };
+        const commentData = {
+            body: comment,
+            issue: props.card?.id,
+        };
 
-            axios
-                .patch(
-                    `${process.env.REACT_APP_HOST}/api/comments/${index}/`,
-                    commentData,
-                    {
-                        headers: {
-                            Authorization: `Token ${authToken}`,
-                        },
-                    }
-                )
-                .then((response) => {
-                    // Handle successful response
-                    console.log(response.data);
+        axios
+            .patch(
+                `${process.env.REACT_APP_HOST}/api/comments/${index}/`,
+                commentData,
+                {
+                    headers: {
+                        Authorization: `Token ${authToken}`,
+                    },
+                }
+            )
+            .then((response) => {
+                // Handle successful response
+                console.log(response.data);
 
-                    const updatedComments = [...comments];
-                    updatedComments[index] = response.data?.body; // Replace the comment at the specified index
-                    setComments(
-                        comments.map((c, i) => (i === index ? comment : c))
-                    );
-                    setSelectedComment(null);
-                    getComments();
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
-        }
+                const updatedComments = [...comments];
+                updatedComments[index] = response.data?.body; // Replace the comment at the specified index
+                setComments(
+                    comments.map((c, i) => (i === index ? comment : c))
+                );
+                getComments();
+            })
+            .catch((error) => {
+                console.log(error);
+            });
     };
 
     const [description, setDescription] = useState(props.card?.desc);
@@ -555,7 +556,6 @@ function CardInfo(props) {
                                 <CardInfoComponents.ActivityButton active={showWorklog} onClick={() => {
                                     setShowWorklog(true);
                                     setShowComments(false);
-                                    setSelectedComment(null);
                                 }}>
                                     Work log
                                 </CardInfoComponents.ActivityButton>
@@ -565,14 +565,36 @@ function CardInfo(props) {
                             <CardInfoComponents.CardInfoBoxCustom>
                                 <CardInfoComponents.CardInfoBoxTitle>Comments</CardInfoComponents.CardInfoBoxTitle>
                                 <CardInfoComponents.FormContainer onSubmit={handleCommentSubmit}>
-                                    <CardInfoComponents.CommentInput
-                                        type="text"
-                                        placeholder="Leave a comment"
-                                        value={newComment}
-                                        onChange={handleNewCommentChange}
-                                    />
-                                    <CardInfoComponents.CommentButton
-                                        type="submit">Send</CardInfoComponents.CommentButton>
+                                    {showQuill ? (
+                                        <>
+                                            <CardInfoComponents.StyledQuillWrapper>
+                                                <ReactQuill modules={modules} value={newComment}
+                                                            onChange={handleQuillChange}
+                                                            style={{width: "555px"}}/>
+                                            </CardInfoComponents.StyledQuillWrapper>
+                                            <div style={{flex: 1}}>
+                                                <CardInfoComponents.CommentButton
+                                                    showQuill={showQuill}
+                                                    type="submit">
+                                                    Send
+                                                </CardInfoComponents.CommentButton>
+                                                <CardInfoComponents.CommentButton
+                                                    color="#000"
+                                                    backgroundColor="#ECEDF0"
+                                                    onClick={() => setShowQuill(false)}
+                                                >
+                                                    Cancel
+                                                </CardInfoComponents.CommentButton>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <CardInfoComponents.CommentInput
+                                            type="text"
+                                            placeholder="Leave a comment"
+                                            onClick={() => setShowQuill(true)}
+                                            onChange={handleNewCommentChange}
+                                        />
+                                    )}
                                 </CardInfoComponents.FormContainer>
                                 <ul>
                                     {comments.map((comment, index) => (
@@ -586,7 +608,6 @@ function CardInfo(props) {
                                             currentUser={currentUserData}
                                             onDelete={handleCommentDelete}
                                             onEdit={handleCommentEdit}
-                                            selectedComment={selectedComment}
                                         />
                                     ))}
                                 </ul>
@@ -684,9 +705,9 @@ function CardInfo(props) {
                     </CardInfoComponents.CardInfoBoxTitle>
                     <CardInfoComponents.TaskList>
                         <UserSelectField defaultValue={props.card?.reporter?.username} users={Useroptions}
-                                            isMultiple={false}
-                                            placeholder={"Unassigned"}
-                                            onSelectChange={(value) => setSelectedReporter(parseInt(value))}
+                                         isMultiple={false}
+                                         placeholder={"Unassigned"}
+                                         onSelectChange={(value) => setSelectedReporter(parseInt(value))}
                         />
                     </CardInfoComponents.TaskList>
                 </CardInfoComponents.CardInfoBox>
@@ -709,19 +730,24 @@ function CardInfo(props) {
                         <TiTags/>
                         Labels
                     </CardInfoComponents.CardInfoBoxTitle>
-                    <Select
-                        mode="multiple"
-                        showArrow
-                        tagRender={tagRender}
-                        style={{
-                            width: '100%',
-                        }}
-                        defaultValue={DefaultIssueLabel}
-                        options={labelOptions}
-                        optionFilterProp="label"
-                        onChange={(value,key)=> {handleLabelChange(key)}}
-                        placeholder="Select Labels"
-                    />
+                    <CardInfoComponents.TaskList>
+
+                        <Select
+                            mode="multiple"
+                            showArrow
+                            tagRender={tagRender}
+                            style={{
+                                width: '100%',
+                            }}
+                            defaultValue={DefaultIssueLabel}
+                            options={labelOptions}
+                            optionFilterProp="label"
+                            onChange={(value, key) => {
+                                handleLabelChange(key)
+                            }}
+                            placeholder="Select Labels"
+                        />
+                    </CardInfoComponents.TaskList>
                 </CardInfoComponents.CardInfoBox>
                 <CardInfoComponents.CardInfoBox>
                     <CardInfoComponents.CardInfoBoxTitle>
@@ -730,7 +756,7 @@ function CardInfo(props) {
                     </CardInfoComponents.CardInfoBoxTitle>
                     <div>
                         <EstimateTimer defaultValue={props.card?.estimate}
-                                        onHoursChange={(value) => setEstimateHours(value)}/>
+                                       onHoursChange={(value) => setEstimateHours(value)}/>
                     </div>
                 </CardInfoComponents.CardInfoBox>
 

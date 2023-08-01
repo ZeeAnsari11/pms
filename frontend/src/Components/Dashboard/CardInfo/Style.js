@@ -64,23 +64,38 @@ export const ActivityButton = styled.button`
 
 export const CommentInput = styled.input`
   flex: 1;
+  width: ${(props) => (props.width ? props.width : "555px")};
   margin-right: 8px;
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 3px;
 `;
 
+export const StyledQuillWrapper = styled.div`
+  flex: 1;
+  margin-right: 8px;
+  padding: 8px;
+
+  .react-quill {
+    height: 200px;
+  }
+`;
+
 export const CommentButton = styled.button`
+  font-weight: 600;
   padding: 8px 12px;
-  background-color: #0052cc;
-  color: #fff;
+  margin-left: 8px;
+  background-color: ${(props) => (props.backgroundColor ? props.backgroundColor : "#0062FF")};
+  cursor: pointer;
+  color: ${(props) => (props.color ? props.color : '#fff')};
   border: none;
   border-radius: 3px;
 `;
 
 export const FormContainer = styled.form`
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
   margin-bottom: 16px;
 `;
 

@@ -9,6 +9,7 @@ import NavBar from "../../Dashboard/Navbar";
 import GenericSelectField from "../../Dashboard/SelectFields/GenericSelectField";
 import ImageUploader from "../ImageUploader";
 import UserSelectField from "../../Dashboard/SelectFields/UserSelectField";
+import {modules} from "../../../Shared/Const/ReactQuillToolbarOptions";
 
 function CreateProject() {
 
@@ -159,7 +160,7 @@ function CreateProject() {
                                                    placeholder="Enter project name"/>
                     <CreateProjectComponents.LabelForDescriptionBoc
                         htmlFor="key">Description:</CreateProjectComponents.LabelForDescriptionBoc>
-                    <CreateProjectComponents.StyledReactQuill id="exampleEditor" value={text}
+                    <CreateProjectComponents.StyledReactQuill modules={modules} id="exampleEditor" value={text}
                                                               onChange={handleTextChange}/>
                     <CreateProjectComponents.LabelForCompany
                         htmlFor="category">Company:</CreateProjectComponents.LabelForCompany>
