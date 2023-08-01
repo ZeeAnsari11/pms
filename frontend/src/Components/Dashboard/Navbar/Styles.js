@@ -73,7 +73,7 @@ export const NavbarLinkExtended = styled(Link)`
 `;
 
 export const Logo = styled.img`
-  margin: 4px 10px 3px 10px;
+  margin: 4px 5px 3px 5px;
   max-width: 100px;
   height: auto;
   cursor: pointer;

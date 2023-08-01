@@ -19,8 +19,12 @@ const ProjectListing = () => {
 
     let authToken = localStorage.getItem('auth_token')
 
+    const handleImageError = (e) => {
+        e.target.src = `/Images/NoImage.jpeg`;
+    };
+
     const columns = [
-        { title: 'ID', dataIndex: 'id', sorter: (record1, record2) => (record1.id > record2.id) },
+        {title: 'ID', dataIndex: 'id', sorter: (record1, record2) => (record1.id > record2.id)},
         {
             title: 'Name',
             dataIndex: 'name',
@@ -29,7 +33,9 @@ const ProjectListing = () => {
                 <ProjectListingComponents.ProjectLink to={`/project/${record.id}/dashboard`}>
                     <ProjectListingComponents.ProjectIcon>
                         <ProjectListingComponents.ProjectAvatar src={`${process.env.REACT_APP_HOST}/${record.icon}`}
-                                                                alt={record.name}/>
+                                                                alt={record.name}
+                                                                onError={handleImageError}
+                        />
                     </ProjectListingComponents.ProjectIcon>
                     {text}
                 </ProjectListingComponents.ProjectLink>
@@ -49,9 +55,9 @@ const ProjectListing = () => {
                 </Tag>
             ),
         }, {
-        title: 'Action', key: 'action',
-        render: (_, record) => (
-            <Space size="middle">
+            title: 'Action', key: 'action',
+            render: (_, record) => (
+                <Space size="middle">
                     <a>Invite {record.name}</a>
                     <a>Delete</a>
                 </Space>
@@ -68,31 +74,31 @@ const ProjectListing = () => {
                         Authorization: `Token ${authToken}`,
                     },
                 })
-            .then(response => {
-                const dataArray = response.data.map(project => ({
-                    id: project.id,
-                    name: project.name,
-                    key: project.key,
-                    lead: project.project_lead.username,
-                    icon: project.icon,
-                    category: typeof project.category === 'string' ? project.category : project.category.category
-                }));
-                setFilteredData(dataArray);
-                setProjects(dataArray);
-                setTotalItems(dataArray.length);
-                setLoading(false);
-            })
-            .catch(error => {
-                displayErrorMessage(`Error occurred while fetching data: ${error}`);
-                setLoading(false);
-            });
+                .then(response => {
+                    const dataArray = response.data.map(project => ({
+                        id: project.id,
+                        name: project.name,
+                        key: project.key,
+                        lead: project.project_lead.username,
+                        icon: project.icon,
+                        category: typeof project.category === 'string' ? project.category : project.category.category
+                    }));
+                    setFilteredData(dataArray);
+                    setProjects(dataArray);
+                    setTotalItems(dataArray.length);
+                    setLoading(false);
+                })
+                .catch(error => {
+                    displayErrorMessage(`Error occurred while fetching data: ${error}`);
+                    setLoading(false);
+                });
         };
         fetchProjects()
     }, []);
 
     const handleSearch = (value) => {
         const filteredProjects = projects.filter(
-            (project) => project.name.toLowerCase().includes(value.toLowerCase())  ||
+            (project) => project.name.toLowerCase().includes(value.toLowerCase()) ||
                 project.key.toLowerCase().includes(value.toLowerCase()) ||
                 project.lead.toLowerCase().includes(value.toLowerCase()) ||
                 project.category.toLowerCase().includes(value.toLowerCase())
@@ -141,7 +147,7 @@ const ProjectListing = () => {
                 <ProjectListingComponents.SearchInputContainer>
                     <ProjectListingComponents.SearchIcon/>
                     <ProjectListingComponents.SearchInput type="text" placeholder="Search Projects" value={null}
-                                                        onChange={(e) => handleSearch(e.target.value)}/>
+                                                          onChange={(e) => handleSearch(e.target.value)}/>
                 </ProjectListingComponents.SearchInputContainer>
             </ProjectListingComponents.SearchContainer>
             <ProjectListingComponents.ProjectListingTable>

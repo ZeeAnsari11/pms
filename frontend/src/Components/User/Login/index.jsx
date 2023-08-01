@@ -145,7 +145,7 @@ function Login() {
                                 </LoginStyleComponents.GhostButton>
                             </LoginStyleComponents.LeftOverlayPanel>
                             <LoginStyleComponents.RightOverlayPanel signingIn={signIn}>
-                                <LoginStyleComponents.Title>PHP Studios!</LoginStyleComponents.Title>
+                                <LoginStyleComponents.Title>Nexius</LoginStyleComponents.Title>
                                 <LoginStyleComponents.Paragraph>
                                     Enter your personal details and start journey with us
                                 </LoginStyleComponents.Paragraph>
