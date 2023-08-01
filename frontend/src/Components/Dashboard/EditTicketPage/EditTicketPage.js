@@ -1,34 +1,61 @@
-import React, { useEffect, useState } from 'react';
-import { Link, useParams } from "react-router-dom";
+import React, {useEffect, useState} from 'react';
+import {Link, useParams} from "react-router-dom";
 import NavBar from "../../Dashboard/Navbar";
 import Sidebar from "../../Dashboard/Sidebar/ProjectSidebar";
 import FileUpload from "../FileAttachement/FileUpload";
 import axios from "axios";
-import { Breadcrumb, Input, Select } from "antd";
+import {Breadcrumb, Input, Select} from "antd";
 import UserSelectField from "../SelectFields/UserSelectField";
 import TrackingField from "../TimeTracking";
 import Editable from "../Editable/Editable";
 import Comment from "../Comment/Comment";
 import Worklog from "../Worklog/Worklog";
+import {useDispatch, useSelector} from "react-redux";
+import {fetchIssueData} from "../../../Store/Slice/Issue/IssueSlice";
 import ReactQuill from "react-quill";
+import 'react-quill/dist/quill.snow.css';
 import * as EditTicketPageComponents from "./Style"
 import GenericSelectField from "../SelectFields/GenericSelectField";
 import {priorityOptions} from '../../../Shared/Const/Issues'
 import tagRender from '../../../Shared/Components/tagRender'
-import { TbExchange, TbStatusChange } from 'react-icons/tb'
-import { FiUser } from 'react-icons/fi'
-import { TiTags } from "react-icons/ti";
-import { RxStopwatch } from 'react-icons/rx'
-import { CgOptions } from 'react-icons/cg'
+import {TbExchange, TbStatusChange} from 'react-icons/tb'
+import {FiUser} from 'react-icons/fi'
+import {IoIosTimer} from 'react-icons/io'
+import {TiTags} from "react-icons/ti";
+import {RxStopwatch} from 'react-icons/rx'
+import {CgOptions} from 'react-icons/cg'
 import Loader from '../../../Utils/Loader'
-import apiRequest from "../../../Utils/apiRequest";
-import { value } from "lodash/seq";
+import {value} from "lodash/seq";
+import EstimateTimer from "../EstimateTimer/EstimateTimer";
+import * as CardInfoComponents from "../CardInfo/Style";
+import {modules} from "../../../Shared/Const/ReactQuillToolbarOptions";
 
 const {TextArea} = Input;
+
+var toolbarOptions = [
+    ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+    ['blockquote', 'code-block'],
+
+    [{'header': 1}, {'header': 2}],               // custom button values
+    [{'list': 'ordered'}, {'list': 'bullet'}],
+    [{'script': 'sub'}, {'script': 'super'}],      // superscript/subscript
+    [{'indent': '-1'}, {'indent': '+1'}],          // outdent/indent
+    [{'direction': 'rtl'}],                         // text direction
+
+    [{'size': ['small', false, 'large', 'huge']}],  // custom dropdown
+    [{'header': [1, 2, 3, 4, 5, 6, false]}],
+
+    [{'color': []}, {'background': []}],          // dropdown with defaults from theme
+    [{'font': []}],
+    [{'align': []}],
+
+    ['clean']                                         // remove formatting button
+];
 
 
 function EditTicketPage({props}) {
     let authToken = localStorage.getItem('auth_token')
+    const dispatch = useDispatch();
 
     const handleWorklogDelete = (index) => {
         const newWorklogs = [...worklogs];
@@ -42,10 +69,10 @@ function EditTicketPage({props}) {
         getWorklogs();
     };
 
+    const [showQuill, setShowQuill] = useState(false);
 
     const [comments, setComments] = useState([]);
     const [newComment, setNewComment] = useState('');
-    const [selectedComment, setSelectedComment] = useState(null);
     const [showComments, setShowComments] = useState(true);
     const [worklogs, setWorklogs] = useState([]);
     const [showWorklog, setShowWorklog] = useState(false);
@@ -60,6 +87,7 @@ function EditTicketPage({props}) {
     const [selectedIssueType, setSelectedIssueType] = useState('');
     const [selectedPriority, setSelectedPriority] = useState('');
     const [selectedIssueStatus, setSelectedIssueStatus] = useState('');
+    const [estimateHours, setEstimateHours] = useState("");
 
     const [selectedLabel, setSelectedLabel] = useState([]);
 
@@ -76,22 +104,19 @@ function EditTicketPage({props}) {
     const [currentUserEmail, setCurrentUserEmail] = useState({});
 
     const [files, setFiles] = useState([]);
-    const [currentIssueData, setCurrentIssueData] = useState([]);
+    const currentIssueData = useSelector((state) => state.issueData.issueData);
 
     useEffect(() => {
         setLoading(true);
         const fetchCurrentIssueData = async () => {
             try {
-                const response = await apiRequest.get(`/api/issues/${issueId}`, {
-                headers: { 'Authorization': `Token ${authToken}` },
-            });
-                setCurrentIssueData(response.data);
-                setLoading(false);
+                dispatch(fetchIssueData(issueId)).unwrap().then(
+                    setLoading(false)
+                )
             } catch (error) {
                 console.error(error);
-                setLoading(false);
             }
-        };
+        }
         fetchCurrentIssueData();
     }, []);
 
@@ -125,8 +150,8 @@ function EditTicketPage({props}) {
 
     const handleLabelChange = (values) => {
         const labelKeys = values.map((value) => {
-                return parseInt( value.key, 10 );
-            });
+            return parseInt(value.key, 10);
+        });
         setSelectedLabel(labelKeys);
     };
 
@@ -248,6 +273,7 @@ function EditTicketPage({props}) {
             setSelectedIssueType(currentIssueData?.type?.id)
             setSelectedIssueStatus(currentIssueData?.status?.id)
             setSelectedLabel(currentIssueData?.label?.map(label => label.id) || []);
+            setEstimateHours(currentIssueData?.estimate)
         }
     }, [currentIssueData])
 
@@ -305,6 +331,7 @@ function EditTicketPage({props}) {
         selectedLabel.forEach((label) => {
             formData.append("label", label);
         });
+        formData.append("estimate", estimateHours);
         formData.append("type", selectedIssueType);
         formData.append("status", selectedIssueStatus);
         formData.append("priority", selectedPriority);
@@ -337,9 +364,10 @@ function EditTicketPage({props}) {
     }
 
 
-    const handleNewCommentChange = (event) => {
-        setNewComment(event.target.value);
+    const handleNewCommentChange = (value) => {
+        setNewComment(value);
     };
+
 
     const handleCommentSubmit = (event) => {
         event.preventDefault();
@@ -361,6 +389,7 @@ function EditTicketPage({props}) {
                 console.log(response.data);
                 setComments([...comments, response.data]);
                 setNewComment("");
+                setShowQuill(false);
                 getComments();
             })
             .catch((error) => {
@@ -391,49 +420,42 @@ function EditTicketPage({props}) {
     };
 
 
-    const handleCommentEdit = (index, comment, key) => {
-        if (selectedComment === null) {
-            setSelectedComment(index);
-        } else if (selectedComment === index) {
-            const updatedComment = {...comment, body: comment};
+    const handleCommentEdit = (index, comment) => {
+        const commentData = {
+            body: comment,
+            issue: issueId,
+        };
 
-            const commentData = {
-                body: updatedComment.body,
-                issue: issueId,
-            };
+        axios
+            .patch(
+                `${process.env.REACT_APP_HOST}/api/comments/${index}/`,
+                commentData,
+                {
+                    headers: {
+                        Authorization: `Token ${authToken}`,
+                    },
+                }
+            )
+            .then((response) => {
+                // Handle successful response
+                console.log(response.data);
 
-            axios
-                .patch(
-                    `${process.env.REACT_APP_HOST}/api/comments/${index}/`,
-                    commentData,
-                    {
-                        headers: {
-                            Authorization: `Token ${authToken}`,
-                        },
-                    }
-                )
-                .then((response) => {
-                    // Handle successful response
-                    console.log(response.data);
-
-                    const updatedComments = [...comments];
-                    updatedComments[index] = response.data?.body; // Replace the comment at the specified index
-                    setComments(
-                        comments.map((c, i) => (i === index ? comment : c))
-                    );
-                    setSelectedComment(null);
-                    getComments();
-                })
-                .catch((error) => {
-                    // Handle error
-                    console.log(error);
-                });
-        }
+                const updatedComments = [...comments];
+                updatedComments[index] = response.data?.body; // Replace the comment at the specified index
+                setComments(
+                    comments.map((c, i) => (i === index ? comment : c))
+                );
+                getComments();
+            })
+            .catch((error) => {
+                // Handle error
+                console.log(error);
+            });
     };
 
     const BreadcrumbitemsStyles = {cursor: 'pointer', fontWeight: "500"}
 
-    if(loading){
+    if (loading) {
         return (
             <div>
                 <NavBar/>
@@ -463,7 +485,7 @@ function EditTicketPage({props}) {
                                             title: (
                                                 <>
                                                     <Link style={BreadcrumbitemsStyles}
-                                                            to={`/project/${projectId}/dashboard`}>
+                                                          to={`/project/${projectId}/dashboard`}>
                                                         {currentIssueProjectData?.name}
                                                     </Link>
                                                 </>
@@ -493,12 +515,14 @@ function EditTicketPage({props}) {
                             Summary
                         </EditTicketPageComponents.Title>
                         <TextArea rows={2} value={IssueSummary}
-                                    onChange={(event) => setIssueSummary(event.target.value)}/>
+                                  onChange={(event) => setIssueSummary(event.target.value)}/>
                         <EditTicketPageComponents.Title>
                             Description
                         </EditTicketPageComponents.Title>
                         <div style={{marginBottom: "15px"}}>
-                            <ReactQuill value={IssueDesc} onChange={(value) => setIssueDesc(value)}/>
+                            <ReactQuill
+                                modules={modules}
+                                value={IssueDesc} onChange={(value) => setIssueDesc(value)}/>
                         </div>
                         <EditTicketPageComponents.Title>
                             File Attachments
@@ -524,7 +548,6 @@ function EditTicketPage({props}) {
                                         <EditTicketPageComponents.ActivityButton active={showWorklog} onClick={() => {
                                             setShowWorklog(true);
                                             setShowComments(false);
-                                            setSelectedComment(null);
                                         }}>
                                             Work log
                                         </EditTicketPageComponents.ActivityButton>
@@ -533,16 +556,38 @@ function EditTicketPage({props}) {
                                 {showComments && (
                                     <EditTicketPageComponents.CardInfoBoxCustom>
                                         <EditTicketPageComponents.Title>Comments</EditTicketPageComponents.Title>
-                                        <EditTicketPageComponents.FormContainer onSubmit={handleCommentSubmit}>
-                                            <EditTicketPageComponents.CommentInput
-                                                type="text"
-                                                placeholder="Add a comment..."
-                                                value={newComment}
-                                                onChange={handleNewCommentChange}
-                                            />
-                                            <EditTicketPageComponents.CommentButton
-                                                type="submit">Send</EditTicketPageComponents.CommentButton>
-                                        </EditTicketPageComponents.FormContainer>
+                                        <CardInfoComponents.FormContainer onSubmit={handleCommentSubmit}>
+                                            {showQuill ? (
+                                                <>
+                                                    <CardInfoComponents.StyledQuillWrapper>
+                                                        <ReactQuill modules={modules} value={newComment} onChange={handleNewCommentChange}
+                                                                    style={{width: "648px"}}/>
+                                                    </CardInfoComponents.StyledQuillWrapper>
+                                                    <div style={{flex: 1}}>
+                                                        <CardInfoComponents.CommentButton
+                                                            showQuill={showQuill}
+                                                            type="submit">
+                                                            Send
+                                                        </CardInfoComponents.CommentButton>
+                                                        <CardInfoComponents.CommentButton
+                                                            color="#000"
+                                                            backgroundColor="#ECEDF0"
+                                                            onClick={() => setShowQuill(false)}
+                                                        >
+                                                            Cancel
+                                                        </CardInfoComponents.CommentButton>
+                                                    </div>
+                                                </>
+                                            ) : (
+                                                <CardInfoComponents.CommentInput
+                                                    type="text"
+                                                    placeholder="Leave a comment"
+                                                    width={"648px"}
+                                                    onClick={() => setShowQuill(true)}
+                                                />
+                                            )}
+                                        </CardInfoComponents.FormContainer>
+
                                         <ul>
                                             {comments.map((comment, index) => (
                                                 <Comment
@@ -555,7 +600,6 @@ function EditTicketPage({props}) {
                                                     currentUser={currentUserData}
                                                     onDelete={handleCommentDelete}
                                                     onEdit={handleCommentEdit}
-                                                    selectedComment={selectedComment}
                                                 />
                                             ))}
                                         </ul>
@@ -626,7 +670,7 @@ function EditTicketPage({props}) {
                                         isMultiple={false}
                                         placeholder={"Unassigned"}
                                         defaultValue={currentIssueData?.type.type}
-                                        onSelectChange={(value) =>  setSelectedIssueType(parseInt(value))}
+                                        onSelectChange={(value) => setSelectedIssueType(parseInt(value))}
                                     />
 
                                     <EditTicketPageComponents.ContentInfoTitle>
@@ -643,8 +687,18 @@ function EditTicketPage({props}) {
                                         }}
                                         options={IssueLabelOptions}
                                         optionFilterProp="label"
-                                        onChange={(value,key)=> {handleLabelChange(key)}}
-                                        />
+                                        onChange={(value, key) => {
+                                            handleLabelChange(key)
+                                        }}
+                                    />
+
+                                    <EditTicketPageComponents.ContentInfoTitle>
+                                        <IoIosTimer/>
+                                        <span>Original Estimate</span>
+                                    </EditTicketPageComponents.ContentInfoTitle>
+                                    <EstimateTimer defaultValue={currentIssueData?.estimate}
+                                                   onHoursChange={(value) => setEstimateHours(value)}/>
+
                                     <EditTicketPageComponents.ContentInfoTitle>
                                         <RxStopwatch/>
                                         <span>Time Tracking</span>
@@ -660,7 +714,7 @@ function EditTicketPage({props}) {
                                         isMultiple={false}
                                         placeholder={"Unassigned"}
                                         defaultValue={currentIssueData?.priority}
-                                        onSelectChange={(value) =>  setSelectedPriority(value)}
+                                        onSelectChange={(value) => setSelectedPriority(value)}
                                     />
 
                                     <EditTicketPageComponents.ContentInfoTitle>

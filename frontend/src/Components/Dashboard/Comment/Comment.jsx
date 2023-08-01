@@ -1,7 +1,10 @@
 import React, {useState} from 'react';
 import Avatar from 'react-avatar';
 import * as CommentComponents from "./Style"
-
+import {Modal} from "antd";
+import ReactQuill from "react-quill";
+import DOMPurify from 'dompurify';
+import {modules} from "../../../Shared/Const/ReactQuillToolbarOptions";
 
 function Comment({
                      comment,
@@ -12,18 +15,20 @@ function Comment({
                      index,
                      onDelete,
                      onEdit,
-                     selectedComment
                  }) {
     const [editComment, setEditComment] = useState(comment);
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+    const [showEditModal, setShowEditModal] = useState(false);
 
     const handleEdit = () => {
         onEdit(index);
         setEditComment(comment);
+        setShowEditModal(true);
     };
 
     const handleSave = () => {
         onEdit(index, editComment);
+        setShowEditModal(false);
     };
 
     const handleDelete = () => {
@@ -37,6 +42,12 @@ function Comment({
 
     const cancelDelete = () => {
         setShowDeleteConfirmation(false);
+    };
+
+    const sanitizeComment = (comment) => {
+        return {
+            __html: DOMPurify.sanitize(comment),
+        };
     };
 
     function formatCreatedAt(created_at) {
@@ -56,20 +67,21 @@ function Comment({
     }
 
     return (
-        <li key={index} style={{listStyle: 'none'}}>
+        <li key={index} style={{listStyle: 'none',}}
+        >
             <CommentComponents.CommentContainer>
-                <Avatar
-                    name={created_by?.username}
-                    size={35}
-                    color="#DE350B"
-                    round={true}
-                    src={`${process.env.REACT_APP_HOST}/${created_by?.userprofile?.image}`}
-                    title={created_by?.username}
-                    style={{marginRight: '10px', marginTop: '-40px'}}
-                />
 
                 <CommentComponents.CommentInfo>
                     <CommentComponents.CommentAuthor>
+                        <Avatar
+                            name={created_by?.username}
+                            size={35}
+                            color="#DE350B"
+                            round={true}
+                            src={`${process.env.REACT_APP_HOST}/${created_by?.userprofile?.image}`}
+                            title={created_by?.username}
+                            style={{marginRight: '10px'}}
+                        />
                         {created_by?.username}
                         <span
                             style={{
@@ -81,42 +93,81 @@ function Comment({
               {formatCreatedAt(created_at)}
             </span>
                     </CommentComponents.CommentAuthor>
-                    <CommentComponents.CommentText>{comment}</CommentComponents.CommentText>
-                    {selectedComment === index ? (
+                    <CommentComponents.CommentText>
+                        <div dangerouslySetInnerHTML={sanitizeComment(comment)}/>
+                    </CommentComponents.CommentText>
+                    {showEditModal && (
                         <>
-                            <CommentComponents.InputField
-                                type="text"
-                                placeholder="Edit comment"
-                                value={editComment}
-                                onChange={(e) => setEditComment(e.target.value)}
-                            />
-                            <CommentComponents.ButtonForEditComment
-                                onClick={handleSave}>Save</CommentComponents.ButtonForEditComment>
-                        </>
-                    ) : (
-                        <>
-                            {(commentUserId === currentUser?.id || currentUser?.user?.is_staff) && ( // Added conditional rendering
-                                <CommentComponents.CommentButtons>
-                                    <CommentComponents.CommentActionButton
-                                        onClick={handleEdit}>Edit</CommentComponents.CommentActionButton>
-                                    <CommentComponents.CommentActionButton
-                                        onClick={handleDelete}>Delete</CommentComponents.CommentActionButton>
-                                </CommentComponents.CommentButtons>
-                            )}
+                            <Modal
+                                title="Edit Comment"
+                                open={showEditModal}
+                                onCancel={() => setShowEditModal(false)}
+                                onOk={handleSave}
+                                okButtonProps={{style: {backgroundColor: 'rgb(30, 100, 209)'}}}
+                                okText="Save"
+                                cancelText="Cancel"
+                            >
+                                <CommentComponents.CommentAuthor>
+                                    <Avatar
+                                        name={created_by?.username}
+                                        size={35}
+                                        color="#DE350B"
+                                        round={true}
+                                        src={`${process.env.REACT_APP_HOST}/${created_by?.userprofile?.image}`}
+                                        title={created_by?.username}
+                                        style={{marginRight: '10px'}}
+                                    />
+                                    {created_by?.username}
+                                    <span
+                                        style={{
+                                            marginLeft: '10px',
+                                            fontWeight: '500',
+                                            color: '#42526E'
+                                        }}
+                                    >
+                                        {formatCreatedAt(created_at)}
+                                    </span>
+                                </CommentComponents.CommentAuthor>
+                                <ReactQuill
+                                    modules={modules}
+                                    value={editComment}
+                                    onChange={(value) => setEditComment(value)}
+                                />
+                            </Modal>
                         </>
                     )}
+                    <>
+                        {(commentUserId === currentUser?.id || currentUser?.user?.is_staff) && (
+                            <CommentComponents.CommentButtons>
+                                <CommentComponents.CommentActionButton
+                                    onClick={handleEdit}>
+                                    Edit
+                                    <CommentComponents.Dot/>
+                                </CommentComponents.CommentActionButton>
+                                <CommentComponents.CommentActionButton
+                                    onClick={handleDelete}>
+                                    Delete
+                                    <CommentComponents.Dot/>
+                                </CommentComponents.CommentActionButton>
+                            </CommentComponents.CommentButtons>
+                        )}
+                    </>
                     {showDeleteConfirmation && (
-                        <CommentComponents.DeleteConfirmation>
-                            <CommentComponents.DeleteConfirmationText>
-                                Are you sure you want to delete this comment?
-                            </CommentComponents.DeleteConfirmationText>
-                            <CommentComponents.DeleteConfirmationButton onClick={confirmDelete}>
-                                Yes
-                            </CommentComponents.DeleteConfirmationButton>
-                            <CommentComponents.DeleteConfirmationButton onClick={cancelDelete}>
-                                No
-                            </CommentComponents.DeleteConfirmationButton>
-                        </CommentComponents.DeleteConfirmation>
+                        <Modal
+                            title="Delete this comment?"
+                            open={showDeleteConfirmation}
+                            onCancel={cancelDelete}
+                            onOk={confirmDelete}
+                            okButtonProps={{style: {backgroundColor: 'rgb(30, 100, 209)'}}}
+                            okText="Delete"
+                            cancelText="Cancel"
+                        >
+                            <p>
+                                <strong>
+                                    Once you delete, it's gone for good.
+                                </strong>
+                            </p>
+                        </Modal>
                     )}
                 </CommentComponents.CommentInfo>
             </CommentComponents.CommentContainer>
