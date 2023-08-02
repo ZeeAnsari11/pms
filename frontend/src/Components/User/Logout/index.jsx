@@ -7,7 +7,7 @@ import {RiExternalLinkLine} from "react-icons/ri";
 import {FaUsersCog} from "react-icons/fa";
 import {MdGroups} from "react-icons/md";
 import {GrSettingsOption} from "react-icons/gr";
-import { FiSettings } from "react-icons/fi";
+import {FiSettings} from "react-icons/fi";
 import {displayErrorMessage, displaySuccessMessage} from "../../../Shared/notify"
 import {AxiosError} from "axios";
 import {StatusCodes} from "http-status-codes";
@@ -52,7 +52,29 @@ const LinkItem = () => {
     )
 }
 
-const accountItems = [
+const simpleUseraccountItems = [
+    {
+        key: "1",
+        type: "group",
+        label: <AccountDropdown/>,
+        children: [
+            {
+                key: "1-2",
+                label: <Link to="/manage-account">Manage Account</Link>,
+                icon: <RiExternalLinkLine size={iconSize}/>,
+            },
+        ],
+    }, {
+        type: "divider",
+    }, {
+        key: "3",
+        icon: <AiOutlineLogout size={iconSize}/>,
+        label: <LinkItem/>,
+    },
+];
+
+
+const adminUseraccountItems = [
     {
         key: "1",
         type: "group",
@@ -76,12 +98,12 @@ const accountItems = [
             {
                 key: "1-5",
                 label: <Link to="/manage-general-settings">Manage General Settings</Link>,
-                icon: <FiSettings size={iconSize} />,
+                icon: <FiSettings size={iconSize}/>,
             },
             {
                 key: "1-6",
                 label: <Link to="/global-integrations-setting">Global Integration Settings</Link>,
-                icon: <GrSettingsOption size={iconSize} />,
+                icon: <GrSettingsOption size={iconSize}/>,
             },
         ],
     }, {
@@ -94,4 +116,4 @@ const accountItems = [
 ];
 
 
-export {accountItems}
+export {adminUseraccountItems, simpleUseraccountItems}

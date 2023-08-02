@@ -16,6 +16,7 @@ import {
     NotImplemented,
 } from './SidebarStyle';
 import axios from "axios";
+import {useSelector} from "react-redux";
 
 
 const ProjectSidebar = () => {
@@ -23,6 +24,9 @@ const ProjectSidebar = () => {
     const {projectId} = useParams()
 
     let authToken = localStorage.getItem('auth_token')
+    const currentUserProfileData = useSelector((state) => state.DataSyncer.userProfileData);
+    const IsAdminOrStaffUser = currentUserProfileData?.user?.is_staff || currentUserProfileData?.user?.is_superuser
+
     const [projectData, setProjectData] = useState({});
     const [icon, setIcon] = useState(null);
 
@@ -88,15 +92,19 @@ const ProjectSidebar = () => {
             </ProjectInfo>
 
             {renderLinkItem(match, 'Kanban Board', 'kanban', `/project/${projectId}/dashboard`)}
-            {renderLinkItem(match, 'Project Settings', 'settings', `/project/${projectId}/project-setting`)}
+            {IsAdminOrStaffUser && renderLinkItem(match,
+                'Project Settings',
+                'settings',
+                `/project/${projectId}/project-setting`
+            )}
             <Divider/>
             {renderLinkItem(match, 'Summary', 'Summary', `/project/${projectId}/setting/summary`)}
-            {renderLinkItem(match, 'Integrations', 'Integrations', `/project/${projectId}/setting/integrations`)}
-            {renderLinkItem(match, 'Tags', 'Tags', `/project/${projectId}/setting/tags`)}
-            {renderLinkItem(match, 'Types', 'Types', `/project/${projectId}/setting/types`)}
-            {renderLinkItem(match, 'Columns', 'Columns', `/project/${projectId}/setting/columns`)}
-            {renderLinkItem(match, 'Permissions', 'Permissions', `/project/${projectId}/setting/permissions`)}
-            {renderLinkItem(match, 'Close Project', 'Close Project', `/project/${projectId}/close-project`)}
+            {IsAdminOrStaffUser && renderLinkItem(match, 'Integrations', 'Integrations', `/project/${projectId}/setting/integrations`)}
+            {IsAdminOrStaffUser && renderLinkItem(match, 'Tags', 'Tags', `/project/${projectId}/setting/tags`)}
+            {IsAdminOrStaffUser && renderLinkItem(match, 'Types', 'Types', `/project/${projectId}/setting/types`)}
+            {IsAdminOrStaffUser && renderLinkItem(match, 'Columns', 'Columns', `/project/${projectId}/setting/columns`)}
+            {IsAdminOrStaffUser && renderLinkItem(match, 'Permissions', 'Permissions', `/project/${projectId}/setting/permissions`)}
+            {IsAdminOrStaffUser && renderLinkItem(match, 'Close Project', 'Close Project', `/project/${projectId}/close-project`)}
             <Divider/>
             {renderLinkItem(match, 'Roadmap', 'roadmap')}
             {renderLinkItem(match, 'Releases', 'release')}

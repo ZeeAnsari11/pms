@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import { Avatar, Button, Select } from 'antd';
+import {Avatar, Button, Select} from 'antd';
 import * as PermissionsComponents from './Style';
 import NavBar from '../../Dashboard/Navbar/index';
 import ProjectSidebar from "../../Dashboard/Sidebar/ProjectSidebar";
@@ -8,6 +8,8 @@ import Toast from "../../../Shared/Components/Toast"
 import {displayErrorMessage, displaySuccessMessage} from "../../../Shared/notify"
 import {useParams} from "react-router-dom";
 import {StatusCodes} from "http-status-codes";
+import {useSelector} from "react-redux";
+import ErrorPage from "../../Error/ErrorPage";
 
 
 const Permissions = () => {
@@ -19,7 +21,10 @@ const Permissions = () => {
     const [dataSource, setDataSource] = useState([]);
 
     let authToken = localStorage.getItem('auth_token');
-    const { Option } = Select;
+    const currentUserProfileData = useSelector((state) => state.DataSyncer.userProfileData);
+    const IsAdminOrStaffUser = currentUserProfileData?.user?.is_staff || currentUserProfileData?.user?.is_superuser
+
+    const {Option} = Select;
 
     const {projectId} = useParams();
 
@@ -192,6 +197,15 @@ const Permissions = () => {
         setDataSource(result);
     }, [permissions]);
 
+    if (!IsAdminOrStaffUser) {
+        return (
+            <>
+                <NavBar/>
+                <ProjectSidebar/>
+                <ErrorPage status={403}/>
+            </>
+        );
+    }
 
     return (
         <>
@@ -200,22 +214,23 @@ const Permissions = () => {
             <Toast/>
             <PermissionsComponents.PermissionsContainer>
                 <PermissionsComponents.Heading>Allowed Users</PermissionsComponents.Heading>
-                    <Select
-                        showArrow
-                        filterOption
-                        onChange={handleUserName}
-                        showSearch
-                        optionFilterProp="label"
-                        placeholder="Select User Name"
-                        optionLabelProp="label"
-                        style={{ width: "25%", marginRight: "10px"}}
-                    >
+                <Select
+                    showArrow
+                    filterOption
+                    onChange={handleUserName}
+                    showSearch
+                    optionFilterProp="label"
+                    placeholder="Select User Name"
+                    optionLabelProp="label"
+                    style={{width: "25%", marginRight: "10px"}}
+                >
                     {userNameList.map((item) => (
                         <Option key={item.value} value={item.value} label={item.label}>
                             {
                                 item.iconUrl ?
                                     <div>
-                                        <Avatar draggable={true} style={{ background: "#10899e" }} alt={item.label} src={`${process.env.REACT_APP_HOST}/${item.iconUrl}`} />{" "}
+                                        <Avatar draggable={true} style={{background: "#10899e"}} alt={item.label}
+                                                src={`${process.env.REACT_APP_HOST}/${item.iconUrl}`}/>{" "}
                                         {item.label}
                                     </div> :
                                     <div>
@@ -223,21 +238,21 @@ const Permissions = () => {
                                     </div>
                             }
                         </Option>
-                        ))}
-                    </Select>
-                    <Select
-                        showArrow
-                        filterOption
-                        showSearch
-                        optionFilterProp="label"
-                        onChange={handleUserGroup}
-                        options={userGroupList}
-                        placeholder={"Select User Group"}
-                        style={{ width: "25%", marginRight: "10px"}}
-                    />
-                    <PermissionsComponents.CustomButton type="primary" onClick={handleAddPermission}>
-                        Add
-                    </PermissionsComponents.CustomButton>
+                    ))}
+                </Select>
+                <Select
+                    showArrow
+                    filterOption
+                    showSearch
+                    optionFilterProp="label"
+                    onChange={handleUserGroup}
+                    options={userGroupList}
+                    placeholder={"Select User Group"}
+                    style={{width: "25%", marginRight: "10px"}}
+                />
+                <PermissionsComponents.CustomButton type="primary" onClick={handleAddPermission}>
+                    Add
+                </PermissionsComponents.CustomButton>
                 <PermissionsComponents.PermissionsTable
                     dataSource={dataSource}
                     columns={columns}

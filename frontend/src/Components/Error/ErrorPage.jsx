@@ -1,9 +1,9 @@
 import React from 'react';
-import { Button, Result } from 'antd';
-import { useNavigate } from "react-router-dom";
+import {Button, Result} from 'antd';
+import {useNavigate} from "react-router-dom";
 
 
-const ErrorPage = ({ status }) => {
+const ErrorPage = ({status}) => {
     const navigate = useNavigate();
     let message;
 
@@ -26,13 +26,13 @@ const ErrorPage = ({ status }) => {
         navigate('/project');
     }
     return (
-        <div>
-        <Result
-            status={status}
-            title={status}
-            subTitle={message}
-            extra={<Button type="primary" onClick={handleBackHome}>Back Home</Button>}
-        />
+        <div style={{paddingTop: "20px"}}>
+            <Result
+                status={status}
+                title={status}
+                subTitle={message}
+                extra={<Button type="primary" onClick={handleBackHome}>Back Home</Button>}
+            />
         </div>
     );
 };
