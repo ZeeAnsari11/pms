@@ -7,6 +7,8 @@ import Toast from "../../../Shared/Components/Toast"
 import {displayErrorMessage, displaySuccessMessage} from "../../../Shared/notify"
 import apiRequest from '../../../Utils/apiRequest';
 import {Button, Form as EditForm, Form as AddForm, Input, Modal, Space, Table, Transfer} from 'antd';
+import {useSelector} from "react-redux";
+import ErrorPage from "../../Error/ErrorPage";
 
 function ManageGroups() {
 
@@ -26,6 +28,8 @@ function ManageGroups() {
     const [addTypeForm] = AddForm.useForm();
 
     let authToken = localStorage.getItem('auth_token');
+    const currentUserProfileData = useSelector((state) => state.DataSyncer.userProfileData);
+    const IsAdminOrStaffUser = currentUserProfileData?.user?.is_staff || currentUserProfileData?.user?.is_superuser
 
     const updateTable = (responseData) => {
         const updatedData = data.map(item => {
@@ -218,6 +222,18 @@ function ManageGroups() {
     const endIndex = startIndex + pageSize;
     const paginatedData = filteredData.slice(startIndex, endIndex);
 
+
+    if (!IsAdminOrStaffUser) {
+        return (
+            <>
+                <NavBar/>
+                <UserSidebar/>
+                <ErrorPage status={403}/>
+            </>
+        );
+    }
+
+
     return (
         <div>
             <UserSidebar/>
@@ -262,7 +278,10 @@ function ManageGroups() {
                         <>
                             <EditForm layout="vertical" form={editTypeForm} onFinish={handleEditModal}>
                                 <ManageGroupComponents.StyledAddFormItem label="Group" name="name"
-                                                   rules={[{required: true, message: 'Please enter Group name'}]}>
+                                                                         rules={[{
+                                                                             required: true,
+                                                                             message: 'Please enter Group name'
+                                                                         }]}>
                                     <Input placeholder="Enter Group name"/>
                                 </ManageGroupComponents.StyledAddFormItem>
                                 <ManageGroupComponents.StyledEditFormItem label="Permissions" name="targetKeys">
@@ -284,7 +303,10 @@ function ManageGroups() {
                         <>
                             <AddForm layout="vertical" form={addTypeForm} onFinish={handleAddModal}>
                                 <ManageGroupComponents.StyledAddFormItem label="Group" name="name"
-                                                    rules={[{required: true, message: 'Please enter Group name'}]}>
+                                                                         rules={[{
+                                                                             required: true,
+                                                                             message: 'Please enter Group name'
+                                                                         }]}>
                                     <Input placeholder="Enter Group name"/>
                                 </ManageGroupComponents.StyledAddFormItem>
                                 <ManageGroupComponents.StyledEditFormItem label="Permissions" name="targetKeys">

@@ -8,6 +8,8 @@ import {Input, Button, Form, Switch} from 'antd';
 import apiRequest from '../../../Utils/apiRequest';
 import ToastContainer from '../../../Shared/Components/Toast';
 import {displayErrorMessage, displaySuccessMessage, displayInfoMessage} from '../../../Shared/notify';
+import {useSelector} from "react-redux";
+import ErrorPage from "../../Error/ErrorPage";
 
 function GlobalIntegrations() {
 
@@ -18,10 +20,12 @@ function GlobalIntegrations() {
     const [slackConfigId, setSlackConfigId] = useState(null);
 
     let authToken = localStorage.getItem('auth_token');
+    const currentUserProfileData = useSelector((state) => state.DataSyncer.userProfileData);
+    const IsAdminOrStaffUser = currentUserProfileData?.user?.is_staff || currentUserProfileData?.user?.is_superuser
 
     const updateSlackIntegrationForm = (response) => {
         let responseData;
-        if(response.data.length === 0){
+        if (response.data.length === 0) {
             setSlackConfigId(null);
             setSlackIsUpdating(false);
             return;
@@ -37,16 +41,16 @@ function GlobalIntegrations() {
         setSlackConfigId(id);
 
         slackForm.setFieldsValue({
-            slackChannelGroupUser : webhook_channel,
-            slackNotificationStatus : is_active,
-            slackWebhookUrl : webhook_url,
+            slackChannelGroupUser: webhook_channel,
+            slackNotificationStatus: is_active,
+            slackWebhookUrl: webhook_url,
         });
     }
 
 
     const fetchGlobalSlackConfig = async () => {
         return await apiRequest.get(`/api/global_slack_webhook/`, {
-            headers: { "Authorization": `Token ${authToken}` }
+            headers: {"Authorization": `Token ${authToken}`}
         })
     }
 
@@ -68,9 +72,9 @@ function GlobalIntegrations() {
         const {slackNotificationStatus, slackChannelGroupUser, slackWebhookUrl} = values
         return await apiRequest
             .patch(`/api/global_slack_webhook/${slackConfigId}/`, {
-                is_active : slackNotificationStatus,
-                webhook_channel : slackChannelGroupUser,
-                webhook_url : slackWebhookUrl,
+                is_active: slackNotificationStatus,
+                webhook_channel: slackChannelGroupUser,
+                webhook_url: slackWebhookUrl,
             }, {
                 headers:
                     {"Authorization": `Token ${authToken}`}
@@ -79,8 +83,12 @@ function GlobalIntegrations() {
 
     useEffect(() => {
         fetchGlobalSlackConfig()
-            .then( response => { updateSlackIntegrationForm(response) } )
-            .catch( error => { displayErrorMessage(error.message) })
+            .then(response => {
+                updateSlackIntegrationForm(response)
+            })
+            .catch(error => {
+                displayErrorMessage(error.message)
+            })
     }, []);
 
     const handleSlackSaveOrUpdateForm = (values) => {
@@ -95,26 +103,36 @@ function GlobalIntegrations() {
                 })
         } else {
             createSlackIntegrationsData(values)
-                .then( response => {
+                .then(response => {
                     displaySuccessMessage(`Successfully Save the Slack Configurations`);
                     updateSlackIntegrationForm(response);
                 })
                 .catch(error => {
                     displayErrorMessage(error.message)
-            });
+                });
         }
 
     };
 
     const validateUrl = (rule, value, callback) => {
-    if (value) {
-        const urlPattern = /^(ftp|http|https):\/\/[^ "]+$/;
-        if (!urlPattern.test(value)) {
-            callback('Please enter a valid URL.');
+        if (value) {
+            const urlPattern = /^(ftp|http|https):\/\/[^ "]+$/;
+            if (!urlPattern.test(value)) {
+                callback('Please enter a valid URL.');
+            }
         }
-    }
-    callback();
+        callback();
     };
+
+    if (!IsAdminOrStaffUser) {
+        return (
+            <>
+                <NavBar/>
+                <UserSidebar/>
+                <ErrorPage status={403}/>
+            </>
+        );
+    }
 
     return (
         <div>
@@ -124,7 +142,8 @@ function GlobalIntegrations() {
                 <ToastContainer/>
                 <GlobalIntegrationsComponents.ContentWrapper>
                     <GlobalIntegrationsComponents.HeadingWrapper>
-                        <GlobalIntegrationsComponents.SummaryHeading>Global Integration with third-party services</GlobalIntegrationsComponents.SummaryHeading>
+                        <GlobalIntegrationsComponents.SummaryHeading>Global Integration with third-party
+                            services</GlobalIntegrationsComponents.SummaryHeading>
                     </GlobalIntegrationsComponents.HeadingWrapper>
                     <GlobalIntegrationsComponents.Divider/>
                     <GlobalIntegrationsComponents.NotificationContainerForSlack>
@@ -134,7 +153,8 @@ function GlobalIntegrations() {
                                     <GlobalIntegrationsComponents.IconWrapperDiv>
                                         <AiFillSlackCircle fontSize={"28px"}/>
                                     </GlobalIntegrationsComponents.IconWrapperDiv>
-                                    <GlobalIntegrationsComponents.IconName>Slack Configuration</GlobalIntegrationsComponents.IconName>
+                                    <GlobalIntegrationsComponents.IconName>Slack
+                                        Configuration</GlobalIntegrationsComponents.IconName>
                                     <GlobalIntegrationsComponents.FormWrapper>
                                         <Form layout="vertical" form={slackForm} onFinish={handleSlackSaveOrUpdateForm}>
                                             <Form.Item
@@ -142,7 +162,7 @@ function GlobalIntegrations() {
                                                 label="Webhook URL"
                                                 rules={[
                                                     {required: true, message: 'Please enter the webhook URL'},
-                                                    { validator: validateUrl }
+                                                    {validator: validateUrl}
                                                 ]}
                                             ><Input/>
                                             </Form.Item>
@@ -163,7 +183,7 @@ function GlobalIntegrations() {
                                             >
                                                 <Switch checkedChildren="Yes" unCheckedChildren="No"/>
                                             </Form.Item>
-                                            { isSlackUpdating ?
+                                            {isSlackUpdating ?
                                                 <Form.Item>
                                                     <Button type="primary" htmlType="update">Update</Button>
                                                 </Form.Item> :
@@ -184,9 +204,12 @@ function GlobalIntegrations() {
                                     <GlobalIntegrationsComponents.IconWrapperDiv>
                                         <FcGoogle fontSize={"28px"}/>
                                     </GlobalIntegrationsComponents.IconWrapperDiv>
-                                    <GlobalIntegrationsComponents.IconName>Gmail Configuration</GlobalIntegrationsComponents.IconName>
+                                    <GlobalIntegrationsComponents.IconName>Gmail
+                                        Configuration</GlobalIntegrationsComponents.IconName>
                                     <GlobalIntegrationsComponents.FormWrapper>
-                                        <Form layout="vertical" onFinish={() => (displayInfoMessage(<><FcGoogle/> Gmail SMTP is Integrated</>))}>
+                                        <Form layout="vertical"
+                                              onFinish={() => (displayInfoMessage(<><FcGoogle/> Gmail SMTP is
+                                                  Integrated</>))}>
                                             <Form.Item
                                                 name="hostName"
                                                 label="Hostname"
@@ -230,13 +253,14 @@ function GlobalIntegrations() {
                                             >
                                                 <Input/>
                                             </Form.Item>
-                                            <GlobalIntegrationsComponents.ParagraphNote>Please enter security protocol SSL or TLS </GlobalIntegrationsComponents.ParagraphNote>
+                                            <GlobalIntegrationsComponents.ParagraphNote>Please enter security protocol
+                                                SSL or TLS </GlobalIntegrationsComponents.ParagraphNote>
                                             <GlobalIntegrationsComponents.StyledStatusDev>
                                                 <Form.Item
                                                     name="SMPTNotificationStatus"
                                                     label="Enable"
                                                     valuePropName="checked"
-                                                    style={{ marginRight: '16px' }}
+                                                    style={{marginRight: '16px'}}
                                                 >
                                                     <Switch checkedChildren="Yes" unCheckedChildren="No"/>
                                                 </Form.Item>
@@ -244,7 +268,7 @@ function GlobalIntegrations() {
                                                     name="SMPTGlobalNotificationStatus"
                                                     label="Use Global Setting"
                                                     valuePropName="checked"
-                                                    style={{ marginLeft: '16px' }}
+                                                    style={{marginLeft: '16px'}}
                                                 >
                                                     <Switch checkedChildren="Yes" unCheckedChildren="No"/>
                                                 </Form.Item>

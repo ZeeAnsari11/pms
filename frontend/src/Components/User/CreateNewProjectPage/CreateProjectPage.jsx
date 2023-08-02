@@ -9,8 +9,11 @@ import NavBar from "../../Dashboard/Navbar";
 import GenericSelectField from "../../Dashboard/SelectFields/GenericSelectField";
 import ImageUploader from "../ImageUploader";
 import {modules} from "../../../Shared/Const/ReactQuillToolbarOptions";
-import { Avatar, Select } from "antd";
-import { StatusCodes } from "http-status-codes";
+import {Avatar, Select} from "antd";
+import {StatusCodes} from "http-status-codes";
+import {useSelector} from "react-redux";
+import ErrorPage from "../../Error/ErrorPage";
+import UserSidebar from "../../Dashboard/Sidebar/UserSidebar";
 
 function CreateProject() {
 
@@ -24,7 +27,10 @@ function CreateProject() {
     const [selectedProjectLead, setSelectedProjectLead] = useState([]);
 
     let authToken = localStorage.getItem('auth_token');
-    const { Option } = Select;
+    const currentUserProfileData = useSelector((state) => state.DataSyncer.userProfileData);
+    const IsAdminOrStaffUser = currentUserProfileData?.user?.is_staff || currentUserProfileData?.user?.is_superuser
+
+    const {Option} = Select;
 
     const uniqueProjectKey = uuidv4();
     const navigate = useNavigate();
@@ -118,12 +124,21 @@ function CreateProject() {
                 navigate('/project');
             })
             .catch(error => {
-                if(error.response.status === StatusCodes.FORBIDDEN){
+                if (error.response.status === StatusCodes.FORBIDDEN) {
                     displayErrorMessage(error.response.data.detail)
                     return;
                 }
                 displayErrorMessage(error.message);
             });
+    }
+
+    if (!IsAdminOrStaffUser) {
+        return (
+            <>
+                <NavBar/>
+                <ErrorPage status={403}/>
+            </>
+        );
     }
 
     return (
@@ -135,15 +150,15 @@ function CreateProject() {
                     <CreateProjectComponents.Details>Details</CreateProjectComponents.Details>
                 </CreateProjectComponents.Header>
                 <CreateProjectComponents.FormWrapper onSubmit={handleSubmit} method="POST">
-                    <ImageUploader onImageChange={(image)=> setImage(image)}/>
+                    <ImageUploader onImageChange={(image) => setImage(image)}/>
                     <CreateProjectComponents.LabelForProject
                         htmlFor="project">Project:</CreateProjectComponents.LabelForProject>
                     <CreateProjectComponents.StyledInput type="text" id="project" name="project"
-                                                    placeholder="Enter project name"/>
+                                                         placeholder="Enter project name"/>
                     <CreateProjectComponents.LabelForDescriptionBoc
                         htmlFor="key">Description:</CreateProjectComponents.LabelForDescriptionBoc>
                     <CreateProjectComponents.StyledReactQuill modules={modules} id="exampleEditor" value={text}
-                                                                onChange={(value=> setText(value))}/>
+                                                              onChange={(value => setText(value))}/>
                     <CreateProjectComponents.LabelForCompany
                         htmlFor="category">Company:</CreateProjectComponents.LabelForCompany>
                     <GenericSelectField
@@ -165,22 +180,24 @@ function CreateProject() {
                     <CreateProjectComponents.LabelforLead htmlFor="category">Project
                         Lead:</CreateProjectComponents.LabelforLead>
                     <Select
-                            showArrow
-                            filterOption
-                            onChange={(value) => setSelectedProjectLead(parseInt(value))}
-                            showSearch
-                            optionFilterProp="label"
-                            placeholder="Please select User"
-                            optionLabelProp="label"
-                            value={selectedProjectLead}
-                            style={{ width: "50%" }}
-                        >
+                        showArrow
+                        filterOption
+                        onChange={(value) => setSelectedProjectLead(parseInt(value))}
+                        showSearch
+                        optionFilterProp="label"
+                        placeholder="Please select User"
+                        optionLabelProp="label"
+                        value={selectedProjectLead}
+                        style={{width: "50%"}}
+                    >
                         {userOptions.map((item) => (
                             <Option key={item.id} value={item.id} label={item.username}>
                                 {
                                     item.iconUrl ?
                                         <div>
-                                            <Avatar draggable={true} style={{ background: "#10899e" }} alt={item.username} src={`${process.env.REACT_APP_HOST}/${item.iconUrl}`} />{" "}
+                                            <Avatar draggable={true} style={{background: "#10899e"}}
+                                                    alt={item.username}
+                                                    src={`${process.env.REACT_APP_HOST}/${item.iconUrl}`}/>{" "}
                                             {item.username}
                                         </div> :
                                         <div>
@@ -191,8 +208,8 @@ function CreateProject() {
                                         </div>
                                 }
                             </Option>
-                            ))}
-                        </Select>
+                        ))}
+                    </Select>
                     <CreateProjectComponents.SaveButton>Save</CreateProjectComponents.SaveButton>
                 </CreateProjectComponents.FormWrapper>
             </CreateProjectComponents.PageWrapper>
