@@ -9,6 +9,8 @@ import {displayErrorMessage, displaySuccessMessage} from "../../../Shared/notify
 import apiRequest from '../../../Utils/apiRequest';
 import {Button, Form as EditForm, Form as AddForm, Input, Modal, Space, Table} from 'antd';
 import {ChromePicker} from 'react-color';
+import {useSelector} from "react-redux";
+import ErrorPage from "../../Error/ErrorPage";
 
 function Tags() {
 
@@ -26,6 +28,8 @@ function Tags() {
     const [addTagForm] = AddForm.useForm();
 
     let authToken = localStorage.getItem('auth_token');
+    const currentUserProfileData = useSelector((state) => state.DataSyncer.userProfileData);
+    const IsAdminOrStaffUser = currentUserProfileData?.user?.is_staff || currentUserProfileData?.user?.is_superuser
 
     const {projectId} = useParams();
 
@@ -202,6 +206,16 @@ function Tags() {
     const endIndex = startIndex + pageSize;
     const paginatedData = filteredData.slice(startIndex, endIndex);
 
+    if (!IsAdminOrStaffUser) {
+        return (
+            <>
+                <NavBar/>
+                <ProjectSidebar/>
+                <ErrorPage status={403}/>
+            </>
+        );
+    }
+
     return (
         <div>
             <ProjectSidebar/>
@@ -210,7 +224,7 @@ function Tags() {
             <TagComponents.TagContainer>
                 <h2>Project Issues Tags</h2>
                 <Input.Search placeholder="Search by tag name" value={searchQuery} onChange={handleSearch}
-                                style={{marginBottom: 16}}/>
+                              style={{marginBottom: 16}}/>
                 <div style={{marginBottom: 16}}>
                     <Button type="primary" onClick={handleAddLink}>
                         <AiOutlinePlus/> Add
@@ -248,7 +262,7 @@ function Tags() {
                                     <Input/>
                                 </TagComponents.StyledEditFormItem>
                                 <TagComponents.StyledEditFormItem label="Color" name="color"
-                                                                    rules={[{required: true,}]}>
+                                                                  rules={[{required: true,}]}>
                                     <ChromePicker color={pickedColor} onChange={(color) => setPickedColor(color)}/>
                                 </TagComponents.StyledEditFormItem>
                             </EditForm>

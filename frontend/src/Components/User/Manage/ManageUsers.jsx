@@ -7,6 +7,8 @@ import {displaySuccessMessage, displayErrorMessage} from "../../../Shared/notify
 import {Input, Button, Modal, Pagination, Space, Form, Switch} from 'antd';
 import {AiOutlineEdit, AiOutlineDelete} from 'react-icons/ai';
 import UserSidebar from "../../Dashboard/Sidebar/UserSidebar";
+import {useSelector} from "react-redux";
+import ErrorPage from "../../Error/ErrorPage";
 
 
 const ManageUsers = () => {
@@ -23,6 +25,9 @@ const ManageUsers = () => {
     const [form] = Form.useForm();
 
     let authToken = localStorage.getItem('auth_token');
+    const currentUserProfileData = useSelector((state) => state.DataSyncer.userProfileData);
+    const IsAdminOrStaffUser = currentUserProfileData?.user?.is_staff || currentUserProfileData?.user?.is_superuser
+
 
     const updateTable = (responseData, id) => {
         const updatedData = data.map(item => {
@@ -187,6 +192,15 @@ const ManageUsers = () => {
     const endIndex = startIndex + pageSize;
     const paginatedData = filteredData.slice(startIndex, endIndex);
 
+    if (!IsAdminOrStaffUser) {
+        return (
+            <>
+                <NavBar/>
+                <UserSidebar/>
+                <ErrorPage status={403}/>
+            </>
+        );
+    }
 
     return (
         <>
@@ -196,7 +210,7 @@ const ManageUsers = () => {
             <ManageUsersComponents.UserContainer>
                 <h2>Users List</h2>
                 <Input.Search placeholder="Search by Username or Email" value={searchQuery} onChange={handleSearch}
-                                style={{marginBottom: 16}}/>
+                              style={{marginBottom: 16}}/>
                 <ManageUsersComponents.PermissionsTable
                     dataSource={paginatedData}
                     columns={columns}
@@ -228,23 +242,27 @@ const ManageUsers = () => {
             >
                 {modalData && (
                     <Form layout="vertical" form={form} onFinish={handleModalSave} initialValues={modalData}>
-                        <ManageUsersComponents.StyledFormItem label="Username" name="username" rules={[{message: 'Please enter a username'}]}>
+                        <ManageUsersComponents.StyledFormItem label="Username" name="username"
+                                                              rules={[{message: 'Please enter a username'}]}>
                             <Input/>
                         </ManageUsersComponents.StyledFormItem>
-                        <ManageUsersComponents.StyledFormItem label="Email" name="email" rules={[{message: 'Please enter an email'}]}>
+                        <ManageUsersComponents.StyledFormItem label="Email" name="email"
+                                                              rules={[{message: 'Please enter an email'}]}>
                             <Input/>
                         </ManageUsersComponents.StyledFormItem>
-                        <ManageUsersComponents.StyledFormItem label="Admin Status" name="isSuperUser" valuePropName="checked">
+                        <ManageUsersComponents.StyledFormItem label="Admin Status" name="isSuperUser"
+                                                              valuePropName="checked">
                             <Switch/>
                         </ManageUsersComponents.StyledFormItem>
-                        <ManageUsersComponents.StyledFormItem label="Active Status" name="isActive" valuePropName="checked">
+                        <ManageUsersComponents.StyledFormItem label="Active Status" name="isActive"
+                                                              valuePropName="checked">
                             <Switch/>
                         </ManageUsersComponents.StyledFormItem>
                         <ManageUsersComponents.StyledFormItem label="Is Staff" name="isStaff" valuePropName="checked">
                             <Switch/>
                         </ManageUsersComponents.StyledFormItem>
                         <ManageUsersComponents.StyledFormItem label="Last LogIn" name="lastLogIn"
-                                        rules={[{message: 'Please enter an email'}]}>
+                                                              rules={[{message: 'Please enter an email'}]}>
                             <Input disabled/>
                         </ManageUsersComponents.StyledFormItem>
                     </Form>
