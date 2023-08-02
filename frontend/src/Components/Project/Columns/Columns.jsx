@@ -1,13 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import React, {useEffect, useState} from 'react';
+import {useParams} from 'react-router-dom';
 import * as ColumnsComponents from './Style';
 import NavBar from "../../Dashboard/Navbar/index";
 import ProjectSidebar from "../../Dashboard/Sidebar/ProjectSidebar";
-import { AiOutlineDelete, AiOutlineEdit, AiOutlinePlus } from 'react-icons/ai';
+import {AiOutlineDelete, AiOutlineEdit, AiOutlinePlus} from 'react-icons/ai';
 import Toast from "../../../Shared/Components/Toast"
-import { displayErrorMessage, displaySuccessMessage } from "../../../Shared/notify"
+import {displayErrorMessage, displaySuccessMessage} from "../../../Shared/notify"
 import apiRequest from '../../../Utils/apiRequest';
-import { Button, Form as EditForm, Form as AddForm, Input, Modal, Space, Table } from 'antd';
+import {Button, Form as EditForm, Form as AddForm, Input, Modal, Space, Table} from 'antd';
+import {useSelector} from "react-redux";
+import ErrorPage from "../../Error/ErrorPage";
 
 function Columns() {
 
@@ -24,11 +26,13 @@ function Columns() {
     const [addStatusForm] = AddForm.useForm();
 
     let authToken = localStorage.getItem('auth_token');
+    const currentUserProfileData = useSelector((state) => state.DataSyncer.userProfileData);
+    const IsAdminOrStaffUser = currentUserProfileData?.user?.is_staff || currentUserProfileData?.user?.is_superuser
 
-    const { projectId } = useParams();
+    const {projectId} = useParams();
 
 
-    const  updateTable = ( responseData ) => {
+    const updateTable = (responseData) => {
         const updatedData = data.map(item => {
             if (item.id === responseData.id) {
                 return {
@@ -51,8 +55,9 @@ function Columns() {
         apiRequest
             .patch(`/api/project_status/${selectedItem.id}/`,
                 {"type": values.type, "priority": values.priority},
-                { headers: { "Authorization": `Token ${authToken}` }
-            })
+                {
+                    headers: {"Authorization": `Token ${authToken}`}
+                })
             .then(response => {
                 displaySuccessMessage('Successfully update the requested Status!');
                 updateTable(response.data)
@@ -63,7 +68,8 @@ function Columns() {
     };
     const deleteIssueStatus = (id) => {
         apiRequest
-            .delete(`/api/project_status/${id}`,{ headers: { "Authorization": `Token ${authToken}` }
+            .delete(`/api/project_status/${id}`, {
+                headers: {"Authorization": `Token ${authToken}`}
             })
             .then(response => {
                 displaySuccessMessage('Successfully delete the requested Status!');
@@ -76,9 +82,10 @@ function Columns() {
     const createIssueType = (values) => {
         apiRequest
             .post(`/api/project_status/`,
-                { "project" : projectId, "status" : values.status, "priority" : values.priority },
-                { headers: { "Authorization": `Token ${authToken}` }
-            })
+                {"project": projectId, "status": values.status, "priority": values.priority},
+                {
+                    headers: {"Authorization": `Token ${authToken}`}
+                })
             .then(response => {
                 const result = {
                     "id": response.data.id, "status": response.data.status, "priority": response.data.priority
@@ -97,13 +104,13 @@ function Columns() {
         apiRequest
             .get(`/api/project_status/`,
                 {
-                    params: { project: projectId, },
-                    headers: { "Authorization": `Token ${authToken}` }
-                } )
+                    params: {project: projectId,},
+                    headers: {"Authorization": `Token ${authToken}`}
+                })
             .then(response => {
                 const dataArray = response.data.map(item => {
-                    const { id, status, priority } = item;
-                    return { id, status, priority };
+                    const {id, status, priority} = item;
+                    return {id, status, priority};
                 })
                 setData(dataArray);
                 setFilteredData(dataArray);
@@ -128,16 +135,16 @@ function Columns() {
         });
     };
 
-    const handleEditLink = ( record ) => {
+    const handleEditLink = (record) => {
         setSelectedItem(record);
         editStatusForm.setFieldValue('priority', record.priority);
         editStatusForm.setFieldValue('status', record.status);
-        setModalVisible( true );
+        setModalVisible(true);
     };
 
     const handleAddLink = () => {
-        addStatusForm.setFieldValue('priority',null);
-        addStatusForm.setFieldValue('status',null);
+        addStatusForm.setFieldValue('priority', null);
+        addStatusForm.setFieldValue('status', null);
         setSelectedItem(null);
         setModalVisible(true);
     };
@@ -171,39 +178,50 @@ function Columns() {
     };
 
     const columns = [
-        { title: 'ID', dataIndex: 'id' },
-        { title: 'Status', dataIndex: 'status' },
-        { title: 'Priority', dataIndex: 'priority' },
+        {title: 'ID', dataIndex: 'id'},
+        {title: 'Status', dataIndex: 'status'},
+        {title: 'Priority', dataIndex: 'priority'},
         {
             title: 'Actions',
-                render: (_, record) => (
+            render: (_, record) => (
                 <Space>
                     <Button type="link" onClick={() => handleEditLink(record)}>
-                        <AiOutlineEdit /> Edit
+                        <AiOutlineEdit/> Edit
                     </Button>
                     <Button type="link" onClick={() => handleDeleteLink(record)}>
-                        <AiOutlineDelete /> Delete
+                        <AiOutlineDelete/> Delete
                     </Button>
                 </Space>
-                ),
-            },
+            ),
+        },
     ];
 
     const startIndex = (currentPage - 1) * pageSize;
     const endIndex = startIndex + pageSize;
     const paginatedData = filteredData.slice(startIndex, endIndex);
 
+    if (!IsAdminOrStaffUser) {
+        return (
+            <>
+                <NavBar/>
+                <ProjectSidebar/>
+                <ErrorPage status={403}/>
+            </>
+        );
+    }
+
     return (
         <div>
-            <ProjectSidebar />
+            <ProjectSidebar/>
             <NavBar/>
-            <Toast />
+            <Toast/>
             <ColumnsComponents.ColumnContainer>
                 <h2>Project Issues Status</h2>
-                <Input.Search placeholder="Search by label name" value={searchQuery} onChange={handleSearch} style={{ marginBottom: 16 }} />
-                <div style={{ marginBottom: 16 }}>
+                <Input.Search placeholder="Search by label name" value={searchQuery} onChange={handleSearch}
+                              style={{marginBottom: 16}}/>
+                <div style={{marginBottom: 16}}>
                     <Button type="primary" onClick={handleAddLink}>
-                        <AiOutlinePlus /> Add
+                        <AiOutlinePlus/> Add
                     </Button>
                 </div>
                 <Table
@@ -224,30 +242,41 @@ function Columns() {
                     open={modalVisible}
                     onCancel={() => setModalVisible(false)}
                     footer={[
-                        <Button key="submit" type="primary" onClick={() => {selectedItem ? editStatusForm.submit() : addStatusForm.submit()}}>
-                            { selectedItem ? 'Edit Item' : 'Add Item'}
+                        <Button key="submit" type="primary" onClick={() => {
+                            selectedItem ? editStatusForm.submit() : addStatusForm.submit()
+                        }}>
+                            {selectedItem ? 'Edit Item' : 'Add Item'}
                         </Button>,
                     ]}
                 >
                     {selectedItem ? (
                         <>
                             <EditForm layout="vertical" form={editStatusForm} onFinish={handleEditModal}>
-                                <ColumnsComponents.StyledEditFormItem label="Status" name="status" rules={[{ required:true}]}>
-                                    <Input />
+                                <ColumnsComponents.StyledEditFormItem label="Status" name="status"
+                                                                      rules={[{required: true}]}>
+                                    <Input/>
                                 </ColumnsComponents.StyledEditFormItem>
-                                <ColumnsComponents.StyledEditFormItem label="Priority" name="priority" rules={[{ required:true,}]}>
-                                    <Input />
+                                <ColumnsComponents.StyledEditFormItem label="Priority" name="priority"
+                                                                      rules={[{required: true,}]}>
+                                    <Input/>
                                 </ColumnsComponents.StyledEditFormItem>
                             </EditForm>
                         </>
                     ) : (
                         <>
-                            <AddForm layout="vertical" form={addStatusForm} onFinish={handleAddModal} >
-                                <ColumnsComponents.StyledAddFormItem label="Status" name="status" value={null} rules={[{required:true, message: 'Please enter the Status Name' }]}>
-                                    <Input />
+                            <AddForm layout="vertical" form={addStatusForm} onFinish={handleAddModal}>
+                                <ColumnsComponents.StyledAddFormItem label="Status" name="status" value={null} rules={[{
+                                    required: true,
+                                    message: 'Please enter the Status Name'
+                                }]}>
+                                    <Input/>
                                 </ColumnsComponents.StyledAddFormItem>
-                                <ColumnsComponents.StyledAddFormItem label="Priority" name="priority" value={null} rules={[{required:true, message: 'Integer value is required' }]}>
-                                    <Input />
+                                <ColumnsComponents.StyledAddFormItem label="Priority" name="priority" value={null}
+                                                                     rules={[{
+                                                                         required: true,
+                                                                         message: 'Integer value is required'
+                                                                     }]}>
+                                    <Input/>
                                 </ColumnsComponents.StyledAddFormItem>
                             </AddForm>
                         </>
@@ -257,4 +286,5 @@ function Columns() {
         </div>
     );
 }
+
 export default Columns;

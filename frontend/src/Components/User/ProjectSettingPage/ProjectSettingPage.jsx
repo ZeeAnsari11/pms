@@ -6,8 +6,11 @@ import ProjectSidebar from "../../Dashboard/Sidebar/ProjectSidebar";
 import apiRequest from '../../../Utils/apiRequest';
 import ImageUploader from "../ImageUploader";
 import {Select, Avatar, Input} from 'antd'
+import {useSelector} from "react-redux";
+import UserSidebar from "../../Dashboard/Sidebar/UserSidebar";
+import ErrorPage from "../../Error/ErrorPage";
 
-const { Option } = Select;
+const {Option} = Select;
 
 function ProjectSettingPage() {
 
@@ -24,6 +27,8 @@ function ProjectSettingPage() {
     const navigate = useNavigate();
 
     let authToken = localStorage.getItem('auth_token')
+    const currentUserProfileData = useSelector((state) => state.DataSyncer.userProfileData);
+    const IsAdminOrStaffUser = currentUserProfileData?.user?.is_staff || currentUserProfileData?.user?.is_superuser
 
     const defaultIconPath = "/Images/NoImage.jpeg"
 
@@ -113,7 +118,7 @@ function ProjectSettingPage() {
 
     function handleSubmit(event) {
         event.preventDefault();
-        const projectObj = { 'name': name, 'key': key, 'icon': image, 'project_lead': selectedProjectLead, };
+        const projectObj = {'name': name, 'key': key, 'icon': image, 'project_lead': selectedProjectLead,};
         apiRequest.patch(`/api/projects/${projectId}/`,
             projectObj,
             {
@@ -130,6 +135,15 @@ function ProjectSettingPage() {
             });
     }
 
+    if (!IsAdminOrStaffUser) {
+        return (
+            <>
+                <NavBar/>
+                <ProjectSidebar/>
+                <ErrorPage status={403}/>
+            </>
+        );
+    }
 
     return (
         <div>
@@ -140,14 +154,14 @@ function ProjectSettingPage() {
                     <ProjectSettingComponents.Details>Details</ProjectSettingComponents.Details>
                 </ProjectSettingComponents.Header>
                 <ProjectSettingComponents.FormWrapper onSubmit={handleSubmit} encType="multipart/form-data"
-                                                        method="POST">
+                                                      method="POST">
                     <ImageUploader id="image" imagePath={IconPath} onImageChange={handleImageChange}/>
                     <ProjectSettingComponents.Label htmlFor="name">Name:</ProjectSettingComponents.Label>
                     <Input
                         id="name"
                         placeholder="Project name"
                         value={name}
-                        style={{ width: "50%" }}
+                        style={{width: "50%"}}
                         onChange={(event) => setName(event.target.value)}
                     />
                     <ProjectSettingComponents.LabelForKey htmlFor="key">Key:</ProjectSettingComponents.LabelForKey>
@@ -155,29 +169,30 @@ function ProjectSettingPage() {
                         id="key"
                         placeholder="Project key"
                         value={key}
-                        style={{ width: "50%" }}
+                        style={{width: "50%"}}
                         onChange={(event) => setKey(event.target.value)}
                         disabled={true}
                     />
                     <ProjectSettingComponents.Labelforlead htmlFor="category">Project
                         lead:</ProjectSettingComponents.Labelforlead>
                     <Select
-                            showArrow
-                            filterOption
-                            onChange={(value) => setSelectedProjectLead(parseInt(value))}
-                            showSearch
-                            optionFilterProp="label"
-                            placeholder="Please select User"
-                            optionLabelProp="label"
-                            value={selectedProjectLead}
-                            style={{ width: "50%" }}
-                        >
+                        showArrow
+                        filterOption
+                        onChange={(value) => setSelectedProjectLead(parseInt(value))}
+                        showSearch
+                        optionFilterProp="label"
+                        placeholder="Please select User"
+                        optionLabelProp="label"
+                        value={selectedProjectLead}
+                        style={{width: "50%"}}
+                    >
                         {useroptions.map((item) => (
                             <Option key={item.id} value={item.id} label={item.username}>
                                 {
                                     item.iconUrl ?
                                         <div>
-                                            <Avatar draggable={true} style={{ background: "#10899e" }} alt={item.username} src={`${process.env.REACT_APP_HOST}/${item.iconUrl}`} />{" "}
+                                            <Avatar draggable={true} style={{background: "#10899e"}} alt={item.username}
+                                                    src={`${process.env.REACT_APP_HOST}/${item.iconUrl}`}/>{" "}
                                             {item.username}
                                         </div> :
                                         <div>
@@ -188,8 +203,8 @@ function ProjectSettingPage() {
                                         </div>
                                 }
                             </Option>
-                            ))}
-                        </Select>
+                        ))}
+                    </Select>
                     <ProjectSettingComponents.Description>Make sure your project lead has access to issues in the
                         project.</ProjectSettingComponents.Description>
                     <ProjectSettingComponents.SaveButton>Save</ProjectSettingComponents.SaveButton>

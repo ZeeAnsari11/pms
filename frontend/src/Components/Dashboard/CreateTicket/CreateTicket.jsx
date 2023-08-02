@@ -12,6 +12,7 @@ import EstimateTimer from "../EstimateTimer/EstimateTimer";
 import * as CreateTicketComponents from "./Style"
 import tagRender from "../../../Shared/Components/tagRender";
 import { Avatar, Select } from "antd";
+import {modules} from "../../../Shared/Const/ReactQuillToolbarOptions";
 
 
 const LinkedIssue1 = [
@@ -407,7 +408,7 @@ const MyModalComponent = ({onClose}) => {
                                 Description
                             </CreateTicketComponents.CardInfoBoxTitle>
                             <CreateTicketComponents.TaskList>
-                                <ReactQuill value={description} onChange={handleDescriptionChange}/>
+                                <ReactQuill modules={modules} value={description} onChange={handleDescriptionChange}/>
                             </CreateTicketComponents.TaskList>
                         </CreateTicketComponents.CardInfoBox>
                         <CreateTicketComponents.CardInfoBox>

@@ -12,8 +12,15 @@ import {
     NavbarLinkExtended,
 } from "./Styles";
 import Dropdown from './NavBarDropdown'
-import {projectItems, yourWorkItems, teamItems, notificationsItems, helpItems} from "./Dropdownitems";
-import {accountItems} from "../../User/Logout/index"
+import {
+    adminUserProjectItems,
+    simpleUserProjectItems,
+    yourWorkItems,
+    teamItems,
+    notificationsItems,
+    helpItems
+} from "./Dropdownitems";
+import {simpleUseraccountItems, adminUseraccountItems} from "../../User/Logout/index"
 import {MdKeyboardArrowDown} from 'react-icons/md'
 import {IoMdNotifications} from 'react-icons/io'
 import {RxAvatar} from 'react-icons/rx'
@@ -29,10 +36,11 @@ function NavBar() {
     const [showModal, setshowModal] = useState(false);
 
     const currentUserProfileData = useSelector((state) => state.DataSyncer.userProfileData);
+    const IsAdminOrStaffUser = currentUserProfileData?.user?.is_staff || currentUserProfileData?.user?.is_superuser
+
     const handleCreateButtonClick = () => {
         setshowModal(true);
     }
-
 
     return (
         <>
@@ -62,7 +70,8 @@ function NavBar() {
                                           marginLeft: "-7px"
                                       }}/>}/>
 
-                            <Dropdown items={projectItems} name='Projects' icon={<MdKeyboardArrowDown size={20} style={{
+                            <Dropdown items={IsAdminOrStaffUser ? adminUserProjectItems : simpleUserProjectItems}
+                                      name='Projects' icon={<MdKeyboardArrowDown size={20} style={{
                                 marginRight: "10px", cursor: 'pointer',
                                 marginLeft: "-7px"
                             }}/>}/>
@@ -81,7 +90,7 @@ function NavBar() {
                         <Dropdown minWidth="350px" items={helpItems}
                                   name={<AiFillQuestionCircle size={24} style={{marginLeft: "10px"}}/>}/>
                         <Dropdown
-                            items={accountItems}
+                            items={IsAdminOrStaffUser ? adminUseraccountItems : simpleUseraccountItems}
                             name={
                                 currentUserProfileData ? (
                                     <Avatar

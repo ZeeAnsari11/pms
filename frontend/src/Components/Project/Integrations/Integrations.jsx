@@ -8,6 +8,8 @@ import {useParams} from "react-router-dom";
 import apiRequest from '../../../Utils/apiRequest';
 import ToastContainer from '../../../Shared/Components/Toast';
 import {displayErrorMessage, displaySuccessMessage} from '../../../Shared/notify';
+import {useSelector} from "react-redux";
+import ErrorPage from "../../Error/ErrorPage";
 
 function Integrations() {
 
@@ -18,10 +20,12 @@ function Integrations() {
     const [initialSlackValues, setInitialSlackValues] = useState({id: undefined, project: projectId});
 
     let authToken = localStorage.getItem('auth_token');
+    const currentUserProfileData = useSelector((state) => state.DataSyncer.userProfileData);
+    const IsAdminOrStaffUser = currentUserProfileData?.user?.is_staff || currentUserProfileData?.user?.is_superuser
 
     const updateSlackIntegrationForm = (response) => {
         let responseData;
-        if(response.data.length === 0){
+        if (response.data.length === 0) {
             setInitialSlackValues({
                 id: undefined,
                 project: projectId,
@@ -42,18 +46,18 @@ function Integrations() {
         });
         setSlackIsUpdating(true);
         slackForm.setFieldsValue({
-            slackChannelGroupUser : webhook_channel,
-            slackNotificationStatus : is_active,
-            slackWebhookUrl : webhook_url,
-            slackGlobalConfigStatus : global_status
+            slackChannelGroupUser: webhook_channel,
+            slackNotificationStatus: is_active,
+            slackWebhookUrl: webhook_url,
+            slackGlobalConfigStatus: global_status
         });
     }
 
 
     const fetchSlackIntegrationsData = async () => {
         return await apiRequest.get(`/api/project_slack_webhook/`, {
-            params: { project: projectId, },
-            headers: { "Authorization": `Token ${authToken}` }
+            params: {project: projectId,},
+            headers: {"Authorization": `Token ${authToken}`}
         })
     }
 
@@ -62,10 +66,10 @@ function Integrations() {
         return await apiRequest
             .post(`/api/project_slack_webhook/`, {
                 project: projectId,
-                is_active : slackNotificationStatus,
-                global_status : slackGlobalConfigStatus,
-                webhook_channel : slackChannelGroupUser,
-                webhook_url : slackWebhookUrl,
+                is_active: slackNotificationStatus,
+                global_status: slackGlobalConfigStatus,
+                webhook_channel: slackChannelGroupUser,
+                webhook_url: slackWebhookUrl,
             }, {
                 headers:
                     {"Authorization": `Token ${authToken}`}
@@ -79,10 +83,10 @@ function Integrations() {
         return await apiRequest
             .patch(`/api/project_slack_webhook/${id}/`, {
                 project: projectId,
-                is_active : slackNotificationStatus,
-                global_status : slackGlobalConfigStatus,
-                webhook_channel : slackChannelGroupUser,
-                webhook_url : slackWebhookUrl,
+                is_active: slackNotificationStatus,
+                global_status: slackGlobalConfigStatus,
+                webhook_channel: slackChannelGroupUser,
+                webhook_url: slackWebhookUrl,
             }, {
                 headers:
                     {"Authorization": `Token ${authToken}`}
@@ -92,8 +96,12 @@ function Integrations() {
     useEffect(() => {
         if (projectId !== undefined) {
             fetchSlackIntegrationsData()
-                .then( response => { updateSlackIntegrationForm(response) } )
-                .catch( error => { displayErrorMessage(error.message) })
+                .then(response => {
+                    updateSlackIntegrationForm(response)
+                })
+                .catch(error => {
+                    displayErrorMessage(error.message)
+                })
         }
     }, []);
 
@@ -109,17 +117,25 @@ function Integrations() {
                 })
         } else {
             createSlackIntegrationsData(values)
-                .then( response => {
+                .then(response => {
                     displaySuccessMessage(`Successfully Save the Slack Configurations`);
                     updateSlackIntegrationForm(response);
                 })
                 .catch(error => {
                     displayErrorMessage(error.message)
-            });
+                });
         }
 
     };
-
+    if (!IsAdminOrStaffUser) {
+        return (
+            <>
+                <NavBar/>
+                <ProjectSidebar/>
+                <ErrorPage status={403}/>
+            </>
+        );
+    }
 
     return (
         <div>
@@ -129,7 +145,8 @@ function Integrations() {
                 <ToastContainer/>
                 <IntegrationsComponents.ContentWrapper>
                     <IntegrationsComponents.HeadingWrapper>
-                        <IntegrationsComponents.SummaryHeading>Integration with third-party services</IntegrationsComponents.SummaryHeading>
+                        <IntegrationsComponents.SummaryHeading>Integration with third-party
+                            services</IntegrationsComponents.SummaryHeading>
                     </IntegrationsComponents.HeadingWrapper>
                     <IntegrationsComponents.Divider/>
                     <IntegrationsComponents.NotificationContainerForSlack>
@@ -139,7 +156,8 @@ function Integrations() {
                                     <IntegrationsComponents.IconWrapperDiv>
                                         <AiFillSlackCircle fontSize={"28px"}/>
                                     </IntegrationsComponents.IconWrapperDiv>
-                                    <IntegrationsComponents.IconName>Slack Configuration</IntegrationsComponents.IconName>
+                                    <IntegrationsComponents.IconName>Slack
+                                        Configuration</IntegrationsComponents.IconName>
                                     <IntegrationsComponents.FormWrapper>
                                         <Form layout="vertical" form={slackForm} onFinish={handleSlackSaveOrUpdateForm}>
                                             <Form.Item
@@ -163,7 +181,7 @@ function Integrations() {
                                                     name="slackNotificationStatus"
                                                     label="Enable"
                                                     valuePropName="checked"
-                                                    style={{ marginRight: '16px' }}
+                                                    style={{marginRight: '16px'}}
                                                 >
                                                     <Switch checkedChildren="Yes" unCheckedChildren="No"/>
                                                 </Form.Item>
@@ -171,17 +189,17 @@ function Integrations() {
                                                     name="slackGlobalConfigStatus"
                                                     label="Use Global Setting"
                                                     valuePropName="checked"
-                                                    style={{ marginLeft: '16px' }}
+                                                    style={{marginLeft: '16px'}}
                                                 >
                                                     <Switch checkedChildren="Yes" unCheckedChildren="No"/>
                                                 </Form.Item>
                                             </IntegrationsComponents.StyledStatusDev>
-                                            { isSlackUpdating ?
+                                            {isSlackUpdating ?
                                                 <Form.Item>
                                                     <Button type="primary" htmlType="update">Update</Button>
                                                 </Form.Item> :
                                                 <Form.Item>
-                                                <Button type="primary" htmlType="submit">Save</Button>
+                                                    <Button type="primary" htmlType="submit">Save</Button>
                                                 </Form.Item>
                                             }
                                         </Form>
