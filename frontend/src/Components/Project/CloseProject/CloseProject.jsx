@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {useParams, useNavigate} from "react-router-dom";
 import apiRequest from '../../../Utils/apiRequest';
 import * as CloseProjectComponents from "./Style";
@@ -7,11 +7,15 @@ import NavBar from "../../Dashboard/Navbar";
 import ProjectSidebar from "../../Dashboard/Sidebar/ProjectSidebar";
 import ToastContainer from '../../../Shared/Components/Toast'
 import {displayInfoMessage} from '../../../Shared/notify'
+import {useSelector} from "react-redux";
+import ErrorPage from "../../Error/ErrorPage";
 
 const CloseProject = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
 
     let authToken = localStorage.getItem('auth_token');
+    const currentUserProfileData = useSelector((state) => state.DataSyncer.userProfileData);
+    const IsAdminOrStaffUser = currentUserProfileData?.user?.is_staff || currentUserProfileData?.user?.is_superuser
 
     const navigate = useNavigate();
     const {projectId} = useParams();
@@ -20,20 +24,21 @@ const CloseProject = () => {
     const deleteProject = () => {
         if (projectId !== undefined) {
             apiRequest
-            .delete(`/api/projects/${projectId}`, {
-                headers: {
-                    Authorization: `Token ${authToken}`},
-            })
-            .then(response => {
-                setIsModalVisible(false);
-                displayInfoMessage('The project has been deleted. \n  You will be redirected to the project within 2 seconds');
-                setTimeout(() => {
-                    navigate('/project');
+                .delete(`/api/projects/${projectId}`, {
+                    headers: {
+                        Authorization: `Token ${authToken}`
+                    },
+                })
+                .then(response => {
+                    setIsModalVisible(false);
+                    displayInfoMessage('The project has been deleted. \n  You will be redirected to the project within 2 seconds');
+                    setTimeout(() => {
+                        navigate('/project');
                     }, 2000);
-            })
-            .catch(error => {
-                console.error('Error deleting data', error);
-            });
+                })
+                .catch(error => {
+                    console.error('Error deleting data', error);
+                });
         }
     }
 
@@ -49,6 +54,15 @@ const CloseProject = () => {
         setIsModalVisible(false);
     };
 
+    if (!IsAdminOrStaffUser) {
+        return (
+            <>
+                <NavBar/>
+                <ProjectSidebar/>
+                <ErrorPage status={403}/>
+            </>
+        );
+    }
 
     return (
         <>
@@ -57,7 +71,8 @@ const CloseProject = () => {
             <ToastContainer/>
             <CloseProjectComponents.PermissionsContainer>
 
-                <CloseProjectComponents.AddTagButton onClick={handleButtonClick}>Close project</CloseProjectComponents.AddTagButton>
+                <CloseProjectComponents.AddTagButton onClick={handleButtonClick}>Close
+                    project</CloseProjectComponents.AddTagButton>
                 <Modal
                     title="Confirm Closure"
                     open={isModalVisible}
