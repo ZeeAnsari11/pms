@@ -2,12 +2,11 @@ import React, {useState} from 'react';
 import * as ProjectViewComponents from './Style'
 import ProjectListing from '../ProjectListing/ProjectListing';
 import NavBar from '../../Dashboard/Navbar';
-import {useSelector} from "react-redux";
 import {useNavigate} from "react-router-dom";
+import {useIsAdminOrStaffUser} from "../../../Store/Selector/Selector";
 
 const ProjectsPage = () => {
-    const currentUserProfileData = useSelector((state) => state.DataSyncer.userProfileData);
-    const IsAdminOrStaffUser = currentUserProfileData?.user?.is_staff || currentUserProfileData?.user?.is_superuser
+    const IsAdminOrStaffUser = useIsAdminOrStaffUser();
 
     const navigate = useNavigate()
 

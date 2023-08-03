@@ -6,9 +6,8 @@ import ProjectSidebar from "../../Dashboard/Sidebar/ProjectSidebar";
 import apiRequest from '../../../Utils/apiRequest';
 import ImageUploader from "../ImageUploader";
 import {Select, Avatar, Input} from 'antd'
-import {useSelector} from "react-redux";
-import UserSidebar from "../../Dashboard/Sidebar/UserSidebar";
 import ErrorPage from "../../Error/ErrorPage";
+import {useIsAdminOrStaffUser} from "../../../Store/Selector/Selector";
 
 const {Option} = Select;
 
@@ -27,8 +26,7 @@ function ProjectSettingPage() {
     const navigate = useNavigate();
 
     let authToken = localStorage.getItem('auth_token')
-    const currentUserProfileData = useSelector((state) => state.DataSyncer.userProfileData);
-    const IsAdminOrStaffUser = currentUserProfileData?.user?.is_staff || currentUserProfileData?.user?.is_superuser
+    const IsAdminOrStaffUser = useIsAdminOrStaffUser();
 
     const defaultIconPath = "/Images/NoImage.jpeg"
 

@@ -8,8 +8,8 @@ import {Input, Button, Form, Switch} from 'antd';
 import apiRequest from '../../../Utils/apiRequest';
 import ToastContainer from '../../../Shared/Components/Toast';
 import {displayErrorMessage, displaySuccessMessage, displayInfoMessage} from '../../../Shared/notify';
-import {useSelector} from "react-redux";
 import ErrorPage from "../../Error/ErrorPage";
+import {useIsAdminOrStaffUser} from "../../../Store/Selector/Selector";
 
 function GlobalIntegrations() {
 
@@ -20,8 +20,8 @@ function GlobalIntegrations() {
     const [slackConfigId, setSlackConfigId] = useState(null);
 
     let authToken = localStorage.getItem('auth_token');
-    const currentUserProfileData = useSelector((state) => state.DataSyncer.userProfileData);
-    const IsAdminOrStaffUser = currentUserProfileData?.user?.is_staff || currentUserProfileData?.user?.is_superuser
+
+    const IsAdminOrStaffUser = useIsAdminOrStaffUser();
 
     const updateSlackIntegrationForm = (response) => {
         let responseData;
