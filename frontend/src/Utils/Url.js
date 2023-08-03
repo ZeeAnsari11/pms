@@ -1,4 +1,4 @@
-import {BrowserRouter, Routes, Route, Navigate} from "react-router-dom";
+import {BrowserRouter, Routes, Route} from "react-router-dom";
 import React from 'react';
 import Login from "../Components/User/Login"
 import ResetPasswordPage from "../Components/User/ResetPassword/ResetPasswordPage"
@@ -39,8 +39,8 @@ function Url() {
             <Routes>
                 {/* General routes */}
 
-                <Route exact path="/" element={<Login />} />
-                <Route exact path="/login" element={<Login />} />
+                <Route exact path="/" element={<Login/>}/>
+                <Route exact path="/login" element={<Login/>}/>
                 <Route path="/user-activate" element={<AccountActivation/>}/>
                 <Route path="/forgot-password" element={<ForgotPassword/>}/>
                 <Route path="/reset-password" element={<ResetPasswordPage/>}/>
@@ -49,8 +49,10 @@ function Url() {
 
                 <Route path="/create-project" element={<PrivateRoute element={CreateProject}/>}/>
                 <Route path="/project/:projectId/setting/summary" element={<PrivateRoute element={ProjectSummary}/>}/>
-                <Route path="/project/:projectId/setting/notification" element={<PrivateRoute element={Notification}/>}/>
-                <Route path="/project/:projectId/setting/integrations" element={<PrivateRoute element={Integrations}/>}/>
+                <Route path="/project/:projectId/setting/notification"
+                       element={<PrivateRoute element={Notification}/>}/>
+                <Route path="/project/:projectId/setting/integrations"
+                       element={<PrivateRoute element={Integrations}/>}/>
                 <Route path="/project/:projectId/setting/tags" element={<PrivateRoute element={ProjectTag}/>}/>
                 <Route path="/project/:projectId/setting/types" element={<PrivateRoute element={Types}/>}/>
                 <Route path="/project/:projectId/setting/columns" element={<PrivateRoute element={Columns}/>}/>
@@ -59,8 +61,8 @@ function Url() {
 
                 {/* Admin (Super User) routes */}
 
-                <Route path="/manage-account" element={<PrivateRoute element={ManageAccount} />}/>
-                <Route path="/manage-users" element={<PrivateRoute element={ManageUsers} />}/>
+                <Route path="/manage-account" element={<PrivateRoute element={ManageAccount}/>}/>
+                <Route path="/manage-users" element={<PrivateRoute element={ManageUsers}/>}/>
                 <Route path="/manage-groups" element={<PrivateRoute element={ManageGroups}/>}/>
                 <Route path="/manage-general-settings" element={<PrivateRoute element={GeneralSettings}/>}/>
                 <Route path="/global-integrations-setting" element={<PrivateRoute element={GlobalIntegrations}/>}/>
@@ -84,9 +86,9 @@ function Url() {
 
                 {/* Error routes */}
 
-                <Route path="error" element={<ErrorPage status={500} />} />
-                <Route path="forbidden" element={<ErrorPage status={403} />} />
-                <Route path="*" element={<ErrorPage status={404} />} />
+                <Route path="error" element={<ErrorPage status={500}/>}/>
+                <Route path="forbidden" element={<ErrorPage status={403}/>}/>
+                <Route path="*" element={<ErrorPage status={404}/>}/>
 
             </Routes>
         </BrowserRouter>
