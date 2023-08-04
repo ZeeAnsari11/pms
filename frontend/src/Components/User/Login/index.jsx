@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {useDispatch, useSelector} from 'react-redux';
+import {useDispatch} from 'react-redux';
 import {login} from '../../../Store/Slice/User/loginSlice';
 import {signUp} from '../../../Store/Slice/User/signupSlice';
 import {Link, useNavigate} from "react-router-dom";
@@ -11,11 +11,13 @@ import {displayErrorMessage, displaySuccessMessage} from "../../../Shared/notify
 import {AxiosError} from "axios";
 import {StatusCodes} from "http-status-codes";
 import {DataSyncer} from "../../../Store/Slice/DataSyncerSlice";
+import {useIsLogInPending, useIsSingUpPending} from "../../../Store/Selector/Selector";
 
 function Login() {
     const dispatch = useDispatch();
-    const isLogInPending = useSelector((state) => state.login.loading);
-    const isSingUpPending = useSelector((state) => state.signUp.loading);
+
+    const isLogInPending = useIsLogInPending();
+    const isSingUpPending = useIsSingUpPending();
 
     const [signIn, setSignIn] = useState(true);
     const [name, setName] = useState('');

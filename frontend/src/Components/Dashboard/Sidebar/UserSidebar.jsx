@@ -9,13 +9,12 @@ import {
     NotImplemented,
 } from './SidebarStyle';
 import React from "react";
-import {useSelector} from "react-redux";
+import {useIsAdminOrStaffUser} from "../../../Store/Selector/Selector";
 
 
 const UserSidebar = () => {
     const match = useLocation();
-    const currentUserProfileData = useSelector((state) => state.DataSyncer.userProfileData);
-    const IsAdminOrStaffUser = currentUserProfileData?.user?.is_staff || currentUserProfileData?.user?.is_superuser
+    const IsAdminOrStaffUser = useIsAdminOrStaffUser();
 
     return (
         <Sidebar>

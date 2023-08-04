@@ -10,8 +10,7 @@ import {faImage} from '@fortawesome/free-solid-svg-icons';
 import {Link, useNavigate} from "react-router-dom";
 import * as ManageAccountComponents from './ManageAccountStyle';
 import apiRequest from '../../../Utils/apiRequest';
-import {useSelector} from "react-redux";
-
+import {useCurrentUserProfileData} from "../../../Store/Selector/Selector";
 
 const emailOptions = [
     {value: 'yes', label: 'Send me email notifications'},
@@ -26,7 +25,7 @@ const notificationFormatOptions = [
 
 const ProfileVisibility = () => {
     const [isImageChanged, setIsImageChanged] = useState(false);
-    const userData = useSelector((state) => state.DataSyncer.userProfileData);
+    const userData = useCurrentUserProfileData();
 
     const [userId, setUserId] = useState({});
     const [userName, setUserName] = useState('');

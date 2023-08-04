@@ -16,7 +16,7 @@ import {
     NotImplemented,
 } from './SidebarStyle';
 import axios from "axios";
-import {useSelector} from "react-redux";
+import {useIsAdminOrStaffUser} from "../../../Store/Selector/Selector";
 
 
 const ProjectSidebar = () => {
@@ -24,8 +24,8 @@ const ProjectSidebar = () => {
     const {projectId} = useParams()
 
     let authToken = localStorage.getItem('auth_token')
-    const currentUserProfileData = useSelector((state) => state.DataSyncer.userProfileData);
-    const IsAdminOrStaffUser = currentUserProfileData?.user?.is_staff || currentUserProfileData?.user?.is_superuser
+
+    const IsAdminOrStaffUser = useIsAdminOrStaffUser();
 
     const [projectData, setProjectData] = useState({});
     const [icon, setIcon] = useState(null);

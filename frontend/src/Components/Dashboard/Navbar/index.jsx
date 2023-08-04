@@ -29,15 +29,14 @@ import SearchBar from './SearchBar/index'
 import {Link} from "react-router-dom";
 import CreateTicket from "../CreateTicket/CreateTicket";
 import Avatar from "react-avatar";
-import {useSelector} from "react-redux";
+import {useCurrentUserProfileData, useIsAdminOrStaffUser} from "../../../Store/Selector/Selector";
 
 function NavBar() {
     const [extendNavbar, setExtendNavbar] = useState(false);
     const [showModal, setshowModal] = useState(false);
 
-    const currentUserProfileData = useSelector((state) => state.DataSyncer.userProfileData);
-    const IsAdminOrStaffUser = currentUserProfileData?.user?.is_staff || currentUserProfileData?.user?.is_superuser
-
+    const currentUserProfileData = useCurrentUserProfileData()
+    const IsAdminOrStaffUser = useIsAdminOrStaffUser()
     const handleCreateButtonClick = () => {
         setshowModal(true);
     }
@@ -54,7 +53,7 @@ function NavBar() {
                 <NavbarInnerContainer>
                     <LeftContainer>
                         <Link to="/project">
-                            <Logo src='http://localhost:3000/companyLogo.png' alt="PHPStudios"></Logo>
+                            <Logo src='http://localhost:3000/companyLogo.png' alt="Nexius"></Logo>
                         </Link>
                         <NavbarLinkContainer>
                             <OpenLinksButton

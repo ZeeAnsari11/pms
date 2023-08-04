@@ -7,19 +7,17 @@ import NavBar from "../../Dashboard/Navbar";
 import ProjectSidebar from "../../Dashboard/Sidebar/ProjectSidebar";
 import ToastContainer from '../../../Shared/Components/Toast'
 import {displayInfoMessage} from '../../../Shared/notify'
-import {useSelector} from "react-redux";
 import ErrorPage from "../../Error/ErrorPage";
+import {useIsAdminOrStaffUser} from "../../../Store/Selector/Selector";
 
 const CloseProject = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
 
     let authToken = localStorage.getItem('auth_token');
-    const currentUserProfileData = useSelector((state) => state.DataSyncer.userProfileData);
-    const IsAdminOrStaffUser = currentUserProfileData?.user?.is_staff || currentUserProfileData?.user?.is_superuser
+    const IsAdminOrStaffUser = useIsAdminOrStaffUser();
 
     const navigate = useNavigate();
     const {projectId} = useParams();
-
 
     const deleteProject = () => {
         if (projectId !== undefined) {
