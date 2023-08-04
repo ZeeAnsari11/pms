@@ -9,7 +9,7 @@ import TrackingField from "../TimeTracking";
 import Editable from "../Editable/Editable";
 import Comment from "../Comment/Comment";
 import Worklog from "../Worklog/Worklog";
-import {useDispatch, useSelector} from "react-redux";
+import {useDispatch} from "react-redux";
 import {fetchIssueData} from "../../../Store/Slice/Issue/IssueSlice";
 import ReactQuill from "react-quill";
 import 'react-quill/dist/quill.snow.css';
@@ -29,6 +29,7 @@ import EstimateTimer from "../EstimateTimer/EstimateTimer";
 import * as CardInfoComponents from "../CardInfo/Style";
 import {modules} from "../../../Shared/Const/ReactQuillToolbarOptions";
 import {LinkOutlined} from '@ant-design/icons';
+import {useCurrentIssueData} from "../../../Store/Selector/Selector";
 
 const {TextArea} = Input;
 
@@ -71,10 +72,10 @@ function EditTicketPage({props}) {
     const [currentUserEmail, setCurrentUserEmail] = useState({});
 
     const [files, setFiles] = useState([]);
-    const currentIssueData = useSelector((state) => state.issueData.issueData);
+    const currentIssueData = useCurrentIssueData();
 
     let authToken = localStorage.getItem('auth_token')
-    const { Option } = Select;
+    const {Option} = Select;
     const {issueId, projectId} = useParams()
     const dispatch = useDispatch()
 
@@ -319,7 +320,9 @@ function EditTicketPage({props}) {
         formData.append("assignee", selectedAssignee);
         formData.append("reporter", selectedReporter);
         formData.append("estimate", estimateHours);
-        selectedLabel.forEach((label) => { formData.append("label", label); });
+        selectedLabel.forEach((label) => {
+            formData.append("label", label);
+        });
         formData.append("type", selectedIssueType);
         formData.append("status", selectedIssueStatus);
         formData.append("priority", selectedPriority);
@@ -491,14 +494,14 @@ function EditTicketPage({props}) {
                                     items={[
                                         {
                                             title: <Link style={BreadcrumbitemsStyles}
-                                                            to="/project">Projects</Link>
+                                                         to="/project">Projects</Link>
                                         },
                                         {
                                             title: (
                                                 <>
                                                     {projectIcon}
                                                     <Link style={BreadcrumbitemsStyles}
-                                                            to={`/project/${projectId}/dashboard`}>
+                                                          to={`/project/${projectId}/dashboard`}>
                                                         {currentIssueProjectData?.name}
                                                     </Link>
                                                 </>
@@ -538,7 +541,7 @@ function EditTicketPage({props}) {
                         </EditTicketPageComponents.IssueTitle>
                         <EditTicketPageComponents.Title>Summary</EditTicketPageComponents.Title>
                         <TextArea rows={2} value={IssueSummary}
-                                    onChange={(event) => setIssueSummary(event.target.value)}/>
+                                  onChange={(event) => setIssueSummary(event.target.value)}/>
                         <EditTicketPageComponents.Title>Description</EditTicketPageComponents.Title>
                         <div style={{marginBottom: "15px"}}>
                             <ReactQuill
@@ -669,21 +672,23 @@ function EditTicketPage({props}) {
                                         placeholder="Please select User"
                                         optionLabelProp="label"
                                         value={selectedAssignee}
-                                        style={{ width: "100%" }}
+                                        style={{width: "100%"}}
                                     >
-                                    {userOptions.map((item) => (
-                                        <Option key={item.id} value={item.id} label={item.username}>
-                                            {
-                                                item.iconUrl ?
-                                                    <div>
-                                                        <Avatar draggable={true} style={{ background: "#10899e" }} alt={item.username} src={`${process.env.REACT_APP_HOST}/${item.iconUrl}`} />{" "}
-                                                        {item.username}
-                                                    </div> :
-                                                    <div>
-                                                        <Avatar> {item.username}</Avatar> {" "}{item.username}
-                                                    </div>
-                                            }
-                                        </Option>
+                                        {userOptions.map((item) => (
+                                            <Option key={item.id} value={item.id} label={item.username}>
+                                                {
+                                                    item.iconUrl ?
+                                                        <div>
+                                                            <Avatar draggable={true} style={{background: "#10899e"}}
+                                                                    alt={item.username}
+                                                                    src={`${process.env.REACT_APP_HOST}/${item.iconUrl}`}/>{" "}
+                                                            {item.username}
+                                                        </div> :
+                                                        <div>
+                                                            <Avatar> {item.username}</Avatar> {" "}{item.username}
+                                                        </div>
+                                                }
+                                            </Option>
                                         ))}
                                     </Select>
                                     <EditTicketPageComponents.ContentInfoTitle>
@@ -719,7 +724,7 @@ function EditTicketPage({props}) {
                                         showArrow
                                         tagRender={tagRender}
                                         defaultValue={DefaultIssueLabel}
-                                        style={{ width: '100%', }}
+                                        style={{width: '100%',}}
                                         options={IssueLabelOptions}
                                         optionFilterProp="label"
                                         onChange={(value, key) => {
@@ -732,7 +737,7 @@ function EditTicketPage({props}) {
                                         <span>Original Estimate</span>
                                     </EditTicketPageComponents.ContentInfoTitle>
                                     <EstimateTimer defaultValue={currentIssueData?.estimate}
-                                                    onHoursChange={(value) => setEstimateHours(value)}/>
+                                                   onHoursChange={(value) => setEstimateHours(value)}/>
 
                                     <EditTicketPageComponents.ContentInfoTitle>
                                         <RxStopwatch/>
@@ -765,21 +770,23 @@ function EditTicketPage({props}) {
                                         placeholder="Please select User"
                                         optionLabelProp="label"
                                         value={selectedReporter}
-                                        style={{ width: "100%" }}
+                                        style={{width: "100%"}}
                                     >
-                                    {userOptions.map((item) => (
-                                        <Option key={item.id} value={item.id} label={item.username}>
-                                            {
-                                                item.iconUrl ?
-                                                    <div>
-                                                        <Avatar draggable={true} style={{ background: "#10899e" }} alt={item.username} src={`${process.env.REACT_APP_HOST}/${item.iconUrl}`} />{" "}
-                                                        {item.username}
-                                                    </div> :
-                                                    <div>
-                                                        <Avatar> {item.username}</Avatar> {" "}{item.username}
-                                                    </div>
-                                            }
-                                        </Option>
+                                        {userOptions.map((item) => (
+                                            <Option key={item.id} value={item.id} label={item.username}>
+                                                {
+                                                    item.iconUrl ?
+                                                        <div>
+                                                            <Avatar draggable={true} style={{background: "#10899e"}}
+                                                                    alt={item.username}
+                                                                    src={`${process.env.REACT_APP_HOST}/${item.iconUrl}`}/>{" "}
+                                                            {item.username}
+                                                        </div> :
+                                                        <div>
+                                                            <Avatar> {item.username}</Avatar> {" "}{item.username}
+                                                        </div>
+                                                }
+                                            </Option>
                                         ))}
                                     </Select>
                                 </EditTicketPageComponents.RightSideContent>
