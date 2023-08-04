@@ -7,8 +7,8 @@ import {displaySuccessMessage, displayErrorMessage} from "../../../Shared/notify
 import {Input, Button, Modal, Pagination, Space, Form, Switch} from 'antd';
 import {AiOutlineEdit, AiOutlineDelete} from 'react-icons/ai';
 import UserSidebar from "../../Dashboard/Sidebar/UserSidebar";
-import {useSelector} from "react-redux";
 import ErrorPage from "../../Error/ErrorPage";
+import {useIsAdminOrStaffUser} from "../../../Store/Selector/Selector";
 
 
 const ManageUsers = () => {
@@ -25,9 +25,7 @@ const ManageUsers = () => {
     const [form] = Form.useForm();
 
     let authToken = localStorage.getItem('auth_token');
-    const currentUserProfileData = useSelector((state) => state.DataSyncer.userProfileData);
-    const IsAdminOrStaffUser = currentUserProfileData?.user?.is_staff || currentUserProfileData?.user?.is_superuser
-
+    const IsAdminOrStaffUser = useIsAdminOrStaffUser();
 
     const updateTable = (responseData, id) => {
         const updatedData = data.map(item => {

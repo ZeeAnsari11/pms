@@ -11,9 +11,8 @@ import ImageUploader from "../ImageUploader";
 import {modules} from "../../../Shared/Const/ReactQuillToolbarOptions";
 import {Avatar, Select} from "antd";
 import {StatusCodes} from "http-status-codes";
-import {useSelector} from "react-redux";
 import ErrorPage from "../../Error/ErrorPage";
-import UserSidebar from "../../Dashboard/Sidebar/UserSidebar";
+import {useIsAdminOrStaffUser} from "../../../Store/Selector/Selector";
 
 function CreateProject() {
 
@@ -27,8 +26,8 @@ function CreateProject() {
     const [selectedProjectLead, setSelectedProjectLead] = useState([]);
 
     let authToken = localStorage.getItem('auth_token');
-    const currentUserProfileData = useSelector((state) => state.DataSyncer.userProfileData);
-    const IsAdminOrStaffUser = currentUserProfileData?.user?.is_staff || currentUserProfileData?.user?.is_superuser
+
+    const IsAdminOrStaffUser = useIsAdminOrStaffUser();
 
     const {Option} = Select;
 

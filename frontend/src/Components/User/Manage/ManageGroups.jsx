@@ -7,8 +7,8 @@ import Toast from "../../../Shared/Components/Toast"
 import {displayErrorMessage, displaySuccessMessage} from "../../../Shared/notify"
 import apiRequest from '../../../Utils/apiRequest';
 import {Button, Form as EditForm, Form as AddForm, Input, Modal, Space, Table, Transfer} from 'antd';
-import {useSelector} from "react-redux";
 import ErrorPage from "../../Error/ErrorPage";
+import {useIsAdminOrStaffUser} from "../../../Store/Selector/Selector";
 
 function ManageGroups() {
 
@@ -28,9 +28,8 @@ function ManageGroups() {
     const [addTypeForm] = AddForm.useForm();
 
     let authToken = localStorage.getItem('auth_token');
-    const currentUserProfileData = useSelector((state) => state.DataSyncer.userProfileData);
-    const IsAdminOrStaffUser = currentUserProfileData?.user?.is_staff || currentUserProfileData?.user?.is_superuser
 
+    const IsAdminOrStaffUser = useIsAdminOrStaffUser();
     const updateTable = (responseData) => {
         const updatedData = data.map(item => {
             if (item.id === responseData.id) {

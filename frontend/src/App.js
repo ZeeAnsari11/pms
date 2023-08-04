@@ -1,12 +1,13 @@
 import React, {useEffect} from "react";
 import Url from './Utils/Url';
-import {useDispatch, useSelector} from "react-redux";
+import {useDispatch} from "react-redux";
 import {DataSyncer} from "./Store/Slice/DataSyncerSlice";
 import Loading from './Utils/Loader'
+import {useIsDataSyncerLoading} from "./Store/Selector/Selector";
 
 function App() {
     const dispatch = useDispatch();
-    const loading = useSelector((state) => state.DataSyncer.loading);
+    const loading = useIsDataSyncerLoading();
 
     useEffect(() => {
         dispatch(DataSyncer());

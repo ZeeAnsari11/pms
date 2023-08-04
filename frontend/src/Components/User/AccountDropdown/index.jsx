@@ -1,12 +1,11 @@
 import React from "react";
 import Avatar from "react-avatar";
 import * as AccountComponents from "./Style"
-import {useSelector} from "react-redux";
+import {useCurrentUserProfileData} from "../../../Store/Selector/Selector";
 
 
 const AccountDropdown = () => {
-    const currentUserProfileData = useSelector((state) => state.DataSyncer.userProfileData);
-
+    const currentUserProfileData = useCurrentUserProfileData();
 
     return (
         <>
