@@ -9,14 +9,17 @@ import NavBar from "../../Dashboard/Navbar";
 import GenericSelectField from "../../Dashboard/SelectFields/GenericSelectField";
 import ImageUploader from "../ImageUploader";
 import {modules} from "../../../Shared/Const/ReactQuillToolbarOptions";
-import {Avatar, Select} from "antd";
+import { Avatar, Select, Tooltip } from "antd";
 import {StatusCodes} from "http-status-codes";
 import ErrorPage from "../../Error/ErrorPage";
 import {useIsAdminOrStaffUser} from "../../../Store/Selector/Selector";
+import { InfoCircleOutlined } from "@ant-design/icons";
 
 function CreateProject() {
 
     const [text, setText] = useState('');
+    const [slug, setSlug] = useState('');
+    const [slugError, setSlugError] = useState(false);
     const [image, setImage] = useState(null);
     const [companyData, setCompanyData] = useState([]);
     const [categoryData, setCategoryData] = useState([]);
@@ -28,10 +31,10 @@ function CreateProject() {
     let authToken = localStorage.getItem('auth_token');
 
     const IsAdminOrStaffUser = useIsAdminOrStaffUser();
+    let hasError = false;
 
     const {Option} = Select;
 
-    const uniqueProjectKey = uuidv4();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -87,17 +90,38 @@ function CreateProject() {
     ) : [];
 
 
-    function generateSlug(text) {
-        return text.toString().toLowerCase()
-            .replace(/\s+/g, '-')        // Replace spaces with -
-            .replace(/[^\w\-]+/g, '')   // Remove all non-word chars
-            .replace(/\-\-+/g, '-')      // Replace multiple - with single -
-            .replace(/^-+/, '')          // Trim - from start of text
-            .replace(/-+$/, '');         // Trim - from end of text
+    const validateUniqueKey = async (text) => {
+        await apiRequest.get('/api/validate_slug',{
+                headers: { Authorization: `Token ${authToken}` },
+                params: { slug_name: text },
+        } )
+            .then(
+                response => {
+                    setSlug(response.data.unique_slug);
+                    setSlugError(false);
+                }
+            )
+            .catch(
+                error => {
+                    displayErrorMessage(error.response.data.error);
+                    setSlugError(true);
+                }
+            );
+    }
+
+    const getUniqueSlug = async (text) => {
+        await apiRequest.post('/api/validate_slug/', {project_name: text}, {
+                    headers: { Authorization: `Token ${authToken}`, },
+                })
+            .then(response => setSlug(response.data.unique_slug))
     }
 
 
     function handleSubmit(event) {
+        if(slugError){
+            displayErrorMessage('Please resolve all the error first')
+            return;
+        }
         event.preventDefault();
         const form = event.target;
 
@@ -106,8 +130,7 @@ function CreateProject() {
             formData.append("icon", image);
         }
         formData.append("name", form.elements.project.value);
-        formData.append("slug", generateSlug(form.elements.project.value));
-        formData.append("key", uniqueProjectKey);
+        formData.append("slug", form.elements.slug.value);
         formData.append("project_lead", selectedProjectLead);
         formData.append("description", text);
         formData.append("company", selectedCompany);
@@ -153,13 +176,28 @@ function CreateProject() {
                     <CreateProjectComponents.LabelForProject
                         htmlFor="project">Project:</CreateProjectComponents.LabelForProject>
                     <CreateProjectComponents.StyledInput type="text" id="project" name="project"
-                                                         placeholder="Enter project name"/>
+                                                            placeholder="Enter project name"
+                                                            onBlur={(e) => getUniqueSlug(e.target.value)}
+                    />
+                    <CreateProjectComponents.LabelForProject
+                        htmlFor="project">Key:</CreateProjectComponents.LabelForProject>
+                    <CreateProjectComponents.StyledInput type="text" id="slug" name="slug" value={slug}
+                                                            placeholder="Enter project key"
+                                                            suffix={
+                                                            <Tooltip title="Key should be unique">
+                                                                <InfoCircleOutlined />
+                                                            </Tooltip>
+                                                            }
+                                                            onChange={((e) => setSlug(e.target.value))}
+                                                            onBlur={(e) => validateUniqueKey(e.target.value)}
+                                                            status={slugError ? 'error' : null}
+                                                        />
                     <CreateProjectComponents.LabelForDescriptionBoc
-                        htmlFor="key">Description:</CreateProjectComponents.LabelForDescriptionBoc>
+                        htmlFor="description">Description:</CreateProjectComponents.LabelForDescriptionBoc>
                     <CreateProjectComponents.StyledReactQuill modules={modules} id="exampleEditor" value={text}
-                                                              onChange={(value => setText(value))}/>
+                                                                onChange={(value => setText(value))}/>
                     <CreateProjectComponents.LabelForCompany
-                        htmlFor="category">Company:</CreateProjectComponents.LabelForCompany>
+                        htmlFor="company">Company:</CreateProjectComponents.LabelForCompany>
                     <GenericSelectField
                         onSelectChange={(value) => setSelectedCompany(parseInt(value))}
                         options={companyOptions}

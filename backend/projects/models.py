@@ -99,12 +99,10 @@ class Project(models.Model):
     name = models.CharField(max_length=255, unique=True)
     description = models.TextField()
     slug = models.SlugField(
-        'shortcut',
-        blank=True
-    )
-    key = models.CharField(
-        max_length=100,
-        blank=True
+        unique=True,
+        max_length=10,
+        db_index=True,
+
     )
     assignees = models.ManyToManyField(
         User,

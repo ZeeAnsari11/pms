@@ -18,7 +18,7 @@ function ProjectSettingPage() {
     const [icon, setIcon] = useState(null);
     const [selectedProjectLead, setSelectedProjectLead] = useState([]);
     const [name, setName] = useState('');
-    const [key, setKey] = useState('');
+    const [slug, setSlug] = useState('');
     const [image, setImage] = useState(null);
 
 
@@ -66,7 +66,7 @@ function ProjectSettingPage() {
     useEffect(() => {
         if (projectData.name) {
             setName(projectData.name);
-            setKey(projectData.key);
+            setSlug(projectData.slug);
         }
     }, [projectData]);
 
@@ -105,7 +105,7 @@ function ProjectSettingPage() {
     };
 
     const handleKeyChange = (event) => {
-        setKey(event.target.value);
+        setSlug(event.target.value);
     };
 
     const handleImageChange = (image) => {
@@ -116,7 +116,7 @@ function ProjectSettingPage() {
 
     function handleSubmit(event) {
         event.preventDefault();
-        const projectObj = {'name': name, 'key': key, 'icon': image, 'project_lead': selectedProjectLead,};
+        const projectObj = {'name': name, 'slug': slug, 'icon': image, 'project_lead': selectedProjectLead,};
         apiRequest.patch(`/api/projects/${projectId}/`,
             projectObj,
             {
@@ -162,13 +162,12 @@ function ProjectSettingPage() {
                         style={{width: "50%"}}
                         onChange={(event) => setName(event.target.value)}
                     />
-                    <ProjectSettingComponents.LabelForKey htmlFor="key">Key:</ProjectSettingComponents.LabelForKey>
+                    <ProjectSettingComponents.LabelForKey htmlFor="slug">Key:</ProjectSettingComponents.LabelForKey>
                     <Input
-                        id="key"
-                        placeholder="Project key"
-                        value={key}
+                        id="slug"
+                        value={slug}
                         style={{width: "50%"}}
-                        onChange={(event) => setKey(event.target.value)}
+                        onChange={(event) => setSlug(event.target.value)}
                         disabled={true}
                     />
                     <ProjectSettingComponents.Labelforlead htmlFor="category">Project

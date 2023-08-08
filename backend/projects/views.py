@@ -3,14 +3,17 @@ from rest_framework.viewsets import ModelViewSet
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
 from .filters import IssueFilter
-from rest_framework.response import Response
-from rest_framework import status
 from django.db.models import Q
 from rest_framework.permissions import IsAuthenticated
 from .permissions import IsAdminOrReadOnly, IsAdminUser, IsAdminOrStaffUser
-from .models import *
-from . import serializers
 from rest_framework.decorators import action
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from django.utils.text import slugify
+from django.utils.crypto import get_random_string
+from . import serializers
+from .models import *
 
 
 # Create your views here.
@@ -88,7 +91,7 @@ class GlobalSlackConfigViewSet(ModelViewSet):
 class ProjectViewSet(ModelViewSet):
     http_method_names = ['get', 'post', 'patch', 'delete']
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['name', 'key', 'slug', 'assignees__id', 'project_lead__username', 'company__company_name',
+    filterset_fields = ['name', 'slug', 'assignees__id', 'project_lead__username', 'company__company_name',
                         'category__category']
 
     def get_serializer_class(self):
@@ -293,6 +296,31 @@ class ProjectIssuesViewSet(ModelViewSet):
     #     return Issue.objects.filter(Q(reporter_id=self.request.user) | Q(assignee=self.request.user))
     #
 
+
+class ValidateSlug(APIView):
+    def post(self, request, format=None):
+        serializer = serializers.ProjectSlugSerializer(data=request.data)
+        if serializer.is_valid():
+            project_name = serializer.validated_data.get('project_name')
+            unique_slug = self.generate_unique_slug(project_name)
+            return Response({'unique_slug': unique_slug}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def generate_unique_slug(self, project_name):
+        base_slug = slugify(project_name)
+        slug = base_slug
+
+        while Project.objects.filter(slug=slug).exists():
+            random_chars = get_random_string(length=3, allowed_chars='abcdefghijklmnopqrstuvwxyz')
+            slug = f"{base_slug}-{random_chars}"
+
+        return slug[:10]
+
+    def get(self, request, format=None):
+        slug = request.query_params.get('slug_name', '')
+        if slug and Project.objects.filter(slug=slug).exists():
+            return Response({'error': 'Key already exists for another project.'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'unique_slug': slug}, status=status.HTTP_200_OK)
 
 def upload(request):
     if request.method == "POST":
