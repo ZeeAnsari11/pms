@@ -152,7 +152,7 @@ function ProjectSettingPage() {
                     <ProjectSettingComponents.Details>Details</ProjectSettingComponents.Details>
                 </ProjectSettingComponents.Header>
                 <ProjectSettingComponents.FormWrapper onSubmit={handleSubmit} encType="multipart/form-data"
-                                                      method="POST">
+                                                        method="POST">
                     <ImageUploader id="image" imagePath={IconPath} onImageChange={handleImageChange}/>
                     <ProjectSettingComponents.Label htmlFor="name">Name:</ProjectSettingComponents.Label>
                     <Input
