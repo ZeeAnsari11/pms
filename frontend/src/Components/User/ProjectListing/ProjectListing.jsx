@@ -42,7 +42,7 @@ const ProjectListing = () => {
             ),
             sorter: (record1, record2) => record1.name.localeCompare(record2.name)
         }, {
-            title: 'Key', dataIndex: 'key', key: 'key',
+            title: 'Key', dataIndex: 'slug', key: 'slug', render: (text) => text.toUpperCase()
         }, {
             title: 'Project Lead', dataIndex: 'lead', key: 'lead',
         }, {
@@ -78,7 +78,7 @@ const ProjectListing = () => {
                     const dataArray = response.data.map(project => ({
                         id: project.id,
                         name: project.name,
-                        key: project.key,
+                        slug: project.slug,
                         lead: project.project_lead.username,
                         icon: project.icon,
                         category: typeof project.category === 'string' ? project.category : project.category.category
@@ -99,7 +99,7 @@ const ProjectListing = () => {
     const handleSearch = (value) => {
         const filteredProjects = projects.filter(
             (project) => project.name.toLowerCase().includes(value.toLowerCase()) ||
-                project.key.toLowerCase().includes(value.toLowerCase()) ||
+                project.slug.toLowerCase().includes(value.toLowerCase()) ||
                 project.lead.toLowerCase().includes(value.toLowerCase()) ||
                 project.category.toLowerCase().includes(value.toLowerCase())
         );
@@ -147,7 +147,7 @@ const ProjectListing = () => {
                 <ProjectListingComponents.SearchInputContainer>
                     <ProjectListingComponents.SearchIcon/>
                     <ProjectListingComponents.SearchInput type="text" placeholder="Search Projects" value={null}
-                                                          onChange={(e) => handleSearch(e.target.value)}/>
+                                                            onChange={(e) => handleSearch(e.target.value)}/>
                 </ProjectListingComponents.SearchInputContainer>
             </ProjectListingComponents.SearchContainer>
             <ProjectListingComponents.ProjectListingTable>
