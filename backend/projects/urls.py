@@ -31,5 +31,8 @@ router.register('companies', CompanyViewSet, basename='companies')
 projects_router = routers.NestedDefaultRouter(router, 'projects', lookup='project')
 projects_router.register('issues', views.ProjectIssuesViewSet, basename='projects-issues')
 
-urlpatterns = [path('api/projects/<int:pk>/assignees/', views.ProjectViewSet.as_view({'get': 'assignees'}),
-                    name='project-assignees'), ] + router.urls + projects_router.urls
+
+urlpatterns = [
+                path('api/projects/<int:pk>/assignees/', views.ProjectViewSet.as_view({'get': 'assignees'}), name='project-assignees'),
+                path('validate_slug/', views.ValidateSlug.as_view(), name='validate-slug'),
+            ] + router.urls + projects_router.urls

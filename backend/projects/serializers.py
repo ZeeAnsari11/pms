@@ -111,14 +111,18 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Project
-        fields = ["id", 'icon', 'name', 'slug', 'key', 'assignees', 'project_lead', 'description', 'company', 'status',
-                  'type', 'label', 'category']
+        fields = ["id", 'icon', 'name', 'slug', 'assignees', 'project_lead', 'description', 'company', 'status',
+                'type', 'label', 'category']
+
+
+class ProjectSlugSerializer(serializers.Serializer):
+    project_name = serializers.CharField(max_length=100)
 
 
 class ProjectMembershipSerializer(serializers.ModelSerializer):
     user = SummarizedUserSerializer(read_only=True)
     project = ProjectPermissionsSerializer(read_only=True)
-    group = GroupPermissionsSerializer(read_only=True)
+    group = DetailedGroupPermissionsSerializer(read_only=True)
 
     class Meta:
         model = models.ProjectMembership
@@ -148,7 +152,7 @@ class ProjectIssuesSerializer(serializers.ModelSerializer):
 class CreateProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Project
-        fields = ["id", 'icon', 'name', 'slug', 'key', 'assignees', 'project_lead', 'description', 'company',
+        fields = ["id", 'icon', 'name', 'slug', 'assignees', 'project_lead', 'description', 'company',
                     'category']
 
 
