@@ -236,7 +236,7 @@ class Issue(models.Model):
         super().save(*args, **kwargs)
 
     def _generate_unique_slug(self):
-        base_slug = slugify(self.project.name)
+        base_slug = slugify(self.project.slug)
         issue_count = Issue.objects.filter(project_id=self.project.id).count()
         return f"{base_slug}-{issue_count+1}"
 
