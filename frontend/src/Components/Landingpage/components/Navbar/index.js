@@ -40,7 +40,7 @@ const Navbar = ({toggle}) => {
                 <Nav scrollNav={scrollNav}>
                     <NavbarContainer>
                         <NavLogo to='/' onClick={toggleHome}>
-                            Proje<LogoImage src="http://localhost:3000/companyIcon.png"/>
+                            <LogoImage src="/Projex-Logo.webp"/>
                         </NavLogo>
                         <MenuIcon onClick={toggle}>
                             <FaBars/>
