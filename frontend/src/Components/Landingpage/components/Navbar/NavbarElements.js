@@ -42,7 +42,7 @@ export const NavLogo = styled(LinkR)`
 `;
 
 export const LogoImage = styled.img`
-  max-width: 50px;
+  max-width: 200px;
   margin-left: -8px;
   height: auto;
   cursor: pointer;

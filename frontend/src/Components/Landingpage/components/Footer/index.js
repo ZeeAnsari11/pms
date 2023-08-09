@@ -73,7 +73,7 @@ const Footer = () => {
                 <SocialMedia>
                     <SocialMediaWrapper>
                         <SocialLogo to='/' onClick={toggleHome}>
-                            Proje<LogoImage src="http://localhost:3000/companyIcon.png"/>
+                            <LogoImage src="/Projex-Logo.webp"/>
                         </SocialLogo>
                         <WebsiteRights>ProjeX © {new Date().getFullYear()} All rights reserved.</WebsiteRights>
                         <SocialIcons>
