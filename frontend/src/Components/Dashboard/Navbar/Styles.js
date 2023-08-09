@@ -44,7 +44,7 @@ export const RightContainer = styled.div`
 
 export const NavbarInnerContainer = styled.div`
   width: 100%;
-  height: 70px;
+  height: 50px;
   display: flex;
 `;
 
@@ -73,7 +73,6 @@ export const NavbarLinkExtended = styled(Link)`
 `;
 
 export const Logo = styled.img`
-  margin: 4px 5px 3px 5px;
   max-width: 100px;
   height: auto;
   cursor: pointer;

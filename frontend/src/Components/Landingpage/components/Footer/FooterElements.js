@@ -91,12 +91,12 @@ export const SocialLogo = styled(Link)`
   font-size: 2.0rem;
   display: flex;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 10px;
   font-weight: bold;
 `;
 
 export const LogoImage = styled.img`
-  max-width: 50px;
+  max-width: 200px;
   margin-left: -8px;
   height: auto;
   cursor: pointer;
