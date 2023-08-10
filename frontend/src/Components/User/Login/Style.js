@@ -1,9 +1,10 @@
 import styled from "styled-components";
-import { colorCode } from "../../../Configurations/colors";
+import {colorCode} from "../../../Configurations/colors";
+import {Input,Button} from 'antd';
 
 export const Container = styled.div`
-  background-color: #fff;
-  border-radius: 10px;
+  background-color: #ffffff;
+  border-radius: 5px;
   box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
   position: relative;
   overflow: hidden;
@@ -42,6 +43,21 @@ export const SignInContainer = styled.div`
   ${props => (props.signingIn !== true ? `transform: translateX(100%);` : null)}
 `;
 
+
+export const StyleInput = styled(Input)`
+  padding: 7px 7px;
+  margin: 8px 0;
+  width: 100%;
+`;
+
+
+export const StylePasswordInput = styled(Input.Password)`
+  padding: 7px 7px;
+  margin: 8px 0;
+  width: 100%;
+
+`;
+
 export const Form = styled.form`
   background-color: #ffffff;
   display: flex;
@@ -49,48 +65,17 @@ export const Form = styled.form`
   justify-content: center;
   flex-direction: column;
   padding: 0 50px;
-  height: 100%;
+  margin-top: 10px;
+  height: 90%;
   text-align: center;
 `;
 
 export const Title = styled.h1`
   font-weight: bold;
-  margin: 0;
+  margin: 5px;
+  align-items: center;
 `;
 
-export const Input = styled.input`
-  background-color: #eee;
-  border: none;
-  padding: 12px 15px;
-  margin: 8px 0;
-  width: 100%;
-`;
-
-export const Button = styled.button`
-  border-radius: 20px;
-  border: 1px solid whitesmoke;
-  background-color: ${colorCode};
-  color: #ffffff;
-  font-size: 12px;
-  font-weight: bold;
-  padding: 12px 45px;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  transition: transform 80ms ease-in;
-
-  &:active {
-    transform: scale(0.95);
-  }
-
-  &:focus {
-    outline: none;
-  }
-
-  &:hover {
-    background-color: #000000;
-  }
-
-`;
 
 export const GhostButton = styled(Button)`
   background-color: transparent;
@@ -167,6 +152,7 @@ export const RightOverlayPanel = styled(OverlayPanel)`
 export const Paragraph = styled.p`
   font-size: 14px;
   font-weight: 600;
+  padding: 5px;
   line-height: 20px;
   letter-spacing: 0.5px;
   margin: 20px 0 30px;
@@ -180,7 +166,7 @@ export const StyledError = styled.p`
 
 export const ParentContainer = styled.div`
   display: flex;
+  background-color: transparent;
   justify-content: center;
   align-items: center;
-  height: 100vh; /* Set the height of the container to fill the viewport */
 `;

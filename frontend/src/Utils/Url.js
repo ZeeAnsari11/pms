@@ -40,7 +40,6 @@ function Url() {
             <Routes>
                 {/* General routes */}
                 <Route exact path="/" element={<LandingPage/>}/>
-                <Route exact path="/login" element={<Login/>}/>
                 <Route path="/user-activate" element={<AccountActivation/>}/>
                 <Route path="/forgot-password" element={<ForgotPassword/>}/>
                 <Route path="/reset-password" element={<ResetPasswordPage/>}/>

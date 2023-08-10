@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { FaTimes } from 'react-icons/fa';
 import { Link as LinkR } from 'react-router-dom';
 import { Link as LinkS } from 'react-scroll';
+import {Modal} from "antd";
 
 export const SidebarContainer = styled.aside`
   position: fixed;
@@ -85,5 +86,11 @@ export const SidebarRoute = styled(LinkR)`
     transition: all 0.2s ease-in-out;
     background: #000;
     color: #fff;
+  }
+`;
+
+export const CustomModal = styled(Modal)`
+  .ant-modal-content {
+    padding: 0;
   }
 `;
