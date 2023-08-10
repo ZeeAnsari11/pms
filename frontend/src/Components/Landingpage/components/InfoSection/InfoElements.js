@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import {Modal} from "antd";
 
 export const InfoContainer = styled.div`
   color: #fff;
@@ -100,3 +101,10 @@ export const Img = styled.img`
   margin: 0 0 10px 0;
   padding-right: 0;
 `;
+
+export const CustomModal = styled(Modal)`
+  .ant-modal-content {
+    padding: 0px;
+  }
+`;
+

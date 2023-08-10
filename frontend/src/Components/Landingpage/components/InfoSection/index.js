@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Button, ButtonfromReactRouter} from '../ButtonElements';
 import {
     InfoContainer,
@@ -12,8 +12,10 @@ import {
     Subtitle,
     BtnWrap,
     Img,
-    ImgWrap
+    ImgWrap,
+    CustomModal
 } from './InfoElements';
+import Login from "../../../User/Login";
 
 const InfoSection = ({
                          lightBg,
@@ -33,6 +35,14 @@ const InfoSection = ({
                          buttonUrl,
                          scroll
                      }) => {
+    const [modalVisible, setModalVisible] = useState(false);
+    const showModal = () => {
+        setModalVisible(true);
+    };
+
+    const hideModal = () => {
+        setModalVisible(false);
+    };
     return (
         <>
             <InfoContainer lightBg={lightBg} id={id}>
@@ -60,12 +70,23 @@ const InfoSection = ({
                                         </Button>
                                     ) : (
                                         <ButtonfromReactRouter
-                                            to={buttonUrl}
+                                            onClick={showModal}
                                         >
                                             {buttonLabel}
                                         </ButtonfromReactRouter>
                                     )}
                                 </BtnWrap>
+                                <CustomModal
+                                    open={modalVisible}
+                                    onCancel={hideModal}
+                                    footer={null}
+                                    width={'fit-content'}
+                                    destroyOnClose
+                                    maskClosable={true}
+                                    closeIcon={false}
+                                >
+                                    <Login/>
+                                </CustomModal>
                             </TextWrapper>
                         </Column1>
                         <Column2>
