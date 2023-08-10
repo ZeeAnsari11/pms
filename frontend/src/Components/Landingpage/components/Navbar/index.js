@@ -12,11 +12,14 @@ import {
     NavMenu,
     NavBtn,
     NavBtnLink,
-    LogoImage
+    LogoImage,
+    CustomModal
 } from './NavbarElements';
+import Login from "../../../User/Login";
 
 const Navbar = ({toggle}) => {
     const [scrollNav, setScrollNav] = useState(false);
+    const [modalVisible, setModalVisible] = useState(false);
 
     const changeNav = () => {
         if (window.scrollY >= 80) {
@@ -32,6 +35,14 @@ const Navbar = ({toggle}) => {
 
     const toggleHome = () => {
         scroll.scrollToTop();
+    };
+
+    const showModal = () => {
+        setModalVisible(true);
+    };
+
+    const hideModal = () => {
+        setModalVisible(false);
     };
 
     return (
@@ -68,8 +79,19 @@ const Navbar = ({toggle}) => {
                             </NavItem>
                         </NavMenu>
                         <NavBtn>
-                            <NavBtnLink to="/login">Sign In</NavBtnLink>
+                            <NavBtnLink onClick={showModal}>Sign In</NavBtnLink>
                         </NavBtn>
+                        <CustomModal
+                            open={modalVisible}
+                            onCancel={hideModal}
+                            footer={null}
+                            width={'fit-content'}
+                            destroyOnClose
+                            maskClosable={true}
+                            closeIcon={false}
+                        >
+                            <Login/>
+                        </CustomModal>
                     </NavbarContainer>
                 </Nav>
             </IconContext.Provider>

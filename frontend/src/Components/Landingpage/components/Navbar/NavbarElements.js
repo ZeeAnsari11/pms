@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { Link as LinkR } from 'react-router-dom';
 import { Link as LinkS } from 'react-scroll';
+import {Modal} from "antd";
 
 export const Nav = styled.nav`
   background: ${({ scrollNav }) => (scrollNav ? '#FAFBFC' : '#FAFBFC')};;
@@ -27,6 +28,10 @@ export const NavbarContainer = styled.div`
   width: 100%;
   padding: 0 15px;
   max-width: 1100px;
+`;
+
+export const StyleModal = styled(Modal)`
+  padding: unset;
 `;
 
 export const NavLogo = styled(LinkR)`
@@ -128,3 +133,10 @@ export const NavBtnLink = styled(LinkR)`
     color: #fff;
   }
 `;
+
+export const CustomModal = styled(Modal)`
+  .ant-modal-content {
+    padding: 0px;
+  }
+`;
+
