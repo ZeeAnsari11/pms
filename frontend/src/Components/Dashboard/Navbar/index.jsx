@@ -53,7 +53,7 @@ function NavBar() {
                 <NavbarInnerContainer>
                     <LeftContainer>
                         <Link to="/project">
-                            <Logo src='http://localhost:3000/companyLogo.png' alt="Nexius"></Logo>
+                            <Logo src='/Projex-Logo.webp' alt="ProjeX"></Logo>
                         </Link>
                         <NavbarLinkContainer>
                             <OpenLinksButton
