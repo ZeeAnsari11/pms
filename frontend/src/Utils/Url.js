@@ -24,6 +24,7 @@ import AccountActivation from "../Components/User/AccountActivate/AccountActivat
 import EditTicketPage from "../Components/Dashboard/EditTicketPage/EditTicketPage";
 import ErrorPage from "../Components/Error/ErrorPage";
 import SessionAlertPage from "../Components/Error/SessionAlertPage";
+import LandingPage from "../Components/Landingpage/Landingpage";
 
 function PrivateRoute({element: Component, ...rest}) {
     let authToken = localStorage.getItem('auth_token')
@@ -38,9 +39,7 @@ function Url() {
         <BrowserRouter>
             <Routes>
                 {/* General routes */}
-
-                <Route exact path="/" element={<Login/>}/>
-                <Route exact path="/login" element={<Login/>}/>
+                <Route exact path="/" element={<LandingPage/>}/>
                 <Route path="/user-activate" element={<AccountActivation/>}/>
                 <Route path="/forgot-password" element={<ForgotPassword/>}/>
                 <Route path="/reset-password" element={<ResetPasswordPage/>}/>
