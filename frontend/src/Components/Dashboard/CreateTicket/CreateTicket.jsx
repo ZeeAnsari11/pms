@@ -361,7 +361,6 @@ const MyModalComponent = ({onClose}) => {
                                     onSelectChange={handleIssueTypeChange}/>
                             </CreateTicketComponents.TaskList>
                         </CreateTicketComponents.CardInfoBox>
-                        <CreateTicketComponents.Divider/>
                         <CreateTicketComponents.CardInfoBox>
                             <CreateTicketComponents.CardInfoBoxTitle>
                                 <TbStatusChange/>
