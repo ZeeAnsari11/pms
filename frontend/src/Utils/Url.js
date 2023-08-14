@@ -1,6 +1,5 @@
-import {BrowserRouter, Routes, Route} from "react-router-dom";
+import {BrowserRouter, Routes, Route, Navigate} from "react-router-dom";
 import React from 'react';
-import Login from "../Components/User/Login"
 import ResetPasswordPage from "../Components/User/ResetPassword/ResetPasswordPage"
 import ForgotPassword from "../Components/User/ForgetPassword/ForgetPassword"
 import Dashboard from "../Components/Dashboard/Dashboard/Dashboard"
@@ -34,12 +33,20 @@ function PrivateRoute({element: Component, ...rest}) {
     return <Component {...rest} />;
 }
 
+function Redirection({element: Component, ...rest}) {
+    let authToken = localStorage.getItem('auth_token')
+    if (authToken) {
+        return <Navigate to="/project" replace />;
+    }
+    return <Component {...rest} />;
+}
+
 function Url() {
     return (
         <BrowserRouter>
             <Routes>
                 {/* General routes */}
-                <Route exact path="/" element={<LandingPage/>}/>
+                <Route exact path="/"  element={<Redirection element={LandingPage}/>}/>
                 <Route path="/user-activate" element={<AccountActivation/>}/>
                 <Route path="/forgot-password" element={<ForgotPassword/>}/>
                 <Route path="/reset-password" element={<ResetPasswordPage/>}/>
@@ -49,9 +56,9 @@ function Url() {
                 <Route path="/create-project" element={<PrivateRoute element={CreateProject}/>}/>
                 <Route path="/project/:projectId/setting/summary" element={<PrivateRoute element={ProjectSummary}/>}/>
                 <Route path="/project/:projectId/setting/notification"
-                       element={<PrivateRoute element={Notification}/>}/>
+                        element={<PrivateRoute element={Notification}/>}/>
                 <Route path="/project/:projectId/setting/integrations"
-                       element={<PrivateRoute element={Integrations}/>}/>
+                        element={<PrivateRoute element={Integrations}/>}/>
                 <Route path="/project/:projectId/setting/tags" element={<PrivateRoute element={ProjectTag}/>}/>
                 <Route path="/project/:projectId/setting/types" element={<PrivateRoute element={Types}/>}/>
                 <Route path="/project/:projectId/setting/columns" element={<PrivateRoute element={Columns}/>}/>

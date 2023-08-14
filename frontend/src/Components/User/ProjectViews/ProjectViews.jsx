@@ -1,8 +1,9 @@
-import React, {useState} from 'react';
+import React from 'react';
 import * as ProjectViewComponents from './Style'
 import ProjectListing from '../ProjectListing/ProjectListing';
 import NavBar from '../../Dashboard/Navbar';
 import {useNavigate} from "react-router-dom";
+import {Button} from "antd"
 import {useIsAdminOrStaffUser} from "../../../Store/Selector/Selector";
 
 const ProjectsPage = () => {
@@ -17,9 +18,7 @@ const ProjectsPage = () => {
                 <ProjectViewComponents.ProjectsHeaderContainer>
                     <ProjectViewComponents.ProjectsHeader>Projects</ProjectViewComponents.ProjectsHeader>
                     {IsAdminOrStaffUser &&
-                        <ProjectViewComponents.ProjectButton onClick={() => navigate('/create-project')}>
-                            Create Project
-                        </ProjectViewComponents.ProjectButton>
+                        <Button type={"primary"} onClick={() => navigate('/create-project')}>Create Project</Button>
                     }
                 </ProjectViewComponents.ProjectsHeaderContainer>
                 <ProjectListing/>
