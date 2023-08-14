@@ -34,17 +34,3 @@ export const ProjectsHeader = styled.h1`
   margin: 0;
 `;
 
-export const ProjectButton = styled.button`
-  background-color: #0052cc;
-  color: #FFFFFF;
-  border: none;
-  border-radius: 4px;
-  font-size: 16px;
-  font-weight: bold;
-  padding: 10px 20px;
-  cursor: pointer;
-
-  &:hover {
-    background-color: #005CA9;
-  }
-`;
