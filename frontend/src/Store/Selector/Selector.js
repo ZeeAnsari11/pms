@@ -8,6 +8,10 @@ export const useIsLogInPending = () => {
     return useSelector((state) => state.login.loading);
 };
 
+export const useIsUserAuthenticated = () => {
+    return useSelector((state) => state.login.isAuthenticated);
+};
+
 export const useIsSingUpPending = () => {
     return useSelector((state) => state.signUp.loading);
 };
