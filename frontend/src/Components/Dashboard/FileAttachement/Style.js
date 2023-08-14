@@ -1,13 +1,13 @@
 import styled from "styled-components";
 
 export const UploadContainer = styled.div`
-  border: 2px dashed #ccc;
+  border: 1px dashed #ccc;
   border-radius: 5px;
   padding: 20px;
   text-align: center;
 
   &:hover {
-    border-color: #666;
+    border-color: #4096ff;
   }
 
   .upload-text {
@@ -37,12 +37,12 @@ export const UploadContainer = styled.div`
 
 export const PreviewContainer = styled.div`
   display: flex;
-  flex-wrap: nowrap; // this will prevent wrapping of preview items
-  overflow-x: auto; // this will enable horizontal scrolling
-  padding: 10px 0; // optional: add some padding for better spacing
-  width: ${(props) => (props.width ? props.width : "557px")};
-  border: 2px solid lightgrey;
-  border-radius: 10px;
+  flex-wrap: nowrap; 
+  overflow-x: auto; 
+  padding: 10px 0; 
+  width: ${(props) => (props.width ? props.width : "560px")};
+  border: 1px solid lightgrey;
+  border-radius: 6px;
   margin-top: 10px;
   margin-bottom: 10px;
 `;
