@@ -1,35 +1,35 @@
-import React, {useEffect, useState} from 'react';
-import {Link, useParams} from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import { Link, useParams } from "react-router-dom";
 import NavBar from "../../Dashboard/Navbar";
 import Sidebar from "../../Dashboard/Sidebar/ProjectSidebar";
 import FileUpload from "../FileAttachement/FileUpload";
 import axios from "axios";
-import {Breadcrumb, Input, Select, Tooltip, Avatar} from "antd";
+import { Avatar, Breadcrumb, Input, Select, Tooltip } from "antd";
 import TrackingField from "../TimeTracking";
 import Editable from "../Editable/Editable";
 import Comment from "../Comment/Comment";
 import Worklog from "../Worklog/Worklog";
-import {useDispatch} from "react-redux";
-import {fetchIssueData} from "../../../Store/Slice/Issue/IssueSlice";
+import { useDispatch } from "react-redux";
+import { fetchIssueData } from "../../../Store/Slice/Issue/IssueSlice";
 import ReactQuill from "react-quill";
 import 'react-quill/dist/quill.snow.css';
 import * as EditTicketPageComponents from "./Style"
 import GenericSelectField from "../SelectFields/GenericSelectField";
-import {priorityOptions} from '../../../Shared/Const/Issues'
+import { priorityOptions } from '../../../Shared/Const/Issues'
 import tagRender from '../../../Shared/Components/tagRender'
-import {TbExchange, TbStatusChange} from 'react-icons/tb'
-import {FiUser} from 'react-icons/fi'
-import {IoIosTimer} from 'react-icons/io'
-import {TiTags} from "react-icons/ti";
-import {RxStopwatch} from 'react-icons/rx'
-import {CgOptions} from 'react-icons/cg'
+import { TbExchange, TbStatusChange } from 'react-icons/tb'
+import { FiUser } from 'react-icons/fi'
+import { IoIosTimer } from 'react-icons/io'
+import { TiTags } from "react-icons/ti";
+import { RxStopwatch } from 'react-icons/rx'
+import { CgOptions } from 'react-icons/cg'
 import Loader from '../../../Utils/Loader'
-import {value} from "lodash/seq";
+import { value } from "lodash/seq";
 import EstimateTimer from "../EstimateTimer/EstimateTimer";
 import * as CardInfoComponents from "../CardInfo/Style";
-import {modules} from "../../../Shared/Const/ReactQuillToolbarOptions";
-import {LinkOutlined} from '@ant-design/icons';
-import {useCurrentIssueData} from "../../../Store/Selector/Selector";
+import { modules } from "../../../Shared/Const/ReactQuillToolbarOptions";
+import { LinkOutlined } from '@ant-design/icons';
+import { useCurrentIssueData } from "../../../Store/Selector/Selector";
 
 const {TextArea} = Input;
 
@@ -581,9 +581,9 @@ function EditTicketPage({props}) {
                                             {showQuill ? (
                                                 <>
                                                     <CardInfoComponents.StyledQuillWrapper>
-                                                        <ReactQuill modules={modules} value={newComment}
+                                                        <ReactQuill  modules={modules} value={newComment}
                                                                     onChange={handleNewCommentChange}
-                                                                    style={{width: "648px"}}/>
+                                                                    />
                                                     </CardInfoComponents.StyledQuillWrapper>
                                                     <div style={{flex: 1}}>
                                                         <CardInfoComponents.CommentButton
@@ -601,10 +601,8 @@ function EditTicketPage({props}) {
                                                     </div>
                                                 </>
                                             ) : (
-                                                <CardInfoComponents.CommentInput
-                                                    type="text"
+                                                <Input
                                                     placeholder="Leave a comment"
-                                                    width={"648px"}
                                                     onClick={() => setShowQuill(true)}
                                                 />
                                             )}

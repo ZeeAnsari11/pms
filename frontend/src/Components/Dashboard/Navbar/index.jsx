@@ -8,7 +8,6 @@ import {
     NavbarLinkContainer,
     Logo,
     OpenLinksButton,
-    Button,
     NavbarLinkExtended,
 } from "./Styles";
 import Dropdown from './NavBarDropdown'
@@ -29,6 +28,7 @@ import SearchBar from './SearchBar/index'
 import {Link} from "react-router-dom";
 import CreateTicket from "../CreateTicket/CreateTicket";
 import Avatar from "react-avatar";
+import {Button} from "antd"
 import {useCurrentUserProfileData, useIsAdminOrStaffUser} from "../../../Store/Selector/Selector";
 
 function NavBar() {
@@ -64,13 +64,13 @@ function NavBar() {
                                 {extendNavbar ? <>&#10005;</> : <> &#8801;</>}
                             </OpenLinksButton>
                             <Dropdown items={yourWorkItems} name="Your Work"
-                                      icon={<MdKeyboardArrowDown size={20} style={{
-                                          marginRight: "10px", cursor: 'pointer',
-                                          marginLeft: "-7px"
-                                      }}/>}/>
+                                        icon={<MdKeyboardArrowDown size={20} style={{
+                                            marginRight: "10px", cursor: 'pointer',
+                                            marginLeft: "-7px"
+                                        }}/>}/>
 
                             <Dropdown items={IsAdminOrStaffUser ? adminUserProjectItems : simpleUserProjectItems}
-                                      name='Projects' icon={<MdKeyboardArrowDown size={20} style={{
+                                        name='Projects' icon={<MdKeyboardArrowDown size={20} style={{
                                 marginRight: "10px", cursor: 'pointer',
                                 marginLeft: "-7px"
                             }}/>}/>
@@ -80,14 +80,14 @@ function NavBar() {
                             }}/>}/>
 
                         </NavbarLinkContainer>
-                        <Button onClick={handleCreateButtonClick}>Create</Button>
+                        <Button type={"primary"} onClick={handleCreateButtonClick}>Create</Button>
                     </LeftContainer>
                     <RightContainer>
                         <SearchBar/>
                         <Dropdown minWidth="450px" items={notificationsItems}
-                                  name={<IoMdNotifications size={24} style={{marginLeft: "10px"}}/>}/>
+                                    name={<IoMdNotifications size={24} style={{marginLeft: "10px"}}/>}/>
                         <Dropdown minWidth="350px" items={helpItems}
-                                  name={<AiFillQuestionCircle size={24} style={{marginLeft: "10px"}}/>}/>
+                                    name={<AiFillQuestionCircle size={24} style={{marginLeft: "10px"}}/>}/>
                         <Dropdown
                             items={IsAdminOrStaffUser ? adminUseraccountItems : simpleUseraccountItems}
                             name={
