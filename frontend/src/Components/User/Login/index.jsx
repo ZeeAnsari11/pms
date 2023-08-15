@@ -25,7 +25,7 @@ function Login() {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [usernameForSignIn, setUsernameForSignIn] = useState('');
+    const [emailForSignIn, setEmailForSignIn] = useState('');
     const [passwordForSignIn, setPasswordForSignIn] = useState('');
 
     const navigate = useNavigate();
@@ -33,7 +33,7 @@ function Login() {
     const handleSubmitSignIn = (e) => {
         e.preventDefault();
 
-        dispatch(login({username: usernameForSignIn, password: passwordForSignIn})).unwrap()
+        dispatch(login({email: emailForSignIn, password: passwordForSignIn})).unwrap()
             .then((response) => {
                 if (response.authToken.auth_token) {
                     localStorage.setItem('auth_token', response.authToken.auth_token);
@@ -130,8 +130,8 @@ function Login() {
                 <LoginStyleComponents.SignInContainer signingIn={signIn}>
                     <LoginStyleComponents.Form onSubmit={handleSubmitSignIn}>
                         <LoginStyleComponents.Title>Sign In</LoginStyleComponents.Title>
-                        <LoginStyleComponents.StyleInput type="text" placeholder="Name" value={usernameForSignIn}
-                                                            onChange={(e) => setUsernameForSignIn(e.target.value)}/>
+                        <LoginStyleComponents.StyleInput type="text" placeholder="Email Address" value={emailForSignIn}
+                                                            onChange={(e) => setEmailForSignIn(e.target.value)}/>
                         <LoginStyleComponents.StylePasswordInput
                             placeholder="Password"
                             value={passwordForSignIn}
