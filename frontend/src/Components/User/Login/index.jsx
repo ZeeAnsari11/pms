@@ -13,7 +13,6 @@ import {DataSyncer} from "../../../Store/Slice/DataSyncerSlice";
 import {useIsLogInPending, useIsSingUpPending} from "../../../Store/Selector/Selector";
 import {EyeInvisibleOutlined, EyeTwoTone, GoogleOutlined} from '@ant-design/icons';
 import {Button, Divider} from 'antd';
-import {FcGoogle} from 'react-icons/fc'
 
 function Login() {
     const dispatch = useDispatch();
@@ -132,7 +131,7 @@ function Login() {
                     <LoginStyleComponents.Form onSubmit={handleSubmitSignIn}>
                         <LoginStyleComponents.Title>Sign In</LoginStyleComponents.Title>
                         <LoginStyleComponents.StyleInput type="text" placeholder="Name" value={usernameForSignIn}
-                                                         onChange={(e) => setUsernameForSignIn(e.target.value)}/>
+                                                            onChange={(e) => setUsernameForSignIn(e.target.value)}/>
                         <LoginStyleComponents.StylePasswordInput
                             placeholder="Password"
                             value={passwordForSignIn}
