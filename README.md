@@ -7,6 +7,7 @@ The project is a complete example of boilerplate project. This project uses:
 * Gunicorn
 * React.js
 * Postgres
+* MySQL
 * Nginx
 * Docker
 * Docker Compose
