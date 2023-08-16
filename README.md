@@ -5,8 +5,7 @@
 The project is a complete example of boilerplate project. This project uses:
 * Django
 * Gunicorn
-* React.js
-* Postgres
+* React
 * MySQL
 * Nginx
 * Docker
