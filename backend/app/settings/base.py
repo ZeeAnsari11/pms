@@ -33,6 +33,8 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'djoser',
     'solo',
+    # Social authentication Apps
+    'social_django',
     # 'restfilesupload.apps.RestfilesuploadConfig',
     # Custom Apps
     'projects',
@@ -44,6 +46,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
+    'social_django.middleware.SocialAuthExceptionMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -63,13 +66,27 @@ REST_FRAMEWORK = {
     ]
 }
 
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.google.GoogleOAuth2',
+    'django.contrib.auth.backends.ModelBackend'
+)
+
 DJOSER = {
     "USER_ID_FIELD": "username",
+    'LOGIN_FIELD': 'email',
     'PASSWORD_RESET_CONFIRM_URL': 'reset-password?uid={uid}&token={token}',
     'USERNAME_RESET_CONFIRM_URL': '#/username/reset/confirm/{uid}/{token}',
     'ACTIVATION_URL': 'user-activate?uid={uid}&token={token}',
     'SEND_ACTIVATION_EMAIL': True,
+    'SOCIAL_AUTH_TOKEN_STRATEGY': 'djoser.social.token.jwt.TokenStrategy',
+    'SOCIAL_AUTH_ALLOWED_REDIRECT_URIS': ['http://localhost:3000/google', 'http://localhost:3000/facebook', 'http://localhost:3000'],
 }
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '244087191113-73n7tkf1gr4lpm5h102rrjv6imj38qcu.apps.googleusercontent.com'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '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'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ['https://www.googleapis.com/auth/userinfo.email',
+                                   'https://www.googleapis.com/auth/userinfo.profile', 'openid']
+SOCIAL_AUTH_GOOGLE_OAUTH2_EXTRA_DATA = ['first_name', 'last_name']
 
 ROOT_URLCONF = 'app.urls'
 
@@ -84,6 +101,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect'
             ],
         },
     },
@@ -134,7 +153,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # Celery broker details
 CELERY_BROKER_URL = os.environ.get("CELERY_BROKER")
 CELERY_RESULT_BACKEND = os.environ.get("CELERY_BACKEND")
-
 
 CORS_ALLOWED_ORIGINS = [
     "https://projex.phpstudios.com:3000",

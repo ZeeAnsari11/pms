@@ -1,8 +1,8 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import {useDispatch} from 'react-redux';
 import {login} from '../../../Store/Slice/User/loginSlice';
 import {signUp} from '../../../Store/Slice/User/signupSlice';
-import {Link, useNavigate} from "react-router-dom";
+import {Link, useNavigate, useLocation} from "react-router-dom";
 import 'react-toastify/dist/ReactToastify.css';
 import Toast from "../../../Shared/Components/Toast"
 import * as LoginStyleComponents from "./Style"
@@ -13,6 +13,8 @@ import {DataSyncer} from "../../../Store/Slice/DataSyncerSlice";
 import {useIsLogInPending, useIsSingUpPending} from "../../../Store/Selector/Selector";
 import {EyeInvisibleOutlined, EyeTwoTone, GoogleOutlined} from '@ant-design/icons';
 import {Button, Divider} from 'antd';
+import axios from 'axios'
+import {googleAuthenticate} from "../../../Store/Slice/User/googleauthSlice";
 
 function Login() {
     const dispatch = useDispatch();
@@ -29,6 +31,21 @@ function Login() {
     const [passwordForSignIn, setPasswordForSignIn] = useState('');
 
     const navigate = useNavigate();
+    let location = useLocation();
+
+    useEffect(() => {
+        const values = new URLSearchParams(location.search);
+        const state = values.get('state') || null;
+        const code = values.get('code') || null;
+
+        console.log('State: ' + state);
+        console.log('Code: ' + code);
+
+        if (state && code) {
+            dispatch(googleAuthenticate({state, code}));
+        }
+    }, [location, dispatch]);
+
 
     const handleSubmitSignIn = (e) => {
         e.preventDefault();
@@ -58,6 +75,18 @@ function Login() {
     };
 
 
+    const continueWithGoogle = async () => {
+        try {
+            const apiBaseUrl = 'http://localhost:8000';
+            const redirectUri = `http://localhost:3000/google`; // This is where the user should be redirected after authentication
+
+            const res = await axios.get(`${apiBaseUrl}/api/auth/o/google-oauth2/?redirect_uri=${encodeURIComponent(redirectUri)}`);
+
+            window.location.replace(res.data.authorization_url);
+        } catch (err) {
+
+        }
+    };
     const handleSubmitSignUp = (e) => {
         e.preventDefault();
 
@@ -120,18 +149,21 @@ function Login() {
                                                                      <EyeInvisibleOutlined/>)}
                         />
                         <Button
-                            size={"large"} type={"primary"} shape="round" loading={isSingUpPending} onClick={handleSubmitSignUp}>
+                            size={"large"} type={"primary"} shape="round" loading={isSingUpPending}
+                            onClick={handleSubmitSignUp}>
                             Sign Up
                         </Button>
                         <Divider>OR</Divider>
-                        <Button type={"primary"} size={"large"} shape="round" icon={<GoogleOutlined/>}>Continue With Google</Button>
+                        <Button type={"primary"} size={"large"} shape="round" icon={<GoogleOutlined/>}
+                                onClick={continueWithGoogle}>Continue With
+                            Google</Button>
                     </LoginStyleComponents.Form>
                 </LoginStyleComponents.SignUpContainer>
                 <LoginStyleComponents.SignInContainer signingIn={signIn}>
                     <LoginStyleComponents.Form onSubmit={handleSubmitSignIn}>
                         <LoginStyleComponents.Title>Sign In</LoginStyleComponents.Title>
                         <LoginStyleComponents.StyleInput type="text" placeholder="Email Address" value={emailForSignIn}
-                                                            onChange={(e) => setEmailForSignIn(e.target.value)}/>
+                                                         onChange={(e) => setEmailForSignIn(e.target.value)}/>
                         <LoginStyleComponents.StylePasswordInput
                             placeholder="Password"
                             value={passwordForSignIn}
@@ -141,11 +173,14 @@ function Login() {
                         <LoginStyleComponents.Anchor>
                             <Link to="/forgot-password">Forgot Password?</Link>
                         </LoginStyleComponents.Anchor>
-                        <Button size={"large"} type={"primary"}  shape="round" loading={isLogInPending} onClick={handleSubmitSignIn}>
+                        <Button size={"large"} type={"primary"} shape="round" loading={isLogInPending}
+                                onClick={handleSubmitSignIn}>
                             Sign In
                         </Button>
                         <Divider>OR</Divider>
-                        <Button type="primary" size={"large"} shape="round" icon={<GoogleOutlined />}>Continue With Google</Button>
+                        <Button type="primary" size={"large"} shape="round" icon={<GoogleOutlined/>}
+                                onClick={continueWithGoogle}>Continue With
+                            Google</Button>
 
                     </LoginStyleComponents.Form>
                 </LoginStyleComponents.SignInContainer>
@@ -156,7 +191,8 @@ function Login() {
                             <LoginStyleComponents.Paragraph>
                                 To keep connected with us please login with your personal info
                             </LoginStyleComponents.Paragraph>
-                            <LoginStyleComponents.GhostButton size={"large"} shape="round" onClick={() => setSignIn(true)}>
+                            <LoginStyleComponents.GhostButton size={"large"} shape="round"
+                                                              onClick={() => setSignIn(true)}>
                                 Sign In
                             </LoginStyleComponents.GhostButton>
                         </LoginStyleComponents.LeftOverlayPanel>
@@ -167,7 +203,8 @@ function Login() {
                             <LoginStyleComponents.Paragraph>
                                 Create a new account unless you already have one, and start journey with us
                             </LoginStyleComponents.Paragraph>
-                            <LoginStyleComponents.GhostButton size={"large"} shape="round" onClick={() => setSignIn(false)}>
+                            <LoginStyleComponents.GhostButton size={"large"} shape="round"
+                                                              onClick={() => setSignIn(false)}>
                                 Sign Up
                             </LoginStyleComponents.GhostButton>
                         </LoginStyleComponents.RightOverlayPanel>
