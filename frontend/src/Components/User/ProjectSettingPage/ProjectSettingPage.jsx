@@ -8,6 +8,9 @@ import ImageUploader from "../ImageUploader";
 import {Select, Avatar, Input} from 'antd'
 import ErrorPage from "../../Error/ErrorPage";
 import {useIsAdminOrStaffUser} from "../../../Store/Selector/Selector";
+import {displayErrorMessage, displaySuccessMessage} from "../../../Shared/notify";
+import {StatusCodes} from "http-status-codes";
+import { ToastContainer } from 'react-toastify';
 
 const {Option} = Select;
 
@@ -126,10 +129,16 @@ function ProjectSettingPage() {
                 },
             })
             .then(response => {
+                console.log(response);
+                displaySuccessMessage(`Project Updated Successfully!`);
                 navigate(`/project/${projectId}/project-setting`);
             })
             .catch(error => {
-                console.log(error);
+                if (error.response.status === StatusCodes.FORBIDDEN) {
+                    displayErrorMessage(error.response.data.detail)
+                    return;
+                }
+                displayErrorMessage(error.message);
             });
     }
 
@@ -146,13 +155,14 @@ function ProjectSettingPage() {
     return (
         <div>
             <NavBar/>
+            <ToastContainer/>
             <ProjectSidebar/>
             <ProjectSettingComponents.PageWrapper>
                 <ProjectSettingComponents.Header>
                     <ProjectSettingComponents.Details>Details</ProjectSettingComponents.Details>
                 </ProjectSettingComponents.Header>
                 <ProjectSettingComponents.FormWrapper onSubmit={handleSubmit} encType="multipart/form-data"
-                                                        method="POST">
+                                                      method="POST">
                     <ImageUploader id="image" imagePath={IconPath} onImageChange={handleImageChange}/>
                     <ProjectSettingComponents.Label htmlFor="name">Name:</ProjectSettingComponents.Label>
                     <Input
