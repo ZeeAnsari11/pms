@@ -3,7 +3,6 @@ import apiRequest from '../../../Utils/apiRequest';
 import * as CreateProjectComponents from "./Style"
 import Toast from "../../../Shared/Components/Toast"
 import {displayErrorMessage, displaySuccessMessage} from "../../../Shared/notify"
-import {v4 as uuidv4} from 'uuid';
 import {useNavigate} from "react-router-dom";
 import NavBar from "../../Dashboard/Navbar";
 import GenericSelectField from "../../Dashboard/SelectFields/GenericSelectField";
@@ -179,8 +178,8 @@ function CreateProject() {
                                                             placeholder="Enter project name"
                                                             onBlur={(e) => getUniqueSlug(e.target.value)}
                     />
-                    <CreateProjectComponents.LabelForProject
-                        htmlFor="project">Key:</CreateProjectComponents.LabelForProject>
+                    <CreateProjectComponents.LabelForKey
+                        htmlFor="project">Key:</CreateProjectComponents.LabelForKey>
                     <CreateProjectComponents.StyledInput type="text" id="slug" name="slug" value={slug}
                                                             placeholder="Enter project key"
                                                             suffix={
