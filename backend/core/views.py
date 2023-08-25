@@ -1,10 +1,15 @@
+from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
+from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
+from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from rest_framework.parsers import MultiPartParser, FormParser
 from django_filters.rest_framework import DjangoFilterBackend
+from dj_rest_auth.registration.views import SocialLoginView
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.viewsets import ModelViewSet
 from django.contrib.auth.models import Permission
-from .models import UserProfile
+from rest_framework.viewsets import ModelViewSet
 from .filters import UserProfileFilter
+from django.conf import settings
+from .models import UserProfile
 from . import serializers
 
 
@@ -37,3 +42,13 @@ class UserGroupPermissionViewSet(ModelViewSet):
     filterset_fields = "__all__"
     queryset = Permission.objects.all()
     serializer_class = serializers.PermissionSerializer
+
+
+class FacebookLogin(SocialLoginView):
+    adapter_class = FacebookOAuth2Adapter
+
+
+class GoogleLogin(SocialLoginView): # if you want to use Authorization Code Grant, use this
+    adapter_class = GoogleOAuth2Adapter
+    callback_url = settings.CALLBACK_URL_SET_ON_GOOGLE
+    client_class = OAuth2Client

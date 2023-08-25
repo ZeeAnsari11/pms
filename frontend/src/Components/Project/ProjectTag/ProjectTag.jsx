@@ -223,7 +223,7 @@ function Tags() {
             <TagComponents.TagContainer>
                 <h2>Project Issues Tags</h2>
                 <Input.Search placeholder="Search by tag name" value={searchQuery} onChange={handleSearch}
-                              style={{marginBottom: 16}}/>
+                                style={{marginBottom: 16}}/>
                 <div style={{marginBottom: 16}}>
                     <Button type="primary" onClick={handleAddLink}>
                         <AiOutlinePlus/> Add
@@ -261,7 +261,7 @@ function Tags() {
                                     <Input/>
                                 </TagComponents.StyledEditFormItem>
                                 <TagComponents.StyledEditFormItem label="Color" name="color"
-                                                                  rules={[{required: true,}]}>
+                                                                    rules={[{required: true,}]}>
                                     <ChromePicker color={pickedColor} onChange={(color) => setPickedColor(color)}/>
                                 </TagComponents.StyledEditFormItem>
                             </EditForm>

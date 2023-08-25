@@ -48,3 +48,5 @@ if DEBUG:
     INTERNAL_IPS = [
         "127.0.0.1",
     ]
+
+    CALLBACK_URL_SET_ON_GOOGLE = 'http://localhost:3000'

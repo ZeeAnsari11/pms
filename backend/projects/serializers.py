@@ -28,6 +28,7 @@ class ComprehensiveUserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'username', 'last_login', 'is_superuser', 'email', 'is_staff', 'is_active', 'user_permissions',
                 'userprofile']
+        read_only_fields = ('id', 'last_login', 'is_superuser', 'email', 'is_staff', 'is_active', 'user_permissions',)
 
 
 class SummarizedUserSerializer(serializers.ModelSerializer):

@@ -36,3 +36,5 @@ if not DEBUG:
             "PORT": os.environ.get("SQL_PORT"),
         }
     }
+
+    CALLBACK_URL_SET_ON_GOOGLE = 'https://projex.phpstudios.com'

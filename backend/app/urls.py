@@ -16,20 +16,16 @@ Including another URLconf
 from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
-from django.urls import path, include
-from django.urls import re_path
-
+from django.urls import path, include, re_path
 
 admin.site.site_header = "ProjeX Admin View"
 admin.site.index_title = "Admin"
 
 urlpatterns = [
-    path('', include('core.urls')),
     path('admin/', admin.site.urls),
     path('api/', include('projects.urls')),
-    path('api/auth/', include('djoser.urls')),
-    path('api/auth/', include('djoser.urls.authtoken')),
-    re_path(r'^api/auth/', include('djoser.social.urls')),
+    path('api/', include('core.urls')),
+
 ]
 
 if settings.DEBUG:
