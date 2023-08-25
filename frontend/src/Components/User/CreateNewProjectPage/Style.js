@@ -39,6 +39,12 @@ export const LabelForProject = styled.label`
     margin-right: 305px;
 `;
 
+export const LabelForKey = styled.label`
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    margin-right: 327px;
+`;
+
 export const LabelForDescriptionBoc = styled.label`
     font-weight: bold;
     margin-bottom: 0.5rem;

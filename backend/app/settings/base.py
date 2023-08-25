@@ -154,6 +154,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 CELERY_BROKER_URL = os.environ.get("CELERY_BROKER")
 CELERY_RESULT_BACKEND = os.environ.get("CELERY_BACKEND")
 
+
 CORS_ALLOWED_ORIGINS = [
     "https://projex.phpstudios.com:3000",
     "https://projex.phpstudios.com",
