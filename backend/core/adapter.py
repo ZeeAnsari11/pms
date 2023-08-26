@@ -3,16 +3,15 @@ from allauth.account.adapter import DefaultAccountAdapter
 
 
 class CustomAccountAdapter(DefaultAccountAdapter):
-    DEBUG = int(os.environ.get("DEBUG", default=1))
+    BASE_URL = os.environ.get("FRONTEND_APP_NAME")
 
     def get_email_confirmation_url(self, request, emailconfirmation):
-
         """
             Changing the confirmation URL to fit the domain that we are working on
         """
 
         url = (
-            "https://example.com/verify-account/"
-            + emailconfirmation.key
+                os.environ.get("FRONTEND_APP_NAME") + "user-activate/"
+                + emailconfirmation.key
         )
         return url

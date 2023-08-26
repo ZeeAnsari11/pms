@@ -47,7 +47,7 @@ function Url() {
             <Routes>
                 {/* General routes */}
                 <Route exact path="/"  element={<Redirection element={LandingPage}/>}/>
-                <Route path="/user-activate" element={<AccountActivation/>}/>
+                <Route path="/user-activate/:activationToken" element={<AccountActivation/>}/>
                 <Route path="/forgot-password" element={<ForgotPassword/>}/>
                 <Route path="/reset-password" element={<ResetPasswordPage/>}/>
 

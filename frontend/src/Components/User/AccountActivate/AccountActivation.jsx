@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import {useNavigate, useLocation} from 'react-router-dom';
+import {useNavigate, useLocation, useParams} from 'react-router-dom';
 import apiRequest from '../../../Utils/apiRequest';
 import * as AccountActivationComponents from "./Style"
 
+
+
 const AccountActivation = () => {
+    const { activationToken } = useParams();
     const [activated, setActivated] = useState(false);
 
     const navigate = useNavigate();
