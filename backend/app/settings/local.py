@@ -6,6 +6,9 @@ dotenv.load_dotenv('.env.local')
 
 DEBUG = int(os.environ.get("DEBUG",default=1))
 
+# Dummy value for development
+SECRET_KEY = os.environ.get("SECRET_KEY")
+
 # EMAIL CONFIG
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "localhost"
@@ -14,11 +17,17 @@ EMAIL_HOST_USER = ""
 EMAIL_HOST_PASSWORD = ""
 EMAIL_USE_TLS = False
 
-# Dummy value for development
-SECRET_KEY = os.environ.get("SECRET_KEY")
+# Celery broker details
+CELERY_BROKER_URL = os.environ.get("CELERY_BROKER")
+CELERY_RESULT_BACKEND = os.environ.get("CELERY_BACKEND")
+
 
 # set the configurations files
 os.environ.get("DJANGO_SETTINGS_MODULE")
+
+
+DOMAIN = os.environ.get("DOMAIN")
+SITE_NAME = os.environ.get("SITE_NAME")
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
@@ -37,6 +46,13 @@ DATABASES = {
             }
         }
     }
+
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ.get("GOOGLE_OAUTH2_KEY")
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get("GOOGLE_OAUTH2_SECRET")
+SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ['https://www.googleapis.com/auth/userinfo.email',
+                                   'https://www.googleapis.com/auth/userinfo.profile', 'openid']
+SOCIAL_AUTH_GOOGLE_OAUTH2_EXTRA_DATA = ['first_name', 'last_name']
 
 if DEBUG:
     # Add django extensions
