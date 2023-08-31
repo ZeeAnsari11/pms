@@ -29,13 +29,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
-    'django_filters',
     'djoser',
     'solo',
+    'django_filters',
     # Social authentication Apps
     'social_django',
     # 'restfilesupload.apps.RestfilesuploadConfig',
@@ -69,17 +68,18 @@ REST_FRAMEWORK = {
     ],
 }
 
+SIMPLE_JWT = {
+    "AUTH_HEADER_TYPES": ("JWT",),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
+}
+
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.google.GoogleOAuth2',
     'django.contrib.auth.backends.ModelBackend'
 )
 
-SIMPLE_JWT = {
-    'AUTH_HEADER_TYPES': ('JWT',),
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
-    "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
-}
 
 DJOSER = {
     'PASSWORD_RESET_CONFIRM_URL': 'reset-password?uid={uid}&token={token}',
@@ -87,10 +87,20 @@ DJOSER = {
     'ACTIVATION_URL': 'user-activate?uid={uid}&token={token}',
     'SEND_ACTIVATION_EMAIL': True,
     'SOCIAL_AUTH_TOKEN_STRATEGY': 'djoser.social.token.jwt.TokenStrategy',
-    'SOCIAL_AUTH_ALLOWED_REDIRECT_URIS': ['http://localhost:3000/google', 'http://localhost:3000/facebook', 'http://localhost:3000'],
+    'SOCIAL_AUTH_ALLOWED_REDIRECT_URIS': ['http://127.0.0.1:3000/google', 'http://127.0.0.1:3000/facebook'],
 }
 
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '860654043952-fr2tgoldcphhe7milfpk5ibsa4junbqu.apps.googleusercontent.com'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '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'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ['https://www.googleapis.com/auth/userinfo.email',
+                                   'https://www.googleapis.com/auth/userinfo.profile', 'openid']
+SOCIAL_AUTH_GOOGLE_OAUTH2_EXTRA_DATA = ['first_name', 'last_name']
+
 ROOT_URLCONF = 'app.urls'
+
+SOCIAL_AUTH_FIELDS_STORED_IN_SESSION = ['state', 'code']
+SESSION_COOKIE_SECURE = False
+
 
 TEMPLATES = [
     {
@@ -154,12 +164,10 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 
-CORS_ALLOWED_ORIGINS = [
-    "https://projex.phpstudios.com:3000",
-    "https://projex.phpstudios.com",
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-]
+CORS_ORIGIN_ALLOW_ALL = True
+
+CORS_ALLOW_CREDENTIALS = True
+
 
 CORS_ALLOW_METHODS = (
     "DELETE",

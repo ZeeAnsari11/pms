@@ -1,5 +1,4 @@
 import React from "react";
-import apiRequest from '../../../Utils/apiRequest';
 import AccountDropdown from "../AccountDropdown";
 import {Link, useNavigate} from "react-router-dom";
 import {AiOutlineLogout} from "react-icons/ai";
@@ -8,43 +7,21 @@ import {FaUsersCog} from "react-icons/fa";
 import {MdGroups} from "react-icons/md";
 import {GrSettingsOption} from "react-icons/gr";
 import {FiSettings} from "react-icons/fi";
-import {displayErrorMessage, displaySuccessMessage} from "../../../Shared/notify"
-import {AxiosError} from "axios";
-import {StatusCodes} from "http-status-codes";
+import {logout} from "../../../Store/Slice/auth/authSlice"
+import {useDispatch} from "react-redux";
 
 
 const iconSize = 20;
 
-const handleLogout = (navigate) => {
-    let authToken = localStorage.getItem('auth_token')
-    apiRequest
-        .post('/api/auth/token/logout/', authToken, {
-            headers: {
-                Authorization: `Token ${authToken}`,
-            },
-        })
-        .then((response) => {
-            console.log("response:", response)
-            localStorage.removeItem('auth_token');
-            navigate('/');
-        })
-        .catch(error => {
-            console.error('Logout failed:', error);
-            if (error.code === AxiosError.ERR_NETWORK) {
-                return displayErrorMessage(`${error.message}`)
-            }
-            if (error.response.status === StatusCodes.UNAUTHORIZED) {
-                return displayErrorMessage(`${error.response.data.detail}`);
-            } else {
-                displayErrorMessage(`${error.message}`)
-            }
-        });
-
-};
-
-
 const LinkItem = () => {
     const navigate = useNavigate()
+    const dispatch = useDispatch()
+
+    const handleLogout = (navigate) => {
+        dispatch(logout())
+        navigate('/');
+    };
+
     return (
         <a onClick={() => handleLogout(navigate)}>
             Logout

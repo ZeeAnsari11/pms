@@ -28,7 +28,7 @@ urlpatterns = [
     path('api/', include('projects.urls')),
     path('api/auth/', include('djoser.urls')),
     path('api/auth/', include('djoser.urls.jwt')),
-    path('auth/', include('djoser.social.urls')),
+    path('api/auth/', include('djoser.social.urls')),
 ]
 
 if settings.DEBUG:

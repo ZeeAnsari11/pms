@@ -10,7 +10,6 @@ import Editable from "../Editable/Editable";
 import Comment from "../Comment/Comment";
 import Worklog from "../Worklog/Worklog";
 import { useDispatch } from "react-redux";
-import { fetchIssueData } from "../../../Store/Slice/Issue/IssueSlice";
 import ReactQuill from "react-quill";
 import 'react-quill/dist/quill.snow.css';
 import * as EditTicketPageComponents from "./Style"
@@ -83,9 +82,9 @@ function EditTicketPage({props}) {
         setLoading(true);
         const fetchCurrentIssueData = async () => {
             try {
-                dispatch(fetchIssueData(issueId)).unwrap().then(
-                    setLoading(false)
-                )
+                // dispatch(fetchIssueData(issueId)).unwrap().then(
+                //     setLoading(false)
+                // )
             } catch (error) {
                 console.error(error);
             }
