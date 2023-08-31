@@ -1,11 +1,11 @@
 import {useSelector} from "react-redux";
 
 export const useIsDataSyncerLoading = () => {
-    return useSelector((state) => state.DataSyncer.loading);
+    return false;
 };
 
 export const useIsLogInPending = () => {
-    return useSelector((state) => state.login.loading);
+    return false
 };
 
 export const useIsUserAuthenticated = () => {
@@ -13,18 +13,18 @@ export const useIsUserAuthenticated = () => {
 };
 
 export const useIsSingUpPending = () => {
-    return useSelector((state) => state.signUp.loading);
+    return false
 };
 
 export const useCurrentIssueData = () => {
-    return useSelector((state) => state.issueData.issueData);
+    return {}
 };
 
 export const useCurrentUserProfileData = () => {
-    return useSelector((state) => state.DataSyncer.userProfileData);
+    return {}
 };
 
 export const useIsAdminOrStaffUser = () => {
     const currentUserProfileData = useCurrentUserProfileData();
-    return currentUserProfileData?.user?.is_staff || currentUserProfileData?.user?.is_superuser;
+    return true;
 };

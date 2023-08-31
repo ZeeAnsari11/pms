@@ -1,135 +1,74 @@
 import React, {useState, useEffect} from "react";
-import {useDispatch} from 'react-redux';
-import {login} from '../../../Store/Slice/User/loginSlice';
-import {signUp} from '../../../Store/Slice/User/signupSlice';
+import {useDispatch, useSelector} from 'react-redux';
 import {Link, useNavigate, useLocation} from "react-router-dom";
+import { userLogin, registerUser } from '../../../Store/Slice/auth/authActions'
 import 'react-toastify/dist/ReactToastify.css';
 import Toast from "../../../Shared/Components/Toast"
 import * as LoginStyleComponents from "./Style"
 import {displayErrorMessage, displaySuccessMessage} from "../../../Shared/notify"
-import {AxiosError} from "axios";
-import {StatusCodes} from "http-status-codes";
-import {DataSyncer} from "../../../Store/Slice/DataSyncerSlice";
-import {useIsLogInPending, useIsSingUpPending} from "../../../Store/Selector/Selector";
 import {EyeInvisibleOutlined, EyeTwoTone, GoogleOutlined} from '@ant-design/icons';
 import {Button, Divider} from 'antd';
-import axios from 'axios'
-import {googleAuthenticate} from "../../../Store/Slice/User/googleauthSlice";
+import {StatusCodes} from "http-status-codes";
+import apiRequest from "../../../Utils/apiRequest";
 
 function Login() {
+
     const dispatch = useDispatch();
+    const navigate = useNavigate()
 
-    const isLogInPending = useIsLogInPending();
-    const isSingUpPending = useIsSingUpPending();
-
+    const { loading } = useSelector((state) => state.auth);
 
     const [signIn, setSignIn] = useState(true);
-    const [name, setName] = useState('');
+    const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [emailForSignIn, setEmailForSignIn] = useState('');
+    const [usernameForSignIn, setUsernameForSignIn] = useState('');
     const [passwordForSignIn, setPasswordForSignIn] = useState('');
 
-    const navigate = useNavigate();
-    let location = useLocation();
 
-    useEffect(() => {
-        const values = new URLSearchParams(location.search);
-        const state = values.get('state') || null;
-        const code = values.get('code') || null;
-
-        console.log('State: ' + state);
-        console.log('Code: ' + code);
-
-        if (state && code) {
-            dispatch(googleAuthenticate({state, code}));
-        }
-    }, [location, dispatch]);
-
-
-    const handleSubmitSignIn = (e) => {
+    const handleSubmitSignIn = async (e) => {
         e.preventDefault();
-
-        dispatch(login({email: emailForSignIn, password: passwordForSignIn})).unwrap()
-            .then((response) => {
-                if (response.authToken.auth_token) {
-                    localStorage.setItem('auth_token', response.authToken.auth_token);
-                    navigate('/project');
-                    dispatch(DataSyncer());
-                }
-            })
-            .catch((error) => {
-                if (error.code === AxiosError.ERR_NETWORK) {
-                    return displayErrorMessage(`${error.message}`)
-                }
-                if (error.response.status === StatusCodes.UNAUTHORIZED) {
-                    return displayErrorMessage(`${error.response.data.detail}`);
-                }
-                if (error.response.status === StatusCodes.BAD_REQUEST && error.response.data.non_field_errors) {
-                    let nonFieldError = error.response.data.non_field_errors;
-                    for (let i = 0; i < nonFieldError.length; i++) {
-                        displayErrorMessage(nonFieldError[i]);
-                    }
-                }
-            });
+        await dispatch(userLogin({ username: usernameForSignIn, password: passwordForSignIn })).unwrap()
+            .then(response => {response.status === StatusCodes.OK && navigate('/project')})
+            .catch(error => {displayErrorMessage(error)})
     };
 
 
     const continueWithGoogle = async () => {
         try {
-            const apiBaseUrl = 'http://localhost:8000';
-            const redirectUri = `http://localhost:3000/google`; // This is where the user should be redirected after authentication
-
-            const res = await axios.get(`${apiBaseUrl}/api/auth/o/google-oauth2/?redirect_uri=${encodeURIComponent(redirectUri)}`);
-
-            window.location.replace(res.data.authorization_url);
-        } catch (err) {
-
-        }
+          const redirectUri = `${process.env.REACT_APP_GOOGLE_AUTH_REDIRECT_URL}`;
+          const response = await apiRequest.get(`/auth/o/google-oauth2/?redirect_uri=${encodeURIComponent(redirectUri)}`);
+          window.location.replace(response.data.authorization_url);
+        } catch (error) {
+            if (error.response && error.response.data.message) {
+                displayErrorMessage(error.response.data.message)
+            } else {
+                displayErrorMessage(error.message)
+            }
+      }
     };
-    const handleSubmitSignUp = (e) => {
-        e.preventDefault();
 
-        if (!name || !email || !password) {
+    const handleSubmitSignUp = async (e) => {
+        e.preventDefault();
+        if (!username || !email || !password) {
             displayErrorMessage('Please fill in all fields.');
             return;
         }
-
-        dispatch(signUp({name, email, password})).unwrap()
-            .then((response) => {
-                if (response.status === StatusCodes.CREATED) {
-                    displaySuccessMessage(`Thanks for registration! Check your email and click the link to activate your account. If you need help, contact us. We appreciate your business!`);
+        await dispatch(registerUser({username: username, email:email, password: password})).unwrap()
+            .then(response => {
+                response.status === StatusCodes.CREATED &&
+                displaySuccessMessage(`Thank you for registering. Activate your account via the email link. Contact us for help.`)}
+            )
+            .catch(error => {
+                if(error !== null && typeof(error) === 'object'){
+                    const errorFields = ['username', 'email', 'password'];
+                    errorFields.forEach((field) => {
+                    if (error[field]) { error[field].forEach((errorMsg) => { displayErrorMessage(`${errorMsg}`) }) }});
+                }
+                if(error !== null && typeof(error) !== 'object' && !Array.isArray(error)){
+                    displayErrorMessage(error)
                 }
             })
-            .catch((error) => {
-                if (error.code === AxiosError.ERR_NETWORK) {
-                    return displayErrorMessage(`${error.message}`)
-                }
-                if (error.response && error.response.data) {
-                    if (error.response.data.username) {
-                        let usernameErrors = error.response.data.username;
-                        for (let i = 0; i < usernameErrors.length; i++) {
-                            displayErrorMessage(`${usernameErrors[i]}`);
-                        }
-                    }
-                    if (error.response.data.password) {
-                        let passwordErrors = error.response.data.password;
-                        for (let i = 0; i < passwordErrors.length; i++) {
-                            displayErrorMessage(`${passwordErrors[i]}`);
-                        }
-                    }
-                    if (error.response.data.email) {
-                        let emailErrors = error.response.data.email;
-                        for (let i = 0; i < emailErrors.length; i++) {
-                            displayErrorMessage(`${emailErrors[i]}`);
-                        }
-                    }
-                } else {
-                    displayErrorMessage(`An error occurred while signing up.`);
-                }
-            });
-
-
     }
 
     return (
@@ -139,8 +78,8 @@ function Login() {
                 <LoginStyleComponents.SignUpContainer signingIn={signIn}>
                     <LoginStyleComponents.Form onSubmit={handleSubmitSignUp}>
                         <LoginStyleComponents.Title>Create Account</LoginStyleComponents.Title>
-                        <LoginStyleComponents.StyleInput type="text" placeholder="Name" value={name}
-                                                         onChange={(e) => setName(e.target.value)}/>
+                        <LoginStyleComponents.StyleInput type="text" placeholder="Enter Username" value={username}
+                                                         onChange={(e) => setUsername(e.target.value)}/>
                         <LoginStyleComponents.StyleInput type="email" placeholder="Email" value={email}
                                                          onChange={(e) => setEmail(e.target.value)}/>
                         <LoginStyleComponents.StylePasswordInput placeholder="Password" value={password}
@@ -149,7 +88,7 @@ function Login() {
                                                                      <EyeInvisibleOutlined/>)}
                         />
                         <Button
-                            size={"large"} type={"primary"} shape="round" loading={isSingUpPending}
+                            size={"large"} type={"primary"} shape="round" loading={loading}
                             onClick={handleSubmitSignUp}>
                             Sign Up
                         </Button>
@@ -162,8 +101,8 @@ function Login() {
                 <LoginStyleComponents.SignInContainer signingIn={signIn}>
                     <LoginStyleComponents.Form onSubmit={handleSubmitSignIn}>
                         <LoginStyleComponents.Title>Sign In</LoginStyleComponents.Title>
-                        <LoginStyleComponents.StyleInput type="text" placeholder="Email Address" value={emailForSignIn}
-                                                         onChange={(e) => setEmailForSignIn(e.target.value)}/>
+                        <LoginStyleComponents.StyleInput type="text" placeholder="Enter your Username" value={usernameForSignIn}
+                                                         onChange={(e) => setUsernameForSignIn(e.target.value)}/>
                         <LoginStyleComponents.StylePasswordInput
                             placeholder="Password"
                             value={passwordForSignIn}
@@ -173,7 +112,7 @@ function Login() {
                         <LoginStyleComponents.Anchor>
                             <Link to="/forgot-password">Forgot Password?</Link>
                         </LoginStyleComponents.Anchor>
-                        <Button size={"large"} type={"primary"} shape="round" loading={isLogInPending}
+                        <Button size={"large"} type={"primary"} shape="round" loading={loading}
                                 onClick={handleSubmitSignIn}>
                             Sign In
                         </Button>

@@ -24,18 +24,21 @@ import EditTicketPage from "../Components/Dashboard/EditTicketPage/EditTicketPag
 import ErrorPage from "../Components/Error/ErrorPage";
 import SessionAlertPage from "../Components/Error/SessionAlertPage";
 import LandingPage from "../Components/Landingpage/Landingpage";
+import AuthenticateWithGoogle from "../Components/User/Login/authenticateWithGoogle"
 
 function PrivateRoute({element: Component, ...rest}) {
-    let authToken = localStorage.getItem('auth_token')
-    if (!authToken) {
+    let accessToken = localStorage.getItem('access')
+    let refreshToken = localStorage.getItem('refresh')
+    if (!accessToken || !refreshToken ) {
         return <SessionAlertPage hasAuthToken={true}/>
     }
     return <Component {...rest} />;
 }
 
 function Redirection({element: Component, ...rest}) {
-    let authToken = localStorage.getItem('auth_token')
-    if (authToken) {
+    let accessToken = localStorage.getItem('access')
+    let refreshToken = localStorage.getItem('refresh')
+    if (accessToken && refreshToken) {
         return <Navigate to="/project" replace />;
     }
     return <Component {...rest} />;
@@ -47,6 +50,7 @@ function Url() {
             <Routes>
                 {/* General routes */}
                 <Route exact path="/"  element={<Redirection element={LandingPage}/>}/>
+                <Route path="/google" element={<AuthenticateWithGoogle/>}/>
                 <Route path="/user-activate" element={<AccountActivation/>}/>
                 <Route path="/forgot-password" element={<ForgotPassword/>}/>
                 <Route path="/reset-password" element={<ResetPasswordPage/>}/>
