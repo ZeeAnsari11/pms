@@ -97,11 +97,12 @@ export const updateUser = createAsyncThunk(
               'Authorization': `JWT ${localStorage.getItem('access')}`
           },
       }
-      return await apiRequest.patch(
+      const response =  await apiRequest.patch(
           `/userprofile/${userId}/`,
           formData,
           config
-      )
+      );
+      return response;
     } catch (error) {
         if (error.response && error.response.data.message) {
             return rejectWithValue(error.response.data.message)
