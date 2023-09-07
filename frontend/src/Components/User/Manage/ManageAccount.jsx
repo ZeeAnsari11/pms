@@ -10,7 +10,6 @@ import {fetchCompaniesList} from "../../../api/list/companies";
 import {faImage} from '@fortawesome/free-solid-svg-icons';
 import {Link, useNavigate} from "react-router-dom";
 import * as ManageAccountComponents from './ManageAccountStyle';
-import apiRequest from '../../../Utils/apiRequest';
 import {updateUser} from '../../../Store/Slice/auth/authActions'
 import {useSelector, useDispatch} from "react-redux";
 
@@ -31,15 +30,15 @@ const ProfileVisibility = () => {
     const { userInfo } = useSelector((state) => state.auth)
 
     const [isImageChanged, setIsImageChanged] = useState(false);
-    const [userId, setUserId] = useState({});
-    const [userName, setUserName] = useState('');
-    const [userjobTitle, setUserJobTitle] = useState('');
-    const [userEmail, setUserEmail] = useState('');
-    const [userDepartment, setUserDepartment] = useState('');
-    const [userOrganization, setUserOrganization] = useState([]);
+    const [userId, setUserId] = useState(userInfo?.id);
+    const [userName, setUserName] = useState(userInfo?.user?.username);
+    const [userjobTitle, setUserJobTitle] = useState(userInfo?.job_title);
+    const [userEmail, setUserEmail] = useState(userInfo?.user?.job_title);
+    const [userDepartment, setUserDepartment] = useState(userInfo?.department);
+    const [userOrganization, setUserOrganization] = useState(userInfo?.company?.company_name);
     const [isUserOrganizationChanged, setIsUserOrganizationChanged] = useState(false);
-    const [userLocation, setUserLocation] = useState('');
-    const [userJoiningDate, setUserJoiningDate] = useState('');
+    const [userJoiningDate, setUserJoiningDate] = useState(userInfo?.joining_date);
+    const [userLocation, setUserLocation] = useState(userInfo?.company?.city);
     const [emailIssueNotification, setEmailIssueNotification] = useState('');
     const [emailNotificationFormat, setEmailNotificationFormat] = useState('');
     const [IsreporterData, setIsreporterData] = useState('');
@@ -47,7 +46,6 @@ const ProfileVisibility = () => {
     const [userImage, setUserImage] = useState(null);
     const [companies, setCompanies] = useState('');
 
-    let authToken = localStorage.getItem('auth_token');
     const navigate = useNavigate();
 
 
@@ -150,7 +148,7 @@ const ProfileVisibility = () => {
         if (isUserOrganizationChanged) {
             manageAccountData.company = userOrganization
         }
-         dispatch(updateUser({userId, manageAccountData })).unwrap()
+         dispatch(updateUser({userId: userId, formData: manageAccountData })).unwrap()
              .then(response => {
                  displaySuccessMessage(`Successfully update the user profile!`);
                  navigate('/manage-account');
