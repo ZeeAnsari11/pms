@@ -1,12 +1,19 @@
 import React, {useState, useRef, useEffect} from 'react';
 import {useNavigate} from 'react-router-dom';
-import {SearchInput, SearchIcon, SearchContainer, CloseIcon} from './Styles'
+import {SearchInput, SearchResultsContainer, SearchIcon, SearchContainer, CloseIcon} from './Styles'
+import apiRequest from "../../../../Utils/apiRequest";
+import {Divider, List, Avatar, Tag} from 'antd';
+import {Link} from 'react-router-dom';
 
 const SearchBar = () => {
     const [expanded, setExpanded] = useState(false);
     const [searchValue, setSearchValue] = useState('');
+    const [searchResults, setSearchResults] = useState({projects: [], issues: []});
+
     const inputRef = useRef(null);
     const navigate = useNavigate();
+
+    let authToken = localStorage.getItem('auth_token');
 
     const toggleExpand = () => {
         setExpanded(!expanded);
@@ -16,8 +23,7 @@ const SearchBar = () => {
         if (event.key === 'Escape') {
             setExpanded(false);
         } else if (event.key === 'Enter' && searchValue) {
-            navigate(`/search?q=${searchValue}`);
-            setExpanded(false);
+            setExpanded(true);
         }
     };
 
@@ -38,6 +44,31 @@ const SearchBar = () => {
     };
 
     useEffect(() => {
+        if (searchValue && expanded) {
+            apiRequest
+                .get(`/api/global_search/?q=${searchValue}`, {
+                    headers: {
+                        Authorization: `Token ${authToken}`
+                    },
+                })
+                .then(response => {
+                    const responseData = response.data;
+                    if (responseData && responseData.projects) {
+                        setSearchResults(responseData);
+                    } else {
+                        console.error('Unexpected response structure:', responseData);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching search results:', error);
+                });
+        } else {
+            setSearchResults({projects: [], issues: []});
+        }
+    }, [searchValue, expanded]);
+
+
+    useEffect(() => {
         if (expanded) {
             inputRef.current.focus();
         }
@@ -53,8 +84,6 @@ const SearchBar = () => {
                         placeholder="Search ProjeX..."
                         value={searchValue}
                         onChange={handleSearchInputChange}
-                        onBlur={handleSearchInputBlur}
-                        onClick={stopPropagation}
                     />
                     <CloseIcon onClick={() => {
                         handleClearSearch();
@@ -64,6 +93,104 @@ const SearchBar = () => {
 
             ) : (
                 <SearchInput placeholder="Search..." onClick={toggleExpand}/>
+            )}
+            {expanded && (
+                <SearchResultsContainer>
+                    <div style={{display: 'flex'}}>
+                        <div style={{flex: 1}}>
+
+                            <Divider>Projects</Divider>
+                            <List
+                                itemLayout="horizontal"
+                                dataSource={searchResults.projects}
+                                renderItem={(project) => (
+                                    <List.Item style={{margin: "10px"}}>
+                                        <List.Item.Meta
+                                            avatar={<Avatar src={`${process.env.REACT_APP_HOST}/${project.icon}`}/>}
+                                            title={
+                                                <Link
+                                                    to={`/project/${project.id}/dashboard`}
+                                                    onClick={(event) => event.stopPropagation()}
+                                                    target="_blank"
+                                                >
+                                                    {project.name}
+                                                </Link>
+                                            }
+                                            description={project.company?.company_name &&
+                                                (<Tag color="blue">{project.company?.company_name}</Tag>)
+                                            }
+                                        />
+                                        {project.assignees && project.assignees.length > 0 && (
+                                            <Avatar.Group maxCount={2} maxStyle={{
+                                                color: '#000',
+                                                backgroundColor: '#fde3cf',
+                                                cursor: 'pointer',
+                                            }}>
+                                                {project.assignees.map(assignee => (
+                                                    <Avatar
+                                                        key={assignee.id}
+                                                        src={`${process.env.REACT_APP_HOST}/${assignee.userprofile.image}`}
+                                                    />
+                                                ))}
+                                            </Avatar.Group>
+                                        )}
+                                    </List.Item>
+                                )}
+                            />
+                        </div>
+                        <Divider type="vertical" style={{width: '15px', margin: '0 20px'}}/>
+                        <div style={{flex: 1}}>
+                            <Divider>Issues</Divider>
+                            <List
+                                itemLayout="horizontal"
+                                dataSource={searchResults.issues}
+                                renderItem={(issue) => (
+                                    <List.Item style={{margin: "10px"}}>
+                                        <List.Item.Meta
+                                            title={
+                                                <Link
+                                                    to={`/project/${issue.project}/dashboard?selectedIssue=${issue.slug}`}
+                                                    onClick={(event) => event.stopPropagation()}
+                                                    target="_blank"
+                                                >
+                                                    {issue.name} ({issue.slug})
+                                                </Link>
+                                            }
+                                            description={issue.priority || issue.type ? (
+                                                <>
+                                                    <Tag
+                                                        color={
+                                                            issue.priority === 'Medium'
+                                                                ? 'yellow'
+                                                                : issue.priority === 'High'
+                                                                    ? 'green'
+                                                                    : 'red'
+                                                        }
+                                                    >
+                                                        {issue.priority}
+                                                    </Tag>
+                                                    <Tag color="blue">{issue.type.type}</Tag>
+                                                </>
+                                            ) : null}
+                                        />
+                                        {issue.assignee && (
+                                            <div>
+                                                <Avatar key={issue.assignee.id}
+                                                        src={`${process.env.REACT_APP_HOST}/${issue.assignee.userprofile.image}`}/>
+                                            </div>
+                                        )}
+                                        {issue.reporter && (
+                                            <div>
+                                                <Avatar key={issue.reporter.id}
+                                                        src={`${process.env.REACT_APP_HOST}/${issue.reporter.userprofile.image}`}/>
+                                            </div>
+                                        )}
+                                    </List.Item>
+                                )}
+                            />
+                        </div>
+                    </div>
+                </SearchResultsContainer>
             )}
         </SearchContainer>
     );
