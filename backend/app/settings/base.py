@@ -64,20 +64,23 @@ REST_FRAMEWORK = {
 }
 
 DJOSER = {
+    'EMAIL': {
+        'password_reset': 'core.email.PasswordResetEmail'
+    },
     "USER_ID_FIELD": "username",
-    "LOGIN_FIELD":"email",
+    "LOGIN_FIELD": "email",
     'PASSWORD_RESET_CONFIRM_URL': 'reset-password?uid={uid}&token={token}',
     'USERNAME_RESET_CONFIRM_URL': '#/username/reset/confirm/{uid}/{token}',
     'ACTIVATION_URL': 'user-activate?uid={uid}&token={token}',
     'SEND_ACTIVATION_EMAIL': True,
 }
-
+SITE_NAME = ('ProjeX')
 ROOT_URLCONF = 'app.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'core/templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -136,7 +139,15 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 CELERY_BROKER_URL = os.environ.get("CELERY_BROKER")
 CELERY_RESULT_BACKEND = os.environ.get("CELERY_BACKEND")
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [
+    'projex.nexius.ai',
+    'projex.nexius.ai:3000',
+    'localhost',
+    '127.0.0.1',
+    'localhost:3000',
+    '127.0.0.1:3000',
+]
+
 
 CSRF_TRUSTED_ORIGINS = [
     "https://projex.nexius.ai:3000",
