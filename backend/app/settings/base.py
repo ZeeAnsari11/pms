@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 import os
 from pathlib import Path
+import datetime
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -74,7 +75,10 @@ DJOSER = {
     'ACTIVATION_URL': 'user-activate?uid={uid}&token={token}',
     'SEND_ACTIVATION_EMAIL': True,
 }
+
 SITE_NAME = ('ProjeX')
+DOMAIN = ('localhost:3000')
+
 ROOT_URLCONF = 'app.urls'
 
 TEMPLATES = [
