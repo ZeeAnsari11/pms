@@ -16,27 +16,84 @@
 {% endblock text_body %}
 
 {% block html_body %}
-<img src="{{ protocol }}://localhost:3000/Projex-Logo.webp" alt="ProjeX" style="display: block; margin: 0 auto; max-width: 200px;">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ site_name }} Account activation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffffff;
+        }
 
-<p>{% trans "Hi" %} <strong>{{ user.get_username }}</strong>,</p>
-<p>{% trans "" %}Thank you for creating an account with us.</p>
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 10px;
+            background-color: transparent;
+        }
 
-<div style="text-align: center; margin: 10px; border: 2px solid #e1e4e8; border-radius: 5px">
-<p>{% blocktrans %}<strong> {{ site_name }} Account Activation{% endblocktrans %}</strong></p>
+        .logo {
+            text-align: center;
+        }
 
-<p>{% blocktrans %}To activate your account, please click on the following Button:{% endblocktrans %}</p>
+        .logo img {
+            max-width: 150px;
+        }
 
-<div style="text-align: center;">
-    <a href="{{ protocol }}://localhost:3000/{{ url|safe }}"
-       style="display: inline-block; background-color: #28a745; color: #fff; text-decoration: none; padding: 10px 20px; margin:10px; border-radius: 5px; text-align: center; font-weight: 400;">
-        Activate Account
-    </a>
+        .divider {
+            border-top: 1px solid #C1C7D0;
+            margin-bottom: 10px;
+        }
+
+        .heading {
+            font-size: 25px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+
+        .button-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .reset-button {
+            display: inline-block;
+            background-color: #28a745;
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 20px;
+            margin: 10px;
+            border-radius: 5px;
+            font-weight: 400;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="logo">
+        <img src="{{ protocol }}://{{ domain }}/Projex-Logo.webp" alt="ProjeX">
+    </div>
+    <div class="divider"></div>
+    <div>
+        <p class="heading">{{ site_name }} Account activation</p>
+        <p>{% trans "Hi" %} {{ user.get_username }},</p>
+        <p>{% blocktrans %}Thank you for creating an account with us.{% endblocktrans %}</p>
+        <p>{% trans "To activate your account, please click on the following Button:" %}</p>
+    </div>
+    <div class="button-container">
+        <a href="{{ protocol }}://{{ domain }}/{{ url|safe }}" class="reset-button">
+            {% trans "Activate Account" %}
+        </a>
+    </div>
+    <p>{% blocktrans %}You're receiving this email because you need to finish activation process on {{ site_name }}.{% endblocktrans %}</p>
+    <p>{% trans "Thanks for using our site!" %}</p>
+    <p>{% blocktrans %}The {{ site_name }} Team.{% endblocktrans %}</p>
+    <div class="divider"></div>
+    <p style="text-align: center">{% blocktrans %}&copy; {{ current_year }} {{ site_name }}. All rights reserved.{% endblocktrans %}</p>
+
 </div>
-</div>
-<p>{% blocktrans %}You're receiving this email because you need to finish activation process on {{ site_name }}.{% endblocktrans %}</p>
-
-<p>{% trans "Thanks for using our site!" %}</p>
-
-<p>{% blocktrans %}The {{ site_name }} team{% endblocktrans %}</p>
-
+</body>
+</html>
 {% endblock html_body %}
