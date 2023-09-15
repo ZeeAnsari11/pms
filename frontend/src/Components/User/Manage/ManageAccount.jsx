@@ -27,7 +27,7 @@ const notificationFormatOptions = [
 const ProfileVisibility = () => {
 
     const dispatch = useDispatch()
-    const { userInfo } = useSelector((state) => state.auth)
+    const {userInfo} = useSelector((state) => state.auth)
 
     const [isImageChanged, setIsImageChanged] = useState(false);
     const [userId, setUserId] = useState(userInfo?.id);
@@ -52,13 +52,13 @@ const ProfileVisibility = () => {
     const titleMessageWhenDisable = "This field is disabled. Enabled for Admin User Only";
 
     useEffect(() => {
-            fetchCompaniesList().then((list)=>{
-                console.log("======list====",list)
-                setCompanies(list.data);
+        fetchCompaniesList().then((list) => {
+            console.log("======list====", list)
+            setCompanies(list.data);
+        })
+            .catch((err) => {
+                displayErrorMessage(err)
             })
-                .catch((err)=>{
-                    displayErrorMessage(err)
-                })
 
     }, []);
 
@@ -148,12 +148,16 @@ const ProfileVisibility = () => {
         if (isUserOrganizationChanged) {
             manageAccountData.company = userOrganization
         }
-         dispatch(updateUser({userId: userId, formData: manageAccountData })).unwrap()
-             .then(response => {
-                 displaySuccessMessage(`Successfully update the user profile!`);
-                 navigate('/manage-account');
-             })
-             .catch(error => {displayErrorMessage(error.message)})
+        dispatch(updateUser({userId: userId, formData: manageAccountData})).unwrap()
+            .then(response => {
+                displaySuccessMessage(`Successfully update the user profile!`);
+                navigate('/manage-account');
+                setIsUserOrganizationChanged(false);
+                setIsImageChanged(false);
+            })
+            .catch(error => {
+                displayErrorMessage(error.message)
+            })
 
     }
 
