@@ -6,8 +6,11 @@ import {Modal} from 'antd';
 import {GrAlert} from 'react-icons/gr';
 import ToastContainer from "../../../Shared/Components/Toast";
 import {displayErrorMessage} from "../../../Shared/notify";
+import {useDispatch} from "react-redux";
+import {loadProjects} from "../../../Store/Slice/project/projectActions";
 
 const ProjectListing = () => {
+    const dispatch = useDispatch()
 
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
@@ -16,8 +19,6 @@ const ProjectListing = () => {
     const [visible, setVisible] = useState(false);
     const [projects, setProjects] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
-
-    let authToken = localStorage.getItem('auth_token')
 
     const handleImageError = (e) => {
         e.target.src = `/Images/NoImage.jpeg`;
@@ -32,7 +33,7 @@ const ProjectListing = () => {
             render: (text, record) => (
                 <ProjectListingComponents.ProjectLink to={`/project/${record.id}/dashboard`}>
                     <ProjectListingComponents.ProjectIcon>
-                        <ProjectListingComponents.ProjectAvatar src={`${process.env.REACT_APP_HOST}/${record.icon}`}
+                        <ProjectListingComponents.ProjectAvatar src={`${process.env.REACT_APP_DOMAIN}/${record.icon}`}
                                                                 alt={record.name}
                                                                 onError={handleImageError}
                         />
@@ -68,12 +69,7 @@ const ProjectListing = () => {
     useEffect(() => {
         const fetchProjects = async () => {
             setLoading(true);
-            await apiRequest
-                .get(`/api/projects/`, {
-                    headers: {
-                        Authorization: `Token ${authToken}`,
-                    },
-                })
+            dispatch(loadProjects()).unwrap()
                 .then(response => {
                     const dataArray = response.data.map(project => ({
                         id: project.id,
@@ -147,7 +143,7 @@ const ProjectListing = () => {
                 <ProjectListingComponents.SearchInputContainer>
                     <ProjectListingComponents.SearchIcon/>
                     <ProjectListingComponents.SearchInput type="text" placeholder="Search Projects" value={null}
-                                                            onChange={(e) => handleSearch(e.target.value)}/>
+                                                          onChange={(e) => handleSearch(e.target.value)}/>
                 </ProjectListingComponents.SearchInputContainer>
             </ProjectListingComponents.SearchContainer>
             <ProjectListingComponents.ProjectListingTable>

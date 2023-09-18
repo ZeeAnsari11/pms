@@ -9,24 +9,21 @@ import ToastContainer from '../../../Shared/Components/Toast'
 import {displayInfoMessage} from '../../../Shared/notify'
 import ErrorPage from "../../Error/ErrorPage";
 import {useIsAdminOrStaffUser} from "../../../Store/Selector/Selector";
+import {useDispatch} from "react-redux";
+import {deleteProject} from "../../../Store/Slice/project/projectActions";
 
 const CloseProject = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
+    const dispatch = useDispatch()
 
-    let authToken = localStorage.getItem('auth_token');
     const IsAdminOrStaffUser = useIsAdminOrStaffUser();
 
     const navigate = useNavigate();
     const {projectId} = useParams();
 
-    const deleteProject = () => {
+    const CloseProject = () => {
         if (projectId !== undefined) {
-            apiRequest
-                .delete(`/api/projects/${projectId}`, {
-                    headers: {
-                        Authorization: `Token ${authToken}`
-                    },
-                })
+            dispatch(deleteProject({projectId: projectId})).unwrap()
                 .then(response => {
                     setIsModalVisible(false);
                     displayInfoMessage('The project has been deleted. \n  You will be redirected to the project within 2 seconds');
@@ -45,7 +42,7 @@ const CloseProject = () => {
     };
 
     const handleModalConfirm = () => {
-        deleteProject()
+        CloseProject()
     };
 
     const handleModalCancel = () => {
