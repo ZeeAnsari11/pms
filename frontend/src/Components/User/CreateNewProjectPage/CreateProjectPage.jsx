@@ -8,13 +8,19 @@ import NavBar from "../../Dashboard/Navbar";
 import GenericSelectField from "../../Dashboard/SelectFields/GenericSelectField";
 import ImageUploader from "../ImageUploader";
 import {modules} from "../../../Shared/Const/ReactQuillToolbarOptions";
-import { Avatar, Select, Tooltip } from "antd";
+import {Avatar, Select, Tooltip} from "antd";
 import {StatusCodes} from "http-status-codes";
 import ErrorPage from "../../Error/ErrorPage";
 import {useIsAdminOrStaffUser} from "../../../Store/Selector/Selector";
-import { InfoCircleOutlined } from "@ant-design/icons";
+import {InfoCircleOutlined} from "@ant-design/icons";
+import {fetchCompaniesList} from "../../../api/list/companies";
+import {fetchCategoriesList} from "../../../api/list/categories";
+import {fetchUsersList} from "../../../api/list/users";
+import {useDispatch} from "react-redux";
+import {createProject, generateUniqueSlug, verifyUniqueKey} from "../../../Store/Slice/project/projectActions";
 
 function CreateProject() {
+    const dispatch = useDispatch()
 
     const [text, setText] = useState('');
     const [slug, setSlug] = useState('');
@@ -27,7 +33,6 @@ function CreateProject() {
     const [selectedCategory, setSelectedCategory] = useState([]);
     const [selectedProjectLead, setSelectedProjectLead] = useState([]);
 
-    let authToken = localStorage.getItem('auth_token');
 
     const IsAdminOrStaffUser = useIsAdminOrStaffUser();
     let hasError = false;
@@ -37,40 +42,15 @@ function CreateProject() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const fetchCompanies = async () => {
-            const response =
-                await apiRequest
-                    .get(`/api/companies/`, {
-                        headers: {
-                            Authorization: `Token ${authToken}`
-                        },
-                    });
-            setCompanyData(response.data);
-        };
-
-        const fetchCategories = async () => {
-            const response =
-                await apiRequest
-                    .get(`/api/project_categories/`, {
-                        headers: {
-                            Authorization: `Token ${authToken}`,
-                        },
-                    });
-            setCategoryData(response.data);
-        };
-
-        const fetchUsers = async () => {
-            const response =
-                await apiRequest.get(`/api/users_list/`, {
-                    headers: {
-                        Authorization: `Token ${authToken}`,
-                    },
-                });
-            setUsersData(response.data);
-        };
-        fetchCompanies().then() // @todo handle the exception on Company fetch
-        fetchCategories().then() // @todo handle the exception on Categories fetch
-        fetchUsers().then() // @todo handle the exception on Users fetch
+        fetchCompaniesList().then((companiesList) => {
+            setCompanyData(companiesList.data);
+        }) // @todo handle the exception on Company fetch
+        fetchCategoriesList().then((categoriesList) => {
+            setCategoryData(categoriesList.data)
+        }) // @todo handle the exception on Categories fetch
+        fetchUsersList().then((usersList) => {
+            setUsersData(usersList.data);
+        }) // @todo handle the exception on Users fetch
     }, []);
 
     const companyOptions = companyData ? companyData.map(
@@ -90,10 +70,7 @@ function CreateProject() {
 
 
     const validateUniqueKey = async (text) => {
-        await apiRequest.get('/api/validate_slug',{
-                headers: { Authorization: `Token ${authToken}` },
-                params: { slug_name: text },
-        } )
+        dispatch(verifyUniqueKey({text: text})).unwrap()
             .then(
                 response => {
                     setSlug(response.data.unique_slug);
@@ -102,22 +79,24 @@ function CreateProject() {
             )
             .catch(
                 error => {
-                    displayErrorMessage(error.response.data.error);
+                    displayErrorMessage(error);
                     setSlugError(true);
                 }
             );
     }
 
     const getUniqueSlug = async (text) => {
-        await apiRequest.post('/api/validate_slug/', {project_name: text}, {
-                    headers: { Authorization: `Token ${authToken}`, },
-                })
+        dispatch(generateUniqueSlug({text: text})).unwrap()
             .then(response => setSlug(response.data.unique_slug))
+            .catch(
+                error => {
+                    displayErrorMessage(error);
+                }
+            );
     }
 
-
     function handleSubmit(event) {
-        if(slugError){
+        if (slugError) {
             displayErrorMessage('Please resolve all the error first')
             return;
         }
@@ -134,22 +113,13 @@ function CreateProject() {
         formData.append("description", text);
         formData.append("company", selectedCompany);
         formData.append("category", selectedCategory);
-        apiRequest
-            .post(`/api/projects/`, formData, {
-                headers: {
-                    'Authorization': `Token ${authToken}`,
-                },
-            })
+        dispatch(createProject({formData: formData})).unwrap()
             .then(response => {
                 displaySuccessMessage(`Successfully create new project!`);
                 navigate('/project');
             })
             .catch(error => {
-                if (error.response.status === StatusCodes.FORBIDDEN) {
-                    displayErrorMessage(error.response.data.detail)
-                    return;
-                }
-                displayErrorMessage(error.message);
+                displayErrorMessage(error);
             });
     }
 
@@ -175,26 +145,26 @@ function CreateProject() {
                     <CreateProjectComponents.LabelForProject
                         htmlFor="project">Project:</CreateProjectComponents.LabelForProject>
                     <CreateProjectComponents.StyledInput type="text" id="project" name="project"
-                                                            placeholder="Enter project name"
-                                                            onBlur={(e) => getUniqueSlug(e.target.value)}
+                                                         placeholder="Enter project name"
+                                                         onBlur={(e) => getUniqueSlug(e.target.value)}
                     />
                     <CreateProjectComponents.LabelForKey
                         htmlFor="project">Key:</CreateProjectComponents.LabelForKey>
                     <CreateProjectComponents.StyledInput type="text" id="slug" name="slug" value={slug}
-                                                            placeholder="Enter project key"
-                                                            suffix={
-                                                            <Tooltip title="Key should be unique">
-                                                                <InfoCircleOutlined />
-                                                            </Tooltip>
-                                                            }
-                                                            onChange={((e) => setSlug(e.target.value))}
-                                                            onBlur={(e) => validateUniqueKey(e.target.value)}
-                                                            status={slugError ? 'error' : null}
-                                                        />
+                                                         placeholder="Enter project key"
+                                                         suffix={
+                                                             <Tooltip title="Key should be unique">
+                                                                 <InfoCircleOutlined/>
+                                                             </Tooltip>
+                                                         }
+                                                         onChange={((e) => setSlug(e.target.value))}
+                                                         onBlur={(e) => validateUniqueKey(e.target.value)}
+                                                         status={slugError ? 'error' : null}
+                    />
                     <CreateProjectComponents.LabelForDescriptionBoc
                         htmlFor="description">Description:</CreateProjectComponents.LabelForDescriptionBoc>
                     <CreateProjectComponents.StyledReactQuill modules={modules} id="exampleEditor" value={text}
-                                                                onChange={(value => setText(value))}/>
+                                                              onChange={(value => setText(value))}/>
                     <CreateProjectComponents.LabelForCompany
                         htmlFor="company">Company:</CreateProjectComponents.LabelForCompany>
                     <GenericSelectField
@@ -233,7 +203,7 @@ function CreateProject() {
                                         <div>
                                             <Avatar draggable={true} style={{background: "#10899e"}}
                                                     alt={item.username}
-                                                    src={`${process.env.REACT_APP_HOST}/${item.iconUrl}`}/>{" "}
+                                                    src={`${process.env.REACT_APP_DOMAIN}${item.iconUrl}`}/>{" "}
                                             {item.username}
                                         </div> :
                                         <div>

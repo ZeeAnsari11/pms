@@ -1,6 +1,6 @@
 import apiRequest from "../../Utils/apiRequest";
 
-export const fetchCompaniesList = async () => {
+export const fetchCategoriesList = async () => {
     try {
       const config = {
           headers: {
@@ -9,7 +9,7 @@ export const fetchCompaniesList = async () => {
           },
       }
       return await apiRequest.get(
-          `/companies/`,
+          `/project_categories/`,
           config
       )
     } catch (error) {

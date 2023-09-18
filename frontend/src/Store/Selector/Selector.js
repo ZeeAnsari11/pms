@@ -21,10 +21,11 @@ export const useCurrentIssueData = () => {
 };
 
 export const useCurrentUserProfileData = () => {
-    return {}
+    return useSelector((state) => state.auth.userInfo);
 };
 
 export const useIsAdminOrStaffUser = () => {
     const currentUserProfileData = useCurrentUserProfileData();
-    return true;
+    return currentUserProfileData?.user?.is_staff || currentUserProfileData?.user?.is_superuser;
 };
+
