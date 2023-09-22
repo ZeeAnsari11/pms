@@ -1,6 +1,6 @@
 import apiRequest from "../../Utils/apiRequest";
 
-export const fetchUsersList = async () => {
+export const fetchSlackConfigurations = async () => {
     try {
         const config = {
             headers: {
@@ -9,7 +9,7 @@ export const fetchUsersList = async () => {
             },
         }
         return await apiRequest.get(
-            `/users_list/`,
+            `/global_slack_webhook/`,
             config
         )
     } catch (error) {
@@ -22,7 +22,7 @@ export const fetchUsersList = async () => {
 }
 
 
-export const updateUser = async (userId, formData) => {
+export const createSlackConfigurations = async (formData) => {
     try {
         const config = {
             headers: {
@@ -30,8 +30,8 @@ export const updateUser = async (userId, formData) => {
                 'Authorization': `JWT ${localStorage.getItem('access')}`
             },
         }
-        return await apiRequest.patch(
-            `/users_list/${userId}/`,
+        return await apiRequest.post(
+            `/global_slack_webhook/`,
             formData,
             config,
         )
@@ -44,9 +44,7 @@ export const updateUser = async (userId, formData) => {
     }
 }
 
-
-
-export const deleteUser = async (userId) => {
+export const updateSlackConfigurations = async (configId, formData) => {
     try {
         const config = {
             headers: {
@@ -54,8 +52,9 @@ export const deleteUser = async (userId) => {
                 'Authorization': `JWT ${localStorage.getItem('access')}`
             },
         }
-        return await apiRequest.delete(
-            `/users_list/${userId}/`,
+        return await apiRequest.patch(
+            `/global_slack_webhook/${configId}/`,
+            formData,
             config,
         )
     } catch (error) {

@@ -1,6 +1,6 @@
 import apiRequest from "../../Utils/apiRequest";
 
-export const fetchUsersList = async () => {
+export const fetchGroupList = async () => {
     try {
         const config = {
             headers: {
@@ -9,7 +9,7 @@ export const fetchUsersList = async () => {
             },
         }
         return await apiRequest.get(
-            `/users_list/`,
+            `/user_groups/`,
             config
         )
     } catch (error) {
@@ -22,7 +22,29 @@ export const fetchUsersList = async () => {
 }
 
 
-export const updateUser = async (userId, formData) => {
+export const createGroup = async (formData) => {
+    try {
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `JWT ${localStorage.getItem('access')}`
+            },
+        }
+        return await apiRequest.post(
+            `/user_groups/`,
+            formData,
+            config,
+        )
+    } catch (error) {
+        if (error.response && error.response.data.message) {
+            throw error.response.data.message
+        } else {
+            throw error.message
+        }
+    }
+}
+
+export const updateGroup = async (groupId, formData) => {
     try {
         const config = {
             headers: {
@@ -31,7 +53,7 @@ export const updateUser = async (userId, formData) => {
             },
         }
         return await apiRequest.patch(
-            `/users_list/${userId}/`,
+            `/user_groups/${groupId}/`,
             formData,
             config,
         )
@@ -46,7 +68,7 @@ export const updateUser = async (userId, formData) => {
 
 
 
-export const deleteUser = async (userId) => {
+export const deleteGroup = async (groupId) => {
     try {
         const config = {
             headers: {
@@ -55,7 +77,7 @@ export const deleteUser = async (userId) => {
             },
         }
         return await apiRequest.delete(
-            `/users_list/${userId}/`,
+            `/user_groups/${groupId}/`,
             config,
         )
     } catch (error) {
