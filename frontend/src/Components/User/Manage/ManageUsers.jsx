@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import * as ManageUsersComponents from './ManageUserStyle';
 import NavBar from '../../Dashboard/Navbar/index';
-import apiRequest from '../../../Utils/apiRequest';
 import Toast from "../../../Shared/Components/Toast"
 import {displaySuccessMessage, displayErrorMessage} from "../../../Shared/notify"
 import {Input, Button, Modal, Pagination, Space, Form, Switch} from 'antd';
@@ -9,6 +8,7 @@ import {AiOutlineEdit, AiOutlineDelete} from 'react-icons/ai';
 import UserSidebar from "../../Dashboard/Sidebar/UserSidebar";
 import ErrorPage from "../../Error/ErrorPage";
 import {useIsAdminOrStaffUser} from "../../../Store/Selector/Selector";
+import {fetchUsersList, updateUser, deleteUser} from "../../../api/list/users";
 
 
 const ManageUsers = () => {
@@ -24,7 +24,6 @@ const ManageUsers = () => {
 
     const [form] = Form.useForm();
 
-    let authToken = localStorage.getItem('auth_token');
     const IsAdminOrStaffUser = useIsAdminOrStaffUser();
 
     const updateTable = (responseData, id) => {
@@ -54,20 +53,23 @@ const ManageUsers = () => {
             title: 'Confirm Delete',
             content: 'Are you sure you want to delete this user?',
             onOk: () => {
-                deleteUser(id);
-                const updatedData = data.filter((item) => item.id !== id);
-                setData(updatedData);
-                setFilteredData(updatedData);
-                setTotalItems(updatedData.length);
+                deleteUser(id)
+                    .then( response =>  {
+                        displaySuccessMessage('Successfully delete the requested user!');
+                        const updatedData = data.filter((item) => item.id !== id);
+                        setData(updatedData);
+                        setFilteredData(updatedData);
+                        setTotalItems(updatedData.length);
+                    } )
+                    .catch( message =>  displayErrorMessage(message))
             },
         });
     };
 
     const fetchUsers = () => {
-        apiRequest
-            .get(`/api/users_list/`, {headers: {"Authorization": `Token ${authToken}`}})
-            .then(response => {
-                const mappedValues = response.data.map(item => {
+          fetchUsersList()
+              .then(usersList => {
+                  const mappedValues = usersList.data.map(item => {
                     return {
                         id: item.id,
                         username: item.username,
@@ -81,42 +83,32 @@ const ManageUsers = () => {
                 setData(mappedValues);
                 setFilteredData(mappedValues);
                 setTotalItems(mappedValues.length);
-            })
-            .catch(error => {
-                displayErrorMessage(error.message)
-            });
+              })
+              .catch(error => {
+                  displayErrorMessage(error.message)
+          })
     };
 
-    const updateUser = (values) => {
+    const handleUserUpdate = (values) => {
         if (modalData.id) {
-            apiRequest
-                .patch(`/api/users_list/${modalData.id}/`,
-                    {
-                        "username": values.username,
-                        "email": values.email,
-                        "is_superuser": values.isSuperUser,
-                        "is_staff": values.isStaff,
-                        "is_active": values.isActive,
-                    },
-                    {headers: {"Authorization": `Token ${authToken}`}})
+            updateUser(
+                modalData.id,
+                {
+                    "username": values.username,
+                    "email": values.email,
+                    "is_superuser": values.isSuperUser,
+                    "is_staff": values.isStaff,
+                    "is_active": values.isActive,
+                }
+                )
                 .then(response => {
-                    updateTable(response.data);
+                    updateTable(response.data)
                     displaySuccessMessage(`Successfully Update the user: ${values.email} `)
                 })
-                .catch(error => {
-                    displayErrorMessage(error.message)
-                });
+                .catch(message => {
+                    displayErrorMessage(message)
+                })
         }
-    };
-    const deleteUser = (id) => {
-        apiRequest
-            .delete(`/api/users_list/${id}`, {headers: {"Authorization": `Token ${authToken}`}})
-            .then(response => {
-                displaySuccessMessage('Successfully delete the requested user!')
-            })
-            .catch(error => {
-                displayErrorMessage(error.message)
-            });
     };
 
     useEffect(() => {
@@ -157,7 +149,7 @@ const ManageUsers = () => {
     };
 
     const handleModalSave = (values) => {
-        updateUser(values);
+        handleUserUpdate(values);
         setModalData(null);
         form.resetFields();
         setModalVisible(false);

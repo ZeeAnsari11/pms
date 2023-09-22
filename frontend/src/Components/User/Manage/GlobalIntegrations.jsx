@@ -10,6 +10,11 @@ import ToastContainer from '../../../Shared/Components/Toast';
 import {displayErrorMessage, displaySuccessMessage, displayInfoMessage} from '../../../Shared/notify';
 import ErrorPage from "../../Error/ErrorPage";
 import {useIsAdminOrStaffUser} from "../../../Store/Selector/Selector";
+import {
+    createSlackConfigurations,
+    fetchSlackConfigurations,
+    updateSlackConfigurations
+} from "../../../api/integrations/slack";
 
 function GlobalIntegrations() {
 
@@ -47,47 +52,32 @@ function GlobalIntegrations() {
         });
     }
 
-
-    const fetchGlobalSlackConfig = async () => {
-        return await apiRequest.get(`/api/global_slack_webhook/`, {
-            headers: {"Authorization": `Token ${authToken}`}
-        })
-    }
-
     const createSlackIntegrationsData = async (values) => {
         const {slackNotificationStatus, slackChannelGroupUser, slackWebhookUrl} = values
-        return await apiRequest
-            .post(`/api/global_slack_webhook/`, {
-                is_active: slackNotificationStatus,
-                webhook_channel: slackChannelGroupUser,
-                webhook_url: slackWebhookUrl,
-            }, {
-                headers:
-                    {"Authorization": `Token ${authToken}`}
-            })
+        return await createSlackConfigurations({
+            is_active: slackNotificationStatus,
+            webhook_channel: slackChannelGroupUser,
+            webhook_url: slackWebhookUrl,
+        })
     }
 
 
     const patchSlackIntegrationsData = async (values) => {
         const {slackNotificationStatus, slackChannelGroupUser, slackWebhookUrl} = values
-        return await apiRequest
-            .patch(`/api/global_slack_webhook/${slackConfigId}/`, {
-                is_active: slackNotificationStatus,
-                webhook_channel: slackChannelGroupUser,
-                webhook_url: slackWebhookUrl,
-            }, {
-                headers:
-                    {"Authorization": `Token ${authToken}`}
-            })
+        return await updateSlackConfigurations(slackConfigId, {
+            is_active: slackNotificationStatus,
+            webhook_channel: slackChannelGroupUser,
+            webhook_url: slackWebhookUrl,
+        })
     }
 
     useEffect(() => {
-        fetchGlobalSlackConfig()
+        fetchSlackConfigurations()
             .then(response => {
                 updateSlackIntegrationForm(response)
             })
             .catch(error => {
-                displayErrorMessage(error.message)
+                displayErrorMessage(error)
             })
     }, []);
 
