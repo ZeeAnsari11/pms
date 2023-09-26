@@ -233,7 +233,7 @@ function CreateProject() {
                                         <div>
                                             <Avatar draggable={true} style={{background: "#10899e"}}
                                                     alt={item.username}
-                                                    src={`${process.env.REACT_APP_HOST}/${item.iconUrl}`}/>{" "}
+                                                    src={`${process.env.REACT_APP_API_URL}/${item.iconUrl}`}/>{" "}
                                             {item.username}
                                         </div> :
                                         <div>

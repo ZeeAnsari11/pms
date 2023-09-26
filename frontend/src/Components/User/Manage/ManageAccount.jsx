@@ -186,7 +186,7 @@ const ProfileVisibility = () => {
                         <ManageAccountComponents.CoverPictureWrapper>
                             <ManageAccountComponents.CircleImage>
                                 <ProfilePhotouploader onImageChange={handleImageChange} id="image"
-                                                      imagePath={`${process.env.REACT_APP_HOST}/${userData?.image}`}/>
+                                                      imagePath={`${process.env.REACT_APP_API_URL}/${userData?.image}`}/>
                                 <ManageAccountComponents.UpdateProfile className="update-cover">
                                     <FontAwesomeIcon icon={faImage} fontSize={"30px"} onClick={() => {
                                     }}/>

@@ -94,7 +94,7 @@ function NavBar() {
                                 currentUserProfileData ? (
                                     <Avatar
                                         name={currentUserProfileData?.user?.username}
-                                        src={`${process.env.REACT_APP_HOST}/${currentUserProfileData?.image}`}
+                                        src={`${process.env.REACT_APP_API_URL}/${currentUserProfileData?.image}`}
                                         size={28}
                                         round={true}
                                         title={currentUserProfileData?.user?.email}

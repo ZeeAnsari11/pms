@@ -31,7 +31,7 @@ const ProjectSidebar = () => {
 
     let IconPath = projectData.icon
     if (IconPath != null) {
-        IconPath = `${process.env.REACT_APP_HOST}/${icon}`
+        IconPath = `${process.env.REACT_APP_API_URL}/${icon}`
     } else {
         IconPath = 'http://localhost:3000/Images/NoImage.jpeg'
     }
@@ -41,7 +41,7 @@ const ProjectSidebar = () => {
 
     useEffect(() => {
         const fetchProjects = async () => {
-            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/projects/${projectId}`, {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/projects/${projectId}`, {
                 headers: {
                     Authorization: `Token ${authToken}`,
                 },

@@ -95,7 +95,7 @@ function EditTicketPage({props}) {
 
     const getComments = async () => {
         try {
-            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/comments/?issue=${issueId}`, {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/comments/?issue=${issueId}`, {
                 headers: {
                     Authorization: `Token ${authToken}`,
                 },
@@ -109,7 +109,7 @@ function EditTicketPage({props}) {
 
     const getWorklogs = async () => {
         try {
-            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/worklogs/?issue=${issueId}`, {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/worklogs/?issue=${issueId}`, {
                 headers: {
                     Authorization: `Token ${authToken}`,
                 },
@@ -143,7 +143,7 @@ function EditTicketPage({props}) {
     useEffect(() => {
         const fetchCurrentUserEmail = async () => {
             try {
-                const response = await axios.get(`${process.env.REACT_APP_HOST}/api/auth/users/me/`, {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/auth/users/me/`, {
                     headers: {"Authorization": `Token ${authToken}`}
                 });
                 setCurrentUserEmail(response.data);
@@ -158,7 +158,7 @@ function EditTicketPage({props}) {
         if (currentUserEmail) {
             const fetchCurrentUserDataFromUserList = async () => {
                 try {
-                    const response = await axios.get(`${process.env.REACT_APP_HOST}/api/userprofile/?user__email__iexact=${currentUserEmail.email}`, {
+                    const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/userprofile/?user__email__iexact=${currentUserEmail.email}`, {
                         headers: {"Authorization": `Token ${authToken}`}
                     });
                     setCurrentUserData(response.data[0]);
@@ -173,7 +173,7 @@ function EditTicketPage({props}) {
 
     useEffect(() => {
         const fetchComments = async () => {
-            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/comments/?issue=${issueId}`, {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/comments/?issue=${issueId}`, {
                 headers: {
                     Authorization: `Token ${authToken}`,
                 },
@@ -182,7 +182,7 @@ function EditTicketPage({props}) {
         };
 
         const fetchWorklogs = async () => {
-            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/worklogs/?issue=${issueId}`, {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/worklogs/?issue=${issueId}`, {
                 headers: {
                     Authorization: `Token ${authToken}`,
                 },
@@ -191,7 +191,7 @@ function EditTicketPage({props}) {
         };
 
         const fetchDependentUserOptions = async () => {
-            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/projects/${projectId}/assignees/`, {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/projects/${projectId}/assignees/`, {
                 headers: {
                     Authorization: `Token ${authToken}`,
                 },
@@ -201,7 +201,7 @@ function EditTicketPage({props}) {
         const fetchDependentProjectTypes = async () => {
             try {
                 setLoading(true);
-                const response = await axios.get(`${process.env.REACT_APP_HOST}/api/projects/${projectId}`, {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/projects/${projectId}`, {
                     headers: {
                         Authorization: `Token ${authToken}`,
                     },
@@ -216,7 +216,7 @@ function EditTicketPage({props}) {
         };
 
         const fetchCurrentIssueProjectData = async () => {
-            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/projects/${projectId}`, {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/projects/${projectId}`, {
                 headers: {
                     Authorization: `Token ${authToken}`,
                 },
@@ -225,7 +225,7 @@ function EditTicketPage({props}) {
         };
 
         const fetchDependentProjectStatuses = async () => {
-            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/project_status/?project=${projectId}`, {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/project_status/?project=${projectId}`, {
                 headers: {
                     Authorization: `Token ${authToken}`,
                 },
@@ -234,7 +234,7 @@ function EditTicketPage({props}) {
         };
 
         const fetchDependentProjectLabels = async () => {
-            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/project_labels/?project=${projectId}`, {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/project_labels/?project=${projectId}`, {
                 headers: {
                     Authorization: `Token ${authToken}`,
                 },
@@ -336,7 +336,7 @@ function EditTicketPage({props}) {
 
         axios({
             method: 'patch',
-            url: `${process.env.REACT_APP_HOST}/api/issues/${issueId}/`,
+            url: `${process.env.REACT_APP_API_URL}/api/issues/${issueId}/`,
             headers: {
                 'Authorization': `Token ${authToken}`,
             },
@@ -368,7 +368,7 @@ function EditTicketPage({props}) {
         };
 
         axios
-            .post(`${process.env.REACT_APP_HOST}/api/comments/`, commentData, {
+            .post(`${process.env.REACT_APP_API_URL}/api/comments/`, commentData, {
                 headers: {
                     Authorization: `Token ${authToken}`,
                 },
@@ -394,7 +394,7 @@ function EditTicketPage({props}) {
 
     const handleCommentDelete = (index) => {
         axios
-            .delete(`${process.env.REACT_APP_HOST}/api/comments/${index}/`, {
+            .delete(`${process.env.REACT_APP_API_URL}/api/comments/${index}/`, {
                 headers: {
                     Authorization: `Token ${authToken}`,
                 },
@@ -419,7 +419,7 @@ function EditTicketPage({props}) {
 
         axios
             .patch(
-                `${process.env.REACT_APP_HOST}/api/comments/${index}/`,
+                `${process.env.REACT_APP_API_URL}/api/comments/${index}/`,
                 commentData,
                 {
                     headers: {
@@ -464,7 +464,7 @@ function EditTicketPage({props}) {
                 cursor: "pointer"
             }}
             alt={currentIssueProjectData?.name}
-            src={`${process.env.REACT_APP_HOST}/${currentIssueProjectData?.icon}`}
+            src={`${process.env.REACT_APP_API_URL}/${currentIssueProjectData?.icon}`}
         />
     ) : (
         <Avatar
@@ -679,7 +679,7 @@ function EditTicketPage({props}) {
                                                         <div>
                                                             <Avatar draggable={true} style={{background: "#10899e"}}
                                                                     alt={item.username}
-                                                                    src={`${process.env.REACT_APP_HOST}/${item.iconUrl}`}/>{" "}
+                                                                    src={`${process.env.REACT_APP_API_URL}/${item.iconUrl}`}/>{" "}
                                                             {item.username}
                                                         </div> :
                                                         <div>
@@ -777,7 +777,7 @@ function EditTicketPage({props}) {
                                                         <div>
                                                             <Avatar draggable={true} style={{background: "#10899e"}}
                                                                     alt={item.username}
-                                                                    src={`${process.env.REACT_APP_HOST}/${item.iconUrl}`}/>{" "}
+                                                                    src={`${process.env.REACT_APP_API_URL}/${item.iconUrl}`}/>{" "}
                                                             {item.username}
                                                         </div> :
                                                         <div>

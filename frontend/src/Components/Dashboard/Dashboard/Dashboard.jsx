@@ -23,7 +23,7 @@ function Dashboard(props) {
     let authToken = localStorage.getItem('auth_token')
     const deleteIssue = (issueId) => {
         axios
-            .delete(`${process.env.REACT_APP_HOST}/api/projects/${projectId}/issues/${issueId}/`, {
+            .delete(`${process.env.REACT_APP_API_URL}/api/projects/${projectId}/issues/${issueId}/`, {
                 headers: {Authorization: `Token ${authToken}`},
             })
             .then(response => {
@@ -38,13 +38,13 @@ function Dashboard(props) {
     const fetchData = async () => {
         try {
             setLoading(true);
-            const projectIssuesPromise = axios.get(`${process.env.REACT_APP_HOST}/api/projects/${projectId}/issues`, {
+            const projectIssuesPromise = axios.get(`${process.env.REACT_APP_API_URL}/api/projects/${projectId}/issues`, {
                 headers: {
                     Authorization: `Token ${authToken}`,
                 },
             });
 
-            const projectIssuesStatusesPromise = axios.get(`${process.env.REACT_APP_HOST}/api/project_status`, {
+            const projectIssuesStatusesPromise = axios.get(`${process.env.REACT_APP_API_URL}/api/project_status`, {
                 params: {project: projectId},
                 headers: {Authorization: `Token ${authToken}`},
             });

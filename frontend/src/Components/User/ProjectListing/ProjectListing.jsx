@@ -32,7 +32,7 @@ const ProjectListing = () => {
             render: (text, record) => (
                 <ProjectListingComponents.ProjectLink to={`/project/${record.id}/dashboard`}>
                     <ProjectListingComponents.ProjectIcon>
-                        <ProjectListingComponents.ProjectAvatar src={`${process.env.REACT_APP_HOST}/${record.icon}`}
+                        <ProjectListingComponents.ProjectAvatar src={`${process.env.REACT_APP_API_URL}/${record.icon}`}
                                                                 alt={record.name}
                                                                 onError={handleImageError}
                         />
