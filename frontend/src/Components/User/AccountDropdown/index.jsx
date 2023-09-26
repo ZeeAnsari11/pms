@@ -13,7 +13,7 @@ const AccountDropdown = () => {
             <div>
                 <Avatar
                     name={currentUserProfileData?.user?.username}
-                    src={`${process.env.REACT_APP_HOST}/${currentUserProfileData?.image}`}
+                    src={`${process.env.REACT_APP_API_URL}/${currentUserProfileData?.image}`}
                     size={30}
                     round={true}
                     title={currentUserProfileData?.user?.username}

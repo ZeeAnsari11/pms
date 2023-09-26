@@ -88,7 +88,7 @@ const MyModalComponent = ({onClose}) => {
 
     useEffect(() => {
         const fetchDependentProjectTypes = async () => {
-            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/project_type/?project=${selectedProject}`, {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/project_type/?project=${selectedProject}`, {
                 headers: {
                     Authorization: `Token ${authToken}`,
                 },
@@ -98,7 +98,7 @@ const MyModalComponent = ({onClose}) => {
 
 
         const fetchDependentProjectStatuses = async () => {
-            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/project_status/?project=${selectedProject}`, {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/project_status/?project=${selectedProject}`, {
                 headers: {
                     Authorization: `Token ${authToken}`,
                 },
@@ -107,7 +107,7 @@ const MyModalComponent = ({onClose}) => {
         };
 
         const fetchDependentProjectLabels = async () => {
-            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/project_labels/?project=${selectedProject}`, {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/project_labels/?project=${selectedProject}`, {
                 headers: {
                     Authorization: `Token ${authToken}`,
                 },
@@ -116,7 +116,7 @@ const MyModalComponent = ({onClose}) => {
         };
 
         const fetchDependentUserOptions = async () => {
-            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/projects/${selectedProject}/assignees/`, {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/projects/${selectedProject}/assignees/`, {
                 headers: {
                     Authorization: `Token ${authToken}`,
                 },
@@ -164,7 +164,7 @@ const MyModalComponent = ({onClose}) => {
 
     useEffect(() => {
         const fetchProject = async () => {
-            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/projects/`, {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/projects/`, {
                 headers: {
                     Authorization: `Token ${authToken}`,
                 },
@@ -174,7 +174,7 @@ const MyModalComponent = ({onClose}) => {
 
         const fetchCurrentUserData = async () => {
             try {
-                const response = await axios.get(`${process.env.REACT_APP_HOST}/api/userprofile/`, {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/userprofile/`, {
                     headers: {"Authorization": `Token ${authToken}`}
                 });
                 setCurrentUserData(response.data[0]);
@@ -285,7 +285,7 @@ const MyModalComponent = ({onClose}) => {
         formData.append("created_by", currentUserId);
         formData.append("updated_by", currentUserId);
 
-        fetch(`${process.env.REACT_APP_HOST}/api/issues/`, {
+        fetch(`${process.env.REACT_APP_API_URL}/api/issues/`, {
             method: "POST",
             headers: {Authorization: `Token ${authToken}`},
             body: formData,
@@ -445,7 +445,7 @@ const MyModalComponent = ({onClose}) => {
                                             {
                                                 item.iconUrl ?
                                                     <div>
-                                                        <Avatar draggable={true} style={{ background: "#10899e" }} alt={item.username} src={`${process.env.REACT_APP_HOST}/${item.iconUrl}`} />{" "}
+                                                        <Avatar draggable={true} style={{ background: "#10899e" }} alt={item.username} src={`${process.env.REACT_APP_API_URL}/${item.iconUrl}`} />{" "}
                                                         {item.username}
                                                     </div> :
                                                     <div>
@@ -498,7 +498,7 @@ const MyModalComponent = ({onClose}) => {
                                             {
                                                 item.iconUrl ?
                                                     <div>
-                                                        <Avatar draggable={true} style={{ background: "#10899e" }} alt={item.username} src={`${process.env.REACT_APP_HOST}/${item.iconUrl}`} />{" "}
+                                                        <Avatar draggable={true} style={{ background: "#10899e" }} alt={item.username} src={`${process.env.REACT_APP_API_URL}/${item.iconUrl}`} />{" "}
                                                         {item.username}
                                                     </div> :
                                                     <div>

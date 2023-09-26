@@ -81,7 +81,7 @@ function CardInfo(props) {
 
     const getComments = async () => {
         try {
-            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/comments/?issue=${props.card?.id}`, {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/comments/?issue=${props.card?.id}`, {
                 headers: {
                     Authorization: `Token ${authToken}`,
                 },
@@ -95,7 +95,7 @@ function CardInfo(props) {
 
     const getWorklogs = async () => {
         try {
-            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/worklogs/?issue=${props.card?.id}`, {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/worklogs/?issue=${props.card?.id}`, {
                 headers: {
                     Authorization: `Token ${authToken}`,
                 },
@@ -110,7 +110,7 @@ function CardInfo(props) {
     useEffect(() => {
         const fetchCurrentUserEmail = async () => {
             try {
-                const response = await axios.get(`${process.env.REACT_APP_HOST}/api/auth/users/me/`, {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/auth/users/me/`, {
                     headers: {"Authorization": `Token ${authToken}`}
                 });
                 setCurrentUserEmail(response.data);
@@ -123,7 +123,7 @@ function CardInfo(props) {
 
     useEffect(() => {
         const fetchIssueData = async () => {
-            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/issues/${props.card?.id}`, {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/issues/${props.card?.id}`, {
                 headers: {
                     Authorization: `Token ${authToken}`,
                 },
@@ -131,7 +131,7 @@ function CardInfo(props) {
             setIssuesData(response.data);
         };
         const fetchComments = async () => {
-            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/comments/?issue=${props.card?.id}`, {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/comments/?issue=${props.card?.id}`, {
                 headers: {
                     Authorization: `Token ${authToken}`,
                 },
@@ -139,7 +139,7 @@ function CardInfo(props) {
             setComments(response.data);
         };
         const fetchWorklogs = async () => {
-            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/worklogs/?issue=${props.card?.id}`, {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/worklogs/?issue=${props.card?.id}`, {
                 headers: {
                     Authorization: `Token ${authToken}`,
                 },
@@ -148,7 +148,7 @@ function CardInfo(props) {
         };
 
         const fetchDependentUserOptions = async () => {
-            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/projects/${props.card.project}/assignees/`, {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/projects/${props.card.project}/assignees/`, {
                 headers: {
                     Authorization: `Token ${authToken}`,
                 },
@@ -158,7 +158,7 @@ function CardInfo(props) {
 
 
         const fetchDependentProjectTypes = async () => {
-            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/project_type/?project=${props.card.project}`, {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/project_type/?project=${props.card.project}`, {
                 headers: {
                     Authorization: `Token ${authToken}`,
                 },
@@ -168,7 +168,7 @@ function CardInfo(props) {
 
 
         const fetchDependentProjectStatuses = async () => {
-            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/project_status/?project=${props.card.project}`, {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/project_status/?project=${props.card.project}`, {
                 headers: {
                     Authorization: `Token ${authToken}`,
                 },
@@ -177,7 +177,7 @@ function CardInfo(props) {
         };
 
         const fetchDependentProjectLabels = async () => {
-            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/project_labels/?project=${projectId}`, {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/project_labels/?project=${projectId}`, {
                 headers: {
                     Authorization: `Token ${authToken}`,
                 },
@@ -187,7 +187,7 @@ function CardInfo(props) {
 
         const fetchCurrentUserDataFromUserList = async () => {
             try {
-                const response = await axios.get(`${process.env.REACT_APP_HOST}/api/userprofile/?user__email__iexact=${currentUserEmail}`, {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/userprofile/?user__email__iexact=${currentUserEmail}`, {
                     headers: {"Authorization": `Token ${authToken}`}
                 });
                 setCurrentUserData(response.data[0]);
@@ -213,7 +213,7 @@ function CardInfo(props) {
         if (currentUserEmail) {
             const fetchCurrentUserDataFromUserList = async () => {
                 try {
-                    const response = await axios.get(`${process.env.REACT_APP_HOST}/api/userprofile/?user__email__iexact=${currentUserEmail.email}`, {
+                    const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/userprofile/?user__email__iexact=${currentUserEmail.email}`, {
                         headers: {"Authorization": `Token ${authToken}`}
                     });
                     setCurrentUserData(response.data[0]);
@@ -267,7 +267,7 @@ function CardInfo(props) {
         };
 
         axios
-            .post(`${process.env.REACT_APP_HOST}/api/comments/`, commentData, {
+            .post(`${process.env.REACT_APP_API_URL}/api/comments/`, commentData, {
                 headers: {
                     Authorization: `Token ${authToken}`,
                 },
@@ -297,7 +297,7 @@ function CardInfo(props) {
 
     const handleCommentDelete = (index) => {
         axios
-            .delete(`${process.env.REACT_APP_HOST}/api/comments/${index}/`, {
+            .delete(`${process.env.REACT_APP_API_URL}/api/comments/${index}/`, {
                 headers: {
                     Authorization: `Token ${authToken}`,
                 },
@@ -323,7 +323,7 @@ function CardInfo(props) {
 
         axios
             .patch(
-                `${process.env.REACT_APP_HOST}/api/comments/${index}/`,
+                `${process.env.REACT_APP_API_URL}/api/comments/${index}/`,
                 commentData,
                 {
                     headers: {
@@ -466,7 +466,7 @@ function CardInfo(props) {
 
         axios({
             method: 'patch',
-            url: `${process.env.REACT_APP_HOST}/api/issues/${props.card.id}/`,
+            url: `${process.env.REACT_APP_API_URL}/api/issues/${props.card.id}/`,
             headers: {
                 'Authorization': `Token ${authToken}`,
             },
@@ -726,7 +726,7 @@ function CardInfo(props) {
                                 {
                                     item.iconUrl ?
                                         <div>
-                                            <Avatar draggable={true} style={{ background: "#10899e" }} alt={item.username} src={`${process.env.REACT_APP_HOST}/${item.iconUrl}`} />{" "}
+                                            <Avatar draggable={true} style={{ background: "#10899e" }} alt={item.username} src={`${process.env.REACT_APP_API_URL}/${item.iconUrl}`} />{" "}
                                             {item.username}
                                         </div> :
                                         <div>
@@ -760,7 +760,7 @@ function CardInfo(props) {
                                 {
                                     item.iconUrl ?
                                         <div>
-                                            <Avatar draggable={true} style={{ background: "#10899e" }} alt={item.username} src={`${process.env.REACT_APP_HOST}/${item.iconUrl}`} />{" "}
+                                            <Avatar draggable={true} style={{ background: "#10899e" }} alt={item.username} src={`${process.env.REACT_APP_API_URL}/${item.iconUrl}`} />{" "}
                                             {item.username}
                                         </div> :
                                         <div>

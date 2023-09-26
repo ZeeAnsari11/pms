@@ -36,7 +36,7 @@ const TimeTracking = ({OriginalEstimate}) => {
     useEffect(() => {
         const getCurrentIssueId = async () => {
             try {
-                const response = await axios.get(`${process.env.REACT_APP_HOST}/api/issues/?slug__iexact=${selectedIssueSlug}`, {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/issues/?slug__iexact=${selectedIssueSlug}`, {
                     headers: {
                         Authorization: `Token ${authToken}`,
                     },
@@ -60,7 +60,7 @@ const TimeTracking = ({OriginalEstimate}) => {
         const fetchWorklogs = async () => {
             try {
                 if (currentIssueId) {
-                    const response = await axios.get(`${process.env.REACT_APP_HOST}/api/worklogs/?issue=${currentIssueId}`, {
+                    const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/worklogs/?issue=${currentIssueId}`, {
                         headers: {
                             Authorization: `Token ${authToken}`,
                         },
@@ -103,7 +103,7 @@ const TimeTracking = ({OriginalEstimate}) => {
         };
         console.log('New Time ', startTime);
         console.log('New Date ', startDate);
-        axios.post(`${process.env.REACT_APP_HOST}/api/worklogs/`, newTimelog, config)
+        axios.post(`${process.env.REACT_APP_API_URL}/api/worklogs/`, newTimelog, config)
 
             .then(response => {
                 console.log(response.data);

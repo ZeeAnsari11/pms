@@ -52,7 +52,7 @@ function Worklog({
 
         axios({
             method: 'patch',
-            url: `${process.env.REACT_APP_HOST}/api/worklogs/${index}/`,
+            url: `${process.env.REACT_APP_API_URL}/api/worklogs/${index}/`,
             headers: {
                 'Authorization': `Token ${authToken}`,
             },
@@ -69,7 +69,7 @@ function Worklog({
 
     const confirmDelete = () => {
         axios
-            .delete(`${process.env.REACT_APP_HOST}/api/worklogs/${index}/`, {
+            .delete(`${process.env.REACT_APP_API_URL}/api/worklogs/${index}/`, {
                 headers: {
                     Authorization: `Token ${authToken}`,
                 },

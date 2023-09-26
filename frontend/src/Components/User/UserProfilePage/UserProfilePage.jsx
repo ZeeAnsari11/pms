@@ -16,7 +16,7 @@ const UserProfilePage = () => {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const response = await axios.get(`${process.env.REACT_APP_HOST}/api/userprofile/`, {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/userprofile/`, {
                     headers: {"Authorization": `Token ${authToken}`}
                 });
                 setUserData(response.data);

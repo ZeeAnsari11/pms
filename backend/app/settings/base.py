@@ -138,8 +138,8 @@ CELERY_RESULT_BACKEND = os.environ.get("CELERY_BACKEND")
 
 
 CORS_ALLOWED_ORIGINS = [
-    "https://projex.phpstudios.com:3000",
-    "https://projex.phpstudios.com",
+    "https://projex.nexius.ai:3000",
+    "https://projex.nexius.ai",
     "http://localhost:3000",
     "http://127.0.0.1:3000",
 ]

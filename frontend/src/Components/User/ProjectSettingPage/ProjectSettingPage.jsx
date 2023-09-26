@@ -47,7 +47,7 @@ function ProjectSettingPage() {
 
         const fetchUsers = async () => {
             const response = await apiRequest
-                .get(`${process.env.REACT_APP_HOST}/api/users_list/`, {
+                .get(`${process.env.REACT_APP_API_URL}/api/users_list/`, {
                     headers: {
                         Authorization: `Token ${authToken}`,
                     },
@@ -88,7 +88,7 @@ function ProjectSettingPage() {
     let IconPath = projectData.icon
 
     if (IconPath != null) {
-        IconPath = `${process.env.REACT_APP_HOST}/${icon}`
+        IconPath = `${process.env.REACT_APP_API_URL}/${icon}`
     } else {
         IconPath = `/Images/NoImage.jpeg`
     }
@@ -199,7 +199,7 @@ function ProjectSettingPage() {
                                     item.iconUrl ?
                                         <div>
                                             <Avatar draggable={true} style={{background: "#10899e"}} alt={item.username}
-                                                    src={`${process.env.REACT_APP_HOST}/${item.iconUrl}`}/>{" "}
+                                                    src={`${process.env.REACT_APP_API_URL}/${item.iconUrl}`}/>{" "}
                                             {item.username}
                                         </div> :
                                         <div>
