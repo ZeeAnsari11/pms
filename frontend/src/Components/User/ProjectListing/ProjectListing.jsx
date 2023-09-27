@@ -85,7 +85,7 @@ const ProjectListing = () => {
                     setLoading(false);
                 })
                 .catch(error => {
-                    displayErrorMessage(`Error occurred while fetching data: ${error}`);
+                    displayErrorMessage(`Error occurred while fetching data : ${error}`);
                     setLoading(false);
                 });
         };

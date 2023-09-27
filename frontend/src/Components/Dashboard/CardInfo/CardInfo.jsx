@@ -19,16 +19,35 @@ import {CgOptions} from 'react-icons/cg'
 import {RxStopwatch} from 'react-icons/rx'
 import {TiTags} from "react-icons/ti";
 import {IoIosTimer} from 'react-icons/io'
-import axios from "axios";
 import * as CardInfoComponents from "./Style"
 import EstimateTimer from "../EstimateTimer/EstimateTimer";
 import tagRender from "../../../Shared/Components/tagRender";
 import {modules} from '../../../Shared/Const/ReactQuillToolbarOptions'
-import { Avatar, Select, Tooltip } from "antd";
+import {Avatar, Select, Tooltip} from "antd";
 import {LinkOutlined} from "@ant-design/icons";
+import {useDispatch, useSelector} from "react-redux";
+import {
+    fetchSelectedProjectAssignees, fetchSelectedProjectLabels, fetchSelectedProjectStatuses,
+    fetchSelectedProjectTypes,
+    getIssue,
+    updateIssue
+} from "../../../Store/Slice/issue/issueActions";
+import {useCurrentUserProfileData} from "../../../Store/Selector/Selector";
+import {displayErrorMessage, displaySuccessMessage} from "../../../Shared/notify";
+import {
+    createComment,
+    deleteComment,
+    fetchIssueComments,
+    updateComment
+} from "../../../Store/Slice/comment/commentAction";
+import {fetchIssueWorkLogs} from "../../../Store/Slice/worklog/worklogActions";
 
 function CardInfo(props) {
-    let authToken = localStorage.getItem('auth_token')
+    const dispatch = useDispatch();
+
+    const currentUserDatafromStore = useCurrentUserProfileData();
+
+    const {projectId} = useParams()
 
     const [isHovered, setIsHovered] = useState(false);
     const [showQuill, setShowQuill] = useState(false);
@@ -63,7 +82,7 @@ function CardInfo(props) {
 
     const [files, setFiles] = useState([]);
 
-    const { Option } = Select;
+    const {Option} = Select;
 
     const handleCopyToClipboard = () => {
         const currentUrl = window.location.href;
@@ -79,152 +98,92 @@ function CardInfo(props) {
         setSelectedLabels(labelKeys);
     };
 
-    const getComments = async () => {
-        try {
-            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/comments/?issue=${props.card?.id}`, {
-                headers: {
-                    Authorization: `Token ${authToken}`,
-                },
-            });
-            setComments(response.data)
-        } catch (error) {
-            console.log(error);
-            throw new Error('Failed to fetch comments');
-        }
-    };
-
-    const getWorklogs = async () => {
-        try {
-            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/worklogs/?issue=${props.card?.id}`, {
-                headers: {
-                    Authorization: `Token ${authToken}`,
-                },
-            });
-            setWorklogs(response.data)
-        } catch (error) {
-            console.log(error);
-            throw new Error('Failed to fetch comments');
-        }
-    };
-
-    useEffect(() => {
-        const fetchCurrentUserEmail = async () => {
-            try {
-                const response = await axios.get(`${process.env.REACT_APP_HOST}/api/auth/users/me/`, {
-                    headers: {"Authorization": `Token ${authToken}`}
-                });
-                setCurrentUserEmail(response.data);
-            } catch (error) {
-                console.error(error);
-            }
-        }
-        fetchCurrentUserEmail();
-    }, []);
-
-    useEffect(() => {
-        const fetchIssueData = async () => {
-            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/issues/${props.card?.id}`, {
-                headers: {
-                    Authorization: `Token ${authToken}`,
-                },
-            });
-            setIssuesData(response.data);
-        };
-        const fetchComments = async () => {
-            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/comments/?issue=${props.card?.id}`, {
-                headers: {
-                    Authorization: `Token ${authToken}`,
-                },
-            });
+    const getComments = () => {
+        dispatch(fetchIssueComments({issueId: props.card?.id})).unwrap().then((response) => {
             setComments(response.data);
-        };
-        const fetchWorklogs = async () => {
-            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/worklogs/?issue=${props.card?.id}`, {
-                headers: {
-                    Authorization: `Token ${authToken}`,
-                },
-            });
-            setWorklogs(response.data);
-        };
-
-        const fetchDependentUserOptions = async () => {
-            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/projects/${props.card.project}/assignees/`, {
-                headers: {
-                    Authorization: `Token ${authToken}`,
-                },
-            });
-            setUsers(response.data);
-        };
-
-
-        const fetchDependentProjectTypes = async () => {
-            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/project_type/?project=${props.card.project}`, {
-                headers: {
-                    Authorization: `Token ${authToken}`,
-                },
-            });
-            setIssueType(response.data);
-        };
-
-
-        const fetchDependentProjectStatuses = async () => {
-            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/project_status/?project=${props.card.project}`, {
-                headers: {
-                    Authorization: `Token ${authToken}`,
-                },
-            });
-            setIssueStatus(response.data);
-        };
-
-        const fetchDependentProjectLabels = async () => {
-            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/project_labels/?project=${projectId}`, {
-                headers: {
-                    Authorization: `Token ${authToken}`,
-                },
-            });
-            setIssueLabels(response.data);
-        };
-
-        const fetchCurrentUserDataFromUserList = async () => {
-            try {
-                const response = await axios.get(`${process.env.REACT_APP_HOST}/api/userprofile/?user__email__iexact=${currentUserEmail}`, {
-                    headers: {"Authorization": `Token ${authToken}`}
-                });
-                setCurrentUserData(response.data[0]);
-            } catch (error) {
-                console.error(error);
+        }).catch(
+            error => {
+                displayErrorMessage(error);
             }
-        }
-        fetchIssueData();
-        fetchDependentProjectLabels();
-        fetchDependentUserOptions();
-        fetchDependentProjectStatuses();
-        fetchDependentProjectTypes();
-        fetchCurrentUserDataFromUserList();
-        fetchComments();
-        fetchWorklogs();
+        );
+    };
 
-    }, []);
+    const getWorklogs = () => {
+        dispatch(fetchIssueWorkLogs({issueId: props.card?.id})).unwrap().then((response) => {
+            setWorklogs(response.data);
+        }).catch(
+            error => {
+                displayErrorMessage(error);
+            }
+        );
+    };
+
+    useEffect(() => {
+        setCurrentUserData(currentUserDatafromStore?.user);
+        setCurrentUserEmail(currentUserDatafromStore?.user?.email);
+    }, [currentUserDatafromStore]);
+
+    useEffect(() => {
+
+        dispatch(getIssue({issueId: props.card?.id})).unwrap().then((response) => {
+            setIssuesData(response.data);
+        }).catch(
+            error => {
+                displayErrorMessage(error);
+            }
+        );
+
+        dispatch(fetchIssueComments({issueId: props.card?.id})).unwrap().then((response) => {
+            setComments(response.data);
+        }).catch(
+            error => {
+                displayErrorMessage(error);
+            }
+        );
+
+        dispatch(fetchIssueWorkLogs({issueId: props.card?.id})).unwrap().then((response) => {
+            setWorklogs(response.data);
+        }).catch(
+            error => {
+                displayErrorMessage(error);
+            }
+        );
+
+        dispatch(fetchSelectedProjectAssignees({selectedProject: props.card.project})).unwrap().then((response) => {
+            setUsers(response.data);
+        }).catch(
+            error => {
+                displayErrorMessage(error);
+            }
+        );
+
+        dispatch(fetchSelectedProjectTypes({selectedProject: props.card.project})).unwrap().then((response) => {
+            setIssueType(response.data);
+        }).catch(
+            error => {
+                displayErrorMessage(error);
+            }
+        );
+
+        dispatch(fetchSelectedProjectStatuses({selectedProject: props.card.project})).unwrap().then((response) => {
+            setIssueStatus(response.data);
+        }).catch(
+            error => {
+                displayErrorMessage(error);
+            }
+        );
+
+        dispatch(fetchSelectedProjectLabels({selectedProject: props.card.project})).unwrap().then((response) => {
+            setIssueLabels(response.data);
+        }).catch(
+            error => {
+                displayErrorMessage(error);
+            }
+        );
+
+    }, [props.card.id, props.card.project]);
     console.log("currentUserEmail:", currentUserEmail)
     console.log("selectedLabels:", selectedLabels)
-
-
-    useEffect(() => {
-        if (currentUserEmail) {
-            const fetchCurrentUserDataFromUserList = async () => {
-                try {
-                    const response = await axios.get(`${process.env.REACT_APP_HOST}/api/userprofile/?user__email__iexact=${currentUserEmail.email}`, {
-                        headers: {"Authorization": `Token ${authToken}`}
-                    });
-                    setCurrentUserData(response.data[0]);
-                } catch (error) {
-                    console.error(error);
-                }
-            }
-            fetchCurrentUserDataFromUserList();
-        }
-    }, [currentUserEmail]);
-
 
     useEffect(() => {
         if (IssuesData?.id) {
@@ -238,8 +197,6 @@ function CardInfo(props) {
         }
     }, [IssuesData]);
 
-    useEffect(() => {
-    }, [])
     const selectedLabelsOptions = selectedLabels.map((label) => ({
         label: label.label,
         value: label.value,
@@ -265,13 +222,7 @@ function CardInfo(props) {
             issue: props.card?.id,
             user: currentUserData?.id,
         };
-
-        axios
-            .post(`${process.env.REACT_APP_HOST}/api/comments/`, commentData, {
-                headers: {
-                    Authorization: `Token ${authToken}`,
-                },
-            })
+        dispatch(createComment({formData: commentData})).unwrap()
             .then((response) => {
                 console.log(response.data);
                 setComments([...comments, response.data]);
@@ -280,7 +231,7 @@ function CardInfo(props) {
                 setShowQuill(false);
             })
             .catch((error) => {
-                // Handle error
+                displayErrorMessage(error);
                 console.log(error);
             });
     };
@@ -296,20 +247,15 @@ function CardInfo(props) {
 
 
     const handleCommentDelete = (index) => {
-        axios
-            .delete(`${process.env.REACT_APP_HOST}/api/comments/${index}/`, {
-                headers: {
-                    Authorization: `Token ${authToken}`,
-                },
-            })
+        dispatch(deleteComment({commentId: index})).unwrap()
             .then((response) => {
-                // Comment deleted successfully, update the state or perform any necessary actions
                 setComments((prevComments) =>
                     prevComments.filter((_, i) => i !== index)
                 );
                 getComments();
             })
             .catch((error) => {
+                displayErrorMessage(error);
                 console.log(error);
             });
     };
@@ -320,21 +266,9 @@ function CardInfo(props) {
             body: comment,
             issue: props.card?.id,
         };
-
-        axios
-            .patch(
-                `${process.env.REACT_APP_HOST}/api/comments/${index}/`,
-                commentData,
-                {
-                    headers: {
-                        Authorization: `Token ${authToken}`,
-                    },
-                }
-            )
+        dispatch(updateComment({commentId: index, formData: commentData})).unwrap()
             .then((response) => {
-                // Handle successful response
                 console.log(response.data);
-
                 const updatedComments = [...comments];
                 updatedComments[index] = response.data?.body; // Replace the comment at the specified index
                 setComments(
@@ -343,6 +277,7 @@ function CardInfo(props) {
                 getComments();
             })
             .catch((error) => {
+                displayErrorMessage(error);
                 console.log(error);
             });
     };
@@ -445,7 +380,6 @@ function CardInfo(props) {
     }, [values])
 
     const handleCloseModalSubmit = () => {
-        props.onClose();
 
         const formData = new FormData();
         formData.append("type", selectedIssueType);
@@ -463,26 +397,19 @@ function CardInfo(props) {
             formData.append("label", label);
         });
 
-
-        axios({
-            method: 'patch',
-            url: `${process.env.REACT_APP_HOST}/api/issues/${props.card.id}/`,
-            headers: {
-                'Authorization': `Token ${authToken}`,
-            },
-            data: formData
-        })
+        dispatch(updateIssue({formData: formData, issueId: props.card.id})).unwrap()
             .then(response => {
-                // handle the response
+                props.onClose();
                 console.log(response.data);
+                displaySuccessMessage(values.title + " Updated Successfully");
             })
             .catch(error => {
-                // handle the error
+                props.onClose();
+                displayErrorMessage(error);
                 console.log(error);
             });
 
     }
-    const {projectId} = useParams()
 
 
     return (
@@ -719,21 +646,23 @@ function CardInfo(props) {
                             placeholder="Please select User"
                             optionLabelProp="label"
                             value={selectedAssignee}
-                            style={{ width: "100%"}}
+                            style={{width: "100%"}}
                         >
-                        {Useroptions.map((item) => (
-                            <Option key={item.id} value={item.id} label={item.username}>
-                                {
-                                    item.iconUrl ?
-                                        <div>
-                                            <Avatar draggable={true} style={{ background: "#10899e" }} alt={item.username} src={`${process.env.REACT_APP_HOST}/${item.iconUrl}`} />{" "}
-                                            {item.username}
-                                        </div> :
-                                        <div>
-                                            <Avatar> {item.username}</Avatar> {" "}{item.username}
-                                        </div>
-                                }
-                            </Option>
+                            {Useroptions.map((item) => (
+                                <Option key={item.id} value={item.id} label={item.username}>
+                                    {
+                                        item.iconUrl ?
+                                            <div>
+                                                <Avatar draggable={true} style={{background: "#10899e"}}
+                                                        alt={item.username}
+                                                        src={`${process.env.REACT_APP_DOMAIN}/${item.iconUrl}`}/>{" "}
+                                                {item.username}
+                                            </div> :
+                                            <div>
+                                                <Avatar> {item.username}</Avatar> {" "}{item.username}
+                                            </div>
+                                    }
+                                </Option>
                             ))}
                         </Select>
                     </CardInfoComponents.TaskList>
@@ -753,21 +682,23 @@ function CardInfo(props) {
                             placeholder="Please select User"
                             optionLabelProp="label"
                             value={selectedReporter}
-                            style={{ width: "100%"}}
+                            style={{width: "100%"}}
                         >
-                        {Useroptions.map((item) => (
-                            <Option key={item.id} value={item.id} label={item.username}>
-                                {
-                                    item.iconUrl ?
-                                        <div>
-                                            <Avatar draggable={true} style={{ background: "#10899e" }} alt={item.username} src={`${process.env.REACT_APP_HOST}/${item.iconUrl}`} />{" "}
-                                            {item.username}
-                                        </div> :
-                                        <div>
-                                            <Avatar> {item.username}</Avatar> {" "}{item.username}
-                                        </div>
-                                }
-                            </Option>
+                            {Useroptions.map((item) => (
+                                <Option key={item.id} value={item.id} label={item.username}>
+                                    {
+                                        item.iconUrl ?
+                                            <div>
+                                                <Avatar draggable={true} style={{background: "#10899e"}}
+                                                        alt={item.username}
+                                                        src={`${process.env.REACT_APP_DOMAIN}/${item.iconUrl}`}/>{" "}
+                                                {item.username}
+                                            </div> :
+                                            <div>
+                                                <Avatar> {item.username}</Avatar> {" "}{item.username}
+                                            </div>
+                                    }
+                                </Option>
                             ))}
                         </Select>
                     </CardInfoComponents.TaskList>
@@ -802,7 +733,9 @@ function CardInfo(props) {
                             defaultValue={DefaultIssueLabel}
                             options={labelOptions}
                             optionFilterProp="label"
-                            onChange={(value,key)=> {handleLabelChange(key)}}
+                            onChange={(value, key) => {
+                                handleLabelChange(key)
+                            }}
                             placeholder="Select Labels"
                         />
                     </CardInfoComponents.TaskList>
@@ -814,8 +747,8 @@ function CardInfo(props) {
                     </CardInfoComponents.CardInfoBoxTitle>
                     <CardInfoComponents.TaskList>
                         <EstimateTimer defaultValue={props.card?.estimate}
-                                        onHoursChange={(value) => setEstimateHours(value)}/>
-                        </CardInfoComponents.TaskList>
+                                       onHoursChange={(value) => setEstimateHours(value)}/>
+                    </CardInfoComponents.TaskList>
                 </CardInfoComponents.CardInfoBox>
                 <CardInfoComponents.CardInfoBox>
                     <CardInfoComponents.CardInfoBoxTitle>
@@ -823,7 +756,8 @@ function CardInfo(props) {
                         Time Tracking
                     </CardInfoComponents.CardInfoBoxTitle>
                     <div>
-                        <TrackingField OriginalEstimate={props.card?.estimate}/>
+                        <TrackingField onCreate={() => getWorklogs()}
+                                       OriginalEstimate={props.card?.estimate}/>
                     </div>
                 </CardInfoComponents.CardInfoBox>
 

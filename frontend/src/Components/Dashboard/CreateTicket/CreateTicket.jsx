@@ -7,12 +7,21 @@ import ReactQuill from "react-quill";
 import {FiUser, FiUsers} from "react-icons/fi";
 import {File} from "react-feather";
 import FileUpload from "../FileAttachement/FileUpload";
-import axios from "axios";
 import EstimateTimer from "../EstimateTimer/EstimateTimer";
 import * as CreateTicketComponents from "./Style"
 import tagRender from "../../../Shared/Components/tagRender";
-import { Avatar, Select } from "antd";
+import {Avatar, Select} from "antd";
 import {modules} from "../../../Shared/Const/ReactQuillToolbarOptions";
+import {useDispatch} from "react-redux";
+import {loadProjects} from "../../../Store/Slice/project/projectActions";
+import {displayErrorMessage, displayInfoMessage, displaySuccessMessage} from "../../../Shared/notify";
+import {loadUser} from "../../../Store/Slice/auth/authActions";
+import {
+    createIssue,
+    fetchSelectedProjectAssignees,
+    fetchSelectedProjectLabels, fetchSelectedProjectStatuses,
+    fetchSelectedProjectTypes
+} from "../../../Store/Slice/issue/issueActions";
 
 
 const LinkedIssue1 = [
@@ -34,12 +43,13 @@ const LinkedIssue2 = [
 
 
 const MyModalComponent = ({onClose}) => {
+    const dispatch = useDispatch()
+
     const [isHovered, setIsHovered] = useState(false);
 
     const [summary, setSummary] = useState("");
     const [name, setName] = useState("");
     const [description, setDescription] = useState('');
-    const [values, setValues] = useState("");
 
     const [IssueType, setIssueType] = useState('');
     const [Status, setStatus] = useState('');
@@ -63,8 +73,7 @@ const MyModalComponent = ({onClose}) => {
     const [project, setProject] = useState('');
 
 
-    let authToken = localStorage.getItem('auth_token')
-    const { Option } = Select;
+    const {Option} = Select;
 
     const handleFilesChange = (newFiles) => {
         setFiles(newFiles);
@@ -87,47 +96,39 @@ const MyModalComponent = ({onClose}) => {
 
 
     useEffect(() => {
-        const fetchDependentProjectTypes = async () => {
-            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/project_type/?project=${selectedProject}`, {
-                headers: {
-                    Authorization: `Token ${authToken}`,
-                },
-            });
-            setIssueType(response.data);
-        };
-
-
-        const fetchDependentProjectStatuses = async () => {
-            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/project_status/?project=${selectedProject}`, {
-                headers: {
-                    Authorization: `Token ${authToken}`,
-                },
-            });
-            setStatus(response.data);
-        };
-
-        const fetchDependentProjectLabels = async () => {
-            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/project_labels/?project=${selectedProject}`, {
-                headers: {
-                    Authorization: `Token ${authToken}`,
-                },
-            });
-            setLabels(response.data);
-        };
-
-        const fetchDependentUserOptions = async () => {
-            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/projects/${selectedProject}/assignees/`, {
-                headers: {
-                    Authorization: `Token ${authToken}`,
-                },
-            });
-            setUsers(response.data);
-        };
-
-        fetchDependentUserOptions();
-        fetchDependentProjectStatuses();
-        fetchDependentProjectTypes();
-        fetchDependentProjectLabels();
+        if (selectedProject === '') {
+            displayInfoMessage("Please Select the Project for relevant Type, Status ,Labels, Reporter and Assignees Field");
+        }
+        dispatch(fetchSelectedProjectTypes({selectedProject: selectedProject})).unwrap().then((list) => {
+            setIssueType(list.data);
+        }).catch(
+            error => {
+                displayErrorMessage(error);
+            }
+        );
+        dispatch(fetchSelectedProjectStatuses({selectedProject: selectedProject})).unwrap().then((list) => {
+            setStatus(list.data);
+        }).catch(
+            error => {
+                displayErrorMessage(error);
+            }
+        );
+        dispatch(fetchSelectedProjectLabels({selectedProject: selectedProject})).unwrap().then((list) => {
+            setLabels(list.data);
+        }).catch(
+            error => {
+                displayErrorMessage(error);
+            }
+        );
+        if (selectedProject) {
+            dispatch(fetchSelectedProjectAssignees({selectedProject: selectedProject})).unwrap().then((list) => {
+                setUsers(list.data);
+            }).catch(
+                error => {
+                    displayErrorMessage(error);
+                }
+            );
+        }
     }, [selectedProject]);
     console.log("DependentProjectTypes:", IssueType)
 
@@ -145,8 +146,8 @@ const MyModalComponent = ({onClose}) => {
 
     const handleLabelChange = (values) => {
         const labelKeys = values.map((value) => {
-                return parseInt( value.key, 10 );
-            });
+            return parseInt(value.key, 10);
+        });
         setSelectedLabels(labelKeys);
     };
     console.log("selectedLabels", selectedLabels)
@@ -163,26 +164,27 @@ const MyModalComponent = ({onClose}) => {
 
 
     useEffect(() => {
+
         const fetchProject = async () => {
-            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/projects/`, {
-                headers: {
-                    Authorization: `Token ${authToken}`,
-                },
-            });
-            setProject(response.data);
+            await dispatch(loadProjects()).unwrap()
+                .then(response => {
+                    setProject(response.data);
+                })
+                .catch(error => {
+                    displayErrorMessage(`An error occurred while fetching Data. ${error}`)
+                });
         };
 
         const fetchCurrentUserData = async () => {
-            try {
-                const response = await axios.get(`${process.env.REACT_APP_HOST}/api/userprofile/`, {
-                    headers: {"Authorization": `Token ${authToken}`}
+            await dispatch(loadUser()).unwrap()
+                .then(response => {
+                    setCurrentUserData(response.data);
+                    setCurrentUserId(response.data.id)
+                })
+                .catch(error => {
+                    displayErrorMessage(error);
                 });
-                setCurrentUserData(response.data[0]);
-                setCurrentUserId(response.data[0].id)
 
-            } catch (error) {
-                console.error(error);
-            }
         }
 
         fetchProject();
@@ -285,19 +287,15 @@ const MyModalComponent = ({onClose}) => {
         formData.append("created_by", currentUserId);
         formData.append("updated_by", currentUserId);
 
-        fetch(`${process.env.REACT_APP_HOST}/api/issues/`, {
-            method: "POST",
-            headers: {Authorization: `Token ${authToken}`},
-            body: formData,
-        })
+        dispatch(createIssue({formData: formData})).unwrap()
             .then((response) => {
-                // handle the response
                 console.log(response);
+                displaySuccessMessage(name + " Ticket Created Successfully");
                 onClose();
                 console.log(formData);
             })
             .catch((error) => {
-                // handle the error
+                displayErrorMessage(error);
                 console.log(error);
             });
     }
@@ -430,22 +428,24 @@ const MyModalComponent = ({onClose}) => {
                             </CreateTicketComponents.CardInfoBoxTitle>
                             <CreateTicketComponents.TaskList>
                                 <Select
-                                        showArrow
-                                        filterOption
-                                        onChange={(value) => setSelectedUsers(parseInt(value))}
-                                        showSearch
-                                        optionFilterProp="label"
-                                        placeholder="Please select User"
-                                        optionLabelProp="label"
-                                        value={selectedUsers}
-                                        style={{ width: "100%" }}
-                                    >
+                                    showArrow
+                                    filterOption
+                                    onChange={(value) => setSelectedUsers(parseInt(value))}
+                                    showSearch
+                                    optionFilterProp="label"
+                                    placeholder="Please select User"
+                                    optionLabelProp="label"
+                                    value={selectedUsers}
+                                    style={{width: "100%"}}
+                                >
                                     {Useroptions.map((item) => (
                                         <Option key={item.id} value={item.id} label={item.username}>
                                             {
                                                 item.iconUrl ?
                                                     <div>
-                                                        <Avatar draggable={true} style={{ background: "#10899e" }} alt={item.username} src={`${process.env.REACT_APP_HOST}/${item.iconUrl}`} />{" "}
+                                                        <Avatar draggable={true} style={{background: "#10899e"}}
+                                                                alt={item.username}
+                                                                src={`${process.env.REACT_APP_DOMAIN}/${item.iconUrl}`}/>{" "}
                                                         {item.username}
                                                     </div> :
                                                     <div>
@@ -453,8 +453,8 @@ const MyModalComponent = ({onClose}) => {
                                                     </div>
                                             }
                                         </Option>
-                                        ))}
-                                    </Select>
+                                    ))}
+                                </Select>
                             </CreateTicketComponents.TaskList>
                         </CreateTicketComponents.CardInfoBox>
 
@@ -464,16 +464,18 @@ const MyModalComponent = ({onClose}) => {
                                 Labels
                             </CreateTicketComponents.CardInfoBoxTitle>
                             <Select
-                                    mode="multiple"
-                                    showArrow
-                                    tagRender={tagRender}
-                                    style={{
-                                        width: '100%',
-                                    }}
-                                    options={labelOptions}
-                                    optionFilterProp="label"
-                                    onChange={(value,key)=> {handleLabelChange(key)}}
-                                    />
+                                mode="multiple"
+                                showArrow
+                                tagRender={tagRender}
+                                style={{
+                                    width: '100%',
+                                }}
+                                options={labelOptions}
+                                optionFilterProp="label"
+                                onChange={(value, key) => {
+                                    handleLabelChange(key)
+                                }}
+                            />
                         </CreateTicketComponents.CardInfoBox>
 
                         <CreateTicketComponents.CardInfoBox>
@@ -483,22 +485,24 @@ const MyModalComponent = ({onClose}) => {
                             </CreateTicketComponents.CardInfoBoxTitle>
                             <CreateTicketComponents.TaskList>
                                 <Select
-                                        showArrow
-                                        filterOption
-                                        onChange={(value) =>  setSelectedReporter(parseInt(value))}
-                                        showSearch
-                                        optionFilterProp="label"
-                                        placeholder="Please select User"
-                                        optionLabelProp="label"
-                                        value={selectedReporter}
-                                        style={{ width: "100%" }}
-                                    >
+                                    showArrow
+                                    filterOption
+                                    onChange={(value) => setSelectedReporter(parseInt(value))}
+                                    showSearch
+                                    optionFilterProp="label"
+                                    placeholder="Please select User"
+                                    optionLabelProp="label"
+                                    value={selectedReporter}
+                                    style={{width: "100%"}}
+                                >
                                     {Reporteroptions.map((item) => (
                                         <Option key={item.id} value={item.id} label={item.username}>
                                             {
                                                 item.iconUrl ?
                                                     <div>
-                                                        <Avatar draggable={true} style={{ background: "#10899e" }} alt={item.username} src={`${process.env.REACT_APP_HOST}/${item.iconUrl}`} />{" "}
+                                                        <Avatar draggable={true} style={{background: "#10899e"}}
+                                                                alt={item.username}
+                                                                src={`${process.env.REACT_APP_DOMAIN}/${item.iconUrl}`}/>{" "}
                                                         {item.username}
                                                     </div> :
                                                     <div>
@@ -506,8 +510,8 @@ const MyModalComponent = ({onClose}) => {
                                                     </div>
                                             }
                                         </Option>
-                                        ))}
-                                    </Select>
+                                    ))}
+                                </Select>
                             </CreateTicketComponents.TaskList>
                         </CreateTicketComponents.CardInfoBox>
 
