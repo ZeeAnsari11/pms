@@ -113,7 +113,7 @@ function Card(props) {
                         size={35}
                         round={true}
                         color="#DE350B"
-                        src={`${process.env.REACT_APP_HOST}/${props.Card?.assignee?.userprofile?.image}`}
+                        src={`${process.env.REACT_APP_DOMAIN}/${props.Card?.assignee?.userprofile?.image}`}
                         title={`Assignee: ${props.Card?.assignee?.username}`}
                         style={{marginRight: '10px'}}
                     />

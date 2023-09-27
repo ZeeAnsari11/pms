@@ -1,20 +1,17 @@
-import {createAsyncThunk} from '@reduxjs/toolkit'
-import apiRequest from '../../../Utils/apiRequest'
-import {StatusCodes} from "http-status-codes";
+import {createAsyncThunk} from "@reduxjs/toolkit";
+import apiRequest from "../../../Utils/apiRequest";
 
-
-export const loadProjects = createAsyncThunk(
-    'project/load',
-    async (_, {rejectWithValue}) => {
+export const loadProjectIssues = createAsyncThunk(
+    'issue/load_project_issues',
+    async ({projectId}, {rejectWithValue}) => {
         try {
             const config = {
                 headers: {
-                    'Content-Type': 'application/json',
                     'Authorization': `JWT ${localStorage.getItem('access')}`
                 },
             }
             return await apiRequest.get(
-                `/projects/`,
+                `/projects/${projectId}/issues/`,
                 config
             )
         } catch (error) {
@@ -29,38 +26,9 @@ export const loadProjects = createAsyncThunk(
     }
 )
 
-
-export const createProject = createAsyncThunk(
-    'project/create',
-    async ({formData}, {rejectWithValue}) => {
-        try {
-            const config = {
-                headers: {
-                    'Authorization': `JWT ${localStorage.getItem('access')}`
-                },
-            }
-            const response = await apiRequest.post(
-                `/projects/`,
-                formData,
-                config
-            )
-            return response;
-        } catch (error) {
-            if (error.response && error.response.data.message) {
-                return rejectWithValue(error.response.data.message)
-            } else if (error.message) {
-                return rejectWithValue(error.message)
-            } else {
-                return rejectWithValue(error)
-            }
-        }
-    }
-)
-
-
-export const getProject = createAsyncThunk(
-    'project/get_project',
-    async ({projectId}, {rejectWithValue}) => {
+export const getIssue = createAsyncThunk(
+    'issue/get_issue',
+    async ({issueId}, {rejectWithValue}) => {
         try {
             const config = {
                 headers: {
@@ -68,13 +36,13 @@ export const getProject = createAsyncThunk(
                 },
             }
             const response = await apiRequest.get(
-                `/projects/${projectId}/`,
+                `/issues/${issueId}/`,
                 config
             )
             return response;
         } catch (error) {
-            if (error.response && error.response.data.message) {
-                return rejectWithValue(error.response.data.message)
+            if (error.response && error.response.data) {
+                return rejectWithValue(error.response.data.error)
             } else if (error.message) {
                 return rejectWithValue(error.message)
             } else {
@@ -84,93 +52,9 @@ export const getProject = createAsyncThunk(
     }
 )
 
-
-export const updateProject = createAsyncThunk(
-    'project/update_project',
-    async ({projectId, formData}, {rejectWithValue}) => {
-        try {
-            const config = {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                    'Authorization': `JWT ${localStorage.getItem('access')}`
-                },
-            }
-            const response = await apiRequest.patch(
-                `/projects/${projectId}/`,
-                formData,
-                config
-            );
-            return response;
-        } catch (error) {
-            if (error.response && error.response.data.message) {
-                return rejectWithValue(error.response.data.message)
-            } else if (error.message) {
-                return rejectWithValue(error.message)
-            } else {
-                return rejectWithValue(error)
-            }
-        }
-    }
-)
-
-export const deleteProject = createAsyncThunk(
-    'project/delete',
-    async ({projectId}, {rejectWithValue}) => {
-        try {
-            const config = {
-                headers: {
-                    'Authorization': `JWT ${localStorage.getItem('access')}`
-                },
-            }
-            const response = await apiRequest.delete(
-                `/projects/${projectId}/`,
-                config
-            );
-            return response;
-        } catch (error) {
-            if (error.response && error.response.data.message) {
-                return rejectWithValue(error.response.data.message)
-            } else if (error.message) {
-                return rejectWithValue(error.message)
-            } else {
-                return rejectWithValue(error)
-            }
-        }
-    }
-)
-
-export const verifyUniqueKey = createAsyncThunk(
-    'project/validate_unique_key',
-    async ({text}, {rejectWithValue}) => {
-        try {
-            const config = {
-                headers: {
-                    'Authorization': `JWT ${localStorage.getItem('access')}`
-                },
-                params: {
-                    slug_name: text
-                }
-            }
-            return await apiRequest.get(
-                `/validate_slug/`,
-                config
-            )
-        } catch (error) {
-            if (error.response && error.response.data.message) {
-                return rejectWithValue(error.response.data.message)
-            } else if (error.message) {
-                return rejectWithValue(error.message)
-            } else {
-                return rejectWithValue(error)
-            }
-        }
-    }
-)
-
-
-export const generateUniqueSlug = createAsyncThunk(
-    'project/generate_unique_slug',
-    async ({text}, {rejectWithValue}) => {
+export const createIssue = createAsyncThunk(
+    'issue/create',
+    async ({formData}, {rejectWithValue}) => {
         try {
             const config = {
                 headers: {
@@ -178,8 +62,34 @@ export const generateUniqueSlug = createAsyncThunk(
                 },
             }
             return await apiRequest.post(
-                `/validate_slug/`,
-                {project_name: text},
+                `/issues/`,
+                formData,
+                config
+            )
+        } catch (error) {
+            if (error.response && error.response.data.message) {
+                return rejectWithValue(error.response.data.message)
+            } else if (error.message) {
+                return rejectWithValue(error.message)
+            } else {
+                return rejectWithValue(error)
+            }
+        }
+    }
+)
+
+export const updateIssue = createAsyncThunk(
+    'issue/update',
+    async ({formData, issueId}, {rejectWithValue}) => {
+        try {
+            const config = {
+                headers: {
+                    'Authorization': `JWT ${localStorage.getItem('access')}`
+                },
+            }
+            return await apiRequest.patch(
+                `/issues/${issueId}/`,
+                formData,
                 config
             )
         } catch (error) {
@@ -195,4 +105,141 @@ export const generateUniqueSlug = createAsyncThunk(
 )
 
 
+export const deleteIssue = createAsyncThunk(
+    'issue/delete',
+    async ({projectId, issueId}, {rejectWithValue}) => {
+        try {
+            const config = {
+                headers: {
+                    'Authorization': `JWT ${localStorage.getItem('access')}`
+                },
+            }
+            const response = await apiRequest.delete(
+                `/projects/${projectId}/issues/${issueId}/`,
+                config
+            );
+            return response;
+        } catch (error) {
+            if (error.response && error.response.data.message) {
+                return rejectWithValue(error.response.data.message)
+            } else if (error.message) {
+                return rejectWithValue(error.message)
+            } else {
+                return rejectWithValue(error)
+            }
+        }
+    }
+)
 
+
+export const fetchSelectedProjectTypes = createAsyncThunk(
+    'issue/fetch_selected_project_types',
+    async ({selectedProject}, {rejectWithValue}) => {
+        try {
+            const config = {
+                headers: {
+                    'Authorization': `JWT ${localStorage.getItem('access')}`
+                },
+                params: {
+                    project: selectedProject
+                }
+            }
+            return await apiRequest.get(
+                `/project_type/`,
+                config
+            )
+        } catch (error) {
+            if (error.response && error.response.data.message) {
+                return rejectWithValue(error.response.data.message)
+            } else if (error.message) {
+                return rejectWithValue(error.message)
+            } else {
+                return rejectWithValue(error)
+            }
+        }
+    }
+)
+
+
+export const fetchSelectedProjectStatuses = createAsyncThunk(
+    'issue/fetch_selected_project_statuses',
+    async ({selectedProject}, {rejectWithValue}) => {
+        try {
+            const config = {
+                headers: {
+                    'Authorization': `JWT ${localStorage.getItem('access')}`
+                },
+                params: {
+                    project: selectedProject
+                }
+            }
+            return await apiRequest.get(
+                `/project_status/`,
+                config
+            )
+        } catch (error) {
+            if (error.response && error.response.data.message) {
+                return rejectWithValue(error.response.data.message)
+            } else if (error.message) {
+                return rejectWithValue(error.message)
+            } else {
+                return rejectWithValue(error)
+            }
+        }
+    }
+)
+
+
+export const fetchSelectedProjectLabels = createAsyncThunk(
+    'issue/fetch_selected_project_labels',
+    async ({selectedProject}, {rejectWithValue}) => {
+        try {
+            const config = {
+                headers: {
+                    'Authorization': `JWT ${localStorage.getItem('access')}`
+                },
+                params: {
+                    project: selectedProject
+                }
+            }
+            return await apiRequest.get(
+                `/project_labels/`,
+                config
+            )
+        } catch (error) {
+            if (error.response && error.response.data.message) {
+                return rejectWithValue(error.response.data.message)
+            } else if (error.message) {
+                return rejectWithValue(error.message)
+            } else {
+                return rejectWithValue(error)
+            }
+        }
+    }
+)
+
+
+export const fetchSelectedProjectAssignees = createAsyncThunk(
+    'issue/fetch_selected_project_assignees',
+    async ({selectedProject}, {rejectWithValue}) => {
+        try {
+            const config = {
+                headers: {
+                    'Authorization': `JWT ${localStorage.getItem('access')}`
+                },
+            }
+            return await apiRequest.get(
+                `/projects/${selectedProject}/assignees/`,
+                config
+            )
+        } catch (error) {
+            if (error.response && error.response.data.message) {
+                return rejectWithValue(error.response.data.message)
+            } else if (error.message) {
+                return rejectWithValue(error.message)
+            } else {
+                return rejectWithValue(error)
+            }
+        }
+    }
+)

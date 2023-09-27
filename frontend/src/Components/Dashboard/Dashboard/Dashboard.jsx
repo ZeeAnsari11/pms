@@ -5,12 +5,20 @@ import {displayErrorMessage, displaySuccessMessage} from "../../../Shared/notify
 import ProjectSidebar from '../Sidebar/ProjectSidebar';
 import NavBar from "../Navbar/index";
 import {useParams} from 'react-router-dom';
-import axios from "axios";
 import * as DashboardComponents from "./Style"
 import Skeleton from './Skeleton';
+import {useDispatch} from "react-redux";
+import {useSelector} from "react-redux";
 
+import {
+    deleteIssue,
+    fetchSelectedProjectStatuses,
+    loadProjectIssues
+} from "../../../Store/Slice/issue/issueActions";
 
 function Dashboard(props) {
+    const dispatch = useDispatch()
+    const loadIssuesData = useSelector((state) => state.issue.currentIssueData);
 
     const [issuesData, setIssuesData] = useState({});
     const [issuesStatues, setIssuesStatues] = useState({});
@@ -20,42 +28,37 @@ function Dashboard(props) {
 
     const {projectId} = useParams()
 
-    let authToken = localStorage.getItem('auth_token')
-    const deleteIssue = (issueId) => {
-        axios
-            .delete(`${process.env.REACT_APP_HOST}/api/projects/${projectId}/issues/${issueId}/`, {
-                headers: {Authorization: `Token ${authToken}`},
-            })
+    const removeIssue = (issueId) => {
+        dispatch(deleteIssue({projectId: projectId, issueId: issueId})).unwrap()
             .then(response => {
                 displaySuccessMessage(`Successfully delete the task.`)
             })
             .catch(error => {
-                displayErrorMessage(`An error occurred while deleting the task. Please try again.`)
+                displayErrorMessage(`An error occurred while deleting the task. ${error}`)
             })
     };
-
 
     const fetchData = async () => {
         try {
             setLoading(true);
-            const projectIssuesPromise = axios.get(`${process.env.REACT_APP_HOST}/api/projects/${projectId}/issues`, {
-                headers: {
-                    Authorization: `Token ${authToken}`,
-                },
-            });
-
-            const projectIssuesStatusesPromise = axios.get(`${process.env.REACT_APP_HOST}/api/project_status`, {
-                params: {project: projectId},
-                headers: {Authorization: `Token ${authToken}`},
-            });
-
-            const [projectIssuesResponse, projectIssuesStatusesResponse] = await Promise.all([
-                projectIssuesPromise,
-                projectIssuesStatusesPromise,
-            ]);
-
-            setIssuesData(projectIssuesResponse.data);
-            setIssuesStatues(projectIssuesStatusesResponse.data);
+            dispatch(loadProjectIssues({projectId: projectId})).unwrap()
+                .then((response) => {
+                    setIssuesData(response.data);
+                })
+                .catch(
+                    error => {
+                        displayErrorMessage(error);
+                    }
+                );
+            dispatch(fetchSelectedProjectStatuses({selectedProject: projectId})).unwrap()
+                .then((response) => {
+                    setIssuesStatues(response.data);
+                })
+                .catch(
+                    error => {
+                        displayErrorMessage(error);
+                    }
+                );
         } catch (error) {
             displayErrorMessage(error);
             setLoading(false);
@@ -66,6 +69,19 @@ function Dashboard(props) {
         fetchData();
     }, []);
 
+    useEffect(() => {
+        dispatch(loadProjectIssues({projectId: projectId})).unwrap()
+            .then((response) => {
+                setIssuesData(response.data);
+            })
+            .catch(
+                error => {
+                    displayErrorMessage(error);
+                }
+            );
+    }, [loadIssuesData.updated_at]);
+
+    console.log("loadIssuesData.updated_at", loadIssuesData.updated_at)
 
     useEffect(() => {
         const queryParams = new URLSearchParams(window.location.search);
@@ -194,7 +210,7 @@ function Dashboard(props) {
 
         const tempBoards = [...boards];
         tempBoards[bIndex].cards.splice(cIndex, 1);
-        deleteIssue(cid)
+        removeIssue(cid)
         setboards(tempBoards);
     };
 
