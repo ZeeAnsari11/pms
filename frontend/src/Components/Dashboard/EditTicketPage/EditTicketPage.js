@@ -536,19 +536,26 @@ function EditTicketPage({props}) {
                                         </CardInfoComponents.FormContainer>
 
                                         <ul>
-                                            {comments.map((comment, index) => (
-                                                <Comment
-                                                    key={index}
-                                                    comment={comment?.body}
-                                                    created_at={comment?.created_at}
-                                                    index={comment?.id}
-                                                    created_by={comment?.user}
-                                                    commentUserId={comment?.user?.id}
-                                                    currentUser={currentUserData}
-                                                    onDelete={handleCommentDelete}
-                                                    onEdit={handleCommentEdit}
-                                                />
-                                            ))}
+                                            {
+                                                comments
+                                                    .slice()
+                                                    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+                                                    .map((comment, index) => (
+                                                        <Comment
+                                                            key={index}
+                                                            comment={comment?.body}
+                                                            created_at={comment?.created_at}
+                                                            updated_at={comment?.updated_at}
+                                                            index={comment?.id}
+                                                            created_by={comment?.user}
+                                                            updated_by={comment?.updated_by}
+                                                            commentUserId={comment?.user?.id}
+                                                            currentUser={currentUserData}
+                                                            onDelete={handleCommentDelete}
+                                                            onEdit={handleCommentEdit}
+                                                        />
+                                                    ))
+                                            }
                                         </ul>
                                     </EditTicketPageComponents.CardInfoBoxCustom>
                                 )}
@@ -559,16 +566,18 @@ function EditTicketPage({props}) {
                                             {worklogs.map((worklog, index) => (
                                                 <Worklog
                                                     created_at={worklog?.created_at}
+                                                    updated_at={worklog?.updated_at}
                                                     worklogDate={worklog.date}
                                                     worklogTime={worklog.time}
                                                     created_by={worklog?.user}
+                                                    updated_by={worklog?.updated_by}
                                                     worklogUserId={worklog?.user?.id}
                                                     currentUser={currentUserData}
                                                     key={index}
                                                     index={worklog?.id}
                                                     worklog={worklog}
-                                                    onDelete={handleWorklogDelete}
-                                                    onEdit={handleWorklogEdit}
+                                                    onDelete={() => getWorklogs()}
+                                                    onEdit={() => getWorklogs()}
                                                     selectedWorklog={selectedWorklog}
                                                 />
                                             ))}
