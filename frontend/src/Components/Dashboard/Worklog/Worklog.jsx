@@ -15,10 +15,13 @@ import DOMPurify from "dompurify";
 import {modules} from "../../../Shared/Const/ReactQuillToolbarOptions";
 import {useDispatch} from "react-redux";
 import {deleteWorkLog, updateWorkLog} from "../../../Store/Slice/worklog/worklogActions";
+import * as CommentComponents from "../Comment/Style";
 
 function Worklog({
                      created_at,
                      created_by,
+                     updated_by,
+                     updated_at,
                      worklogUserId,
                      currentUser,
                      worklogDate,
@@ -51,6 +54,7 @@ function Worklog({
         formData.append("date", formattedDate);
         formData.append("time", formattedTime);
         formData.append("comment", workDescription);
+        formData.append("updated_by", currentUser?.id);
         dispatch(updateWorkLog({formData: formData, worklogId: index})).unwrap()
             .then(response => {
                 setShowEditModal(false);
@@ -177,6 +181,22 @@ function Worklog({
         };
     };
 
+    function formatDateTime(dateTimeField) {
+        const date = new Date(dateTimeField);
+
+        const day = date.getDate();
+        const month = date.toLocaleString('default', {month: 'long'});
+        const year = date.getFullYear();
+        const hours = date.getHours();
+        const minutes = date.getMinutes();
+
+        const formattedDate = `${day} ${month} ${year} at ${hours}:${minutes
+            .toString()
+            .padStart(2, '0')}`;
+
+        return formattedDate;
+    }
+
 
     return (
         <li key={index} style={{listStyle: "none"}}>
@@ -198,6 +218,14 @@ function Worklog({
                         logged <WorklogComponents.StyledSpan>{convertToTimeFormat(worklog.time_spent)}</WorklogComponents.StyledSpan>
                         <span style={{marginLeft: '10px', fontWeight: '500', color: '#42526E'}}>
                             {formatDate(worklogDate)} at {formatTime(worklogTime)}
+                        </span>
+
+                        <span className="tooltip" title={`${formatDateTime(updated_at)} by ${updated_by?.username}`}>
+                            {updated_by && (
+                                <CommentComponents.CommentEditedText>
+                                    Edited
+                                </CommentComponents.CommentEditedText>
+                            )}
                         </span>
                     </p>
                 </WorklogComponents.CommentButtons>

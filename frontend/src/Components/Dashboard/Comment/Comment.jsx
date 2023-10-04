@@ -8,7 +8,9 @@ import {modules} from "../../../Shared/Const/ReactQuillToolbarOptions";
 
 function Comment({
                      comment,
+                     updated_at,
                      created_at,
+                     updated_by,
                      created_by,
                      commentUserId,
                      currentUser,
@@ -86,8 +88,8 @@ function Comment({
     };
 
 
-    function formatCreatedAt(created_at) {
-        const date = new Date(created_at);
+    function formatDateTime(dateTimeField) {
+        const date = new Date(dateTimeField);
 
         const day = date.getDate();
         const month = date.toLocaleString('default', {month: 'long'});
@@ -123,11 +125,20 @@ function Comment({
                             style={{
                                 marginLeft: '10px',
                                 fontWeight: '500',
-                                color: '#42526E'
+                                color: '#42526E',
                             }}
                         >
-              {formatCreatedAt(created_at)}
-            </span>
+              {formatDateTime(created_at)}
+                </span>
+
+                        <span className="tooltip" title={`${formatDateTime(updated_at)} by ${updated_by?.username}`}>
+                {updated_by && (
+                    <CommentComponents.CommentEditedText>
+                        Edited
+                    </CommentComponents.CommentEditedText>
+                )}
+                </span>
+
                     </CommentComponents.CommentAuthor>
                     <CommentComponents.CommentText>
                         <div dangerouslySetInnerHTML={sanitizeComment(comment)}/>
@@ -161,7 +172,15 @@ function Comment({
                                             color: '#42526E'
                                         }}
                                     >
-                                        {formatCreatedAt(created_at)}
+                                    {formatDateTime(created_at)}
+                                    </span>
+                                    <span className="tooltip"
+                                          title={`${formatDateTime(updated_at)} by ${updated_by?.username}`}>
+                                        {updated_by && (
+                                            <CommentComponents.CommentEditedText>
+                                                Edited
+                                            </CommentComponents.CommentEditedText>
+                                        )}
                                     </span>
                                 </CommentComponents.CommentAuthor>
                                 <ReactQuill
@@ -173,7 +192,7 @@ function Comment({
                         </>
                     )}
                     <>
-                        {(commentUserId === currentUser?.id || currentUser?.user?.is_staff) && (
+                        {(commentUserId === currentUser?.id || currentUser?.is_staff) && (
                             <CommentComponents.CommentButtons>
                                 <CommentComponents.CommentActionButton
                                     onClick={handleEdit}>
