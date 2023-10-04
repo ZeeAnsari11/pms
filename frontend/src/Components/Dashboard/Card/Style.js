@@ -57,7 +57,7 @@ export const CardFooter = styled.div`
 
 export const CardProfile = styled.div`
   text-align: end;
-  z-index: 1;
+  z-index: 0;
   margin-left: 175px;
   margin-top: -60px;
 

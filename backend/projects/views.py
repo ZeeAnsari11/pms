@@ -1,9 +1,10 @@
 from django.shortcuts import render
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.viewsets import ModelViewSet, ViewSet
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
 from .filters import IssueFilter
 from django.db.models import Q
+from django.http import JsonResponse
 from rest_framework.permissions import IsAuthenticated
 from .permissions import IsAdminOrReadOnly, IsAdminUser, IsAdminOrStaffUser
 from rest_framework.decorators import action
@@ -297,6 +298,27 @@ class ProjectIssuesViewSet(ModelViewSet):
     #
 
 
+class GlobalSearchView(APIView):
+    def get(self, request, *args, **kwargs):
+        query = request.query_params.get('q', '')
+
+        if self.request.user.is_staff:
+            projects = Project.objects.filter(Q(name__icontains=query) | Q(description__icontains=query)).distinct()
+            issues = Issue.objects.filter(
+                Q(name__icontains=query) | Q(summary__icontains=query) | Q(description__icontains=query))
+        else:
+            projects = Project.objects.filter(Q(name__icontains=query) | Q(description__icontains=query)).filter(
+                Q(project_lead=self.request.user) | Q(assignees__in=[self.request.user])).distinct()
+            issues = Issue.objects.filter(
+                Q(name__icontains=query) | Q(summary__icontains=query) | Q(description__icontains=query)).filter(
+                Q(reporter_id=self.request.user) | Q(assignee=self.request.user))
+
+        project_serializer = serializers.ProjectSerializer(projects, many=True)
+        issue_serializer = serializers.IssueSerializer(issues, many=True)
+
+        return Response({'projects': project_serializer.data, 'issues': issue_serializer.data})
+
+
 class ValidateSlug(APIView):
     def post(self, request, format=None):
         serializer = serializers.ProjectSlugSerializer(data=request.data)
@@ -321,6 +343,7 @@ class ValidateSlug(APIView):
         if slug and Project.objects.filter(slug=slug).exists():
             return Response({'error': 'Key already exists for another project.'}, status=status.HTTP_400_BAD_REQUEST)
         return Response({'unique_slug': slug}, status=status.HTTP_200_OK)
+
 
 def upload(request):
     if request.method == "POST":
