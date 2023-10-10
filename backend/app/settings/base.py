@@ -82,6 +82,11 @@ AUTHENTICATION_BACKENDS = (
 
 
 DJOSER = {
+    'EMAIL': {
+        'password_reset': 'core.email.PasswordResetEmail'
+    },
+    "USER_ID_FIELD": "username",
+    "LOGIN_FIELD": "email",
     'PASSWORD_RESET_CONFIRM_URL': 'reset-password?uid={uid}&token={token}',
     'USERNAME_RESET_CONFIRM_URL': '#/username/reset/confirm/{uid}/{token}',
     'ACTIVATION_URL': 'user-activate?uid={uid}&token={token}',
@@ -95,6 +100,8 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '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'
 SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ['https://www.googleapis.com/auth/userinfo.email',
                                    'https://www.googleapis.com/auth/userinfo.profile', 'openid']
 SOCIAL_AUTH_GOOGLE_OAUTH2_EXTRA_DATA = ['first_name', 'last_name']
+SITE_NAME = ('ProjeX')
+
 
 ROOT_URLCONF = 'app.urls'
 
@@ -105,7 +112,7 @@ SESSION_COOKIE_SECURE = False
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'core/templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -163,11 +170,28 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
+ALLOWED_HOSTS = [
+    'projex.nexius.ai',
+    'projex.nexius.ai:3000',
+    'localhost',
+    '127.0.0.1',
+    'localhost:3000',
+    '127.0.0.1:3000',
+]
 
-CORS_ORIGIN_ALLOW_ALL = True
+CSRF_TRUSTED_ORIGINS = [
+    "https://projex.nexius.ai:3000",
+    "https://projex.nexius.ai",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
 
-CORS_ALLOW_CREDENTIALS = True
-
+CORS_ALLOWED_ORIGINS = [
+    "https://projex.nexius.ai:3000",
+    "https://projex.nexius.ai",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
 
 CORS_ALLOW_METHODS = (
     "DELETE",

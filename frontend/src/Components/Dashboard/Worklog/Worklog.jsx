@@ -37,6 +37,7 @@ function Worklog({
     const [workDescription, setWorkDescription] = useState(worklog.comment);
     const [startDate, setStartDate] = useState(dayjs(worklogDate));
     const [startTime, setStartTime] = useState(dayjs(worklogTime, 'HH:mm:ss'));
+
     const handleEdit = () => {
         setShowEditModal(true);
     };
@@ -58,6 +59,7 @@ function Worklog({
             .catch(error => {
                 console.log(error);
             });
+
     };
 
     const confirmDelete = () => {

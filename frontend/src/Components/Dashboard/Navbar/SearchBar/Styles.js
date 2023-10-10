@@ -19,6 +19,22 @@ export const SearchContainer = styled.div`
   }
 `;
 
+export const SearchResultsContainer = styled.div`
+  position: absolute;
+  margin: 10px;
+  top: 100%;
+  left: 60%;
+  transform: translateX(-50%);
+  width: 50%;
+  background-color: #fff;
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 10;
+`;
+
+
 export const SearchIcon = styled(FaSearch)`
   margin-right: 5px;
 `;

@@ -230,7 +230,7 @@ const Permissions = () => {
                                 item.iconUrl ?
                                     <div>
                                         <Avatar draggable={true} style={{background: "#10899e"}} alt={item.label}
-                                                src={`${process.env.REACT_APP_HOST}/${item.iconUrl}`}/>{" "}
+                                                src={`${process.env.REACT_APP_API_URL}/${item.iconUrl}`}/>{" "}
                                         {item.label}
                                     </div> :
                                     <div>
