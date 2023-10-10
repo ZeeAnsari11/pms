@@ -6,11 +6,12 @@ import UserSidebar from "../../Dashboard/Sidebar/UserSidebar";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import Toast from "../../../Shared/Components/Toast"
 import {displayErrorMessage, displaySuccessMessage} from "../../../Shared/notify"
+import {fetchCompaniesList} from "../../../api/list/companies";
 import {faImage} from '@fortawesome/free-solid-svg-icons';
 import {Link, useNavigate} from "react-router-dom";
 import * as ManageAccountComponents from './ManageAccountStyle';
-import apiRequest from '../../../Utils/apiRequest';
-import {useCurrentUserProfileData} from "../../../Store/Selector/Selector";
+import {updateUser} from '../../../Store/Slice/auth/authActions'
+import {useSelector, useDispatch} from "react-redux";
 
 const emailOptions = [
     {value: 'yes', label: 'Send me email notifications'},
@@ -24,18 +25,20 @@ const notificationFormatOptions = [
 
 
 const ProfileVisibility = () => {
-    const [isImageChanged, setIsImageChanged] = useState(false);
-    const userData = useCurrentUserProfileData();
 
-    const [userId, setUserId] = useState({});
-    const [userName, setUserName] = useState('');
-    const [userjobTitle, setUserJobTitle] = useState('');
-    const [userEmail, setUserEmail] = useState('');
-    const [userDepartment, setUserDepartment] = useState('');
-    const [userOrganization, setUserOrganization] = useState([]);
+    const dispatch = useDispatch()
+    const {userInfo} = useSelector((state) => state.auth)
+
+    const [isImageChanged, setIsImageChanged] = useState(false);
+    const [userId, setUserId] = useState(userInfo?.id);
+    const [userName, setUserName] = useState(userInfo?.user?.username);
+    const [userjobTitle, setUserJobTitle] = useState(userInfo?.job_title);
+    const [userEmail, setUserEmail] = useState(userInfo?.user?.job_title);
+    const [userDepartment, setUserDepartment] = useState(userInfo?.department);
+    const [userOrganization, setUserOrganization] = useState(userInfo?.company?.company_name);
     const [isUserOrganizationChanged, setIsUserOrganizationChanged] = useState(false);
-    const [userLocation, setUserLocation] = useState('');
-    const [userJoiningDate, setUserJoiningDate] = useState('');
+    const [userJoiningDate, setUserJoiningDate] = useState(userInfo?.joining_date);
+    const [userLocation, setUserLocation] = useState(userInfo?.company?.city);
     const [emailIssueNotification, setEmailIssueNotification] = useState('');
     const [emailNotificationFormat, setEmailNotificationFormat] = useState('');
     const [IsreporterData, setIsreporterData] = useState('');
@@ -43,48 +46,39 @@ const ProfileVisibility = () => {
     const [userImage, setUserImage] = useState(null);
     const [companies, setCompanies] = useState('');
 
-    let authToken = localStorage.getItem('auth_token');
     const navigate = useNavigate();
 
 
     const titleMessageWhenDisable = "This field is disabled. Enabled for Admin User Only";
 
-    const fetchData = async () => {
-        try {
-
-            const [companiesListResponse] = await Promise.all([
-                apiRequest.get(`/api/companies`, {
-                    headers: {Authorization: `Token ${authToken}`}
-                })
-            ]);
-            setCompanies(companiesListResponse.data);
-        } catch (error) {
-            displayErrorMessage(error);
-        }
-    };
-
-
     useEffect(() => {
-        fetchData();
+        fetchCompaniesList().then((list) => {
+            console.log("======list====", list)
+            setCompanies(list.data);
+        })
+            .catch((err) => {
+                displayErrorMessage(err)
+            })
+
     }, []);
 
     useEffect(() => {
-        if (userData != null) {
-            setUserId(userData?.id)
-            setUserImage(userData?.image)
-            setUserName(userData?.user?.username)
-            setUserEmail(userData?.user?.email)
-            setUserJobTitle(userData?.job_title)
-            setUserDepartment(userData?.department)
-            setUserOrganization(userData?.company?.company_name)
-            setUserLocation(userData?.company?.city)
-            setUserJoiningDate(userData?.joining_date)
-            setIsreporterData(userData?.is_reporter)
-            setIsassigneeData(userData?.is_assignee)
-            setEmailIssueNotification(userData?.send_email)
-            setEmailNotificationFormat(userData?.email_format)
+        if (userInfo != null) {
+            setUserId(userInfo?.id)
+            setUserImage(userInfo?.image)
+            setUserName(userInfo?.user?.username)
+            setUserEmail(userInfo?.user?.email)
+            setUserJobTitle(userInfo?.job_title)
+            setUserDepartment(userInfo?.department)
+            setUserOrganization(userInfo?.company?.company_name)
+            setUserLocation(userInfo?.company?.city)
+            setUserJoiningDate(userInfo?.joining_date)
+            setIsreporterData(userInfo?.is_reporter)
+            setIsassigneeData(userInfo?.is_assignee)
+            setEmailIssueNotification(userInfo?.send_email)
+            setEmailNotificationFormat(userInfo?.email_format)
         }
-    }, [userData]);
+    }, [userInfo]);
 
     const handleUserNameChange = (event) => {
         setUserName(event.target.value);
@@ -110,11 +104,11 @@ const ProfileVisibility = () => {
     };
 
     const handleIsReporterChange = () => {
-        setIsreporterData(!userData.is_reporter);
+        setIsreporterData(!userInfo.is_reporter);
     };
 
     const handleIsassigneeChange = () => {
-        setIsassigneeData(!userData.is_assignee);
+        setIsassigneeData(!userInfo.is_assignee);
     };
 
     const handleEmailIssueNotification = (value) => {
@@ -154,23 +148,17 @@ const ProfileVisibility = () => {
         if (isUserOrganizationChanged) {
             manageAccountData.company = userOrganization
         }
-
-        apiRequest
-            .patch(`/api/userprofile/${userId}/`,
-                manageAccountData,
-                {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                        'Authorization': `Token ${authToken}`,
-                    }
-                })
+        dispatch(updateUser({userId: userId, formData: manageAccountData})).unwrap()
             .then(response => {
                 displaySuccessMessage(`Successfully update the user profile!`);
                 navigate('/manage-account');
+                setIsUserOrganizationChanged(false);
+                setIsImageChanged(false);
             })
             .catch(error => {
-                displayErrorMessage(error);
-            });
+                displayErrorMessage(error.message)
+            })
+
     }
 
     return (
@@ -186,7 +174,7 @@ const ProfileVisibility = () => {
                         <ManageAccountComponents.CoverPictureWrapper>
                             <ManageAccountComponents.CircleImage>
                                 <ProfilePhotouploader onImageChange={handleImageChange} id="image"
-                                                      imagePath={`${process.env.REACT_APP_API_URL}/${userData?.image}`}/>
+                                                      imagePath={`${process.env.REACT_APP_DOMAIN}${userInfo?.image}`}/>
                                 <ManageAccountComponents.UpdateProfile className="update-cover">
                                     <FontAwesomeIcon icon={faImage} fontSize={"30px"} onClick={() => {
                                     }}/>
@@ -272,13 +260,13 @@ const ProfileVisibility = () => {
                                     when:</ManageAccountComponents.ConfigureMessage>
                                 <ManageAccountComponents.CheckboxWrapper>
                                     <ManageAccountComponents.CheckboxLabel htmlFor="reporter">
-                                        <input type="checkbox" defaultChecked={userData?.is_reporter} id="reporter"
+                                        <input type="checkbox" defaultChecked={userInfo?.is_reporter} id="reporter"
                                                onClick={handleIsReporterChange}/>
                                         You're the <strong>reporter</strong>
                                     </ManageAccountComponents.CheckboxLabel>
 
                                     <ManageAccountComponents.CheckboxLabel htmlFor="assignees">
-                                        <input type="checkbox" defaultChecked={userData?.is_assignee} id="assignee"
+                                        <input type="checkbox" defaultChecked={userInfo?.is_assignee} id="assignee"
                                                onClick={handleIsassigneeChange}/>
                                         You're the <strong>assignee</strong> for the issue
                                     </ManageAccountComponents.CheckboxLabel>

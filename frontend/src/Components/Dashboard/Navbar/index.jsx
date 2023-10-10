@@ -1,4 +1,5 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
+import { useDispatch, useSelector } from 'react-redux'
 import {
     NavbarContainer,
     LeftContainer,
@@ -29,23 +30,40 @@ import {Link} from "react-router-dom";
 import CreateTicket from "../CreateTicket/CreateTicket";
 import Avatar from "react-avatar";
 import {Button} from "antd"
-import {useCurrentUserProfileData, useIsAdminOrStaffUser} from "../../../Store/Selector/Selector";
+import Loading from "../../../Utils/Loader";
+import { useGetUserDetailsQuery } from '../../../Store/Slice/auth/authService'
+import { setUserInfo } from '../../../Store/Slice/auth/authSlice'
 
 function NavBar() {
-    const [extendNavbar, setExtendNavbar] = useState(false);
-    const [showModal, setshowModal] = useState(false);
+    const dispatch = useDispatch()
 
-    const currentUserProfileData = useCurrentUserProfileData()
-    const IsAdminOrStaffUser = useIsAdminOrStaffUser()
+    const { userInfo } = useSelector((state) => state.auth)
+    const isSuperuser = userInfo?.user?.is_superuser;
+
+
+    const [extendNavbar, setExtendNavbar] = useState(false);
+    const [showModal, setShowModal] = useState(false);
+
+      const { data, isFetching } =  useGetUserDetailsQuery('userDetails', {
+          // perform a refetch every 15 mins
+          pollingInterval: 900000,
+      })
+
+    console.log("User Data through the RTK query", data) // user object
+
     const handleCreateButtonClick = () => {
-        setshowModal(true);
+        setShowModal(true);
     }
+
+    useEffect(() => {
+        if (data) dispatch(setUserInfo(data))
+    }, [data, dispatch])
 
     return (
         <>
             {showModal && (
                 <CreateTicket
-                    onClose={() => setshowModal(false)}
+                    onClose={() => setShowModal(false)}
                 />
             )}
 
@@ -69,7 +87,7 @@ function NavBar() {
                                             marginLeft: "-7px"
                                         }}/>}/>
 
-                            <Dropdown items={IsAdminOrStaffUser ? adminUserProjectItems : simpleUserProjectItems}
+                            <Dropdown items={isSuperuser ? adminUserProjectItems : simpleUserProjectItems}
                                         name='Projects' icon={<MdKeyboardArrowDown size={20} style={{
                                 marginRight: "10px", cursor: 'pointer',
                                 marginLeft: "-7px"
@@ -89,15 +107,15 @@ function NavBar() {
                         <Dropdown minWidth="350px" items={helpItems}
                                     name={<AiFillQuestionCircle size={24} style={{marginLeft: "10px"}}/>}/>
                         <Dropdown
-                            items={IsAdminOrStaffUser ? adminUseraccountItems : simpleUseraccountItems}
+                            items={isSuperuser ? adminUseraccountItems : simpleUseraccountItems}
                             name={
-                                currentUserProfileData ? (
+                                userInfo ? (
                                     <Avatar
-                                        name={currentUserProfileData?.user?.username}
-                                        src={`${process.env.REACT_APP_API_URL}/${currentUserProfileData?.image}`}
+                                        name={userInfo?.user?.username}
+                                        src={`${process.env.REACT_APP_DOMAIN}${userInfo?.image}`}
                                         size={28}
                                         round={true}
-                                        title={currentUserProfileData?.user?.email}
+                                        title={userInfo?.user?.email}
                                         color="#DE350B"
                                         style={{marginLeft: "10px"}}
                                     />

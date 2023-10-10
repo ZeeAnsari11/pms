@@ -15,15 +15,16 @@ import {
     LinkText,
     NotImplemented,
 } from './SidebarStyle';
-import axios from "axios";
 import {useIsAdminOrStaffUser} from "../../../Store/Selector/Selector";
+import {getProject} from "../../../Store/Slice/project/projectActions";
+import {displayErrorMessage} from "../../../Shared/notify";
+import {useDispatch} from "react-redux";
 
 
 const ProjectSidebar = () => {
     const match = useLocation();
     const {projectId} = useParams()
-
-    let authToken = localStorage.getItem('auth_token')
+    const dispatch = useDispatch()
 
     const IsAdminOrStaffUser = useIsAdminOrStaffUser();
 
@@ -34,7 +35,7 @@ const ProjectSidebar = () => {
 
     let IconPath = projectData.icon
     if (IconPath != null) {
-        IconPath = `${process.env.REACT_APP_API_URL}/${icon}`
+        IconPath = `${process.env.REACT_APP_DOMAIN}/${icon}`
     } else {
         IconPath = '/Images/NoImage.jpeg'
     }
@@ -43,17 +44,17 @@ const ProjectSidebar = () => {
     const [projectCategory, setProjectCategory] = useState(''); // Set initial value from project object
 
     useEffect(() => {
-        const fetchProjects = async () => {
-            const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/projects/${projectId}`, {
-                headers: {
-                    Authorization: `Token ${authToken}`,
-                },
-            });
-            setProjectData(response.data);
-
+        const fetchProject = async () => {
+            dispatch(getProject({projectId: projectId})).unwrap()
+                .then(response => {
+                    setProjectData(response.data);
+                })
+                .catch(error => {
+                    displayErrorMessage(`Error occurred while fetching data: ${error}`);
+                });
         };
 
-        fetchProjects();
+        fetchProject();
     }, []);
 
     useEffect(() => {

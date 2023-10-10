@@ -1,40 +1,54 @@
-import React, { useEffect, useState } from 'react';
-import { Link, useParams } from "react-router-dom";
+import React, {useEffect, useState} from 'react';
+import {Link, useParams} from "react-router-dom";
 import NavBar from "../../Dashboard/Navbar";
 import Sidebar from "../../Dashboard/Sidebar/ProjectSidebar";
 import FileUpload from "../FileAttachement/FileUpload";
-import axios from "axios";
-import { Avatar, Breadcrumb, Input, Select, Tooltip } from "antd";
+import {Avatar, Breadcrumb, Input, Select, Tooltip} from "antd";
 import TrackingField from "../TimeTracking";
 import Editable from "../Editable/Editable";
 import Comment from "../Comment/Comment";
 import Worklog from "../Worklog/Worklog";
-import { useDispatch } from "react-redux";
-import { fetchIssueData } from "../../../Store/Slice/Issue/IssueSlice";
+import {useDispatch} from "react-redux";
 import ReactQuill from "react-quill";
 import 'react-quill/dist/quill.snow.css';
 import * as EditTicketPageComponents from "./Style"
 import GenericSelectField from "../SelectFields/GenericSelectField";
-import { priorityOptions } from '../../../Shared/Const/Issues'
+import {priorityOptions} from '../../../Shared/Const/Issues'
 import tagRender from '../../../Shared/Components/tagRender'
-import { TbExchange, TbStatusChange } from 'react-icons/tb'
-import { FiUser } from 'react-icons/fi'
-import { IoIosTimer } from 'react-icons/io'
-import { TiTags } from "react-icons/ti";
-import { RxStopwatch } from 'react-icons/rx'
-import { CgOptions } from 'react-icons/cg'
+import {TbExchange, TbStatusChange} from 'react-icons/tb'
+import {FiUser} from 'react-icons/fi'
+import {IoIosTimer} from 'react-icons/io'
+import {TiTags} from "react-icons/ti";
+import {RxStopwatch} from 'react-icons/rx'
+import {CgOptions} from 'react-icons/cg'
 import Loader from '../../../Utils/Loader'
-import { value } from "lodash/seq";
 import EstimateTimer from "../EstimateTimer/EstimateTimer";
 import * as CardInfoComponents from "../CardInfo/Style";
-import { modules } from "../../../Shared/Const/ReactQuillToolbarOptions";
-import { LinkOutlined } from '@ant-design/icons';
-import { useCurrentIssueData } from "../../../Store/Selector/Selector";
+import {modules} from "../../../Shared/Const/ReactQuillToolbarOptions";
+import {LinkOutlined} from '@ant-design/icons';
+import {useCurrentUserProfileData} from "../../../Store/Selector/Selector";
+import {
+    createComment,
+    deleteComment,
+    fetchIssueComments,
+    updateComment
+} from "../../../Store/Slice/comment/commentAction";
+import {displayErrorMessage, displaySuccessMessage} from "../../../Shared/notify";
+import {fetchIssueWorkLogs} from "../../../Store/Slice/worklog/worklogActions";
+import {
+    fetchSelectedProjectAssignees, fetchSelectedProjectLabels, fetchSelectedProjectStatuses,
+    fetchSelectedProjectTypes,
+    getIssue,
+    updateIssue
+} from "../../../Store/Slice/issue/issueActions";
+import {getProject} from "../../../Store/Slice/project/projectActions";
 
 const {TextArea} = Input;
 
 
 function EditTicketPage({props}) {
+    const dispatch = useDispatch()
+    const currentUserDatafromStore = useCurrentUserProfileData();
 
     const [showQuill, setShowQuill] = useState(false);
     const [tooltipMessage, setTooltipMessage] = useState('');
@@ -70,55 +84,30 @@ function EditTicketPage({props}) {
     const [Users, setUsers] = useState('');
     const [currentUserData, setCurrentUserData] = useState({});
     const [currentUserEmail, setCurrentUserEmail] = useState({});
+    const [currentIssueData, setCurrentIssueData] = useState({});
 
     const [files, setFiles] = useState([]);
-    const currentIssueData = useCurrentIssueData();
-
-    let authToken = localStorage.getItem('auth_token')
     const {Option} = Select;
     const {issueId, projectId} = useParams()
-    const dispatch = useDispatch()
 
-    useEffect(() => {
-        setLoading(true);
-        const fetchCurrentIssueData = async () => {
-            try {
-                dispatch(fetchIssueData(issueId)).unwrap().then(
-                    setLoading(false)
-                )
-            } catch (error) {
-                console.error(error);
-            }
-        }
-        fetchCurrentIssueData();
-    }, []);
-
-    const getComments = async () => {
-        try {
-            const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/comments/?issue=${issueId}`, {
-                headers: {
-                    Authorization: `Token ${authToken}`,
-                },
-            });
+    const getComments = () => {
+        dispatch(fetchIssueComments({issueId: issueId})).unwrap().then((response) => {
             setComments(response.data)
-        } catch (error) {
-            console.log(error);
-            throw new Error('Failed to fetch comments');
-        }
+        }).catch(
+            error => {
+                displayErrorMessage(error);
+            }
+        );
     };
 
-    const getWorklogs = async () => {
-        try {
-            const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/worklogs/?issue=${issueId}`, {
-                headers: {
-                    Authorization: `Token ${authToken}`,
-                },
-            });
+    const getWorklogs = () => {
+        dispatch(fetchIssueWorkLogs({issueId: issueId})).unwrap().then((response) => {
             setWorklogs(response.data)
-        } catch (error) {
-            console.log(error);
-            throw new Error('Failed to fetch comments');
-        }
+        }).catch(
+            error => {
+                displayErrorMessage(error);
+            }
+        );
     };
 
     const handleLabelChange = (values) => {
@@ -139,116 +128,77 @@ function EditTicketPage({props}) {
         setWorklogs([...worklogs])
         getWorklogs();
     };
+    useEffect(() => {
+        setCurrentUserData(currentUserDatafromStore?.user);
+        setCurrentUserEmail(currentUserDatafromStore?.user?.email);
+    }, [currentUserDatafromStore]);
+
 
     useEffect(() => {
-        const fetchCurrentUserEmail = async () => {
-            try {
-                const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/auth/users/me/`, {
-                    headers: {"Authorization": `Token ${authToken}`}
-                });
-                setCurrentUserEmail(response.data);
-            } catch (error) {
-                console.error(error);
+        dispatch(getIssue({issueId: issueId})).unwrap().then((response) => {
+            setCurrentIssueData(response.data);
+        }).catch(
+            error => {
+                displayErrorMessage(error);
             }
-        }
-        fetchCurrentUserEmail();
-    }, []);
+        );
 
-    useEffect(() => {
-        if (currentUserEmail) {
-            const fetchCurrentUserDataFromUserList = async () => {
-                try {
-                    const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/userprofile/?user__email__iexact=${currentUserEmail.email}`, {
-                        headers: {"Authorization": `Token ${authToken}`}
-                    });
-                    setCurrentUserData(response.data[0]);
-                } catch (error) {
-                    console.error(error);
-                }
-            }
-            fetchCurrentUserDataFromUserList();
-        }
-    }, [currentUserEmail]);
-
-
-    useEffect(() => {
-        const fetchComments = async () => {
-            const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/comments/?issue=${issueId}`, {
-                headers: {
-                    Authorization: `Token ${authToken}`,
-                },
-            });
+        dispatch(fetchIssueComments({issueId: issueId})).unwrap().then((response) => {
             setComments(response.data);
-        };
-
-        const fetchWorklogs = async () => {
-            const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/worklogs/?issue=${issueId}`, {
-                headers: {
-                    Authorization: `Token ${authToken}`,
-                },
-            });
-            setWorklogs(response.data);
-        };
-
-        const fetchDependentUserOptions = async () => {
-            const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/projects/${projectId}/assignees/`, {
-                headers: {
-                    Authorization: `Token ${authToken}`,
-                },
-            });
-            setUsers(response.data);
-        };
-        const fetchDependentProjectTypes = async () => {
-            try {
-                setLoading(true);
-                const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/projects/${projectId}`, {
-                    headers: {
-                        Authorization: `Token ${authToken}`,
-                    },
-                });
-                setCurrentIssueProjectData(response.data);
-                setLoading(false);
-            } catch (error) {
-                setLoading(false);
-                console.error('Error fetching project data:', error);
-                setCurrentIssueProjectData(null);
+        }).catch(
+            error => {
+                displayErrorMessage(error);
             }
-        };
+        );
 
-        const fetchCurrentIssueProjectData = async () => {
-            const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/projects/${projectId}`, {
-                headers: {
-                    Authorization: `Token ${authToken}`,
-                },
-            });
-            setCurrentIssueProjectData(response.data);
-        };
+        dispatch(fetchIssueWorkLogs({issueId: issueId})).unwrap().then((response) => {
+            setWorklogs(response.data);
+        }).catch(
+            error => {
+                displayErrorMessage(error);
+            }
+        );
 
-        const fetchDependentProjectStatuses = async () => {
-            const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/project_status/?project=${projectId}`, {
-                headers: {
-                    Authorization: `Token ${authToken}`,
-                },
-            });
+        dispatch(fetchSelectedProjectAssignees({selectedProject: projectId})).unwrap().then((response) => {
+            setUsers(response.data);
+        }).catch(
+            error => {
+                displayErrorMessage(error);
+            }
+        );
+
+        dispatch(fetchSelectedProjectTypes({selectedProject: projectId})).unwrap().then((response) => {
+            setIssueType(response.data);
+        }).catch(
+            error => {
+                displayErrorMessage(error);
+            }
+        );
+
+        dispatch(fetchSelectedProjectStatuses({selectedProject: projectId})).unwrap().then((response) => {
             setIssueStatus(response.data);
-        };
+        }).catch(
+            error => {
+                displayErrorMessage(error);
+            }
+        );
 
-        const fetchDependentProjectLabels = async () => {
-            const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/project_labels/?project=${projectId}`, {
-                headers: {
-                    Authorization: `Token ${authToken}`,
-                },
-            });
+        dispatch(fetchSelectedProjectLabels({selectedProject: projectId})).unwrap().then((response) => {
             setIssueLabels(response.data);
-        };
+        }).catch(
+            error => {
+                displayErrorMessage(error);
+            }
+        );
 
-        fetchDependentUserOptions();
-        fetchDependentProjectLabels();
-        fetchDependentProjectStatuses();
-        fetchDependentProjectTypes();
-        fetchCurrentIssueProjectData();
-        fetchComments();
-        fetchWorklogs();
+        dispatch(getProject({projectId: projectId})).unwrap().then((response) => {
+            setCurrentIssueProjectData(response.data);
+            setLoading(false);
+        }).catch(
+            error => {
+                displayErrorMessage(error);
+            }
+        );
 
     }, []);
 
@@ -268,10 +218,7 @@ function EditTicketPage({props}) {
         }
     }, [currentIssueData])
 
-
-    const fileArray = files
-    const prefix = "http://localhost:8000";
-    const combinedArray = fileArray.map((file) => `${prefix}${file}`);
+    const combinedArray = files.map((file) => `${process.env.REACT_APP_DOMAIN}${file}`);
 
     console.log("combinedArray:", combinedArray)
 
@@ -333,20 +280,15 @@ function EditTicketPage({props}) {
             formData.append("file", file);
         });
 
-
-        axios({
-            method: 'patch',
-            url: `${process.env.REACT_APP_API_URL}/api/issues/${issueId}/`,
-            headers: {
-                'Authorization': `Token ${authToken}`,
-            },
-            data: formData
-        })
+        dispatch(updateIssue({formData: formData, issueId: issueId})).unwrap()
             .then(response => {
                 console.log(response.data);
                 window.location.href = window.location.href
+                displaySuccessMessage(IssueName + " Updated Successfully");
             })
             .catch(error => {
+                props.onClose();
+                displayErrorMessage(error);
                 console.log(error);
             });
 
@@ -366,20 +308,16 @@ function EditTicketPage({props}) {
             issue: issueId,
             user: currentUserData?.id,
         };
-
-        axios
-            .post(`${process.env.REACT_APP_API_URL}/api/comments/`, commentData, {
-                headers: {
-                    Authorization: `Token ${authToken}`,
-                },
-            })
+        dispatch(createComment({formData: commentData})).unwrap()
             .then((response) => {
+                console.log(response.data);
                 setComments([...comments, response.data]);
+                getComments();
                 setNewComment("");
                 setShowQuill(false);
-                getComments();
             })
             .catch((error) => {
+                displayErrorMessage(error);
                 console.log(error);
             });
     };
@@ -393,12 +331,7 @@ function EditTicketPage({props}) {
 
 
     const handleCommentDelete = (index) => {
-        axios
-            .delete(`${process.env.REACT_APP_API_URL}/api/comments/${index}/`, {
-                headers: {
-                    Authorization: `Token ${authToken}`,
-                },
-            })
+        dispatch(deleteComment({commentId: index})).unwrap()
             .then((response) => {
                 setComments((prevComments) =>
                     prevComments.filter((_, i) => i !== index)
@@ -406,28 +339,21 @@ function EditTicketPage({props}) {
                 getComments();
             })
             .catch((error) => {
+                displayErrorMessage(error);
                 console.log(error);
             });
     };
 
 
     const handleCommentEdit = (index, comment) => {
+
         const commentData = {
             body: comment,
             issue: issueId,
         };
-
-        axios
-            .patch(
-                `${process.env.REACT_APP_API_URL}/api/comments/${index}/`,
-                commentData,
-                {
-                    headers: {
-                        Authorization: `Token ${authToken}`,
-                    },
-                }
-            )
+        dispatch(updateComment({commentId: index, formData: commentData})).unwrap()
             .then((response) => {
+                console.log(response.data);
                 const updatedComments = [...comments];
                 updatedComments[index] = response.data?.body; // Replace the comment at the specified index
                 setComments(
@@ -436,6 +362,7 @@ function EditTicketPage({props}) {
                 getComments();
             })
             .catch((error) => {
+                displayErrorMessage(error);
                 console.log(error);
             });
     };
@@ -464,7 +391,7 @@ function EditTicketPage({props}) {
                 cursor: "pointer"
             }}
             alt={currentIssueProjectData?.name}
-            src={`${process.env.REACT_APP_API_URL}/${currentIssueProjectData?.icon}`}
+            src={`${process.env.REACT_APP_DOMAIN}/${currentIssueProjectData?.icon}`}
         />
     ) : (
         <Avatar
@@ -581,9 +508,9 @@ function EditTicketPage({props}) {
                                             {showQuill ? (
                                                 <>
                                                     <CardInfoComponents.StyledQuillWrapper>
-                                                        <ReactQuill  modules={modules} value={newComment}
+                                                        <ReactQuill modules={modules} value={newComment}
                                                                     onChange={handleNewCommentChange}
-                                                                    />
+                                                        />
                                                     </CardInfoComponents.StyledQuillWrapper>
                                                     <div style={{flex: 1}}>
                                                         <CardInfoComponents.CommentButton
@@ -679,7 +606,7 @@ function EditTicketPage({props}) {
                                                         <div>
                                                             <Avatar draggable={true} style={{background: "#10899e"}}
                                                                     alt={item.username}
-                                                                    src={`${process.env.REACT_APP_API_URL}/${item.iconUrl}`}/>{" "}
+                                                                    src={`${process.env.REACT_APP_DOMAIN}/${item.iconUrl}`}/>{" "}
                                                             {item.username}
                                                         </div> :
                                                         <div>
@@ -741,7 +668,8 @@ function EditTicketPage({props}) {
                                         <RxStopwatch/>
                                         <span>Time Tracking</span>
                                     </EditTicketPageComponents.ContentInfoTitle>
-                                    <TrackingField OriginalEstimate={currentIssueData?.estimate}/>
+                                    <TrackingField onCreate={() => getWorklogs()}
+                                                   OriginalEstimate={currentIssueData?.estimate}/>
 
                                     <EditTicketPageComponents.ContentInfoTitle>
                                         <CgOptions/>
@@ -777,7 +705,7 @@ function EditTicketPage({props}) {
                                                         <div>
                                                             <Avatar draggable={true} style={{background: "#10899e"}}
                                                                     alt={item.username}
-                                                                    src={`${process.env.REACT_APP_API_URL}/${item.iconUrl}`}/>{" "}
+                                                                    src={`${process.env.REACT_APP_DOMAIN}/${item.iconUrl}`}/>{" "}
                                                             {item.username}
                                                         </div> :
                                                         <div>

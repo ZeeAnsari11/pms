@@ -12,6 +12,10 @@ from datetime import datetime
 from django.core.exceptions import ValidationError
 
 
+from django.contrib.auth.models import User
+
+User._meta.get_field('email')._unique = True
+
 def get_default_avatar():
     default_avatars_dir = os.path.join(settings.MEDIA_ROOT, 'default_avatars')
     avatars = os.listdir(default_avatars_dir)

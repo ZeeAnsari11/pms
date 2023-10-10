@@ -114,7 +114,7 @@ function Comment({
                             size={35}
                             color="#DE350B"
                             round={true}
-                            src={`${process.env.REACT_APP_API_URL}/${created_by?.userprofile?.image}`}
+                            src={`${process.env.REACT_APP_DOMAIN}/${created_by?.userprofile?.image}`}
                             title={created_by?.username}
                             style={{marginRight: '10px'}}
                         />
@@ -149,7 +149,7 @@ function Comment({
                                         size={35}
                                         color="#DE350B"
                                         round={true}
-                                        src={`${process.env.REACT_APP_API_URL}/${created_by?.userprofile?.image}`}
+                                        src={`${process.env.REACT_APP_DOMAIN}/${created_by?.userprofile?.image}`}
                                         title={created_by?.username}
                                         style={{marginRight: '10px'}}
                                     />
