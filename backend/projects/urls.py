@@ -20,7 +20,6 @@ router.register('project_memberships', views.ProjectMembershipViewSet, basename=
 router.register('project_slack_webhook', views.ProjectSlackWebhookViewSet, basename='project_slack_webhook')
 router.register('global_slack_webhook', views.GlobalSlackConfigViewSet, basename='global_slack_webhook')
 
-
 router.register('users_list', views.UserViewSet, basename='users')
 router.register('userprofile', UserProfileViewSet, basename='userprofile')
 router.register('user_groups', views.GroupPermissionsViewSet, basename='user_groups')
@@ -31,8 +30,9 @@ router.register('companies', CompanyViewSet, basename='companies')
 projects_router = routers.NestedDefaultRouter(router, 'projects', lookup='project')
 projects_router.register('issues', views.ProjectIssuesViewSet, basename='projects-issues')
 
-
 urlpatterns = [
-                path('api/projects/<int:pk>/assignees/', views.ProjectViewSet.as_view({'get': 'assignees'}), name='project-assignees'),
-                path('validate_slug/', views.ValidateSlug.as_view(), name='validate-slug'),
-            ] + router.urls + projects_router.urls
+                  path('api/projects/<int:pk>/assignees/', views.ProjectViewSet.as_view({'get': 'assignees'}),
+                       name='project-assignees'),
+                  path('validate_slug/', views.ValidateSlug.as_view(), name='validate-slug'),
+                  path('global_search/', views.GlobalSearchView.as_view(), name='global_search'),
+              ] + router.urls + projects_router.urls
