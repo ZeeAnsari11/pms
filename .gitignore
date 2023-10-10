@@ -157,3 +157,6 @@ out/
 ./backend/.DS_Store
 ./frontend/.DS_Store
 /node_modules/
+
+
+/frontend/src/Utils/apiRequest.jsx

@@ -1,10 +1,9 @@
 from .base import *
 import dotenv
 
-
 dotenv.load_dotenv('.env.local')
 
-DEBUG = int(os.environ.get("DEBUG",default=1))
+DEBUG = int(os.environ.get("DEBUG", default=1))
 
 # Dummy value for development
 SECRET_KEY = os.environ.get("SECRET_KEY")
@@ -21,10 +20,8 @@ EMAIL_USE_TLS = False
 CELERY_BROKER_URL = os.environ.get("CELERY_BROKER")
 CELERY_RESULT_BACKEND = os.environ.get("CELERY_BACKEND")
 
-
 # set the configurations files
 os.environ.get("DJANGO_SETTINGS_MODULE")
-
 
 DOMAIN = os.environ.get("DOMAIN")
 SITE_NAME = os.environ.get("SITE_NAME")
@@ -32,21 +29,20 @@ SITE_NAME = os.environ.get("SITE_NAME")
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 DATABASES = {
-        'default': {
-            'ENGINE': os.environ.get("SQL_ENGINE"),
-            "NAME": os.environ.get("SQL_DATABASE"),
-            "USER": os.environ.get("SQL_USER"),
-            "PASSWORD": os.environ.get("SQL_PASSWORD"),
-            "HOST": os.environ.get("SQL_HOST"),
-            "PORT": os.environ.get("SQL_PORT"),
-            'OPTIONS': {
-                'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-                'charset': 'utf8mb4',
-                'use_unicode': True,
-            }
+    'default': {
+        'ENGINE': os.environ.get("SQL_ENGINE"),
+        "NAME": os.environ.get("SQL_DATABASE"),
+        "USER": os.environ.get("SQL_USER"),
+        "PASSWORD": os.environ.get("SQL_PASSWORD"),
+        "HOST": os.environ.get("SQL_HOST"),
+        "PORT": os.environ.get("SQL_PORT"),
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+            'charset': 'utf8mb4',
+            'use_unicode': True,
         }
     }
-
+}
 
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ.get("GOOGLE_OAUTH2_KEY")
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get("GOOGLE_OAUTH2_SECRET")
@@ -64,3 +60,18 @@ if DEBUG:
     INTERNAL_IPS = [
         "127.0.0.1",
     ]
+
+    CORS_ORIGIN_ALLOW_ALL = True
+
+    CORS_ALLOW_CREDENTIALS = True
+
+    CORS_ALLOW_METHODS = (
+        "DELETE",
+        "GET",
+        "OPTIONS",
+        "PATCH",
+        "POST",
+        "PUT",
+    )
+
+    DOMAIN = ('localhost:3000')
