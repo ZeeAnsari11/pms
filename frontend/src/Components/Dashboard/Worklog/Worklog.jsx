@@ -188,7 +188,7 @@ function Worklog({
                             size={35}
                             round={true}
                             color="#DE350B"
-                            src={`${process.env.REACT_APP_DOMAIN}/${created_by?.userprofile?.image}`}
+                            src={`${process.env.REACT_APP_DOMAIN}${created_by?.userprofile?.image}`}
                             title={created_by?.username}
                             style={{marginRight: "10px", marginLeft: "-40px"}}
                         />

@@ -90,7 +90,7 @@ function ProjectSettingPage() {
     let IconPath = projectData.icon
 
     if (IconPath != null) {
-        IconPath = `${process.env.REACT_APP_DOMAIN}/${icon}`
+        IconPath = `${process.env.REACT_APP_DOMAIN}${icon}`
     } else {
         IconPath = `/Images/NoImage.jpeg`
     }
@@ -190,7 +190,7 @@ function ProjectSettingPage() {
                                     item.iconUrl ?
                                         <div>
                                             <Avatar draggable={true} style={{background: "#10899e"}} alt={item.username}
-                                                    src={`${process.env.REACT_APP_DOMAIN}/${item.iconUrl}`}/>{" "}
+                                                    src={`${process.env.REACT_APP_DOMAIN}${item.iconUrl}`}/>{" "}
                                             {item.username}
                                         </div> :
                                         <div>
