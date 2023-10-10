@@ -5,10 +5,11 @@ import UserSidebar from "../../Dashboard/Sidebar/UserSidebar";
 import {AiOutlineDelete, AiOutlineEdit, AiOutlinePlus} from 'react-icons/ai';
 import Toast from "../../../Shared/Components/Toast"
 import {displayErrorMessage, displaySuccessMessage} from "../../../Shared/notify"
-import apiRequest from '../../../Utils/apiRequest';
 import {Button, Form as EditForm, Form as AddForm, Input, Modal, Space, Table, Transfer} from 'antd';
 import ErrorPage from "../../Error/ErrorPage";
 import {useIsAdminOrStaffUser} from "../../../Store/Selector/Selector";
+import {fetchPermissionsList} from "../../../api/list/permissions";
+import {createGroup, deleteGroup, fetchGroupList, updateGroup} from "../../../api/list/groups";
 
 function ManageGroups() {
 
@@ -26,8 +27,6 @@ function ManageGroups() {
 
     const [editTypeForm] = EditForm.useForm();
     const [addTypeForm] = AddForm.useForm();
-
-    let authToken = localStorage.getItem('auth_token');
 
     const IsAdminOrStaffUser = useIsAdminOrStaffUser();
     const updateTable = (responseData) => {
@@ -49,59 +48,6 @@ function ManageGroups() {
         setModalVisible(false);
     }
 
-    const updateUserGroup = (values) => {
-        apiRequest
-            .patch(`/api/user_groups/${selectedItem.id}/`,
-                {"name": values.name, "permissions": values.targetKeys},
-                {
-                    headers: {"Authorization": `Token ${authToken}`}
-                })
-            .then(response => {
-                updateTable(response.data)
-                displaySuccessMessage('Successfully update the requested Type!');
-            })
-            .catch(error => {
-                displayErrorMessage(`Error occurred while updating the type ${error}`);
-            });
-    };
-
-    const deleteIssueType = (id) => {
-        apiRequest
-            .delete(`/api/user_groups/${id}`, {headers: {"Authorization": `Token ${authToken}`}})
-            .then(response => {
-                displaySuccessMessage('Successfully delete the requested User Group!');
-            })
-            .catch(error => {
-                displayErrorMessage(`Error occurred while deleting the User Group ${error}`);
-            });
-    };
-
-    const createUserGroup = (values) => {
-        apiRequest
-            .post(`/api/user_groups/`,
-                {
-                    name: values.name,
-                    permissions: values.targetKeys,
-                }, {
-                    headers: {"Authorization": `Token ${authToken}`}
-                })
-            .then(response => {
-                displaySuccessMessage('Successfully create the requested User Group!');
-                const result = {
-                    "id": response.data.id,
-                    "name": response.data.name,
-                    "permissions": response.data.permissions
-                };
-                setData((data) => [...data, result]);
-                setFilteredData((filteredData) => [...filteredData, result]);
-                setTotalItems((totalItems) => totalItems + 1);
-                setModalVisible(false);
-            })
-            .catch(error => {
-                displayErrorMessage(`Error occurred while creating new User Group ${error}`);
-            });
-    };
-
     const onPermissionChange = (nextTargetKeys) => {
         setTargetKeys(nextTargetKeys);
     };
@@ -112,21 +58,21 @@ function ManageGroups() {
 
     const fetchData = async () => {
         try {
-            const [groupsResponse, permissionsResponse] = await Promise.all([
-                apiRequest.get(`/api/user_groups/`, {headers: {"Authorization": `Token ${authToken}`}}),
-                apiRequest.get(`/api/user_permissions/`, {headers: {"Authorization": `Token ${authToken}`}})
-            ]);
+            const [groupsResponse, permissionsResponse] = await Promise.all([fetchGroupList(), fetchPermissionsList()]);
+
+            console.log(`======== Groups Response =======`, groupsResponse);
+            console.log(`======== Permissions Response=======`, permissionsResponse);
 
             const groupsData = groupsResponse.data.map(item => ({
-                id: item.id,
-                name: item.name,
-                permissions: item.permissions
+                id: item.id, name: item.name, permissions: item.permissions
             }));
 
             const permissionsData = permissionsResponse.data.map(item => ({
-                key: item.id,
-                formatted_name: item.formatted_name
+                key: item.id, formatted_name: item.formatted_name
             }));
+
+            console.log(`======== Groups Data =======`, groupsData);
+            console.log(`======== Permissions Data =======`, permissionsData);
 
             setData(groupsData);
             setFilteredData(groupsData);
@@ -139,14 +85,20 @@ function ManageGroups() {
 
     useEffect(() => {
         fetchData();
-    }, [authToken]);
+    }, []);
 
     const handleDeleteLink = (record) => {
         Modal.confirm({
             title: 'Confirm',
             content: `Are you sure you want to delete this User Group: ${record.name}  ?`,
             onOk() {
-                deleteIssueType(record.id);
+                deleteGroup(record.id)
+                    .then(response => {
+                        displaySuccessMessage('Successfully delete the requested User Group!');
+                    })
+                    .catch(error => {
+                        displayErrorMessage(`Error occurred while deleting the User Group ${error}`);
+                    })
                 const updatedData = data.filter((item) => item.id !== record.id);
                 setData(updatedData);
                 setFilteredData(updatedData);
@@ -172,11 +124,38 @@ function ManageGroups() {
     };
 
     const handleEditModal = (values) => {
-        updateUserGroup(values)
+        updateGroup(
+            selectedItem.id,
+            {
+                "name": values.name, "permissions": values.targetKeys
+            })
+            .then( response => {
+                updateTable(response.data)
+                displaySuccessMessage('Successfully update the requested Type!');
+            })
+            .catch(error => {
+                displayErrorMessage(`Error occurred while updating the type ${error}`);
+            })
     }
 
     const handleAddModal = (values) => {
-        createUserGroup(values)
+        createGroup(
+            {
+                name: values.name, permissions: values.targetKeys,
+            })
+            .then( response => {
+                const result = {
+                    "id": response.data.id, "name": response.data.name, "permissions": response.data.permissions
+                };
+                setData((data) => [...data, result]);
+                setFilteredData((filteredData) => [...filteredData, result]);
+                setTotalItems((totalItems) => totalItems + 1);
+                setModalVisible(false);
+                displaySuccessMessage('Successfully create the requested User Group!');
+            })
+            .catch( message => {
+                displayErrorMessage(`Error occurred while creating new User Group ${message}`)
+            })
     }
 
     const handleSearch = (e) => {

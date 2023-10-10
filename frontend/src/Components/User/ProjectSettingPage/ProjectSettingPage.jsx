@@ -10,11 +10,15 @@ import ErrorPage from "../../Error/ErrorPage";
 import {useIsAdminOrStaffUser} from "../../../Store/Selector/Selector";
 import {displayErrorMessage, displaySuccessMessage} from "../../../Shared/notify";
 import {StatusCodes} from "http-status-codes";
-import { ToastContainer } from 'react-toastify';
+import {ToastContainer} from 'react-toastify';
+import {useDispatch} from "react-redux";
+import {getProject, updateProject} from "../../../Store/Slice/project/projectActions";
+import {fetchUsersList} from "../../../api/list/users";
 
 const {Option} = Select;
 
 function ProjectSettingPage() {
+    const dispatch = useDispatch()
 
     const [usersData, setUsersData] = useState([]);
     const [projectData, setProjectData] = useState({});
@@ -28,33 +32,31 @@ function ProjectSettingPage() {
     const {projectId} = useParams()
     const navigate = useNavigate();
 
-    let authToken = localStorage.getItem('auth_token')
     const IsAdminOrStaffUser = useIsAdminOrStaffUser();
 
     const defaultIconPath = "/Images/NoImage.jpeg"
 
     useEffect(() => {
-        const fetchProjects = async () => {
-            const response = await apiRequest
-                .get(`/api/projects/${projectId}`, {
-                    headers: {
-                        Authorization: `Token ${authToken}`,
-                    },
+        const fetchProject = async () => {
+            dispatch(getProject({projectId: projectId})).unwrap()
+                .then(response => {
+                    setProjectData(response.data);
+                })
+                .catch(error => {
+                    displayErrorMessage(`Error occurred while fetching data: ${error}`);
                 });
-            setProjectData(response.data);
-
         };
 
         const fetchUsers = async () => {
-            const response = await apiRequest
-                .get(`${process.env.REACT_APP_API_URL}/api/users_list/`, {
-                    headers: {
-                        Authorization: `Token ${authToken}`,
-                    },
+            fetchUsersList()
+                .then(response => {
+                    setUsersData(response.data);
+                })
+                .catch(error => {
+                    displayErrorMessage(`Error occurred while fetching data: ${error}`);
                 });
-            setUsersData(response.data);
         };
-        fetchProjects();
+        fetchProject();
         fetchUsers();
     }, []);
 
@@ -88,7 +90,7 @@ function ProjectSettingPage() {
     let IconPath = projectData.icon
 
     if (IconPath != null) {
-        IconPath = `${process.env.REACT_APP_API_URL}/${icon}`
+        IconPath = `${process.env.REACT_APP_DOMAIN}/${icon}`
     } else {
         IconPath = `/Images/NoImage.jpeg`
     }
@@ -119,26 +121,15 @@ function ProjectSettingPage() {
 
     function handleSubmit(event) {
         event.preventDefault();
-        const projectObj = {'name': name, 'slug': slug, 'icon': image, 'project_lead': selectedProjectLead,};
-        apiRequest.patch(`/api/projects/${projectId}/`,
-            projectObj,
-            {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                    'Authorization': `Token ${authToken}`,
-                },
-            })
+        const formData = {'name': name, 'slug': slug, 'icon': image, 'project_lead': selectedProjectLead,};
+        dispatch(updateProject({projectId: projectId, formData: formData})).unwrap()
             .then(response => {
                 console.log(response);
                 displaySuccessMessage(`Project Updated Successfully!`);
                 navigate(`/project/${projectId}/project-setting`);
             })
             .catch(error => {
-                if (error.response.status === StatusCodes.FORBIDDEN) {
-                    displayErrorMessage(error.response.data.detail)
-                    return;
-                }
-                displayErrorMessage(error.message);
+                displayErrorMessage(`Error occurred while Updating Project data: ${error}`);
             });
     }
 
@@ -199,7 +190,7 @@ function ProjectSettingPage() {
                                     item.iconUrl ?
                                         <div>
                                             <Avatar draggable={true} style={{background: "#10899e"}} alt={item.username}
-                                                    src={`${process.env.REACT_APP_API_URL}/${item.iconUrl}`}/>{" "}
+                                                    src={`${process.env.REACT_APP_DOMAIN}/${item.iconUrl}`}/>{" "}
                                             {item.username}
                                         </div> :
                                         <div>

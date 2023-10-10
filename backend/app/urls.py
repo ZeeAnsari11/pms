@@ -17,7 +17,6 @@ from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path, include
-from django.urls import re_path
 
 
 admin.site.site_header = "ProjeX Admin View"
@@ -28,8 +27,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('projects.urls')),
     path('api/auth/', include('djoser.urls')),
-    path('api/auth/', include('djoser.urls.authtoken')),
-    re_path(r'^api/auth/', include('djoser.social.urls')),
+    path('api/auth/', include('djoser.urls.jwt')),
+    path('api/auth/', include('djoser.social.urls')),
 ]
 
 if settings.DEBUG:

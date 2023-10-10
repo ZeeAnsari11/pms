@@ -11,8 +11,13 @@ import * as TimeTrackingComponents from "./Style"
 import EstimateTimer from "../EstimateTimer/EstimateTimer";
 import axios from 'axios';
 import {modules} from '../../../Shared/Const/ReactQuillToolbarOptions'
+import {useDispatch, useSelector} from "react-redux";
+import {createWorkLog, fetchIssueWorkLogs} from "../../../Store/Slice/worklog/worklogActions";
+import {displayErrorMessage, displayInfoMessage} from "../../../Shared/notify";
 
-const TimeTracking = ({OriginalEstimate}) => {
+const TimeTracking = ({OriginalEstimate, onCreate}) => {
+    const dispatch = useDispatch();
+    const loadWorklogData = useSelector((state) => state.worklog.currentWorklogData);
 
     const [currentIssueId, setCurrentIssueId] = useState('');
     const [currentTimeLog, setCurrentTimeLog] = useState(0);
@@ -23,22 +28,20 @@ const TimeTracking = ({OriginalEstimate}) => {
     const [timeLoggedHistory, setTimeLoggedHistory] = useState([]);
     const [timeLogged, setTimeLogged] = useState(0);
 
-
     const urlParams = new URLSearchParams(window.location.search);
     const selectedIssueSlug = urlParams.get('selectedIssue');
     console.log("selectedIssueSlug", selectedIssueSlug);
 
     const {issueId} = useParams();
     const originalEstimate = OriginalEstimate;
-    let authToken = localStorage.getItem('auth_token')
 
 
     useEffect(() => {
         const getCurrentIssueId = async () => {
             try {
-                const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/issues/?slug__iexact=${selectedIssueSlug}`, {
+                const response = await axios.get(`${process.env.REACT_APP_HOST}/issues/?slug__iexact=${selectedIssueSlug}`, {
                     headers: {
-                        Authorization: `Token ${authToken}`,
+                        Authorization: `JWT ${localStorage.getItem('access')}`,
                     },
                 });
                 setCurrentIssueId(response.data[0].id);
@@ -57,24 +60,14 @@ const TimeTracking = ({OriginalEstimate}) => {
 
 
     useEffect(() => {
-        const fetchWorklogs = async () => {
-            try {
-                if (currentIssueId) {
-                    const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/worklogs/?issue=${currentIssueId}`, {
-                        headers: {
-                            Authorization: `Token ${authToken}`,
-                        },
-                    });
-                    setTimeLoggedHistory(response.data);
-                }
-            } catch (error) {
-                console.log(error);
-                throw new Error('Failed to fetch comments');
+        dispatch(fetchIssueWorkLogs({issueId: currentIssueId})).unwrap().then((response) => {
+            setTimeLoggedHistory(response.data);
+        }).catch(
+            error => {
+                displayErrorMessage(error);
             }
-        };
-
-        fetchWorklogs();
-    }, [currentIssueId]);
+        );
+    }, [currentIssueId, loadWorklogData]);
 
 
     useEffect(() => {
@@ -87,13 +80,10 @@ const TimeTracking = ({OriginalEstimate}) => {
 
 
     const handleModalOk = () => {
-
-        const config = {
-            headers: {
-                Authorization: `Token ${authToken}`
-            }
-        };
-
+        if (!startDate || !startTime) {
+            displayInfoMessage('Please pick the date and time.');
+            return;
+        }
         const newTimelog = {
             time_spent: currentTimeLog,
             comment: workDescription,
@@ -103,10 +93,10 @@ const TimeTracking = ({OriginalEstimate}) => {
         };
         console.log('New Time ', startTime);
         console.log('New Date ', startDate);
-        axios.post(`${process.env.REACT_APP_API_URL}/api/worklogs/`, newTimelog, config)
-
+        dispatch(createWorkLog({formData: newTimelog})).unwrap()
             .then(response => {
                 console.log(response.data);
+                onCreate();
             })
             .catch(error => {
                 console.error(error);
@@ -273,7 +263,7 @@ const TimeTracking = ({OriginalEstimate}) => {
                         <div><p
                             style={{alignSelf: "center", fontSize: "1rem", marginTop: 0, fontWeight: "500"}}>The
                             original estimate for
-                            this issue was
+                            this issue was {" "}
                             <TimeTrackingComponents.TimeEstimate>{originalEstimate > 0 ? convertToTimeFormat(originalEstimate) : '0m'}</TimeTrackingComponents.TimeEstimate>
                         </p></div>
                     </TimeTrackingComponents.TimeTextDisplayContainer>

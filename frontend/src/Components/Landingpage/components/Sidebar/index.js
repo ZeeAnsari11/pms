@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     SidebarContainer,
     Icon,
@@ -11,8 +11,10 @@ import {
     CustomModal
 } from "./SidebarElements";
 import Login from "../../../User/Login";
+import {useSelector} from "react-redux";
 
 const Sidebar = ({isOpen, toggle}) => {
+
     const [modalVisible, setModalVisible] = useState(false);
 
     const showModal = () => {
@@ -22,6 +24,7 @@ const Sidebar = ({isOpen, toggle}) => {
     const hideModal = () => {
         setModalVisible(false);
     };
+
     return (
         <SidebarContainer isOpen={isOpen} onClick={toggle}>
             <Icon onClick={toggle}>

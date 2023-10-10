@@ -10,10 +10,11 @@ import {ImWarning} from 'react-icons/im'
 import moment from 'moment';
 import EstimateTimer from "../EstimateTimer/EstimateTimer";
 import ReactQuill from "react-quill";
-import axios from "axios";
 import * as WorklogComponents from "./Style"
 import DOMPurify from "dompurify";
 import {modules} from "../../../Shared/Const/ReactQuillToolbarOptions";
+import {useDispatch} from "react-redux";
+import {deleteWorkLog, updateWorkLog} from "../../../Store/Slice/worklog/worklogActions";
 
 function Worklog({
                      created_at,
@@ -27,6 +28,8 @@ function Worklog({
                      onDelete,
                      onEdit
                  }) {
+    const dispatch = useDispatch();
+
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [timeSpent, setTimeSpent] = useState(worklog.time_spent);
@@ -35,7 +38,6 @@ function Worklog({
     const [startDate, setStartDate] = useState(dayjs(worklogDate));
     const [startTime, setStartTime] = useState(dayjs(worklogTime, 'HH:mm:ss'));
 
-    let authToken = localStorage.getItem('auth_token')
     const handleEdit = () => {
         setShowEditModal(true);
     };
@@ -49,17 +51,10 @@ function Worklog({
         formData.append("date", formattedDate);
         formData.append("time", formattedTime);
         formData.append("comment", workDescription);
-
-        axios({
-            method: 'patch',
-            url: `${process.env.REACT_APP_API_URL}/api/worklogs/${index}/`,
-            headers: {
-                'Authorization': `Token ${authToken}`,
-            },
-            data: formData
-        })
+        dispatch(updateWorkLog({formData: formData, worklogId: index})).unwrap()
             .then(response => {
                 setShowEditModal(false);
+                onEdit(index, worklog);
             })
             .catch(error => {
                 console.log(error);
@@ -68,12 +63,7 @@ function Worklog({
     };
 
     const confirmDelete = () => {
-        axios
-            .delete(`${process.env.REACT_APP_API_URL}/api/worklogs/${index}/`, {
-                headers: {
-                    Authorization: `Token ${authToken}`,
-                },
-            })
+        dispatch(deleteWorkLog({worklogId: index})).unwrap()
             .then((response) => {
                 console.log(response.data)
                 onDelete(index);
@@ -198,7 +188,7 @@ function Worklog({
                             size={35}
                             round={true}
                             color="#DE350B"
-                            src={`${created_by?.userprofile?.image}`}
+                            src={`${process.env.REACT_APP_DOMAIN}/${created_by?.userprofile?.image}`}
                             title={created_by?.username}
                             style={{marginRight: "10px", marginLeft: "-40px"}}
                         />

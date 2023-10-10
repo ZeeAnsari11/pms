@@ -1,14 +1,23 @@
 import {configureStore} from '@reduxjs/toolkit'
-import loginSlice from "./Slice/User/loginSlice"
-import signupSlice from "./Slice/User/signupSlice"
-import DataSyncerSlice from "./Slice/DataSyncerSlice"
-import IssueSlice from "./Slice/Issue/IssueSlice"
+import authReducer from './Slice/auth/authSlice'
+import projectReducer from './Slice/project/projectSlice'
+import issueReducer from './Slice/issue/issueSlice'
+import commentReducer from './Slice/comment/commentSlice'
+import worklogReducer from './Slice/worklog/worklogSlice'
+import {authApi} from './Slice/auth/authService'
+import {projectApi} from "./Slice/project/projectService";
 
-export const store = configureStore({
+const store = configureStore({
     reducer: {
-        login: loginSlice,
-        signUp: signupSlice,
-        DataSyncer: DataSyncerSlice,
-        issueData: IssueSlice
+        auth: authReducer,
+        projects: projectReducer,
+        issue: issueReducer,
+        comment: commentReducer,
+        worklog: worklogReducer,
+        [projectApi.reducerPath]: projectApi.reducer,
+        [authApi.reducerPath]: authApi.reducer,
     },
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware().concat(authApi.middleware,projectApi.middleware),
 })
+export default store
