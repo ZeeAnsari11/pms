@@ -35,7 +35,7 @@ const ProjectSidebar = () => {
 
     let IconPath = projectData.icon
     if (IconPath != null) {
-        IconPath = `${process.env.REACT_APP_DOMAIN}/${icon}`
+        IconPath = `${process.env.REACT_APP_DOMAIN}${icon}`
     } else {
         IconPath = '/Images/NoImage.jpeg'
     }

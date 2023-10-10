@@ -655,7 +655,7 @@ function CardInfo(props) {
                                             <div>
                                                 <Avatar draggable={true} style={{background: "#10899e"}}
                                                         alt={item.username}
-                                                        src={`${process.env.REACT_APP_DOMAIN}/${item.iconUrl}`}/>{" "}
+                                                        src={`${process.env.REACT_APP_DOMAIN}${item.iconUrl}`}/>{" "}
                                                 {item.username}
                                             </div> :
                                             <div>
@@ -691,7 +691,7 @@ function CardInfo(props) {
                                             <div>
                                                 <Avatar draggable={true} style={{background: "#10899e"}}
                                                         alt={item.username}
-                                                        src={`${process.env.REACT_APP_DOMAIN}/${item.iconUrl}`}/>{" "}
+                                                        src={`${process.env.REACT_APP_DOMAIN}${item.iconUrl}`}/>{" "}
                                                 {item.username}
                                             </div> :
                                             <div>
