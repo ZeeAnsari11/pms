@@ -5,6 +5,7 @@ import {Modal} from "antd";
 import ReactQuill from "react-quill";
 import DOMPurify from 'dompurify';
 import {modules} from "../../../Shared/Const/ReactQuillToolbarOptions";
+import {REACT_APP_DOMAIN} from "../../../Utils/envConstants";
 
 function Comment({
                      comment,
@@ -116,7 +117,7 @@ function Comment({
                             size={35}
                             color="#DE350B"
                             round={true}
-                            src={`${process.env.REACT_APP_DOMAIN}${created_by?.userprofile?.image}`}
+                            src={`${REACT_APP_DOMAIN}${created_by?.userprofile?.image}`}
                             title={created_by?.username}
                             style={{marginRight: '10px'}}
                         />
@@ -160,7 +161,7 @@ function Comment({
                                         size={35}
                                         color="#DE350B"
                                         round={true}
-                                        src={`${process.env.REACT_APP_DOMAIN}${created_by?.userprofile?.image}`}
+                                        src={`${REACT_APP_DOMAIN}${created_by?.userprofile?.image}`}
                                         title={created_by?.username}
                                         style={{marginRight: '10px'}}
                                     />

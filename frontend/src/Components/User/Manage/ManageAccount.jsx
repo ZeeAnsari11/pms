@@ -12,6 +12,7 @@ import {Link, useNavigate} from "react-router-dom";
 import * as ManageAccountComponents from './ManageAccountStyle';
 import {updateUser} from '../../../Store/Slice/auth/authActions'
 import {useSelector, useDispatch} from "react-redux";
+import {REACT_APP_DOMAIN} from "../../../Utils/envConstants";
 
 const emailOptions = [
     {value: 'yes', label: 'Send me email notifications'},
@@ -174,7 +175,7 @@ const ProfileVisibility = () => {
                         <ManageAccountComponents.CoverPictureWrapper>
                             <ManageAccountComponents.CircleImage>
                                 <ProfilePhotouploader onImageChange={handleImageChange} id="image"
-                                                      imagePath={`${process.env.REACT_APP_DOMAIN}${userInfo?.image}`}/>
+                                                      imagePath={`${REACT_APP_DOMAIN}${userInfo?.image}`}/>
                                 <ManageAccountComponents.UpdateProfile className="update-cover">
                                     <FontAwesomeIcon icon={faImage} fontSize={"30px"} onClick={() => {
                                     }}/>

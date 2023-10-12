@@ -33,6 +33,7 @@ import {Button} from "antd"
 import Loading from "../../../Utils/Loader";
 import { useGetUserDetailsQuery } from '../../../Store/Slice/auth/authService'
 import { setUserInfo } from '../../../Store/Slice/auth/authSlice'
+import {REACT_APP_DOMAIN} from "../../../Utils/envConstants";
 
 function NavBar() {
     const dispatch = useDispatch()
@@ -112,7 +113,7 @@ function NavBar() {
                                 userInfo ? (
                                     <Avatar
                                         name={userInfo?.user?.username}
-                                        src={`${process.env.REACT_APP_DOMAIN}${userInfo?.image}`}
+                                        src={`${REACT_APP_DOMAIN}${userInfo?.image}`}
                                         size={28}
                                         round={true}
                                         title={userInfo?.user?.email}

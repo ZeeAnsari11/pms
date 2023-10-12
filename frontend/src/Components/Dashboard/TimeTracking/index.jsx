@@ -14,6 +14,7 @@ import {modules} from '../../../Shared/Const/ReactQuillToolbarOptions'
 import {useDispatch, useSelector} from "react-redux";
 import {createWorkLog, fetchIssueWorkLogs} from "../../../Store/Slice/worklog/worklogActions";
 import {displayErrorMessage, displayInfoMessage} from "../../../Shared/notify";
+import {REACT_APP_HOST} from "../../../Utils/envConstants";
 
 const TimeTracking = ({OriginalEstimate, onCreate}) => {
     const dispatch = useDispatch();
@@ -39,7 +40,7 @@ const TimeTracking = ({OriginalEstimate, onCreate}) => {
     useEffect(() => {
         const getCurrentIssueId = async () => {
             try {
-                const response = await axios.get(`${process.env.REACT_APP_HOST}/issues/?slug__iexact=${selectedIssueSlug}`, {
+                const response = await axios.get(`${REACT_APP_HOST}/issues/?slug__iexact=${selectedIssueSlug}`, {
                     headers: {
                         Authorization: `JWT ${localStorage.getItem('access')}`,
                     },
