@@ -19,8 +19,6 @@ function Integrations() {
     const [isSlackUpdating, setSlackIsUpdating] = useState(false);
     const [initialSlackValues, setInitialSlackValues] = useState({id: undefined, project: projectId});
 
-    let authToken = localStorage.getItem('auth_token');
-
     const IsAdminOrStaffUser = useIsAdminOrStaffUser();
 
     const updateSlackIntegrationForm = (response) => {
@@ -55,16 +53,16 @@ function Integrations() {
 
 
     const fetchSlackIntegrationsData = async () => {
-        return await apiRequest.get(`/api/project_slack_webhook/`, {
+        return await apiRequest.get(`/project_slack_webhook/`, {
             params: {project: projectId,},
-            headers: {"Authorization": `Token ${authToken}`}
+            headers: {"Authorization": `JWT ${localStorage.getItem('access')}`}
         })
     }
 
     const createSlackIntegrationsData = async (values) => {
         const {slackNotificationStatus, slackGlobalConfigStatus, slackChannelGroupUser, slackWebhookUrl} = values
         return await apiRequest
-            .post(`/api/project_slack_webhook/`, {
+            .post(`/project_slack_webhook/`, {
                 project: projectId,
                 is_active: slackNotificationStatus,
                 global_status: slackGlobalConfigStatus,
@@ -72,7 +70,7 @@ function Integrations() {
                 webhook_url: slackWebhookUrl,
             }, {
                 headers:
-                    {"Authorization": `Token ${authToken}`}
+                    {"Authorization": `JWT ${localStorage.getItem('access')}`}
             })
     }
 
@@ -81,7 +79,7 @@ function Integrations() {
         const {id} = initialSlackValues
         const {slackNotificationStatus, slackGlobalConfigStatus, slackChannelGroupUser, slackWebhookUrl} = values
         return await apiRequest
-            .patch(`/api/project_slack_webhook/${id}/`, {
+            .patch(`/project_slack_webhook/${id}/`, {
                 project: projectId,
                 is_active: slackNotificationStatus,
                 global_status: slackGlobalConfigStatus,
@@ -89,7 +87,7 @@ function Integrations() {
                 webhook_url: slackWebhookUrl,
             }, {
                 headers:
-                    {"Authorization": `Token ${authToken}`}
+                    {"Authorization": `JWT ${localStorage.getItem('access')}`}
             })
     }
 

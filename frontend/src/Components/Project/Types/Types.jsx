@@ -25,7 +25,6 @@ function Types() {
     const [editTypeForm] = EditForm.useForm();
     const [addTypeForm] = AddForm.useForm();
 
-    let authToken = localStorage.getItem('auth_token');
     const IsAdminOrStaffUser = useIsAdminOrStaffUser();
 
     const {projectId} = useParams();
@@ -51,10 +50,10 @@ function Types() {
 
     const updadteIssueType = (values) => {
         apiRequest
-            .patch(`/api/project_type/${selectedItem.id}/`,
+            .patch(`/project_type/${selectedItem.id}/`,
                 {"type": values.type,},
                 {
-                    headers: {"Authorization": `Token ${authToken}`}
+                    headers: {"Authorization": `JWT ${localStorage.getItem('access')}`}
                 })
             .then(response => {
                 displaySuccessMessage('Successfully update the requested Type!');
@@ -67,8 +66,8 @@ function Types() {
 
     const deleteIssueType = (id) => {
         apiRequest
-            .delete(`/api/project_type/${id}`, {
-                headers: {"Authorization": `Token ${authToken}`}
+            .delete(`/project_type/${id}`, {
+                headers: {"Authorization": `JWT ${localStorage.getItem('access')}`}
             })
             .then(response => {
                 displaySuccessMessage('Successfully delete the requested Type!');
@@ -80,10 +79,10 @@ function Types() {
 
     const createIssueType = (values) => {
         apiRequest
-            .post(`/api/project_type/`,
+            .post(`/project_type/`,
                 {"project": projectId, "type": values.type},
                 {
-                    headers: {"Authorization": `Token ${authToken}`}
+                    headers: {"Authorization": `JWT ${localStorage.getItem('access')}`}
                 })
             .then(response => {
                 const result = {"id": response.data.id, "type": response.data.type};
@@ -99,10 +98,10 @@ function Types() {
 
     useEffect(() => {
         apiRequest
-            .get(`/api/project_type/`,
+            .get(`/project_type/`,
                 {
                     params: {project: projectId,},
-                    headers: {"Authorization": `Token ${authToken}`}
+                    headers: {"Authorization": `JWT ${localStorage.getItem('access')}`}
                 })
             .then(response => {
                 const dataArray = response.data.map(item => {
