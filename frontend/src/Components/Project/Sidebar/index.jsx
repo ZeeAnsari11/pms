@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from 'react';
-import PropTypes from 'prop-types';
 import {NavLink, useLocation, useParams} from 'react-router-dom';
 import {ProjectCategoryCopy} from './constants/projects';
 import Icon from './components/Icon/index';
@@ -17,6 +16,7 @@ import {
     NotImplemented,
 } from './Styles';
 import axios from "axios";
+import {REACT_APP_DOMAIN} from "../../../Utils/envConstants";
 
 
 const ProjectSidebar = () => {
@@ -31,7 +31,7 @@ const ProjectSidebar = () => {
 
     let IconPath = projectData.icon
     if (IconPath != null) {
-        IconPath = `${process.env.REACT_APP_API_URL}/${icon}`
+        IconPath = `${REACT_APP_DOMAIN}/${icon}`
     } else {
         IconPath = 'http://localhost:3000/Images/NoImage.jpeg'
     }
@@ -41,7 +41,7 @@ const ProjectSidebar = () => {
 
     useEffect(() => {
         const fetchProjects = async () => {
-            const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/projects/${projectId}`, {
+            const response = await axios.get(`${REACT_APP_DOMAIN}/api/projects/${projectId}`, {
                 headers: {
                     Authorization: `Token ${authToken}`,
                 },

@@ -42,6 +42,7 @@ import {
     updateIssue
 } from "../../../Store/Slice/issue/issueActions";
 import {getProject} from "../../../Store/Slice/project/projectActions";
+import {REACT_APP_DOMAIN} from "../../../Utils/envConstants";
 
 const {TextArea} = Input;
 
@@ -218,7 +219,7 @@ function EditTicketPage({props}) {
         }
     }, [currentIssueData])
 
-    const combinedArray = files.map((file) => `${process.env.REACT_APP_DOMAIN}${file}`);
+    const combinedArray = files.map((file) => `${REACT_APP_DOMAIN}${file}`);
 
     console.log("combinedArray:", combinedArray)
 
@@ -391,7 +392,7 @@ function EditTicketPage({props}) {
                 cursor: "pointer"
             }}
             alt={currentIssueProjectData?.name}
-            src={`${process.env.REACT_APP_DOMAIN}${currentIssueProjectData?.icon}`}
+            src={`${REACT_APP_DOMAIN}${currentIssueProjectData?.icon}`}
         />
     ) : (
         <Avatar
@@ -615,7 +616,7 @@ function EditTicketPage({props}) {
                                                         <div>
                                                             <Avatar draggable={true} style={{background: "#10899e"}}
                                                                     alt={item.username}
-                                                                    src={`${process.env.REACT_APP_DOMAIN}${item.iconUrl}`}/>{" "}
+                                                                    src={`${REACT_APP_DOMAIN}${item.iconUrl}`}/>{" "}
                                                             {item.username}
                                                         </div> :
                                                         <div>
@@ -714,7 +715,7 @@ function EditTicketPage({props}) {
                                                         <div>
                                                             <Avatar draggable={true} style={{background: "#10899e"}}
                                                                     alt={item.username}
-                                                                    src={`${process.env.REACT_APP_DOMAIN}${item.iconUrl}`}/>{" "}
+                                                                    src={`${REACT_APP_DOMAIN}${item.iconUrl}`}/>{" "}
                                                             {item.username}
                                                         </div> :
                                                         <div>

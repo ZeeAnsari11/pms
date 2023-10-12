@@ -16,6 +16,7 @@ import {modules} from "../../../Shared/Const/ReactQuillToolbarOptions";
 import {useDispatch} from "react-redux";
 import {deleteWorkLog, updateWorkLog} from "../../../Store/Slice/worklog/worklogActions";
 import * as CommentComponents from "../Comment/Style";
+import {REACT_APP_DOMAIN} from "../../../Utils/envConstants";
 
 function Worklog({
                      created_at,
@@ -208,7 +209,7 @@ function Worklog({
                             size={35}
                             round={true}
                             color="#DE350B"
-                            src={`${process.env.REACT_APP_DOMAIN}${created_by?.userprofile?.image}`}
+                            src={`${REACT_APP_DOMAIN}${created_by?.userprofile?.image}`}
                             title={created_by?.username}
                             style={{marginRight: "10px", marginLeft: "-40px"}}
                         />

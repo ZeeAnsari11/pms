@@ -8,6 +8,7 @@ import ToastContainer from "../../../Shared/Components/Toast";
 import {displayErrorMessage} from "../../../Shared/notify";
 import {useDispatch} from "react-redux";
 import {loadProjects} from "../../../Store/Slice/project/projectActions";
+import {REACT_APP_DOMAIN} from "../../../Utils/envConstants";
 
 const ProjectListing = () => {
     const dispatch = useDispatch()
@@ -33,7 +34,7 @@ const ProjectListing = () => {
             render: (text, record) => (
                 <ProjectListingComponents.ProjectLink to={`/project/${record.id}/dashboard`}>
                     <ProjectListingComponents.ProjectIcon>
-                        <ProjectListingComponents.ProjectAvatar src={`${process.env.REACT_APP_DOMAIN}${record.icon}`}
+                        <ProjectListingComponents.ProjectAvatar src={`${REACT_APP_DOMAIN}${record.icon}`}
                                                                 alt={record.name}
                                                                 onError={handleImageError}
                         />

@@ -18,6 +18,7 @@ import {fetchCategoriesList} from "../../../api/list/categories";
 import {fetchUsersList} from "../../../api/list/users";
 import {useDispatch} from "react-redux";
 import {createProject, generateUniqueSlug, verifyUniqueKey} from "../../../Store/Slice/project/projectActions";
+import {REACT_APP_DOMAIN} from "../../../Utils/envConstants";
 
 function CreateProject() {
     const dispatch = useDispatch()
@@ -203,7 +204,7 @@ function CreateProject() {
                                         <div>
                                             <Avatar draggable={true} style={{background: "#10899e"}}
                                                     alt={item.username}
-                                                    src={`${process.env.REACT_APP_DOMAIN}${item.iconUrl}`}/>{" "}
+                                                    src={`${REACT_APP_DOMAIN}${item.iconUrl}`}/>{" "}
                                             {item.username}
                                         </div> :
                                         <div>

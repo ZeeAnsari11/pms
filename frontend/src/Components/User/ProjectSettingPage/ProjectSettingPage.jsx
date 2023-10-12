@@ -14,6 +14,7 @@ import {ToastContainer} from 'react-toastify';
 import {useDispatch} from "react-redux";
 import {getProject, updateProject} from "../../../Store/Slice/project/projectActions";
 import {fetchUsersList} from "../../../api/list/users";
+import {REACT_APP_DOMAIN} from "../../../Utils/envConstants";
 
 const {Option} = Select;
 
@@ -90,7 +91,7 @@ function ProjectSettingPage() {
     let IconPath = projectData.icon
 
     if (IconPath != null) {
-        IconPath = `${process.env.REACT_APP_DOMAIN}${icon}`
+        IconPath = `${REACT_APP_DOMAIN}${icon}`
     } else {
         IconPath = `/Images/NoImage.jpeg`
     }
@@ -190,7 +191,7 @@ function ProjectSettingPage() {
                                     item.iconUrl ?
                                         <div>
                                             <Avatar draggable={true} style={{background: "#10899e"}} alt={item.username}
-                                                    src={`${process.env.REACT_APP_DOMAIN}${item.iconUrl}`}/>{" "}
+                                                    src={`${REACT_APP_DOMAIN}${item.iconUrl}`}/>{" "}
                                             {item.username}
                                         </div> :
                                         <div>

@@ -19,6 +19,7 @@ import {useIsAdminOrStaffUser} from "../../../Store/Selector/Selector";
 import {getProject} from "../../../Store/Slice/project/projectActions";
 import {displayErrorMessage} from "../../../Shared/notify";
 import {useDispatch} from "react-redux";
+import {REACT_APP_DOMAIN} from "../../../Utils/envConstants";
 
 
 const ProjectSidebar = () => {
@@ -35,7 +36,7 @@ const ProjectSidebar = () => {
 
     let IconPath = projectData.icon
     if (IconPath != null) {
-        IconPath = `${process.env.REACT_APP_DOMAIN}${icon}`
+        IconPath = `${REACT_APP_DOMAIN}${icon}`
     } else {
         IconPath = '/Images/NoImage.jpeg'
     }
