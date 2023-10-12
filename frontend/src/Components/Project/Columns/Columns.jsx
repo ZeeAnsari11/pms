@@ -25,8 +25,6 @@ function Columns() {
     const [editStatusForm] = EditForm.useForm();
     const [addStatusForm] = AddForm.useForm();
 
-    let authToken = localStorage.getItem('auth_token');
-
     const IsAdminOrStaffUser = useIsAdminOrStaffUser();
 
     const {projectId} = useParams();
@@ -53,10 +51,10 @@ function Columns() {
 
     const updadteIssueStatus = (values) => {
         apiRequest
-            .patch(`/api/project_status/${selectedItem.id}/`,
+            .patch(`/project_status/${selectedItem.id}/`,
                 {"type": values.type, "priority": values.priority},
                 {
-                    headers: {"Authorization": `Token ${authToken}`}
+                    headers: {"Authorization": `JWT ${localStorage.getItem('access')}`}
                 })
             .then(response => {
                 displaySuccessMessage('Successfully update the requested Status!');
@@ -68,8 +66,8 @@ function Columns() {
     };
     const deleteIssueStatus = (id) => {
         apiRequest
-            .delete(`/api/project_status/${id}`, {
-                headers: {"Authorization": `Token ${authToken}`}
+            .delete(`/project_status/${id}`, {
+                headers: {"Authorization": `JWT ${localStorage.getItem('access')}`}
             })
             .then(response => {
                 displaySuccessMessage('Successfully delete the requested Status!');
@@ -81,10 +79,10 @@ function Columns() {
 
     const createIssueType = (values) => {
         apiRequest
-            .post(`/api/project_status/`,
+            .post(`/project_status/`,
                 {"project": projectId, "status": values.status, "priority": values.priority},
                 {
-                    headers: {"Authorization": `Token ${authToken}`}
+                    headers: {"Authorization": `JWT ${localStorage.getItem('access')}`}
                 })
             .then(response => {
                 const result = {
@@ -102,10 +100,10 @@ function Columns() {
 
     useEffect(() => {
         apiRequest
-            .get(`/api/project_status/`,
+            .get(`/project_status/`,
                 {
                     params: {project: projectId,},
-                    headers: {"Authorization": `Token ${authToken}`}
+                    headers: {"Authorization": `JWT ${localStorage.getItem('access')}`}
                 })
             .then(response => {
                 const dataArray = response.data.map(item => {
