@@ -10,6 +10,7 @@ import {useParams} from "react-router-dom";
 import {StatusCodes} from "http-status-codes";
 import ErrorPage from "../../Error/ErrorPage";
 import {useIsAdminOrStaffUser} from "../../../Store/Selector/Selector";
+import {REACT_APP_DOMAIN} from "../../../Utils/envConstants";
 
 
 const Permissions = () => {
@@ -230,7 +231,7 @@ const Permissions = () => {
                                 item.iconUrl ?
                                     <div>
                                         <Avatar draggable={true} style={{background: "#10899e"}} alt={item.label}
-                                                src={`${process.env.REACT_APP_API_URL}/${item.iconUrl}`}/>{" "}
+                                                src={`${REACT_APP_DOMAIN}/${item.iconUrl}`}/>{" "}
                                         {item.label}
                                     </div> :
                                     <div>

@@ -7,6 +7,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import Editable from '../Editable/Editable';
 import NavBar from '../../Dashboard/Navbar';
 import axios from 'axios';
+import {REACT_APP_DOMAIN} from "../../../Utils/envConstants";
 
 const UserProfilePage = () => {
     const [userData, setUserData] = useState({});
@@ -16,7 +17,7 @@ const UserProfilePage = () => {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/userprofile/`, {
+                const response = await axios.get(`${REACT_APP_DOMAIN}/api/userprofile/`, {
                     headers: {"Authorization": `Token ${authToken}`}
                 });
                 setUserData(response.data);

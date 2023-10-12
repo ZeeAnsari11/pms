@@ -1,8 +1,8 @@
 import React from "react";
 import Avatar from "react-avatar";
 import * as AccountComponents from "./Style"
-import {useCurrentUserProfileData} from "../../../Store/Selector/Selector";
 import {useSelector} from "react-redux";
+import {REACT_APP_DOMAIN} from "../../../Utils/envConstants";
 
 
 const AccountDropdown = () => {
@@ -16,7 +16,7 @@ const AccountDropdown = () => {
             <div>
                 <Avatar
                     name={userInfo?.user?.username}
-                    src={`${process.env.REACT_APP_DOMAIN}${userInfo?.image}`}
+                    src={`${REACT_APP_DOMAIN}${userInfo?.image}`}
                     size={30}
                     round={true}
                     title={userInfo?.user?.username}
