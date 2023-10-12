@@ -233,6 +233,7 @@ class CreateCommentSerializer(serializers.ModelSerializer):
 
 class CommentSerializer(serializers.ModelSerializer):
     user = ComprehensiveUserSerializer(read_only=True)
+    updated_by = ComprehensiveUserSerializer(read_only=True)
     issue = IssueSerializer(read_only=True)
 
     class Meta:
@@ -254,6 +255,7 @@ class CreateWorkLogSerializer(serializers.ModelSerializer):
 
 class WorkLogSerializer(serializers.ModelSerializer):
     user = ComprehensiveUserSerializer(read_only=True)
+    updated_by = ComprehensiveUserSerializer(read_only=True)
     issue = IssueSerializer(read_only=True)
 
     class Meta:

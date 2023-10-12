@@ -25,6 +25,13 @@ export const CommentText = styled.p`
   font-size: 14px;
 `;
 
+export const CommentEditedText = styled.span`
+  font-weight: 400;
+  color: #47546b;
+  margin-left: 20px;
+`;
+
+
 export const CommentButtons = styled.div`
   display: flex;
   margin-left: 40px;

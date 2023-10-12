@@ -42,6 +42,7 @@ import {
     updateIssue
 } from "../../../Store/Slice/issue/issueActions";
 import {getProject} from "../../../Store/Slice/project/projectActions";
+import {REACT_APP_DOMAIN} from "../../../Utils/envConstants";
 
 const {TextArea} = Input;
 
@@ -218,7 +219,7 @@ function EditTicketPage({props}) {
         }
     }, [currentIssueData])
 
-    const combinedArray = files.map((file) => `${process.env.REACT_APP_DOMAIN}${file}`);
+    const combinedArray = files.map((file) => `${REACT_APP_DOMAIN}${file}`);
 
     console.log("combinedArray:", combinedArray)
 
@@ -391,7 +392,7 @@ function EditTicketPage({props}) {
                 cursor: "pointer"
             }}
             alt={currentIssueProjectData?.name}
-            src={`${process.env.REACT_APP_DOMAIN}${currentIssueProjectData?.icon}`}
+            src={`${REACT_APP_DOMAIN}${currentIssueProjectData?.icon}`}
         />
     ) : (
         <Avatar
@@ -536,19 +537,26 @@ function EditTicketPage({props}) {
                                         </CardInfoComponents.FormContainer>
 
                                         <ul>
-                                            {comments.map((comment, index) => (
-                                                <Comment
-                                                    key={index}
-                                                    comment={comment?.body}
-                                                    created_at={comment?.created_at}
-                                                    index={comment?.id}
-                                                    created_by={comment?.user}
-                                                    commentUserId={comment?.user?.id}
-                                                    currentUser={currentUserData}
-                                                    onDelete={handleCommentDelete}
-                                                    onEdit={handleCommentEdit}
-                                                />
-                                            ))}
+                                            {
+                                                comments
+                                                    .slice()
+                                                    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+                                                    .map((comment, index) => (
+                                                        <Comment
+                                                            key={index}
+                                                            comment={comment?.body}
+                                                            created_at={comment?.created_at}
+                                                            updated_at={comment?.updated_at}
+                                                            index={comment?.id}
+                                                            created_by={comment?.user}
+                                                            updated_by={comment?.updated_by}
+                                                            commentUserId={comment?.user?.id}
+                                                            currentUser={currentUserData}
+                                                            onDelete={handleCommentDelete}
+                                                            onEdit={handleCommentEdit}
+                                                        />
+                                                    ))
+                                            }
                                         </ul>
                                     </EditTicketPageComponents.CardInfoBoxCustom>
                                 )}
@@ -559,16 +567,18 @@ function EditTicketPage({props}) {
                                             {worklogs.map((worklog, index) => (
                                                 <Worklog
                                                     created_at={worklog?.created_at}
+                                                    updated_at={worklog?.updated_at}
                                                     worklogDate={worklog.date}
                                                     worklogTime={worklog.time}
                                                     created_by={worklog?.user}
+                                                    updated_by={worklog?.updated_by}
                                                     worklogUserId={worklog?.user?.id}
                                                     currentUser={currentUserData}
                                                     key={index}
                                                     index={worklog?.id}
                                                     worklog={worklog}
-                                                    onDelete={handleWorklogDelete}
-                                                    onEdit={handleWorklogEdit}
+                                                    onDelete={() => getWorklogs()}
+                                                    onEdit={() => getWorklogs()}
                                                     selectedWorklog={selectedWorklog}
                                                 />
                                             ))}
@@ -606,7 +616,7 @@ function EditTicketPage({props}) {
                                                         <div>
                                                             <Avatar draggable={true} style={{background: "#10899e"}}
                                                                     alt={item.username}
-                                                                    src={`${process.env.REACT_APP_DOMAIN}${item.iconUrl}`}/>{" "}
+                                                                    src={`${REACT_APP_DOMAIN}${item.iconUrl}`}/>{" "}
                                                             {item.username}
                                                         </div> :
                                                         <div>
@@ -705,7 +715,7 @@ function EditTicketPage({props}) {
                                                         <div>
                                                             <Avatar draggable={true} style={{background: "#10899e"}}
                                                                     alt={item.username}
-                                                                    src={`${process.env.REACT_APP_DOMAIN}${item.iconUrl}`}/>{" "}
+                                                                    src={`${REACT_APP_DOMAIN}${item.iconUrl}`}/>{" "}
                                                             {item.username}
                                                         </div> :
                                                         <div>

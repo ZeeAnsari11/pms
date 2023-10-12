@@ -239,7 +239,7 @@ class WorklogViewSet(ModelViewSet):
         serializer.save()
 
     def perform_update(self, serializer):
-        serializer.validated_data['user'] = self.request.user
+        serializer.validated_data['updated_by'] = self.request.user
         serializer.save()
 
 

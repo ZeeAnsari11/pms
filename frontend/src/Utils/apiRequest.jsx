@@ -1,7 +1,8 @@
 import axios from 'axios';
+import {REACT_APP_HOST} from "./envConstants";
 
 const apiRequest = axios.create({
-    baseURL: `https://projex.nexius.ai/api`,
+    baseURL: REACT_APP_HOST,
     withCredentials: true,
 });
 

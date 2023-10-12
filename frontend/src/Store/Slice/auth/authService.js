@@ -1,9 +1,10 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import {REACT_APP_HOST} from "../../../Utils/envConstants";
 
 export const authApi = createApi({
   reducerPath: 'authApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: `${process.env.REACT_APP_HOST}`,
+    baseUrl: `${REACT_APP_HOST}`,
     prepareHeaders: (headers, { getState }) => {
       const accessToken = getState().auth.access
       if (accessToken) {
