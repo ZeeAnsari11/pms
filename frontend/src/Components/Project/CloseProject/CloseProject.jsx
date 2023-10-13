@@ -1,6 +1,5 @@
 import React, {useState} from 'react';
 import {useParams, useNavigate} from "react-router-dom";
-import apiRequest from '../../../Utils/apiRequest';
 import * as CloseProjectComponents from "./Style";
 import {Modal} from 'antd';
 import NavBar from "../../Dashboard/Navbar";

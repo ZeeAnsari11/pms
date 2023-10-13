@@ -27,8 +27,6 @@ function Tags() {
     const [editTagForm] = EditForm.useForm();
     const [addTagForm] = AddForm.useForm();
 
-    let authToken = localStorage.getItem('auth_token');
-
     const IsAdminOrStaffUser = useIsAdminOrStaffUser();
     const {projectId} = useParams();
 
@@ -54,10 +52,10 @@ function Tags() {
 
     const updadteIssueStatus = (values) => {
         apiRequest
-            .patch(`/api/project_labels/${selectedItem.id}/`,
+            .patch(`/project_labels/${selectedItem.id}/`,
                 {"name": values.name, "color": values.color?.hex},
                 {
-                    headers: {"Authorization": `Token ${authToken}`}
+                    headers: {"Authorization": `JWT ${localStorage.getItem('access')}`}
                 })
             .then(response => {
                 displaySuccessMessage('Successfully update the requested Tag!');
@@ -69,8 +67,8 @@ function Tags() {
     };
     const deleteIssueStatus = (id) => {
         apiRequest
-            .delete(`/api/project_labels/${id}`, {
-                headers: {"Authorization": `Token ${authToken}`}
+            .delete(`/project_labels/${id}`, {
+                headers: {"Authorization": `JWT ${localStorage.getItem('access')}`}
             })
             .then(response => {
                 displaySuccessMessage('Successfully delete the requested Tag!');
@@ -82,10 +80,10 @@ function Tags() {
 
     const createIssueType = (values) => {
         apiRequest
-            .post(`/api/project_labels/`,
+            .post(`/project_labels/`,
                 {"project": projectId, "name": values.name, "color": values.color.hex},
                 {
-                    headers: {"Authorization": `Token ${authToken}`}
+                    headers: {"Authorization": `JWT ${localStorage.getItem('access')}`}
                 })
             .then(response => {
                 const result = {
@@ -103,10 +101,10 @@ function Tags() {
 
     useEffect(() => {
         apiRequest
-            .get(`/api/project_labels/`,
+            .get(`/project_labels/`,
                 {
                     params: {project: projectId,},
-                    headers: {"Authorization": `Token ${authToken}`}
+                    headers: {"Authorization": `JWT ${localStorage.getItem('access')}`}
                 })
             .then(response => {
                 const dataArray = response.data.map(item => {

@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import {useDispatch, useSelector} from 'react-redux';
 import {Link, useNavigate} from "react-router-dom";
-import {userLogin, registerUser} from '../../../Store/Slice/auth/authActions'
+import {userLogin, registerUser, loadUser} from '../../../Store/Slice/auth/authActions'
 import 'react-toastify/dist/ReactToastify.css';
 import Toast from "../../../Shared/Components/Toast"
 import * as LoginStyleComponents from "./Style"
@@ -11,6 +11,8 @@ import {Button, Divider} from 'antd';
 import {StatusCodes} from "http-status-codes";
 import apiRequest from "../../../Utils/apiRequest";
 import {REACT_APP_GOOGLE_AUTH_REDIRECT_URL} from "../../../Utils/envConstants";
+import {useGetUserDetailsQuery} from "../../../Store/Slice/auth/authService";
+import {setUserInfo} from "../../../Store/Slice/auth/authSlice";
 
 function Login() {
 
@@ -32,10 +34,17 @@ function Login() {
         await dispatch(userLogin({username: usernameForSignIn, password: passwordForSignIn})).unwrap()
             .then(response => {
                 response.status === StatusCodes.OK && navigate('/project')
+                dispatch(loadUser()).unwrap().then(response => {
+                    dispatch(setUserInfo(response.data))
+                })
+                    .catch(error => {
+                        displayErrorMessage(error)
+                    })
             })
             .catch(error => {
                 displayErrorMessage(error)
             })
+
     };
 
 
@@ -87,7 +96,7 @@ function Login() {
             <Toast/>
             <LoginStyleComponents.Container>
                 <LoginStyleComponents.SignUpContainer signingIn={signIn}>
-                    <LoginStyleComponents.Form onSubmit={handleSubmitSignUp}>
+                    <LoginStyleComponents.Form onSubmit={handleSubmitSignUp} >
                         <LoginStyleComponents.Title>Create Account</LoginStyleComponents.Title>
                         <LoginStyleComponents.StyleInput type="text" placeholder="Enter Username" value={username}
                                                          onChange={(e) => setUsername(e.target.value)}/>
