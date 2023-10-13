@@ -333,7 +333,7 @@ function CardInfo(props) {
         : [];
 
     const fileArray = props.card?.file
-    const prefix = "http://localhost:8000";
+    const prefix = REACT_APP_DOMAIN;
     const combinedArray = fileArray.map((file) => `${prefix}${file}`);
 
     console.log(combinedArray);

@@ -25,7 +25,7 @@ const ImageUploader = ({imagePath, onImageChange}) => {
                 {selectedImage || imagePath ? (
                     <ImageUploaderComponents.Image src={selectedImage || imagePath} alt="Selected Image"/>
                 ) : (
-                    <ImageUploaderComponents.Image src="http://localhost:3000/Images/NoImage.jpeg" alt="Default Image"/>
+                    <ImageUploaderComponents.Image src="/Images/NoImage.jpeg" alt="Default Image"/>
                 )}
             </ImageUploaderComponents.ImageContainer>
             <ImageUploaderComponents.Input type="file" accept="image/*" id="file-input" onChange={handleImageChange}/>
