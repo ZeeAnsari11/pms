@@ -21,8 +21,6 @@ const Permissions = () => {
     const [permissions, setPermissions] = useState([]);
     const [dataSource, setDataSource] = useState([]);
 
-    let authToken = localStorage.getItem('auth_token');
-
     const IsAdminOrStaffUser = useIsAdminOrStaffUser();
 
     const {Option} = Select;
@@ -31,9 +29,9 @@ const Permissions = () => {
 
     const fetchUserGroupsList = () => {
         apiRequest
-            .get(`/api/user_groups/`,
+            .get(`/user_groups/`,
                 {
-                    headers: {"Authorization": `Token ${authToken}`}
+                    headers: {"Authorization": `JWT ${localStorage.getItem('access')}`}
                 })
             .then(response => {
                 if (response.data) {
@@ -50,9 +48,9 @@ const Permissions = () => {
 
     const fetchUserList = () => {
         apiRequest
-            .get(`/api/users_list/`,
+            .get(`/users_list/`,
                 {
-                    headers: {"Authorization": `Token ${authToken}`}
+                    headers: {"Authorization": `JWT ${localStorage.getItem('access')}`}
                 })
             .then(response => {
                 if (response.data) {
@@ -70,12 +68,12 @@ const Permissions = () => {
     const fetchProjectMembershipList = () => {
         if (projectId !== undefined) {
             apiRequest
-                .get(`api/project_memberships`,
+                .get(`/project_memberships`,
                     {
                         params:
                             {project: projectId},
                         headers:
-                            {"Authorization": `Token ${authToken}`}
+                            {"Authorization": `JWT ${localStorage.getItem('access')}`}
                     }).then(response => {
                     console.log(response);
                     if (response.status === StatusCodes.OK) {
@@ -95,10 +93,10 @@ const Permissions = () => {
     const deleteFromProjectMembershipList = (index) => {
         const id = permissions[index].key;
         apiRequest
-            .delete(`api/project_memberships/${id}`,
+            .delete(`/project_memberships/${id}`,
                 {
                     headers:
-                        {"Authorization": `Token ${authToken}`}
+                        {"Authorization": `JWT ${localStorage.getItem('access')}`}
                 })
             .then(response => {
                 displaySuccessMessage(`Successfully delete the project permission.`)
@@ -113,7 +111,7 @@ const Permissions = () => {
 
     const addIntoProjectMembershipList = (userName, userGroup) => {
         apiRequest
-            .post('api/project_memberships/',
+            .post('/project_memberships/',
                 {
                     "user": userName.value,
                     "project": projectId,
@@ -121,7 +119,7 @@ const Permissions = () => {
                 },
                 {
                     headers:
-                        {"Authorization": `Token ${authToken}`}
+                        {"Authorization": `JWT ${localStorage.getItem('access')}`}
                 })
             .then(response => {
                 if (response.status === StatusCodes.CREATED) {

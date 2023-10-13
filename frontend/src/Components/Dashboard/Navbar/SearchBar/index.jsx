@@ -4,7 +4,7 @@ import {SearchInput, SearchResultsContainer, SearchIcon, SearchContainer, CloseI
 import apiRequest from "../../../../Utils/apiRequest";
 import {Divider, List, Avatar, Tag} from 'antd';
 import {Link} from 'react-router-dom';
-import {REACT_APP_HOST} from "../../../../Utils/envConstants";
+import {REACT_APP_DOMAIN} from "../../../../Utils/envConstants";
 
 const SearchBar = () => {
     const [expanded, setExpanded] = useState(false);
@@ -14,7 +14,6 @@ const SearchBar = () => {
     const inputRef = useRef(null);
     const navigate = useNavigate();
 
-    let authToken = localStorage.getItem('auth_token');
 
     const toggleExpand = () => {
         setExpanded(!expanded);
@@ -47,9 +46,9 @@ const SearchBar = () => {
     useEffect(() => {
         if (searchValue && expanded) {
             apiRequest
-                .get(`/api/global_search/?q=${searchValue}`, {
+                .get(`/global_search/?q=${searchValue}`, {
                     headers: {
-                        Authorization: `Token ${authToken}`
+                        Authorization: `JWT ${localStorage.getItem('access')}`
                     },
                 })
                 .then(response => {
@@ -107,7 +106,7 @@ const SearchBar = () => {
                                 renderItem={(project) => (
                                     <List.Item style={{margin: "10px"}}>
                                         <List.Item.Meta
-                                            avatar={<Avatar src={`${REACT_APP_HOST}/${project.icon}`}/>}
+                                            avatar={<Avatar src={`${REACT_APP_DOMAIN}/${project.icon}`}/>}
                                             title={
                                                 <Link
                                                     to={`/project/${project.id}/dashboard`}
@@ -130,7 +129,7 @@ const SearchBar = () => {
                                                 {project.assignees.map(assignee => (
                                                     <Avatar
                                                         key={assignee.id}
-                                                        src={`${REACT_APP_HOST}/${assignee.userprofile.image}`}
+                                                        src={`${REACT_APP_DOMAIN}/${assignee.userprofile.image}`}
                                                     />
                                                 ))}
                                             </Avatar.Group>
@@ -177,13 +176,13 @@ const SearchBar = () => {
                                         {issue.assignee && (
                                             <div>
                                                 <Avatar key={issue.assignee.id}
-                                                        src={`${REACT_APP_HOST}/${issue.assignee.userprofile.image}`}/>
+                                                        src={`${REACT_APP_DOMAIN}/${issue.assignee.userprofile.image}`}/>
                                             </div>
                                         )}
                                         {issue.reporter && (
                                             <div>
                                                 <Avatar key={issue.reporter.id}
-                                                        src={`${REACT_APP_HOST}/${issue.reporter.userprofile.image}`}/>
+                                                        src={`${REACT_APP_DOMAIN}/${issue.reporter.userprofile.image}`}/>
                                             </div>
                                         )}
                                     </List.Item>
