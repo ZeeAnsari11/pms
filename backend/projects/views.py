@@ -6,7 +6,7 @@ from .filters import IssueFilter
 from django.db.models import Q
 from django.http import JsonResponse
 from rest_framework.permissions import IsAuthenticated
-from .permissions import IsAdminOrReadOnly, IsAdminUser, IsAdminOrStaffUser
+from .permissions import IsAdminOrReadOnly, IsAdminUser, IsAdminOrStaffUser, HasPerms
 from rest_framework.decorators import action
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -272,7 +272,11 @@ class ProjectIssuesViewSet(ModelViewSet):
     serializer_class = serializers.ProjectIssuesSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_class = IssueFilter
-    permission_classes = [IsAuthenticated]
+    view_perm = 'view_issue'
+    add_perm = 'add_issue'
+    change_perm = 'change_issue'
+    delete_perm = 'delete_issue'
+    permission_classes = [IsAuthenticated, HasPerms]
 
     def get_serializer_context(self):
         return {'project_id': self.kwargs['project_pk']}
