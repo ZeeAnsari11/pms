@@ -13,7 +13,7 @@ import {useSelector} from "react-redux";
 import {
     deleteIssue,
     fetchSelectedProjectStatuses,
-    loadProjectIssues
+    loadProjectIssues, updateIssue
 } from "../../../Store/Slice/issue/issueActions";
 
 function Dashboard(props) {
@@ -164,6 +164,7 @@ function Dashboard(props) {
                 return {
                     id: Date.now() + Math.random() * 2,
                     title: status.status,
+                    statusId: status?.id,
                     priority: status.priority,
                     cards: cardsData.hasOwnProperty(status.status) ? cardsData[status.status] : []
                 };
@@ -226,34 +227,45 @@ function Dashboard(props) {
         });
     };
 
+    const updateCardStatus = async (cid, newStatus) => {
+        const formData = new FormData();
+        formData.append("status", newStatus);
+
+        dispatch(updateIssue({issueId: cid, formData: formData})).unwrap()
+            .then((response) => {
+                displaySuccessMessage(`Card status updated successfully.`);
+            })
+            .catch(
+                error => {
+                    displayErrorMessage(error);
+                }
+            );
+    };
+
     const handleDragEnd = (cid, bid) => {
-        let s_bIndex, s_cIndex, t_bIndex, t_cIndex;
+        const tempBoards = [...boards];
+        const sourceBoard = tempBoards.find((board) => board.id === bid);
+        const targetBoard = tempBoards.find((board) => board.id === target.bid);
 
-        s_bIndex = boards.findIndex((item) => item.id === bid);
-        if (s_bIndex < 0) return;
+        const sourceCardIndex = sourceBoard.cards.findIndex((card) => card.id === cid);
+        const sourceCard = sourceBoard.cards[sourceCardIndex];
+        sourceBoard.cards.splice(sourceCardIndex, 1);
 
-        s_cIndex = boards[s_bIndex].cards?.findIndex((item) => item.id === cid);
-        if (s_cIndex < 0) return;
-
-        t_bIndex = boards.findIndex((item) => item.id === target.bid);
-        if (t_bIndex < 0) return;
-
-        t_cIndex = boards[t_bIndex].cards?.findIndex((item) => item.id === target.cid);
-        if (t_cIndex < 0) return;
-
-        const tempboards = [...boards];
-        const tempCard = tempboards[s_bIndex].cards[s_cIndex];
-
-        tempboards[s_bIndex].cards.splice(s_cIndex, 1);
-
-        if (tempboards[t_bIndex].cards.length === 0) {
-            addCard(tempCard.title, tempboards[t_bIndex].id);
+        if (targetBoard.statusId === sourceBoard.statusId) {
+            // If source and target boards have the same status, simply insert the card at the target position
+            const targetCardIndex = targetBoard.cards.findIndex((card) => card.id === target.cid);
+            targetBoard.cards.splice(targetCardIndex, 0, sourceCard);
         } else {
-            tempboards[t_bIndex].cards.splice(t_cIndex, 0, tempCard);
+            // If source and target boards have different statuses, update the source card's status
+            updateCardStatus(sourceCard.id, targetBoard.statusId);
 
-            setboards(tempboards);
+            // Insert the source card at the target position and update its status only
+            const targetCardIndex = targetBoard.cards.findIndex((card) => card.id === target.cid);
+            targetBoard.cards.splice(targetCardIndex, 0, {...sourceCard, status: targetBoard.statusId});
         }
-    }
+
+        setboards(tempBoards);
+    };
 
     const updateCard = (bid, cid, card) => {
         const bIndex = boards.findIndex((item) => item.id === bid);
