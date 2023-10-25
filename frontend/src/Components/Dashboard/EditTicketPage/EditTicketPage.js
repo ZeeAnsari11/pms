@@ -136,7 +136,7 @@ function EditTicketPage({props}) {
 
 
     useEffect(() => {
-        dispatch(getIssue({issueId: issueId})).unwrap().then((response) => {
+        dispatch(getIssue({projectId: projectId, issueId: issueId})).unwrap().then((response) => {
             setCurrentIssueData(response.data);
         }).catch(
             error => {
@@ -281,7 +281,7 @@ function EditTicketPage({props}) {
             formData.append("file", file);
         });
 
-        dispatch(updateIssue({formData: formData, issueId: issueId})).unwrap()
+        dispatch(updateIssue({projectId: projectId, formData: formData, issueId: issueId})).unwrap()
             .then(response => {
                 console.log(response.data);
                 window.location.href = window.location.href

@@ -23,6 +23,7 @@ import {
     fetchSelectedProjectTypes
 } from "../../../Store/Slice/issue/issueActions";
 import {REACT_APP_DOMAIN} from "../../../Utils/envConstants";
+import {useParams} from "react-router-dom";
 
 
 const LinkedIssue1 = [
@@ -45,6 +46,7 @@ const LinkedIssue2 = [
 
 const MyModalComponent = ({onClose}) => {
     const dispatch = useDispatch()
+    const {projectId} = useParams()
 
     const [isHovered, setIsHovered] = useState(false);
 
@@ -267,6 +269,10 @@ const MyModalComponent = ({onClose}) => {
 
     function handleSubmit(event) {
         event.preventDefault();
+        if (!selectedProject || !selectedReporter) {
+            displayInfoMessage('Please Select the Project and Reporter.');
+            return;
+        }
 
         const formData = new FormData();
         formData.append("name", name);
@@ -288,7 +294,7 @@ const MyModalComponent = ({onClose}) => {
         formData.append("created_by", currentUserId);
         formData.append("updated_by", currentUserId);
 
-        dispatch(createIssue({formData: formData})).unwrap()
+        dispatch(createIssue({projectId: selectedProject, formData: formData})).unwrap()
             .then((response) => {
                 console.log(response);
                 displaySuccessMessage(name + " Ticket Created Successfully");
