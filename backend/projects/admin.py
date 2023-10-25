@@ -5,6 +5,7 @@ from . import models
 from django.db.models.aggregates import Count
 from django.utils.html import format_html, urlencode
 from django.urls import reverse
+from django.contrib.auth.models import Permission
 
 
 # Register your models here.
@@ -93,7 +94,7 @@ class ProjectSlackWebhookAdmin(admin.ModelAdmin):
     list_display = ['project', 'webhook_url', 'webhook_channel', 'is_active',
                     'global_status']
     search_fields = ['webhook_url', 'webhook_channel', 'is_active',
-                    'global_status']
+                     'global_status']
 
 
 class ProjectStatusAdmin(admin.ModelAdmin):
@@ -119,6 +120,7 @@ admin.site.register(GlobalSlackConfig, SingletonModelAdmin)
 admin.site.register(models.ProjectMembership, ProjectMembershipAdmin)
 
 admin.site.register(models.Issue, IssueAdmin)
+admin.site.register(Permission)
 
 admin.site.register(models.Comment, CommentAdmin)
 admin.site.register(models.WorkLog, WorkLogAdmin)

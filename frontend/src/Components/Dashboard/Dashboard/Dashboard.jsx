@@ -231,7 +231,7 @@ function Dashboard(props) {
         const formData = new FormData();
         formData.append("status", newStatus);
 
-        dispatch(updateIssue({issueId: cid, formData: formData})).unwrap()
+        dispatch(updateIssue({projectId: projectId, issueId: cid, formData: formData})).unwrap()
             .then((response) => {
                 displaySuccessMessage(`Card status updated successfully.`);
             })

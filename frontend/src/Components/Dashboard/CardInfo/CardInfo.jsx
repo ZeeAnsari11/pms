@@ -126,7 +126,7 @@ function CardInfo(props) {
 
     useEffect(() => {
 
-        dispatch(getIssue({issueId: props.card?.id})).unwrap().then((response) => {
+        dispatch(getIssue({projectId: projectId, issueId: props.card?.id})).unwrap().then((response) => {
             setIssuesData(response.data);
         }).catch(
             error => {
@@ -399,7 +399,7 @@ function CardInfo(props) {
             formData.append("label", label);
         });
 
-        dispatch(updateIssue({formData: formData, issueId: props.card.id})).unwrap()
+        dispatch(updateIssue({projectId: projectId, formData: formData, issueId: props.card.id})).unwrap()
             .then(response => {
                 props.onClose();
                 console.log(response.data);

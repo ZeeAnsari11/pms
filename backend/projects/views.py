@@ -6,7 +6,7 @@ from .filters import IssueFilter
 from django.db.models import Q
 from django.http import JsonResponse
 from rest_framework.permissions import IsAuthenticated
-from .permissions import IsAdminOrReadOnly, IsAdminUser, IsAdminOrStaffUser, HasPerms
+from .permissions import IsAdminOrReadOnly, IsAdminUser, IsAdminOrStaffUser, IsCreatorOrAdminOrStaffUser, HasPerms
 from rest_framework.decorators import action
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -15,6 +15,8 @@ from django.utils.text import slugify
 from django.utils.crypto import get_random_string
 from . import serializers
 from .models import *
+from django.http import Http404
+from django.shortcuts import get_object_or_404
 
 
 # Create your views here.
@@ -159,18 +161,15 @@ class IssueViewSet(ModelViewSet):
     http_method_names = ['get', 'post', 'patch', 'delete']
     filter_backends = [DjangoFilterBackend]
     filterset_class = IssueFilter
+    view_perm = 'view_issue'
+    add_perm = 'add_issue'
+    change_perm = 'change_issue'
+    delete_perm = 'delete_issue'
 
     def get_serializer_class(self):
         if self.request.method in ['POST', 'PATCH', 'DELETE']:
             return serializers.CreateIssueSerializer
         return serializers.IssueSerializer
-
-    permission_classes = [IsAuthenticated]
-
-    def get_permissions(self):
-        if self.request.method in ['POST', 'PATCH', 'DELETE']:
-            return [IsAuthenticated()]
-        return [IsAuthenticated()]
 
     def get_serializer_context(self):
         return {'reporter_id': self.request.user.id}
@@ -180,6 +179,20 @@ class IssueViewSet(ModelViewSet):
         if user.is_staff:
             return Issue.objects.prefetch_related('assignee').select_related('reporter').select_related('project').all()
         return Issue.objects.filter(Q(reporter_id=self.request.user) | Q(assignee=self.request.user))
+
+    def get_permissions(self):
+        try:
+            # Try to get project from URL parameters
+            project = get_object_or_404(Project, pk=self.kwargs.get('project_pk'))
+            return [IsAuthenticated(), HasPerms()]  # Include HasPerms permission class
+        except Http404:
+            # If project not found in URL parameters, try to get from request parameters
+            project_id = self.request.GET.get('project_id')
+            project = project_id  # Replace 'project_id' with your actual parameter name
+            if project:
+                return [IsAuthenticated(), HasPerms()]  # Include HasPerms permission class
+            else:
+                return [IsAuthenticated()]  # Return only IsAuthenticated permission class
 
 
 class CommentViewSet(ModelViewSet):
@@ -192,7 +205,7 @@ class CommentViewSet(ModelViewSet):
             return serializers.CreateCommentSerializer
         return serializers.CommentSerializer
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsCreatorOrAdminOrStaffUser]
 
     def get_serializer_context(self):
         return {'user_id': self.request.user.id}
@@ -214,7 +227,7 @@ class WorklogViewSet(ModelViewSet):
             return serializers.CreateWorkLogSerializer
         return serializers.WorkLogSerializer
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsCreatorOrAdminOrStaffUser]
 
     def get_queryset(self):
         user = self.request.user
@@ -268,7 +281,7 @@ class WatcherViewSet(ModelViewSet):
 
 
 class ProjectIssuesViewSet(ModelViewSet):
-    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
+    http_method_names = ['get', 'post', 'patch', 'delete']
     serializer_class = serializers.ProjectIssuesSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_class = IssueFilter

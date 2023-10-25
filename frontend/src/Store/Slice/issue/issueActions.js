@@ -1,5 +1,7 @@
 import {createAsyncThunk} from "@reduxjs/toolkit";
 import apiRequest from "../../../Utils/apiRequest";
+import {useParams} from "react-router-dom";
+
 
 export const loadProjectIssues = createAsyncThunk(
     'issue/load_project_issues',
@@ -9,6 +11,7 @@ export const loadProjectIssues = createAsyncThunk(
                 headers: {
                     'Authorization': `JWT ${localStorage.getItem('access')}`
                 },
+
             }
             return await apiRequest.get(
                 `/projects/${projectId}/issues/`,
@@ -28,12 +31,15 @@ export const loadProjectIssues = createAsyncThunk(
 
 export const getIssue = createAsyncThunk(
     'issue/get_issue',
-    async ({issueId}, {rejectWithValue}) => {
+    async ({projectId,issueId}, {rejectWithValue}) => {
         try {
             const config = {
                 headers: {
                     'Authorization': `JWT ${localStorage.getItem('access')}`
                 },
+                params: {
+                    project_id: projectId
+                }
             }
             const response = await apiRequest.get(
                 `/issues/${issueId}/`,
@@ -54,12 +60,15 @@ export const getIssue = createAsyncThunk(
 
 export const createIssue = createAsyncThunk(
     'issue/create',
-    async ({formData}, {rejectWithValue}) => {
+    async ({projectId,formData}, {rejectWithValue}) => {
         try {
             const config = {
                 headers: {
                     'Authorization': `JWT ${localStorage.getItem('access')}`
                 },
+                params: {
+                    project_id: projectId
+                }
             }
             return await apiRequest.post(
                 `/issues/`,
@@ -80,12 +89,15 @@ export const createIssue = createAsyncThunk(
 
 export const updateIssue = createAsyncThunk(
     'issue/update',
-    async ({formData, issueId}, {rejectWithValue}) => {
+    async ({projectId,formData, issueId}, {rejectWithValue}) => {
         try {
             const config = {
                 headers: {
                     'Authorization': `JWT ${localStorage.getItem('access')}`
                 },
+                params: {
+                    project_id: projectId
+                }
             }
             return await apiRequest.patch(
                 `/issues/${issueId}/`,
