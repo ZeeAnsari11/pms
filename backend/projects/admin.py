@@ -118,10 +118,7 @@ admin.site.register(models.ProjectStatus, ProjectStatusAdmin)
 admin.site.register(models.ProjectSlackWebhook, ProjectSlackWebhookAdmin)
 admin.site.register(GlobalSlackConfig, SingletonModelAdmin)
 admin.site.register(models.ProjectMembership, ProjectMembershipAdmin)
-
 admin.site.register(models.Issue, IssueAdmin)
-admin.site.register(Permission)
-
 admin.site.register(models.Comment, CommentAdmin)
 admin.site.register(models.WorkLog, WorkLogAdmin)
 admin.site.register(models.Watcher, WatcherAdmin)
