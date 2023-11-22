@@ -1,34 +1,33 @@
 from rest_framework import permissions
-from rest_framework.permissions import BasePermission
 from django.shortcuts import get_object_or_404
 from .models import ProjectMembership, Project
 from django.http import Http404
 
 
-class IsAdminOrReadOnly(BasePermission):
+class IsAdminOrReadOnly(permissions.BasePermission):
     def has_permission(self, request, view):
         if request.method in permissions.SAFE_METHODS:
             return True
         return bool(request.user and request.user.is_staff)
 
 
-class IsAdminUser(BasePermission):
+class IsAdminUser(permissions.BasePermission):
     def has_permission(self, request, view):
         if request.method in permissions.SAFE_METHODS:
             return True
         return bool(request.user and request.user.is_superuser)
 
 
-class IsAdminOrStaffUser(BasePermission):
+class IsAdminOrStaffUser(permissions.BasePermission):
     def has_permission(self, request, view):
         if request.method in permissions.SAFE_METHODS:
             return True
         return bool(request.user and (request.user.is_superuser or request.user.is_staff))
 
 
-class HasPerms(BasePermission):
+class HasPerms(permissions.BasePermission):
     def has_permission(self, request, view):
-        if request.user.is_superuser:
+        if request.user.is_superuser or request.user.is_staff:
             return True
 
         project_pk = view.kwargs.get('project_pk') or request.GET.get('project_id')
