@@ -25,7 +25,7 @@ const Pricing = () => {
                     <PricingH2>Free</PricingH2>
                     <PricingP><strong>$0</strong> per user</PricingP>
                     <PricingP><strong>$0 monthly total</strong></PricingP>
-                    <PricingBtn to="/login">Get it Now</PricingBtn>
+                    <PricingBtn to="/">Get it Now</PricingBtn>
                     <PricingH3>This plan includes:</PricingH3>
                     <Pricingul>
                         <Pricingli>
@@ -53,7 +53,7 @@ const Pricing = () => {
                     <PricingH2>Standard</PricingH2>
                     <PricingP><strong>$7.75</strong> per user</PricingP>
                     <PricingP><strong>$77.50 monthly total</strong></PricingP>
-                    <PricingBtn to="/login">Start Trial</PricingBtn>
+                    <PricingBtn to="/">Start Trial</PricingBtn>
                     <PricingH3>Everything from Free plan, plus:</PricingH3>
                     <Pricingul>
                         <Pricingli>
@@ -82,7 +82,7 @@ const Pricing = () => {
                     <PricingH2>Premium</PricingH2>
                     <PricingP><strong>$15.25</strong> per user</PricingP>
                     <PricingP><strong>$152.50 monthly total</strong></PricingP>
-                    <PricingBtn to="/login">Start Trial</PricingBtn>
+                    <PricingBtn to="/">Start Trial</PricingBtn>
                     <PricingH3>Everything from Standard plan, plus:</PricingH3>
                     <Pricingul>
                         <Pricingli>

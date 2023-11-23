@@ -26,17 +26,21 @@ import {IoMdNotifications} from 'react-icons/io'
 import {RxAvatar} from 'react-icons/rx'
 import {AiFillQuestionCircle} from 'react-icons/ai'
 import SearchBar from './SearchBar/index'
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import CreateTicket from "../CreateTicket/CreateTicket";
 import Avatar from "react-avatar";
 import {Button} from "antd"
-import Loading from "../../../Utils/Loader";
+import {verifyToken} from '../../../Store/Slice/auth/authActions'
 import { useGetUserDetailsQuery } from '../../../Store/Slice/auth/authService'
 import { setUserInfo } from '../../../Store/Slice/auth/authSlice'
 import {REACT_APP_DOMAIN} from "../../../Utils/envConstants";
+import {StatusCodes} from "http-status-codes";
+import {displayErrorMessage} from "../../../Shared/notify";
 
 function NavBar() {
-    const dispatch = useDispatch()
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
 
     const { userInfo } = useSelector((state) => state.auth)
     const isSuperuser = userInfo?.user?.is_superuser;
@@ -55,10 +59,34 @@ function NavBar() {
     const handleCreateButtonClick = () => {
         setShowModal(true);
     }
+    const unAuthenticatedAction = () => {
+            localStorage.removeItem('access');
+            localStorage.removeItem('access');
+            navigate('/');
+    }
 
     useEffect(() => {
-        if (data) dispatch(setUserInfo(data))
-    }, [data, dispatch])
+
+        const verifyTokenOnPageLoad = async () => {
+            const accessToken = localStorage.getItem('access');
+            const refreshToken = localStorage.getItem('refresh');
+
+            if (accessToken && refreshToken) {
+                try {
+                    await dispatch(verifyToken({token: accessToken})).unwrap()
+                        .then(response => {
+                            if (data && response.status === StatusCodes.OK) dispatch(setUserInfo(data))
+                        })
+                        .catch(error => {
+                            unAuthenticatedAction();
+                    })
+                } catch (error) {
+                    unAuthenticatedAction();
+                }
+            }
+        };
+        verifyTokenOnPageLoad();
+        }, [data, dispatch])
 
     return (
         <>
