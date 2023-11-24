@@ -1,5 +1,6 @@
 import React, {useState, useRef} from "react";
 import * as ProfilePhotoUploaderComponents from './ProfilePhotoUploaderStyle';
+import {REACT_APP_DOMAIN} from "../../../Utils/envConstants";
 
 const ProfilePhotouploader = ({imagePath, onImageChange}) => {
     const [selectedImage, setSelectedImage] = useState(null);
@@ -30,7 +31,7 @@ const ProfilePhotouploader = ({imagePath, onImageChange}) => {
                     />
                 ) : (
                     <ProfilePhotoUploaderComponents.Image
-                        src="http://localhost:3000/Images/NoImage.jpeg"
+                        src={`${REACT_APP_DOMAIN}/Images/NoImage.jpeg`}
                         alt="Default Image"
                     />
                 )}

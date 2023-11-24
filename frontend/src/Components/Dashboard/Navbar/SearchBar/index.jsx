@@ -83,7 +83,7 @@ const SearchBar = () => {
                         ref={inputRef}
                         placeholder="Search ProjeX..."
                         value={searchValue}
-                        onChange={handleSearchInputChange}
+                        onBlur={handleSearchInputChange}
                     />
                     <CloseIcon onClick={() => {
                         handleClearSearch();

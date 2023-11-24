@@ -25,6 +25,10 @@ import ErrorPage from "../Components/Error/ErrorPage";
 import SessionAlertPage from "../Components/Error/SessionAlertPage";
 import LandingPage from "../Components/Landingpage/Landingpage";
 import AuthenticateWithGoogle from "../Components/User/Login/authenticateWithGoogle"
+import {verifyToken} from "../Store/Slice/auth/authActions";
+import {StatusCodes} from "http-status-codes";
+import {useDispatch} from "react-redux";
+
 
 function PrivateRoute({element: Component, ...rest}) {
     let accessToken = localStorage.getItem('access')
@@ -36,10 +40,23 @@ function PrivateRoute({element: Component, ...rest}) {
 }
 
 function Redirection({element: Component, ...rest}) {
+    const dispatch = useDispatch();
     let accessToken = localStorage.getItem('access')
     let refreshToken = localStorage.getItem('refresh')
     if (accessToken && refreshToken) {
-        return <Navigate to="/project" replace />;
+        try {
+            dispatch(verifyToken({token: accessToken})).unwrap()
+                .then(response => {
+                    if (response.status === StatusCodes.OK) {
+                        return <Navigate to="/project" replace />;
+                    }
+                })
+                .catch(error => {
+                    return <SessionAlertPage hasAuthToken={true}/>;
+            })
+        } catch (error) {
+            return <SessionAlertPage hasAuthToken={true}/>;
+        }
     }
     return <Component {...rest} />;
 }
